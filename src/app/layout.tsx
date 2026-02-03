@@ -14,8 +14,11 @@ export const metadata: Metadata = {
   description: "Public transparency dashboard for the Southeast Louisiana Flood Protection Authority - East. View system readiness, financial data, operations, and more.",
   keywords: ["flood protection", "New Orleans", "SLFPA-E", "levees", "transparency", "public dashboard"],
   icons: {
-    icon: "/fpa_logo.png",
-    apple: "/fpa_logo.png",
+    icon: [
+      { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+    ],
+    apple: "/apple-touch-icon.png",
   },
 };
 
