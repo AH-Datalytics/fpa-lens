@@ -13,6 +13,10 @@ export const metadata: Metadata = {
   title: "The FPA Lens | SLFPA-E Transparency Dashboard",
   description: "Public transparency dashboard for the Southeast Louisiana Flood Protection Authority - East. View system readiness, financial data, operations, and more.",
   keywords: ["flood protection", "New Orleans", "SLFPA-E", "levees", "transparency", "public dashboard"],
+  icons: {
+    icon: "/fpa_logo.png",
+    apple: "/fpa_logo.png",
+  },
 };
 
 export default function RootLayout({
