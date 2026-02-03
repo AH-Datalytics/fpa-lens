@@ -47,7 +47,7 @@ export default function Home() {
       {/* Hero Section */}
       <section className="relative bg-gradient-to-br from-[#21355a] via-[#2c3859] to-[#21355a] text-white">
         <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-5"></div>
-        <div className="relative mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
+        <div className="relative mx-auto max-w-7xl px-4 pt-10 pb-28 sm:px-6 lg:px-8 lg:pt-12 lg:pb-32">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div>
               <div className="flex items-center gap-2 mb-6">
