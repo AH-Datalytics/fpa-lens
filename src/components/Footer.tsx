@@ -43,6 +43,15 @@ export default function Footer() {
             <h3 className="text-lg font-semibold mb-4">Resources</h3>
             <div className="space-y-2 text-sm">
               <a
+                href="https://www.floodauthority.org/news/public-alerts/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 text-blue-200 hover:text-white transition-colors"
+              >
+                <ExternalLink className="h-4 w-4" />
+                Sign up for Alerts
+              </a>
+              <a
                 href="https://www.floodauthority.org"
                 target="_blank"
                 rel="noopener noreferrer"

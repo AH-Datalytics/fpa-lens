@@ -1,0 +1,53 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "Pump": null,
+        "Location_N": "17th Street Canal",
+        "Lat": 0,
+        "Long_": 0
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.12175513740539,
+          30.02271496440142
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "Pump": null,
+        "Location_N": "Orleans Avenue Canal",
+        "Lat": 0,
+        "Long_": 0
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.0969064261215,
+          30.027045583432088
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "Pump": null,
+        "Location_N": "London Avenue Canal",
+        "Lat": 0,
+        "Long_": 0
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.0734423542583,
+          30.027681048662544
+        ]
+      }
+    }
+  ]
+}

@@ -56,3 +56,21 @@ body {
 .animate-status-pulse {
   animation: status-pulse 2s ease-in-out infinite;
 }
+
+/* Leaflet map styles */
+.leaflet-container {
+  font-family: inherit;
+}
+
+.custom-marker {
+  background: transparent;
+  border: none;
+}
+
+.leaflet-popup-content-wrapper {
+  border-radius: 8px;
+}
+
+.leaflet-popup-content {
+  margin: 12px;
+}

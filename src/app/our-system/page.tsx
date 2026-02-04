@@ -2,6 +2,7 @@ import { Shield, Droplets, Building2, Waves, AlertCircle } from "lucide-react";
 import SectionHeader, { SectionSubheader } from "@/components/SectionHeader";
 import DataCard from "@/components/DataCard";
 import PlaceholderBox from "@/components/PlaceholderBox";
+import SystemMap from "@/components/SystemMap";
 import { infrastructureAssets, educationalContent, hurricaneSeasonInfo } from "@/data/siteData";
 
 export default function OurSystemPage() {
@@ -33,16 +34,17 @@ export default function OurSystemPage() {
           </div>
         </section>
 
-        {/* System Map Placeholder */}
+        {/* System Map */}
         <section className="mb-12">
           <SectionSubheader title="System Map" />
-          <PlaceholderBox
-            title="Interactive System Map"
-            description="A comprehensive map showing levee alignments, floodgates, pump stations, and complex structures across the protection system."
-            stakeholderNeeded="GIS/Engineering"
-            type="map"
-            height="h-96"
-          />
+          <p className="text-gray-600 mb-4">
+            Interactive map showing levee alignments, floodgates, pump stations, and complex structures
+            across the SLFPA-E flood protection system. Click on features for more information.
+          </p>
+          <SystemMap />
+          <p className="text-xs text-gray-400 mt-2">
+            Source: SLFPA-E GIS Data (Centerline and Structures Shapefiles)
+          </p>
         </section>
 
         {/* Confirmed Assets */}

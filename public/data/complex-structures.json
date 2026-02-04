@@ -1,0 +1,157 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "ID": 5,
+        "Latitude": 29.998334,
+        "Longitude": -89.915573,
+        "FloodGate": "Bayou Beinvenue Sector Gate",
+        "Hyperlink1": "https://www.floodauthority.org/wp-content/uploads/2020/05/Bayou-Beinvenue-7-19-2017-1024x768-1.jpg",
+        "About": "https://www.floodauthority.org/the-system/bayous-bienvenue-and-dupre-sector-gates/",
+        "GateStatus": "Please see the table above for gate status communications"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -89.91557299989462,
+          29.99833399999848
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "ID": 1,
+        "Latitude": 30.030409,
+        "Longitude": -90.034072,
+        "FloodGate": "Seabrook Complex",
+        "Hyperlink1": "https://1npx5b3js4ww1aopzd2np95r-wpengine.netdna-ssl.com/wp-content/uploads/2017/03/Seabrook-aerial-1.jpg",
+        "About": "https://www.floodauthority.org/the-system/seabrook-floodgate-complex/",
+        "GateStatus": "Please see the table above for gate status communications"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.03407199989465,
+          30.030408999998553
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "ID": 3,
+        "Latitude": 30.013695,
+        "Longitude": -89.90134,
+        "FloodGate": "GIWW East Closure Bypass Gate",
+        "Hyperlink1": "https://www.floodauthority.org/wp-content/uploads/2020/09/GIWW-East-Closure-Bypass-Gate-scaled.jpg",
+        "About": "https://www.floodauthority.org/the-system/lake-borgne-surge-barrier/",
+        "GateStatus": "Please see the table above for gate status communications"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -89.9013399998946,
+          30.013694999998393
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "ID": 2,
+        "Latitude": 30.014583,
+        "Longitude": -89.901804,
+        "FloodGate": "GIWW East Closure Sector Gate",
+        "Hyperlink1": "https://www.floodauthority.org/wp-content/uploads/2020/09/GIWW-East-Closure-Sector-Gate-scaled.jpg",
+        "About": "https://www.floodauthority.org/the-system/lake-borgne-surge-barrier/",
+        "GateStatus": "Please see the table above for gate status communications"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -89.90180399989465,
+          30.014582999998407
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "ID": 4,
+        "Latitude": 30.002541,
+        "Longitude": -89.902456,
+        "FloodGate": "Bayou Beinvenue Vertical Lift Gate",
+        "Hyperlink1": "https://1npx5b3js4ww1aopzd2np95r-wpengine.netdna-ssl.com/wp-content/uploads/2017/03/Bayou-Bienvenue-Lift-Gate.jpg",
+        "About": "https://www.floodauthority.org/the-system/bayous-bienvenue-and-dupre-sector-gates/",
+        "GateStatus": "Please see the table above for gate status communications"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -89.90245599989464,
+          30.002540999998423
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "ID": 6,
+        "Latitude": 29.93492,
+        "Longitude": -89.83665,
+        "FloodGate": "Bayou Dupre Sector Gate",
+        "Hyperlink1": "https://www.floodauthority.org/wp-content/uploads/2020/05/Bayou-Dupre-07-19-2017-1024x768-1.jpg",
+        "About": "https://www.floodauthority.org/the-system/bayous-bienvenue-and-dupre-sector-gates/",
+        "GateStatus": "Please see the table above for gate status communications"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -89.83664999989476,
+          29.934919999998332
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "ID": 7,
+        "Latitude": 29.858589,
+        "Longitude": -89.90691,
+        "FloodGate": "Caernarvon Sector Gate",
+        "Hyperlink1": "https://1npx5b3js4ww1aopzd2np95r-wpengine.netdna-ssl.com/wp-content/uploads/2017/03/Caernarvon-side-aerial.jpg",
+        "About": "https://www.floodauthority.org/the-system/caernarvon-sector-gate/",
+        "GateStatus": "Please see the table above for gate status communications"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -89.90690999989482,
+          29.858588999998428
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "ID": 8,
+        "Latitude": 30.024267,
+        "Longitude": -90.082825,
+        "FloodGate": "Bayou St. John  Sector Gate",
+        "Hyperlink1": "https://www.floodauthority.org/wp-content/uploads/2021/05/Bayou-St-John-floodgate-picture.jpeg",
+        "About": "https://www.floodauthority.org/the-system/bayou-st-john-sector-gate/",
+        "GateStatus": "Please see the table above for gate status communications"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.08282499989461,
+          30.024266999998527
+        ]
+      }
+    }
+  ]
+}
