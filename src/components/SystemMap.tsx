@@ -234,11 +234,11 @@ export default function SystemMap() {
             >
               <Popup>
                 <div className="text-sm min-w-[200px]">
-                  <strong className="text-[#21355a]">{props.FloodGate as string}</strong>
-                  {props.About && (
+                  <strong className="text-[#21355a]">{String(props.FloodGate)}</strong>
+                  {typeof props.About === "string" && props.About && (
                     <div className="mt-2">
                       <a
-                        href={props.About as string}
+                        href={props.About}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-blue-600 hover:underline text-xs"
