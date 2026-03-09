@@ -255,27 +255,27 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
             {quickLinks.map((link) => {
               const Icon = link.icon;
               return (
                 <Link
                   key={link.href}
                   href={link.href}
-                  className="group bg-gray-50 hover:bg-[#21355a] rounded-xl p-6 transition-all duration-300"
+                  className="group bg-gray-50 hover:bg-[#21355a] rounded-xl p-4 transition-all duration-300"
                 >
-                  <div className="w-12 h-12 bg-[#65bc7b]/10 group-hover:bg-white/10 rounded-lg flex items-center justify-center mb-4">
-                    <Icon className="h-6 w-6 text-[#65bc7b] group-hover:text-[#65bc7b]" />
+                  <div className="w-10 h-10 bg-[#65bc7b]/10 group-hover:bg-white/10 rounded-lg flex items-center justify-center mb-3">
+                    <Icon className="h-5 w-5 text-[#65bc7b] group-hover:text-[#65bc7b]" />
                   </div>
-                  <h3 className="font-semibold text-[#21355a] group-hover:text-white mb-2">
+                  <h3 className="text-sm font-semibold text-[#21355a] group-hover:text-white mb-1">
                     {link.title}
                   </h3>
-                  <p className="text-sm text-gray-600 group-hover:text-blue-200">
+                  <p className="text-xs text-gray-600 group-hover:text-blue-200">
                     {link.description}
                   </p>
-                  <div className="mt-4 flex items-center text-sm font-medium text-[#65bc7b]">
+                  <div className="mt-3 flex items-center text-xs font-medium text-[#65bc7b]">
                     Learn more
-                    <ArrowRight className="h-4 w-4 ml-1 group-hover:translate-x-1 transition-transform" />
+                    <ArrowRight className="h-3 w-3 ml-1 group-hover:translate-x-1 transition-transform" />
                   </div>
                 </Link>
               );
