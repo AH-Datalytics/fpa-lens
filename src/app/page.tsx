@@ -7,6 +7,7 @@ import {
   FileText,
   HardHat,
   ArrowRight,
+  Info,
 } from "lucide-react";
 import StatusBadge from "@/components/StatusBadge";
 import {
@@ -53,7 +54,7 @@ const quickLinks = [
     title: "About Us",
     description: "What SLFPA-E does and how we protect the region",
     href: "/about/what-we-do",
-    icon: Shield,
+    icon: Info,
   },
 ];
 
