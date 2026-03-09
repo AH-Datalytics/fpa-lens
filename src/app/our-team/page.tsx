@@ -27,7 +27,7 @@ export default function OurTeamPage() {
     <div className="py-12">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <SectionHeader
-          title="Our Team"
+          title="Staffing"
           subtitle="The dedicated professionals protecting Greater New Orleans"
           source={staffingData.source}
         />

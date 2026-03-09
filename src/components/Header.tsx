@@ -14,15 +14,15 @@ interface NavItem {
 
 const navigation: NavItem[] = [
   { name: "Our System", href: "/our-system" },
-  { name: "Financials", href: "/financial" },
+  { name: "Financial Transparency", href: "/financial" },
   { name: "Operations", href: "/operations" },
   { name: "Safety", href: "/safety" },
+  { name: "Staffing", href: "/our-team" },
   {
     name: "About Us",
     href: "#",
     submenu: [
       { name: "What We Do", href: "/about/what-we-do" },
-      { name: "Our Team", href: "/our-team" },
       { name: "Stay Informed", href: "/about/stay-informed" },
     ],
   },
