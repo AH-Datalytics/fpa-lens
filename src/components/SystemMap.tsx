@@ -23,6 +23,13 @@ interface MapData {
   levees: GeoJSONCollection | null;
   structures: GeoJSONCollection | null;
   pccps: GeoJSONCollection | null;
+  floodgates: GeoJSONCollection | null;
+  valves: GeoJSONCollection | null;
+}
+
+interface LayerVisibility {
+  floodgates: boolean;
+  valves: boolean;
 }
 
 // Dynamically import map to avoid SSR issues with Leaflet
@@ -70,8 +77,7 @@ const createCircleIcon = (color: string, size: number = 24) => {
 const createTriangleIcon = (color: string, size: number = 28) => {
   if (typeof window === "undefined") return undefined;
   const L = require("leaflet");
-  // Using SVG for cleaner triangle with white outline
-  const svgSize = size + 6; // Add padding for stroke
+  const svgSize = size + 6;
   return L.divIcon({
     className: "custom-marker",
     html: `<svg width="${svgSize}" height="${svgSize}" viewBox="0 0 ${svgSize} ${svgSize}" style="filter: drop-shadow(0 2px 3px rgba(0,0,0,0.3)); opacity: 0.85;">
@@ -88,30 +94,147 @@ const createTriangleIcon = (color: string, size: number = 28) => {
   });
 };
 
-function MapLegend({ pccpCount, structureCount }: { pccpCount: number; structureCount: number }) {
+const createSquareIcon = (color: string, size: number = 10) => {
+  if (typeof window === "undefined") return undefined;
+  const L = require("leaflet");
+  return L.divIcon({
+    className: "custom-marker",
+    html: `<div style="
+      background-color: ${color};
+      width: ${size}px;
+      height: ${size}px;
+      border: 1.5px solid white;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+      opacity: 0.85;
+    "></div>`,
+    iconSize: [size, size],
+    iconAnchor: [size / 2, size / 2],
+  });
+};
+
+const createDiamondIcon = (color: string, size: number = 10) => {
+  if (typeof window === "undefined") return undefined;
+  const L = require("leaflet");
+  const svgSize = size + 4;
+  return L.divIcon({
+    className: "custom-marker",
+    html: `<svg width="${svgSize}" height="${svgSize}" viewBox="0 0 ${svgSize} ${svgSize}" style="filter: drop-shadow(0 1px 2px rgba(0,0,0,0.3)); opacity: 0.85;">
+      <rect
+        x="${svgSize/2 - size/2}"
+        y="${svgSize/2 - size/2}"
+        width="${size}"
+        height="${size}"
+        fill="${color}"
+        stroke="white"
+        stroke-width="1.5"
+        transform="rotate(45 ${svgSize/2} ${svgSize/2})"
+      />
+    </svg>`,
+    iconSize: [svgSize, svgSize],
+    iconAnchor: [svgSize / 2, svgSize / 2],
+  });
+};
+
+interface MapLegendProps {
+  pccpCount: number;
+  structureCount: number;
+  floodgateCount: number;
+  valveCount: number;
+  layerVisibility: LayerVisibility;
+  onToggleLayer: (layer: keyof LayerVisibility) => void;
+}
+
+function MapLegend({
+  pccpCount,
+  structureCount,
+  floodgateCount,
+  valveCount,
+  layerVisibility,
+  onToggleLayer,
+}: MapLegendProps) {
   return (
     <div className="absolute bottom-4 left-4 bg-white rounded-lg shadow-lg p-4 z-[1000]">
       <h4 className="font-semibold text-sm text-gray-800 mb-3">Map Legend</h4>
       <div className="space-y-2 text-sm">
+        {/* Always-on layers */}
         <div className="flex items-center gap-2">
-          <div className="w-6 h-1 bg-[#21355a] rounded"></div>
+          <div className="w-5 flex-shrink-0 flex justify-center">
+            <div className="w-5 h-1 bg-[#21355a] rounded"></div>
+          </div>
           <span className="text-gray-600">Levees & Floodwalls</span>
         </div>
         <div className="flex items-center gap-2">
-          <svg width="18" height="16" viewBox="0 0 18 16">
-            <polygon
-              points="9,1 17,15 1,15"
-              fill="#65bc7b"
-              stroke="white"
-              strokeWidth="2"
-              strokeLinejoin="round"
-            />
-          </svg>
+          <div className="w-5 flex-shrink-0 flex justify-center">
+            <svg width="16" height="14" viewBox="0 0 16 14" style={{ filter: "drop-shadow(0 1px 2px rgba(0,0,0,0.3))" }}>
+              <polygon
+                points="8,1 15,13 1,13"
+                fill="#65bc7b"
+                stroke="white"
+                strokeWidth="2"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </div>
           <span className="text-gray-600">PCCP Stations ({pccpCount})</span>
         </div>
         <div className="flex items-center gap-2">
-          <div className="w-4 h-4 bg-[#f59e0b] rounded-full border-2 border-white shadow"></div>
+          <div className="w-5 flex-shrink-0 flex justify-center">
+            <div className="w-4 h-4 bg-[#f59e0b] rounded-full border-2 border-white shadow"></div>
+          </div>
           <span className="text-gray-600">Complex Structures ({structureCount})</span>
+        </div>
+
+        {/* Toggleable layers */}
+        <div className="border-t border-gray-200 pt-2 mt-2">
+          <p className="text-xs text-gray-400 mb-2">Toggle layers</p>
+          <label className="flex items-center gap-2 cursor-pointer">
+            <div className="w-5 flex-shrink-0 flex justify-center">
+              <div className="w-[10px] h-[10px] bg-[#3b82f6] border-[1.5px] border-white shadow"></div>
+            </div>
+            <span className={`flex-1 ${layerVisibility.floodgates ? "text-gray-600" : "text-gray-400"}`}>
+              Floodgates ({floodgateCount})
+            </span>
+            <button
+              onClick={() => onToggleLayer("floodgates")}
+              className={`relative w-9 h-5 rounded-full transition-colors ${
+                layerVisibility.floodgates ? "bg-[#65bc7b]" : "bg-gray-300"
+              }`}
+            >
+              <span
+                className={`absolute top-0.5 left-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform ${
+                  layerVisibility.floodgates ? "translate-x-4" : ""
+                }`}
+              />
+            </button>
+          </label>
+          <label className="flex items-center gap-2 cursor-pointer mt-2">
+            <div className="w-5 flex-shrink-0 flex justify-center">
+              <svg width="14" height="14" viewBox="0 0 14 14" style={{ filter: "drop-shadow(0 1px 2px rgba(0,0,0,0.3))" }}>
+                <rect
+                  x="3" y="3" width="8" height="8"
+                  fill="#dc143c"
+                  stroke="white"
+                  strokeWidth="2"
+                  transform="rotate(45 7 7)"
+                />
+              </svg>
+            </div>
+            <span className={`flex-1 ${layerVisibility.valves ? "text-gray-600" : "text-gray-400"}`}>
+              Valves ({valveCount})
+            </span>
+            <button
+              onClick={() => onToggleLayer("valves")}
+              className={`relative w-9 h-5 rounded-full transition-colors ${
+                layerVisibility.valves ? "bg-[#65bc7b]" : "bg-gray-300"
+              }`}
+            >
+              <span
+                className={`absolute top-0.5 left-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform ${
+                  layerVisibility.valves ? "translate-x-4" : ""
+                }`}
+              />
+            </button>
+          </label>
         </div>
       </div>
     </div>
@@ -123,30 +246,52 @@ export default function SystemMap() {
     levees: null,
     structures: null,
     pccps: null,
+    floodgates: null,
+    valves: null,
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [layerVisibility, setLayerVisibility] = useState<LayerVisibility>({
+    floodgates: false,
+    valves: false,
+  });
+
+  const toggleLayer = (layer: keyof LayerVisibility) => {
+    setLayerVisibility((prev) => ({ ...prev, [layer]: !prev[layer] }));
+  };
 
   useEffect(() => {
     async function loadData() {
       try {
-        const [leveesRes, structuresRes, pccpsRes] = await Promise.all([
-          fetch("/data/levee-centerline.json"),
-          fetch("/data/complex-structures.json"),
-          fetch("/data/pccps.json"),
-        ]);
+        const [leveesRes, structuresRes, pccpsRes, floodgatesRes, valvesRes] =
+          await Promise.all([
+            fetch("/data/levee-centerline.json"),
+            fetch("/data/complex-structures.json"),
+            fetch("/data/pccps.json"),
+            fetch("/data/floodgates.json"),
+            fetch("/data/valves.json"),
+          ]);
 
-        if (!leveesRes.ok || !structuresRes.ok || !pccpsRes.ok) {
+        if (
+          !leveesRes.ok ||
+          !structuresRes.ok ||
+          !pccpsRes.ok ||
+          !floodgatesRes.ok ||
+          !valvesRes.ok
+        ) {
           throw new Error("Failed to load map data");
         }
 
-        const [levees, structures, pccps] = await Promise.all([
-          leveesRes.json(),
-          structuresRes.json(),
-          pccpsRes.json(),
-        ]);
+        const [levees, structures, pccps, floodgates, valves] =
+          await Promise.all([
+            leveesRes.json(),
+            structuresRes.json(),
+            pccpsRes.json(),
+            floodgatesRes.json(),
+            valvesRes.json(),
+          ]);
 
-        setMapData({ levees, structures, pccps });
+        setMapData({ levees, structures, pccps, floodgates, valves });
       } catch (err) {
         setError(err instanceof Error ? err.message : "Failed to load map");
       } finally {
@@ -230,7 +375,8 @@ export default function SystemMap() {
             <Marker
               key={`structure-${index}`}
               position={[coords[1], coords[0]]}
-              icon={createCircleIcon("#f59e0b", 20)}
+              icon={createCircleIcon("#f59e0b", 24)}
+              zIndexOffset={1000}
             >
               <Popup>
                 <div className="text-sm min-w-[200px]">
@@ -261,7 +407,8 @@ export default function SystemMap() {
             <Marker
               key={`pccp-${index}`}
               position={[coords[1], coords[0]]}
-              icon={createTriangleIcon("#65bc7b", 20)}
+              icon={createTriangleIcon("#65bc7b", 24)}
+              zIndexOffset={1000}
             >
               <Popup>
                 <div className="text-sm">
@@ -272,10 +419,64 @@ export default function SystemMap() {
             </Marker>
           );
         })}
+
+        {/* Floodgates (toggleable) */}
+        {layerVisibility.floodgates &&
+          mapData.floodgates?.features.map((feature, index) => {
+            const coords = feature.geometry.coordinates as [number, number];
+            const props = feature.properties;
+            return (
+              <Marker
+                key={`floodgate-${index}`}
+                position={[coords[1], coords[0]]}
+                icon={createSquareIcon("#3b82f6", 10)}
+              >
+                <Popup>
+                  <div className="text-sm">
+                    <strong className="text-[#21355a]">
+                      Floodgate {String(props.GateCode)}
+                    </strong>
+                    <p className="text-gray-600">
+                      {String(props.OperatingAuthority)}
+                    </p>
+                  </div>
+                </Popup>
+              </Marker>
+            );
+          })}
+
+        {/* Valves (toggleable) */}
+        {layerVisibility.valves &&
+          mapData.valves?.features.map((feature, index) => {
+            const coords = feature.geometry.coordinates as [number, number];
+            const props = feature.properties;
+            return (
+              <Marker
+                key={`valve-${index}`}
+                position={[coords[1], coords[0]]}
+                icon={createDiamondIcon("#dc143c", 11)}
+              >
+                <Popup>
+                  <div className="text-sm">
+                    <strong className="text-[#21355a]">
+                      Valve {String(props.GateCode)}
+                    </strong>
+                    <p className="text-gray-600">
+                      {String(props.OperatingAuthority)}
+                    </p>
+                  </div>
+                </Popup>
+              </Marker>
+            );
+          })}
       </MapContainer>
       <MapLegend
         pccpCount={mapData.pccps?.features.length || 0}
         structureCount={mapData.structures?.features.length || 0}
+        floodgateCount={mapData.floodgates?.features.length || 0}
+        valveCount={mapData.valves?.features.length || 0}
+        layerVisibility={layerVisibility}
+        onToggleLayer={toggleLayer}
       />
     </div>
   );

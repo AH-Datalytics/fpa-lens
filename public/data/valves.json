@@ -1,0 +1,1447 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "GateCode": "OHV-16",
+        "OperatingAuthority": "Orleans Levee District"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.02708899999999,
+          29.96787200000006
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "GateCode": "OHV-15",
+        "OperatingAuthority": "Orleans Levee District"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.02615899999995,
+          29.97201400000006
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "GateCode": "OHV-14",
+        "OperatingAuthority": "Orleans Levee District"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.02631499999995,
+          29.97734600000007
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "GateCode": "OHV-13",
+        "OperatingAuthority": "Orleans Levee District"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.02601199999998,
+          29.97824400000007
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "GateCode": "OHV-12",
+        "OperatingAuthority": "Orleans Levee District"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.02575699999994,
+          29.98016700000005
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "GateCode": "OHV-11",
+        "OperatingAuthority": "Orleans Levee District"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.02370899999994,
+          29.98101900000006
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "GateCode": "OHV-09",
+        "OperatingAuthority": "Orleans Levee District"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.08300999999994,
+          30.02428300000003
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "GateCode": "OHV-10",
+        "OperatingAuthority": "Orleans Levee District"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.03677899999997,
+          30.03064800000004
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "GateCode": "OHV-17",
+        "OperatingAuthority": "Orleans Levee District"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.02046899999999,
+          29.98032400000005
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "GateCode": "OHV-21",
+        "OperatingAuthority": "Orleans Levee District"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.02903599999996,
+          30.02355600000004
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "GateCode": "OHV-22",
+        "OperatingAuthority": "Orleans Levee District"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.03137699999996,
+          30.03160700000006
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "GateCode": "OHV-04",
+        "OperatingAuthority": "Orleans Levee District"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.11576699999995,
+          30.02178300000003
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "GateCode": "OHV-05",
+        "OperatingAuthority": "Orleans Levee District"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.11540799999995,
+          30.02180500000003
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "GateCode": "OHV-03",
+        "OperatingAuthority": "Orleans Levee District"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.11662499999994,
+          30.02176900000006
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "GateCode": "OHV-23",
+        "OperatingAuthority": "Orleans Levee District"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.02848999999998,
+          30.03365300000007
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "GateCode": "OHV-24",
+        "OperatingAuthority": "Orleans Levee District"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.02696399999996,
+          30.03399500000006
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "GateCode": "OHV-25",
+        "OperatingAuthority": "Orleans Levee District"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.02639099999999,
+          30.03405700000008
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "GateCode": "OHV-26",
+        "OperatingAuthority": "Orleans Levee District"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.02643699999999,
+          30.03370200000006
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "GateCode": "OHV-27",
+        "OperatingAuthority": "Orleans Levee District"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.02453699999995,
+          30.03421600000007
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "GateCode": "OHV-32",
+        "OperatingAuthority": "Orleans Levee District"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -89.95236499999999,
+          30.06908800000008
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "GateCode": "OHV-33",
+        "OperatingAuthority": "Orleans Levee District"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -89.95177199999995,
+          30.06946200000004
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "GateCode": "OHV-34",
+        "OperatingAuthority": "Orleans Levee District"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -89.88019999999995,
+          30.14693500000004
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "GateCode": "OHV-35",
+        "OperatingAuthority": "Orleans Levee District"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -89.86361299999999,
+          30.11459000000008
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "GateCode": "OHV-36",
+        "OperatingAuthority": "Orleans Levee District"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -89.85702599999996,
+          30.07987600000007
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "GateCode": "OHV-37",
+        "OperatingAuthority": "Orleans Levee District"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -89.83302899999995,
+          30.05809000000005
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "GateCode": "OHV-18",
+        "OperatingAuthority": "Orleans Levee District"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.01928299999997,
+          29.98081500000006
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "GateCode": "OHV-19",
+        "OperatingAuthority": "Orleans Levee District"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.01910399999997,
+          29.98090400000007
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "GateCode": "OHV-20",
+        "OperatingAuthority": "Orleans Levee District"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.01802099999998,
+          29.98228700000004
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "GateCode": "OHV-08",
+        "OperatingAuthority": "Orleans Levee District"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.11327899999998,
+          30.02203100000003
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "GateCode": "OHV-07",
+        "OperatingAuthority": "Orleans Levee District"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.11440399999998,
+          30.02210100000008
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "GateCode": "OHV-01",
+        "OperatingAuthority": "Orleans Levee District"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.11976699999997,
+          30.02208300000007
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "GateCode": "OHV-02",
+        "OperatingAuthority": "Orleans Levee District"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.11944699999998,
+          30.02188400000006
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "GateCode": "OHV-06",
+        "OperatingAuthority": "Orleans Levee District"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.11470699999995,
+          30.02175200000005
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "GateCode": "ORV-01",
+        "OperatingAuthority": "Orleans Levee District"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.12016199999994,
+          29.91520900000006
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "GateCode": "ORV-06",
+        "OperatingAuthority": "Orleans Levee District"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.08587399999999,
+          29.91793500000006
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "GateCode": "ORV-02",
+        "OperatingAuthority": "Orleans Levee District"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.11481399999997,
+          29.91424700000005
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "GateCode": "ORV-03",
+        "OperatingAuthority": "Orleans Levee District"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.11406499999998,
+          29.91445300000004
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "GateCode": "ORV-04",
+        "OperatingAuthority": "Orleans Levee District"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.10807399999999,
+          29.91524700000008
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "GateCode": "ORV-05",
+        "OperatingAuthority": "Orleans Levee District"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.10098999999997,
+          29.91549400000002
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "GateCode": "ORV-07",
+        "OperatingAuthority": "Orleans Levee District"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.08363999999995,
+          29.91881800000004
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "GateCode": "ORV-08",
+        "OperatingAuthority": "Orleans Levee District"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.08266999999995,
+          29.91915200000005
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "GateCode": "ORV-09",
+        "OperatingAuthority": "Orleans Levee District"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.08086299999997,
+          29.91971300000006
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "GateCode": "ORV-10",
+        "OperatingAuthority": "Orleans Levee District"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.07850099999996,
+          29.92047300000007
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "GateCode": "ORV-11",
+        "OperatingAuthority": "Orleans Levee District"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.07663299999996,
+          29.92109500000004
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "GateCode": "ORV-12",
+        "OperatingAuthority": "Orleans Levee District"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.07554799999997,
+          29.92150900000007
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "GateCode": "ORV-13",
+        "OperatingAuthority": "Orleans Levee District"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.07458899999995,
+          29.92182800000006
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "GateCode": "ORV-14",
+        "OperatingAuthority": "Orleans Levee District"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.07250799999997,
+          29.92275000000006
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "GateCode": "ORV-15",
+        "OperatingAuthority": "Orleans Levee District"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.07030399999996,
+          29.92388900000003
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "GateCode": "ORV-16",
+        "OperatingAuthority": "Orleans Levee District"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.06882999999999,
+          29.92488000000003
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "GateCode": "ORV-17",
+        "OperatingAuthority": "Orleans Levee District"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.06740599999995,
+          29.92606900000004
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "GateCode": "ORV-18",
+        "OperatingAuthority": "Orleans Levee District"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.06581099999994,
+          29.92755000000005
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "GateCode": "ORV-19",
+        "OperatingAuthority": "Orleans Levee District"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.06541499999997,
+          29.92789600000003
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "GateCode": "ORV-20",
+        "OperatingAuthority": "Orleans Levee District"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.06484499999999,
+          29.92847600000005
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "GateCode": "ORV-21",
+        "OperatingAuthority": "Orleans Levee District"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.06350499999996,
+          29.93130500000007
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "GateCode": "ORV-22",
+        "OperatingAuthority": "Orleans Levee District"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.06331199999994,
+          29.93179300000003
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "GateCode": "ORV-23",
+        "OperatingAuthority": "Orleans Levee District"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.06269999999995,
+          29.93310900000006
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "GateCode": "ORV-24",
+        "OperatingAuthority": "Orleans Levee District"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.06204499999996,
+          29.93555600000008
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "GateCode": "ORV-25A(EB)",
+        "OperatingAuthority": "Orleans Levee District"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.06209999999999,
+          29.93551700000006
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "GateCode": "ORV-25",
+        "OperatingAuthority": "Orleans Levee District"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.06234699999999,
+          29.93620600000003
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "GateCode": "ORV-26(EB)",
+        "OperatingAuthority": "Orleans Levee District"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.06216699999999,
+          29.93780000000004
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "GateCode": "ORV-27",
+        "OperatingAuthority": "Orleans Levee District"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.06212199999999,
+          29.93834300000003
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "GateCode": "ORV-27A(EB)",
+        "OperatingAuthority": "Orleans Levee District"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.06229999999994,
+          29.93828300000007
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "GateCode": "ORV-27B(EB)",
+        "OperatingAuthority": "Orleans Levee District"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.06319999999994,
+          29.94816700000007
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "GateCode": "ORV-28",
+        "OperatingAuthority": "Orleans Levee District"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.06232199999994,
+          29.93816300000003
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "GateCode": "ORV-29",
+        "OperatingAuthority": "Orleans Levee District"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.06341399999997,
+          29.94792600000005
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "GateCode": "ORV-30",
+        "OperatingAuthority": "Orleans Levee District"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.06363299999998,
+          29.95063300000004
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "GateCode": "ORV-31",
+        "OperatingAuthority": "Orleans Levee District"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.06368299999997,
+          29.95241700000003
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "GateCode": "ORV-32",
+        "OperatingAuthority": "Orleans Levee District"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.06352899999996,
+          29.95053400000006
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "GateCode": "ORV-32A(EB)",
+        "OperatingAuthority": "Orleans Levee District"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.06371699999994,
+          29.95366700000005
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "GateCode": "ORV-33",
+        "OperatingAuthority": "Orleans Levee District"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.06382499999995,
+          29.95233700000006
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "GateCode": "ORV-34",
+        "OperatingAuthority": "Orleans Levee District"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.06372999999996,
+          29.95291900000007
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "GateCode": "ORV-35",
+        "OperatingAuthority": "Orleans Levee District"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.06375999999995,
+          29.95365000000004
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "GateCode": "ORV-36",
+        "OperatingAuthority": "Orleans Levee District"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.06359399999997,
+          29.95473300000003
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "GateCode": "ORV-37",
+        "OperatingAuthority": "Orleans Levee District"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.06185099999999,
+          29.95735300000007
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "GateCode": "ORV-38",
+        "OperatingAuthority": "Orleans Levee District"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.06098799999995,
+          29.95811400000002
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "GateCode": "ORV-39",
+        "OperatingAuthority": "Orleans Levee District"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.06027199999994,
+          29.95884900000004
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "GateCode": "ORV-40",
+        "OperatingAuthority": "Orleans Levee District"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.05952099999996,
+          29.95955100000003
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "GateCode": "ORV-41",
+        "OperatingAuthority": "Orleans Levee District"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.05751699999996,
+          29.96071400000005
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "GateCode": "ORV-42",
+        "OperatingAuthority": "Orleans Levee District"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.05671199999995,
+          29.96128100000004
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "GateCode": "ORV-43",
+        "OperatingAuthority": "Orleans Levee District"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.05390399999999,
+          29.96188900000004
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "GateCode": "ORV-44",
+        "OperatingAuthority": "Orleans Levee District"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.05225399999995,
+          29.96205500000008
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "GateCode": "ORV-45",
+        "OperatingAuthority": "Orleans Levee District"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.05027799999993,
+          29.96220600000004
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "GateCode": "ORV-46",
+        "OperatingAuthority": "Orleans Levee District"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.05013499999995,
+          29.96224500000005
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "GateCode": "ORV-47",
+        "OperatingAuthority": "Orleans Levee District"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.04589499999997,
+          29.96182300000004
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "GateCode": "ORV-48",
+        "OperatingAuthority": "Orleans Levee District"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.04414799999995,
+          29.96164500000003
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "GateCode": "ORV-49",
+        "OperatingAuthority": "Orleans Levee District"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.04182299999997,
+          29.96132600000004
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "GateCode": "ORV-50",
+        "OperatingAuthority": "Orleans Levee District"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.04033899999996,
+          29.96118700000005
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "GateCode": "ORV-51",
+        "OperatingAuthority": "Orleans Levee District"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.03970199999998,
+          29.96093000000008
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "GateCode": "ORV-52",
+        "OperatingAuthority": "Orleans Levee District"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.03923399999996,
+          29.96081200000003
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "GateCode": "ORV-53",
+        "OperatingAuthority": "Orleans Levee District"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.03823599999998,
+          29.96058600000003
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "GateCode": "ORV-54",
+        "OperatingAuthority": "Orleans Levee District"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.03751099999994,
+          29.96042200000005
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "GateCode": "ORV-55",
+        "OperatingAuthority": "Orleans Levee District"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.03591399999999,
+          29.96018600000008
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "GateCode": "ORV-56",
+        "OperatingAuthority": "Orleans Levee District"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.03319499999998,
+          29.95957400000003
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "GateCode": "ORV-56-A(EB)",
+        "OperatingAuthority": "Orleans Levee District"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.03109999999998,
+          29.95896700000003
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "GateCode": "ORV-57",
+        "OperatingAuthority": "Orleans Levee District"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.03134899999998,
+          29.95898900000003
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "GateCode": "ORV-58",
+        "OperatingAuthority": "Orleans Levee District"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.03111299999995,
+          29.95894500000003
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "GateCode": "LHV-04",
+        "OperatingAuthority": "Lake Borgne Basin Levee District"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -89.95741992999996,
+          29.95505143000003
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "GateCode": "LHV-01",
+        "OperatingAuthority": "Lake Borgne Basin Levee District"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -89.77963999999997,
+          29.86590200000006
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "GateCode": "LHV-02",
+        "OperatingAuthority": "Lake Borgne Basin Levee District"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -89.78105799999997,
+          29.86246800000004
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "GateCode": "LHV-03",
+        "OperatingAuthority": "Lake Borgne Basin Levee District"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -89.78449799999999,
+          29.85504500000008
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "GateCode": "OHV-28",
+        "OperatingAuthority": "Orleans Levee District"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.02921799999996,
+          30.03242400000005
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "GateCode": "OHV-29",
+        "OperatingAuthority": "Orleans Levee District"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.02752599999997,
+          30.03295100000003
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "GateCode": "OHV-30",
+        "OperatingAuthority": "Orleans Levee District"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.02648499999998,
+          30.03320100000008
+        ]
+      }
+    }
+  ]
+}

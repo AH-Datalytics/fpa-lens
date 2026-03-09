@@ -1,0 +1,2528 @@
+{
+  "yearlyTotals": [
+    {
+      "year": 2022,
+      "totalEvents": 58,
+      "accidents": 9,
+      "incidents": 49,
+      "lostTime": 9,
+      "propertyDamage": 36
+    },
+    {
+      "year": 2023,
+      "totalEvents": 41,
+      "accidents": 5,
+      "incidents": 36,
+      "lostTime": 4,
+      "propertyDamage": 28
+    },
+    {
+      "year": 2024,
+      "totalEvents": 58,
+      "accidents": 1,
+      "incidents": 57,
+      "lostTime": 3,
+      "propertyDamage": 44
+    },
+    {
+      "year": 2025,
+      "totalEvents": 42,
+      "accidents": 1,
+      "incidents": 41,
+      "lostTime": 5,
+      "propertyDamage": 31
+    },
+    {
+      "year": 2026,
+      "totalEvents": 14,
+      "accidents": 1,
+      "incidents": 13,
+      "lostTime": 0,
+      "propertyDamage": 12
+    }
+  ],
+  "monthlyData": [
+    {
+      "year": 2022,
+      "month": 1,
+      "accidents": 0,
+      "incidents": 3
+    },
+    {
+      "year": 2022,
+      "month": 2,
+      "accidents": 0,
+      "incidents": 2
+    },
+    {
+      "year": 2022,
+      "month": 3,
+      "accidents": 2,
+      "incidents": 3
+    },
+    {
+      "year": 2022,
+      "month": 4,
+      "accidents": 1,
+      "incidents": 7
+    },
+    {
+      "year": 2022,
+      "month": 5,
+      "accidents": 1,
+      "incidents": 8
+    },
+    {
+      "year": 2022,
+      "month": 6,
+      "accidents": 2,
+      "incidents": 8
+    },
+    {
+      "year": 2022,
+      "month": 7,
+      "accidents": 2,
+      "incidents": 2
+    },
+    {
+      "year": 2022,
+      "month": 8,
+      "accidents": 1,
+      "incidents": 3
+    },
+    {
+      "year": 2022,
+      "month": 9,
+      "accidents": 0,
+      "incidents": 4
+    },
+    {
+      "year": 2022,
+      "month": 10,
+      "accidents": 0,
+      "incidents": 6
+    },
+    {
+      "year": 2022,
+      "month": 11,
+      "accidents": 0,
+      "incidents": 1
+    },
+    {
+      "year": 2022,
+      "month": 12,
+      "accidents": 0,
+      "incidents": 2
+    },
+    {
+      "year": 2023,
+      "month": 1,
+      "accidents": 0,
+      "incidents": 4
+    },
+    {
+      "year": 2023,
+      "month": 2,
+      "accidents": 0,
+      "incidents": 3
+    },
+    {
+      "year": 2023,
+      "month": 3,
+      "accidents": 1,
+      "incidents": 4
+    },
+    {
+      "year": 2023,
+      "month": 4,
+      "accidents": 0,
+      "incidents": 2
+    },
+    {
+      "year": 2023,
+      "month": 5,
+      "accidents": 2,
+      "incidents": 3
+    },
+    {
+      "year": 2023,
+      "month": 6,
+      "accidents": 0,
+      "incidents": 4
+    },
+    {
+      "year": 2023,
+      "month": 7,
+      "accidents": 0,
+      "incidents": 4
+    },
+    {
+      "year": 2023,
+      "month": 8,
+      "accidents": 0,
+      "incidents": 4
+    },
+    {
+      "year": 2023,
+      "month": 9,
+      "accidents": 1,
+      "incidents": 2
+    },
+    {
+      "year": 2023,
+      "month": 10,
+      "accidents": 1,
+      "incidents": 1
+    },
+    {
+      "year": 2023,
+      "month": 11,
+      "accidents": 0,
+      "incidents": 5
+    },
+    {
+      "year": 2024,
+      "month": 1,
+      "accidents": 0,
+      "incidents": 5
+    },
+    {
+      "year": 2024,
+      "month": 2,
+      "accidents": 0,
+      "incidents": 1
+    },
+    {
+      "year": 2024,
+      "month": 3,
+      "accidents": 0,
+      "incidents": 6
+    },
+    {
+      "year": 2024,
+      "month": 4,
+      "accidents": 0,
+      "incidents": 1
+    },
+    {
+      "year": 2024,
+      "month": 5,
+      "accidents": 0,
+      "incidents": 5
+    },
+    {
+      "year": 2024,
+      "month": 6,
+      "accidents": 0,
+      "incidents": 8
+    },
+    {
+      "year": 2024,
+      "month": 7,
+      "accidents": 1,
+      "incidents": 9
+    },
+    {
+      "year": 2024,
+      "month": 8,
+      "accidents": 0,
+      "incidents": 6
+    },
+    {
+      "year": 2024,
+      "month": 9,
+      "accidents": 0,
+      "incidents": 2
+    },
+    {
+      "year": 2024,
+      "month": 10,
+      "accidents": 0,
+      "incidents": 7
+    },
+    {
+      "year": 2024,
+      "month": 11,
+      "accidents": 0,
+      "incidents": 3
+    },
+    {
+      "year": 2024,
+      "month": 12,
+      "accidents": 0,
+      "incidents": 4
+    },
+    {
+      "year": 2025,
+      "month": 1,
+      "accidents": 0,
+      "incidents": 1
+    },
+    {
+      "year": 2025,
+      "month": 2,
+      "accidents": 0,
+      "incidents": 2
+    },
+    {
+      "year": 2025,
+      "month": 3,
+      "accidents": 0,
+      "incidents": 3
+    },
+    {
+      "year": 2025,
+      "month": 4,
+      "accidents": 0,
+      "incidents": 1
+    },
+    {
+      "year": 2025,
+      "month": 5,
+      "accidents": 0,
+      "incidents": 3
+    },
+    {
+      "year": 2025,
+      "month": 6,
+      "accidents": 0,
+      "incidents": 1
+    },
+    {
+      "year": 2025,
+      "month": 7,
+      "accidents": 0,
+      "incidents": 3
+    },
+    {
+      "year": 2025,
+      "month": 8,
+      "accidents": 0,
+      "incidents": 5
+    },
+    {
+      "year": 2025,
+      "month": 9,
+      "accidents": 0,
+      "incidents": 8
+    },
+    {
+      "year": 2025,
+      "month": 10,
+      "accidents": 1,
+      "incidents": 9
+    },
+    {
+      "year": 2025,
+      "month": 11,
+      "accidents": 0,
+      "incidents": 3
+    },
+    {
+      "year": 2025,
+      "month": 12,
+      "accidents": 0,
+      "incidents": 2
+    },
+    {
+      "year": 2026,
+      "month": 1,
+      "accidents": 1,
+      "incidents": 8
+    },
+    {
+      "year": 2026,
+      "month": 2,
+      "accidents": 0,
+      "incidents": 5
+    }
+  ],
+  "eventTypes": [
+    {
+      "type": "Ergonomic",
+      "count": 1,
+      "accidents": 0,
+      "incidents": 1
+    },
+    {
+      "type": "Fire",
+      "count": 1,
+      "accidents": 0,
+      "incidents": 1
+    },
+    {
+      "type": "Illness",
+      "count": 1,
+      "accidents": 0,
+      "incidents": 1
+    },
+    {
+      "type": "Insect Related",
+      "count": 2,
+      "accidents": 0,
+      "incidents": 2
+    },
+    {
+      "type": "Mobile Equipment",
+      "count": 8,
+      "accidents": 1,
+      "incidents": 7
+    },
+    {
+      "type": "Not categorized",
+      "count": 157,
+      "accidents": 15,
+      "incidents": 142
+    },
+    {
+      "type": "Sharp Edge",
+      "count": 1,
+      "accidents": 0,
+      "incidents": 1
+    },
+    {
+      "type": "Slip/Trip/Fall",
+      "count": 5,
+      "accidents": 0,
+      "incidents": 5
+    },
+    {
+      "type": "Vehicle",
+      "count": 37,
+      "accidents": 1,
+      "incidents": 36
+    }
+  ],
+  "recentEvents": [
+    {
+      "date": "2026-02-13",
+      "month": "February",
+      "year": 2026,
+      "eventType": "Vehicle",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2026-02-12",
+      "month": "February",
+      "year": 2026,
+      "eventType": "Vehicle",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2026-02-12",
+      "month": "February",
+      "year": 2026,
+      "eventType": "Vehicle",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2026-02-02",
+      "month": "February",
+      "year": 2026,
+      "eventType": "Vehicle",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2026-02-02",
+      "month": "February",
+      "year": 2026,
+      "eventType": "Ergonomic",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": false,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2026-01-21",
+      "month": "January",
+      "year": 2026,
+      "eventType": "Mobile Equipment",
+      "isAccident": true,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": true
+    },
+    {
+      "date": "2026-01-13",
+      "month": "January",
+      "year": 2026,
+      "eventType": "Vehicle",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": true
+    },
+    {
+      "date": "2026-01-12",
+      "month": "January",
+      "year": 2026,
+      "eventType": "Vehicle",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2026-01-12",
+      "month": "January",
+      "year": 2026,
+      "eventType": "Vehicle",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2026-01-12",
+      "month": "January",
+      "year": 2026,
+      "eventType": "Vehicle",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": true
+    },
+    {
+      "date": "2026-01-11",
+      "month": "January",
+      "year": 2026,
+      "eventType": "Vehicle",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": true
+    },
+    {
+      "date": "2026-01-09",
+      "month": "January",
+      "year": 2026,
+      "eventType": "Vehicle",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": true
+    },
+    {
+      "date": "2026-01-09",
+      "month": "January",
+      "year": 2026,
+      "eventType": "Vehicle",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2026-01-06",
+      "month": "January",
+      "year": 2026,
+      "eventType": "Sharp Edge",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": false,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2025-12-02",
+      "month": "December",
+      "year": 2025,
+      "eventType": "Fire",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": false,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2025-12-01",
+      "month": "December",
+      "year": 2025,
+      "eventType": "Vehicle",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2025-11-18",
+      "month": "November",
+      "year": 2025,
+      "eventType": "Vehicle",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": true
+    },
+    {
+      "date": "2025-11-13",
+      "month": "November",
+      "year": 2025,
+      "eventType": "Vehicle",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2025-11-05",
+      "month": "November",
+      "year": 2025,
+      "eventType": "Mobile Equipment",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2025-10-27",
+      "month": "October",
+      "year": 2025,
+      "eventType": "Vehicle",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2025-10-25",
+      "month": "October",
+      "year": 2025,
+      "eventType": "Vehicle",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": true
+    },
+    {
+      "date": "2025-10-23",
+      "month": "October",
+      "year": 2025,
+      "eventType": "Vehicle",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": true
+    },
+    {
+      "date": "2025-10-21",
+      "month": "October",
+      "year": 2025,
+      "eventType": "Vehicle",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2025-10-16",
+      "month": "October",
+      "year": 2025,
+      "eventType": "Vehicle",
+      "isAccident": true,
+      "isLostTime": true,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2025-10-15",
+      "month": "October",
+      "year": 2025,
+      "eventType": "Slip/Trip/Fall",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": false,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2025-10-09",
+      "month": "October",
+      "year": 2025,
+      "eventType": "Vehicle",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2025-10-06",
+      "month": "October",
+      "year": 2025,
+      "eventType": "Vehicle",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2025-10-06",
+      "month": "October",
+      "year": 2025,
+      "eventType": "Vehicle",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2025-10-01",
+      "month": "October",
+      "year": 2025,
+      "eventType": "Vehicle",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2025-09-29",
+      "month": "September",
+      "year": 2025,
+      "eventType": "Vehicle",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2025-09-23",
+      "month": "September",
+      "year": 2025,
+      "eventType": "Vehicle",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2025-09-20",
+      "month": "September",
+      "year": 2025,
+      "eventType": "Vehicle",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2025-09-18",
+      "month": "September",
+      "year": 2025,
+      "eventType": "Insect Related",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": false,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2025-09-15",
+      "month": "September",
+      "year": 2025,
+      "eventType": "Mobile Equipment",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2025-09-08",
+      "month": "September",
+      "year": 2025,
+      "eventType": "Vehicle",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2025-09-08",
+      "month": "September",
+      "year": 2025,
+      "eventType": "Vehicle",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2025-09-01",
+      "month": "September",
+      "year": 2025,
+      "eventType": "Vehicle",
+      "isAccident": false,
+      "isLostTime": true,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": true
+    },
+    {
+      "date": "2025-08-27",
+      "month": "August",
+      "year": 2025,
+      "eventType": "Slip/Trip/Fall",
+      "isAccident": false,
+      "isLostTime": true,
+      "hasDamage": false,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2025-08-26",
+      "month": "August",
+      "year": 2025,
+      "eventType": "Vehicle",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2025-08-18",
+      "month": "August",
+      "year": 2025,
+      "eventType": "Mobile Equipment",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2025-08-12",
+      "month": "August",
+      "year": 2025,
+      "eventType": "Illness",
+      "isAccident": false,
+      "isLostTime": true,
+      "hasDamage": false,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2025-08-06",
+      "month": "August",
+      "year": 2025,
+      "eventType": "Mobile Equipment",
+      "isAccident": false,
+      "isLostTime": true,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2025-07-31",
+      "month": "July",
+      "year": 2025,
+      "eventType": "Vehicle",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2025-07-24",
+      "month": "July",
+      "year": 2025,
+      "eventType": "Slip/Trip/Fall",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": false,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2025-07-16",
+      "month": "July",
+      "year": 2025,
+      "eventType": "Vehicle",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": false,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2025-06-11",
+      "month": "June",
+      "year": 2025,
+      "eventType": "Vehicle",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": true
+    },
+    {
+      "date": "2025-05-27",
+      "month": "May",
+      "year": 2025,
+      "eventType": "Insect Related",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": false,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2025-05-19",
+      "month": "May",
+      "year": 2025,
+      "eventType": "Vehicle",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2025-05-10",
+      "month": "May",
+      "year": 2025,
+      "eventType": "Vehicle",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2025-04-02",
+      "month": "April",
+      "year": 2025,
+      "eventType": "Vehicle",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2025-03-22",
+      "month": "March",
+      "year": 2025,
+      "eventType": "Slip/Trip/Fall",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": false,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2025-03-18",
+      "month": "March",
+      "year": 2025,
+      "eventType": "Mobile Equipment",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2025-03-12",
+      "month": "March",
+      "year": 2025,
+      "eventType": "Mobile Equipment",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2025-02-20",
+      "month": "February",
+      "year": 2025,
+      "eventType": "Vehicle",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2025-02-06",
+      "month": "February",
+      "year": 2025,
+      "eventType": "Mobile Equipment",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": false,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2025-01-31",
+      "month": "January",
+      "year": 2025,
+      "eventType": "Slip/Trip/Fall",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": false,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2024-12-28",
+      "month": "December",
+      "year": 2024,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": false,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2024-12-26",
+      "month": "December",
+      "year": 2024,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": true
+    },
+    {
+      "date": "2024-12-16",
+      "month": "December",
+      "year": 2024,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2024-12-03",
+      "month": "December",
+      "year": 2024,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2024-11-25",
+      "month": "November",
+      "year": 2024,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2024-11-06",
+      "month": "November",
+      "year": 2024,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2024-11-06",
+      "month": "November",
+      "year": 2024,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": true,
+      "hasDamage": false,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2024-10-31",
+      "month": "October",
+      "year": 2024,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": true
+    },
+    {
+      "date": "2024-10-23",
+      "month": "October",
+      "year": 2024,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": false,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2024-10-21",
+      "month": "October",
+      "year": 2024,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": false,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2024-10-17",
+      "month": "October",
+      "year": 2024,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2024-10-14",
+      "month": "October",
+      "year": 2024,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": true
+    },
+    {
+      "date": "2024-10-02",
+      "month": "October",
+      "year": 2024,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": false,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2024-10-02",
+      "month": "October",
+      "year": 2024,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2024-09-06",
+      "month": "September",
+      "year": 2024,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": true
+    },
+    {
+      "date": "2024-09-03",
+      "month": "September",
+      "year": 2024,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": false,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2024-08-27",
+      "month": "August",
+      "year": 2024,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2024-08-20",
+      "month": "August",
+      "year": 2024,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2024-08-15",
+      "month": "August",
+      "year": 2024,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2024-08-05",
+      "month": "August",
+      "year": 2024,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2024-08-04",
+      "month": "August",
+      "year": 2024,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2024-08-04",
+      "month": "August",
+      "year": 2024,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": true
+    },
+    {
+      "date": "2024-07-31",
+      "month": "July",
+      "year": 2024,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": true
+    },
+    {
+      "date": "2024-07-30",
+      "month": "July",
+      "year": 2024,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": false,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2024-07-22",
+      "month": "July",
+      "year": 2024,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2024-07-17",
+      "month": "July",
+      "year": 2024,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": false,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2024-07-16",
+      "month": "July",
+      "year": 2024,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": true,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2024-07-16",
+      "month": "July",
+      "year": 2024,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": true
+    },
+    {
+      "date": "2024-07-15",
+      "month": "July",
+      "year": 2024,
+      "eventType": "Not categorized",
+      "isAccident": true,
+      "isLostTime": true,
+      "hasDamage": false,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2024-07-11",
+      "month": "July",
+      "year": 2024,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2024-07-06",
+      "month": "July",
+      "year": 2024,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": true
+    },
+    {
+      "date": "2024-07-02",
+      "month": "July",
+      "year": 2024,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": true
+    },
+    {
+      "date": "2024-06-25",
+      "month": "June",
+      "year": 2024,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": true
+    },
+    {
+      "date": "2024-06-22",
+      "month": "June",
+      "year": 2024,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2024-06-19",
+      "month": "June",
+      "year": 2024,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2024-06-14",
+      "month": "June",
+      "year": 2024,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2024-06-13",
+      "month": "June",
+      "year": 2024,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2024-06-08",
+      "month": "June",
+      "year": 2024,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2024-06-05",
+      "month": "June",
+      "year": 2024,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2024-06-01",
+      "month": "June",
+      "year": 2024,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": true
+    },
+    {
+      "date": "2024-05-25",
+      "month": "May",
+      "year": 2024,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2024-05-22",
+      "month": "May",
+      "year": 2024,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2024-05-16",
+      "month": "May",
+      "year": 2024,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2024-05-05",
+      "month": "May",
+      "year": 2024,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": true
+    },
+    {
+      "date": "2024-05-02",
+      "month": "May",
+      "year": 2024,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": true
+    },
+    {
+      "date": "2024-04-18",
+      "month": "April",
+      "year": 2024,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": false,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2024-03-29",
+      "month": "March",
+      "year": 2024,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2024-03-26",
+      "month": "March",
+      "year": 2024,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": true
+    },
+    {
+      "date": "2024-03-12",
+      "month": "March",
+      "year": 2024,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": false,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2024-03-11",
+      "month": "March",
+      "year": 2024,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": false,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2024-03-06",
+      "month": "March",
+      "year": 2024,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": false,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2024-03-04",
+      "month": "March",
+      "year": 2024,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": false,
+      "hasPrivatePropertyDamage": true
+    },
+    {
+      "date": "2024-02-01",
+      "month": "February",
+      "year": 2024,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2024-01-25",
+      "month": "January",
+      "year": 2024,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": false,
+      "hasPrivatePropertyDamage": true
+    },
+    {
+      "date": "2024-01-25",
+      "month": "January",
+      "year": 2024,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": false,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2024-01-23",
+      "month": "January",
+      "year": 2024,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": true
+    },
+    {
+      "date": "2024-01-15",
+      "month": "January",
+      "year": 2024,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2024-01-13",
+      "month": "January",
+      "year": 2024,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": true
+    },
+    {
+      "date": "2023-11-29",
+      "month": "November",
+      "year": 2023,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": true
+    },
+    {
+      "date": "2023-11-28",
+      "month": "November",
+      "year": 2023,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2023-11-16",
+      "month": "November",
+      "year": 2023,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": true
+    },
+    {
+      "date": "2023-11-13",
+      "month": "November",
+      "year": 2023,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": true
+    },
+    {
+      "date": "2023-11-07",
+      "month": "November",
+      "year": 2023,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2023-10-23",
+      "month": "October",
+      "year": 2023,
+      "eventType": "Not categorized",
+      "isAccident": true,
+      "isLostTime": true,
+      "hasDamage": false,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2023-10-22",
+      "month": "October",
+      "year": 2023,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": false,
+      "hasPrivatePropertyDamage": true
+    },
+    {
+      "date": "2023-09-27",
+      "month": "September",
+      "year": 2023,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": false,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2023-09-25",
+      "month": "September",
+      "year": 2023,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": true
+    },
+    {
+      "date": "2023-09-14",
+      "month": "September",
+      "year": 2023,
+      "eventType": "Not categorized",
+      "isAccident": true,
+      "isLostTime": true,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": true
+    },
+    {
+      "date": "2023-08-21",
+      "month": "August",
+      "year": 2023,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": false,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2023-08-17",
+      "month": "August",
+      "year": 2023,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": false,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2023-08-15",
+      "month": "August",
+      "year": 2023,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2023-08-01",
+      "month": "August",
+      "year": 2023,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2023-07-24",
+      "month": "July",
+      "year": 2023,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": false,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2023-07-12",
+      "month": "July",
+      "year": 2023,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": true
+    },
+    {
+      "date": "2023-07-12",
+      "month": "July",
+      "year": 2023,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": false,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2023-07-11",
+      "month": "July",
+      "year": 2023,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": false,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2023-06-16",
+      "month": "June",
+      "year": 2023,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": true
+    },
+    {
+      "date": "2023-06-15",
+      "month": "June",
+      "year": 2023,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": true
+    },
+    {
+      "date": "2023-06-12",
+      "month": "June",
+      "year": 2023,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": false,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2023-06-01",
+      "month": "June",
+      "year": 2023,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2023-05-29",
+      "month": "May",
+      "year": 2023,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": true
+    },
+    {
+      "date": "2023-05-21",
+      "month": "May",
+      "year": 2023,
+      "eventType": "Not categorized",
+      "isAccident": true,
+      "isLostTime": true,
+      "hasDamage": false,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2023-05-21",
+      "month": "May",
+      "year": 2023,
+      "eventType": "Not categorized",
+      "isAccident": true,
+      "isLostTime": true,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2023-05-04",
+      "month": "May",
+      "year": 2023,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": true
+    },
+    {
+      "date": "2023-05-03",
+      "month": "May",
+      "year": 2023,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": true
+    },
+    {
+      "date": "2023-04-20",
+      "month": "April",
+      "year": 2023,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": false,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2023-04-19",
+      "month": "April",
+      "year": 2023,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2023-03-30",
+      "month": "March",
+      "year": 2023,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2023-03-15",
+      "month": "March",
+      "year": 2023,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": true
+    },
+    {
+      "date": "2023-03-12",
+      "month": "March",
+      "year": 2023,
+      "eventType": "Not categorized",
+      "isAccident": true,
+      "isLostTime": false,
+      "hasDamage": false,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2023-03-06",
+      "month": "March",
+      "year": 2023,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2023-03-06",
+      "month": "March",
+      "year": 2023,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2023-02-14",
+      "month": "February",
+      "year": 2023,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2023-02-09",
+      "month": "February",
+      "year": 2023,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": true
+    },
+    {
+      "date": "2023-02-01",
+      "month": "February",
+      "year": 2023,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": false,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2023-01-30",
+      "month": "January",
+      "year": 2023,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2023-01-29",
+      "month": "January",
+      "year": 2023,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": true
+    },
+    {
+      "date": "2023-01-23",
+      "month": "January",
+      "year": 2023,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": false,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2023-01-12",
+      "month": "January",
+      "year": 2023,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2022-12-14",
+      "month": "December",
+      "year": 2022,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2022-12-08",
+      "month": "December",
+      "year": 2022,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": true
+    },
+    {
+      "date": "2022-11-09",
+      "month": "November",
+      "year": 2022,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": false,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2022-10-29",
+      "month": "October",
+      "year": 2022,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": false,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2022-10-20",
+      "month": "October",
+      "year": 2022,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": false,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2022-10-18",
+      "month": "October",
+      "year": 2022,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": false,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2022-10-13",
+      "month": "October",
+      "year": 2022,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": false,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2022-10-10",
+      "month": "October",
+      "year": 2022,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": false,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2022-10-05",
+      "month": "October",
+      "year": 2022,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": true
+    },
+    {
+      "date": "2022-09-21",
+      "month": "September",
+      "year": 2022,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2022-09-17",
+      "month": "September",
+      "year": 2022,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2022-09-07",
+      "month": "September",
+      "year": 2022,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2022-09-05",
+      "month": "September",
+      "year": 2022,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": false,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2022-08-30",
+      "month": "August",
+      "year": 2022,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": false,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2022-08-25",
+      "month": "August",
+      "year": 2022,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": true
+    },
+    {
+      "date": "2022-08-10",
+      "month": "August",
+      "year": 2022,
+      "eventType": "Not categorized",
+      "isAccident": true,
+      "isLostTime": true,
+      "hasDamage": false,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2022-08-09",
+      "month": "August",
+      "year": 2022,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": false,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2022-07-21",
+      "month": "July",
+      "year": 2022,
+      "eventType": "Not categorized",
+      "isAccident": true,
+      "isLostTime": true,
+      "hasDamage": false,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2022-07-15",
+      "month": "July",
+      "year": 2022,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2022-07-06",
+      "month": "July",
+      "year": 2022,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2022-07-02",
+      "month": "July",
+      "year": 2022,
+      "eventType": "Not categorized",
+      "isAccident": true,
+      "isLostTime": true,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2022-06-28",
+      "month": "June",
+      "year": 2022,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2022-06-27",
+      "month": "June",
+      "year": 2022,
+      "eventType": "Not categorized",
+      "isAccident": true,
+      "isLostTime": true,
+      "hasDamage": false,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2022-06-27",
+      "month": "June",
+      "year": 2022,
+      "eventType": "Not categorized",
+      "isAccident": true,
+      "isLostTime": true,
+      "hasDamage": false,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2022-06-21",
+      "month": "June",
+      "year": 2022,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2022-06-20",
+      "month": "June",
+      "year": 2022,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2022-06-15",
+      "month": "June",
+      "year": 2022,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": false,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2022-06-15",
+      "month": "June",
+      "year": 2022,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2022-06-07",
+      "month": "June",
+      "year": 2022,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": true
+    },
+    {
+      "date": "2022-06-02",
+      "month": "June",
+      "year": 2022,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": true
+    },
+    {
+      "date": "2022-06-01",
+      "month": "June",
+      "year": 2022,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": true
+    },
+    {
+      "date": "2022-05-25",
+      "month": "May",
+      "year": 2022,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2022-05-24",
+      "month": "May",
+      "year": 2022,
+      "eventType": "Not categorized",
+      "isAccident": true,
+      "isLostTime": true,
+      "hasDamage": false,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2022-05-17",
+      "month": "May",
+      "year": 2022,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": false,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2022-05-12",
+      "month": "May",
+      "year": 2022,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": false,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2022-05-12",
+      "month": "May",
+      "year": 2022,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2022-05-09",
+      "month": "May",
+      "year": 2022,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": true
+    },
+    {
+      "date": "2022-05-05",
+      "month": "May",
+      "year": 2022,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": true
+    },
+    {
+      "date": "2022-05-05",
+      "month": "May",
+      "year": 2022,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": true
+    },
+    {
+      "date": "2022-05-05",
+      "month": "May",
+      "year": 2022,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2022-04-28",
+      "month": "April",
+      "year": 2022,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": false,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2022-04-27",
+      "month": "April",
+      "year": 2022,
+      "eventType": "Not categorized",
+      "isAccident": true,
+      "isLostTime": true,
+      "hasDamage": false,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2022-04-20",
+      "month": "April",
+      "year": 2022,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": false,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2022-04-05",
+      "month": "April",
+      "year": 2022,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2022-04-05",
+      "month": "April",
+      "year": 2022,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2022-04-05",
+      "month": "April",
+      "year": 2022,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2022-04-04",
+      "month": "April",
+      "year": 2022,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2022-04-03",
+      "month": "April",
+      "year": 2022,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": true
+    },
+    {
+      "date": "2022-03-31",
+      "month": "March",
+      "year": 2022,
+      "eventType": "Not categorized",
+      "isAccident": true,
+      "isLostTime": true,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2022-03-23",
+      "month": "March",
+      "year": 2022,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2022-03-14",
+      "month": "March",
+      "year": 2022,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": true
+    },
+    {
+      "date": "2022-03-02",
+      "month": "March",
+      "year": 2022,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": true
+    },
+    {
+      "date": "2022-03-01",
+      "month": "March",
+      "year": 2022,
+      "eventType": "Not categorized",
+      "isAccident": true,
+      "isLostTime": true,
+      "hasDamage": false,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2022-02-24",
+      "month": "February",
+      "year": 2022,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2022-02-16",
+      "month": "February",
+      "year": 2022,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2022-01-26",
+      "month": "January",
+      "year": 2022,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2022-01-13",
+      "month": "January",
+      "year": 2022,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2022-01-04",
+      "month": "January",
+      "year": 2022,
+      "eventType": "Not categorized",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": false,
+      "hasPrivatePropertyDamage": false
+    }
+  ]
+}

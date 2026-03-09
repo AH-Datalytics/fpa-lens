@@ -72,7 +72,7 @@ function transformGeometry(geometry, sourceProj) {
 }
 
 async function main() {
-  const shapefileDir = join(__dirname, '..', 'Centerline and Structures Shapefiles');
+  const shapefileDir = join(__dirname, '..', 'data-sources', 'shapefiles');
   const outputDir = join(__dirname, '..', 'public', 'data');
 
   // Create output directory

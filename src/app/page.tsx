@@ -39,6 +39,12 @@ const quickLinks = [
     href: "/operations",
     icon: Droplets,
   },
+  {
+    title: "Safety",
+    description: "Our commitment to workplace safety and accident prevention",
+    href: "/safety",
+    icon: HardHat,
+  },
 ];
 
 export default function Home() {
@@ -162,7 +168,7 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid md:grid-cols-2 lg:grid-cols-5 gap-6">
             {quickLinks.map((link) => {
               const Icon = link.icon;
               return (

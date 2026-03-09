@@ -1,7 +1,7 @@
 import { ReactNode } from "react";
 
 interface DataCardProps {
-  title: string;
+  title: ReactNode;
   children: ReactNode;
   source?: string;
   className?: string;
