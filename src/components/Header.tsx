@@ -19,7 +19,6 @@ const navigation: NavItem[] = [
   { name: "Safety", href: "/safety" },
   { name: "Staffing", href: "/our-team" },
   { name: "About Us", href: "/about/what-we-do" },
-  { name: "Contact", href: "/contact" },
 ];
 
 export default function Header() {

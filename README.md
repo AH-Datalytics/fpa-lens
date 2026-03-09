@@ -11,8 +11,7 @@ Public transparency dashboard for the Southeast Louisiana Flood Protection Autho
 | `/operations` | Permits, inspections, valve exercises, PCCP repairs, maintenance activities |
 | `/safety` | Accident/incident trends, events by category, lost time tracking |
 | `/financial` | FY26 budget by category and district, capital projects, major future projects |
-| `/our-team` | Staffing: headcount, vacancies, department status, recent hires |
-| `/contact` | Regional Director contact info |
+| `/our-team` | Staffing: leadership, headcount, vacancies, department status, recent hires |
 | `/about/what-we-do` | About Us: organization overview |
 
 ## Getting Started

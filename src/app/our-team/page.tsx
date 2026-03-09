@@ -1,6 +1,6 @@
 "use client";
 
-import { Users, TrendingUp, CheckCircle, UserPlus } from "lucide-react";
+import { Users, TrendingUp, CheckCircle, UserPlus, User } from "lucide-react";
 import {
   PieChart,
   Pie,
@@ -12,7 +12,6 @@ import {
 import SectionHeader, { SectionSubheader } from "@/components/SectionHeader";
 import DataCard from "@/components/DataCard";
 import KPICard from "@/components/KPICard";
-import PlaceholderBox from "@/components/PlaceholderBox";
 import { staffingData, kpiMetrics } from "@/data/siteData";
 
 const COLORS = ["#21355a", "#65bc7b"];
@@ -174,16 +173,25 @@ export default function OurTeamPage() {
           </DataCard>
         </section>
 
-        {/* Department Breakdown Placeholder */}
+        {/* Leadership */}
         <section>
-          <SectionSubheader title="Department Breakdown" />
-          <PlaceholderBox
-            title="Staffing by Department/Function"
-            description="Detailed breakdown of employee counts by department, division, or functional area."
-            stakeholderNeeded={staffingData.departmentBreakdown.stakeholderNeeded}
-            type="team"
-            height="h-64"
-          />
+          <SectionSubheader title="Leadership" />
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {staffingData.leadership.map((leader) => (
+              <div
+                key={leader.name}
+                className="bg-white rounded-lg shadow-sm border border-gray-100 p-4 flex items-center gap-4"
+              >
+                <div className="w-10 h-10 bg-[#21355a]/10 rounded-full flex items-center justify-center flex-shrink-0">
+                  <User className="h-5 w-5 text-[#21355a]" />
+                </div>
+                <div>
+                  <p className="font-semibold text-[#21355a]">{leader.name}</p>
+                  <p className="text-sm text-gray-600">{leader.title}</p>
+                </div>
+              </div>
+            ))}
+          </div>
         </section>
       </div>
     </div>

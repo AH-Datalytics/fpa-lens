@@ -462,12 +462,16 @@ export const staffingData = {
     },
   ],
 
-  // PLACEHOLDER - awaiting stakeholder input
-  departmentBreakdown: {
-    data: "[PLACEHOLDER - breakdown by department/function not provided]",
-    isPlaceholder: true,
-    stakeholderNeeded: "HR",
-  },
+  // Source: Stakeholder interviews
+  leadership: [
+    { name: "L. Jeff Williams", title: "Regional Director" },
+    { name: "Darren Austin", title: "Director of Operations" },
+    { name: "Ryan Foster", title: "Director of Engineering" },
+    { name: "Carlos Metoyer", title: "Director of Maintenance" },
+    { name: "Denise Williams", title: "Director of Finance" },
+    { name: "Joshua Rondeno", title: "Chief of Police" },
+    { name: "Jamal Dortch", title: "Safety & Risk Manager" },
+  ],
 };
 
 // ============================================================================
