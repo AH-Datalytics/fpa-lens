@@ -49,7 +49,7 @@ export default function Footer() {
                 className="flex items-center gap-2 text-blue-200 hover:text-white transition-colors"
               >
                 <ExternalLink className="h-4 w-4" />
-                Sign Up for Alerts
+                Sign up for alerts
               </a>
               <a
                 href="https://www.floodauthority.org"
@@ -58,7 +58,7 @@ export default function Footer() {
                 className="flex items-center gap-2 text-blue-200 hover:text-white transition-colors"
               >
                 <ExternalLink className="h-4 w-4" />
-                Main SLFPA-E Website
+                Main SLFPA-E website
               </a>
               <a
                 href={siteConfig.boardStreamUrl}
@@ -67,7 +67,7 @@ export default function Footer() {
                 className="flex items-center gap-2 text-blue-200 hover:text-white transition-colors"
               >
                 <ExternalLink className="h-4 w-4" />
-                Watch Board Meetings
+                Watch board meetings
               </a>
             </div>
           </div>
