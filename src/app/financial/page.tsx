@@ -54,7 +54,7 @@ function HoverDef({ term, className }: { term: string; className?: string }) {
   return (
     <span className={`relative group/def cursor-default border-b border-dashed border-gray-400 ${className || ""}`}>
       {term}
-      <span className="invisible group-hover/def:visible absolute left-1/2 -translate-x-1/2 top-full mt-2 w-52 rounded-lg bg-gray-800 text-white text-xs font-normal p-2 leading-relaxed shadow-lg z-50 text-center whitespace-normal">
+      <span className="invisible group-hover/def:visible absolute left-0 top-full mt-2 w-52 rounded-lg bg-gray-800 text-white text-xs font-normal p-2 leading-relaxed shadow-lg z-50 whitespace-normal">
         {definition}
       </span>
     </span>
