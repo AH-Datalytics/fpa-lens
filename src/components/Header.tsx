@@ -14,7 +14,6 @@ interface NavItem {
 
 const navigation: NavItem[] = [
   { name: "Our System", href: "/our-system" },
-  { name: "System Readiness", href: "/system-readiness" },
   { name: "Financial Transparency", href: "/financial" },
   { name: "Operations", href: "/operations" },
   { name: "Safety", href: "/safety" },

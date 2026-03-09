@@ -9,8 +9,6 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  LineChart,
-  Line,
 } from "recharts";
 import SectionHeader, { SectionSubheader } from "@/components/SectionHeader";
 import DataCard from "@/components/DataCard";
@@ -23,30 +21,41 @@ export default function OperationsPage() {
     count: item.count,
   }));
 
+  const latestPermit = operationsData.permitsIssued[operationsData.permitsIssued.length - 1];
+  const latestMonth = latestPermit.month.split(" ")[0].substring(0, 3);
+
   return (
     <div className="py-12">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <SectionHeader
           title="Operations & Maintenance"
           subtitle="Ongoing work to maintain our flood defense systems"
-          source="Dec 2025 SITREP"
+          source={latestPermit.source}
         />
 
         {/* Key Metrics */}
         <section className="mb-12">
-          <div className="grid md:grid-cols-3 gap-6">
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             <KPICard
-              label="Permits Issued (Dec)"
-              value={kpiMetrics.permitsIssued.value}
+              label={`Permits Issued (${latestMonth})`}
+              value={latestPermit.count}
               unit="permits"
               icon={<FileText className="h-6 w-6" />}
-              source={kpiMetrics.permitsIssued.source}
+              source={latestPermit.source}
             />
             <KPICard
-              label="River Floodgate Inspections"
-              value={operationsData.floodgateInspections.completed}
-              total={operationsData.floodgateInspections.total}
-              unit="completed"
+              label="Hurricane Gate Inspections"
+              value={operationsData.floodgateInspections.hurricaneGates.percentComplete}
+              total={100}
+              unit="% complete"
+              icon={<CheckCircle className="h-6 w-6" />}
+              source={operationsData.floodgateInspections.source}
+            />
+            <KPICard
+              label="Valve Exercises"
+              value={operationsData.floodgateInspections.valveExercises.percentComplete}
+              total={100}
+              unit="% complete"
               icon={<CheckCircle className="h-6 w-6" />}
               source={operationsData.floodgateInspections.source}
             />
@@ -57,9 +66,11 @@ export default function OperationsPage() {
                 </span>
                 <Clock className="h-6 w-6 text-[#21355a]" />
               </div>
-              <div className="text-lg font-semibold text-[#21355a]">On Schedule</div>
               <p className="text-sm text-gray-600 mt-2">
-                {operationsData.pccpRepairStatus.overallStatus}
+                Most items near completion pending final acceptance.
+              </p>
+              <p className="text-sm text-green-600 font-medium mt-2">
+                All 17 pumps remain available. Repair work does not impact pumping capacity.
               </p>
               <p className="text-xs text-gray-400 mt-2">
                 Managed by: {operationsData.pccpRepairStatus.managedBy}
@@ -98,71 +109,6 @@ export default function OperationsPage() {
                       <td className="py-2 text-gray-700">{item.month}</td>
                       <td className="py-2 text-right font-semibold text-[#21355a]">{item.count}</td>
                       <td className="py-2 pl-4 text-xs text-gray-500">{item.source}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </DataCard>
-        </section>
-
-        {/* PCCP Repair Status */}
-        <section className="mb-12">
-          <SectionSubheader title="PCCP Repair Status" />
-          <DataCard title="Repair Progress by Station" source={operationsData.pccpRepairStatus.source}>
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-b border-gray-200">
-                    <th className="text-left py-3 font-semibold text-gray-700">Issue</th>
-                    <th className="text-center py-3 font-semibold text-gray-700" colSpan={2}>London Ave</th>
-                    <th className="text-center py-3 font-semibold text-gray-700" colSpan={2}>Orleans Ave</th>
-                    <th className="text-center py-3 font-semibold text-gray-700" colSpan={2}>17th Street</th>
-                  </tr>
-                  <tr className="border-b border-gray-100 text-xs text-gray-500">
-                    <th></th>
-                    <th className="py-1">Progress</th>
-                    <th className="py-1">Est.</th>
-                    <th className="py-1">Progress</th>
-                    <th className="py-1">Est.</th>
-                    <th className="py-1">Progress</th>
-                    <th className="py-1">Est.</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {operationsData.pccpRepairStatus.repairs.map((repair) => (
-                    <tr key={repair.issue} className="border-b border-gray-100">
-                      <td className="py-3 text-gray-700">{repair.issue}</td>
-                      <td className="py-3 text-center">
-                        {repair.london.percent !== null ? (
-                          <span className={`font-semibold ${repair.london.percent >= 90 ? 'text-green-600' : 'text-amber-600'}`}>
-                            {repair.london.percent}%
-                          </span>
-                        ) : (
-                          <span className="text-gray-400">--</span>
-                        )}
-                      </td>
-                      <td className="py-3 text-center text-xs text-gray-500">{repair.london.estimated}</td>
-                      <td className="py-3 text-center">
-                        {repair.orleans.percent !== null ? (
-                          <span className={`font-semibold ${repair.orleans.percent >= 90 ? 'text-green-600' : 'text-amber-600'}`}>
-                            {repair.orleans.percent}%
-                          </span>
-                        ) : (
-                          <span className="text-gray-400">--</span>
-                        )}
-                      </td>
-                      <td className="py-3 text-center text-xs text-gray-500">{repair.orleans.estimated}</td>
-                      <td className="py-3 text-center">
-                        {repair.seventeenthSt.percent !== null ? (
-                          <span className={`font-semibold ${repair.seventeenthSt.percent >= 90 ? 'text-green-600' : 'text-amber-600'}`}>
-                            {repair.seventeenthSt.percent}%
-                          </span>
-                        ) : (
-                          <span className="text-gray-400">--</span>
-                        )}
-                      </td>
-                      <td className="py-3 text-center text-xs text-gray-500">{repair.seventeenthSt.estimated}</td>
                     </tr>
                   ))}
                 </tbody>

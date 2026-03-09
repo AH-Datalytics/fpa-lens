@@ -1,0 +1,117 @@
+{
+  "fiscalYear": 2026,
+  "districts": [
+    "OLD",
+    "EJLD",
+    "LBBLD",
+    "FPAE"
+  ],
+  "districtNames": {
+    "OLD": "Orleans Levee District",
+    "EJLD": "East Jefferson Levee District",
+    "LBBLD": "Lake Borgne Basin Levee District",
+    "FPAE": "Flood Protection Authority East"
+  },
+  "revenue": {
+    "OLD": 60582900,
+    "EJLD": 14759900,
+    "LBBLD": 3949400,
+    "FPAE": 433600,
+    "total": 79725800
+  },
+  "expenses": [
+    {
+      "category": "Personnel Services",
+      "OLD": 18108400,
+      "EJLD": 5953600,
+      "LBBLD": 1394600,
+      "FPAE": 8867000,
+      "total": 34323600
+    },
+    {
+      "category": "Training",
+      "OLD": 105500,
+      "EJLD": 18000,
+      "LBBLD": 0,
+      "FPAE": 344400,
+      "total": 467900
+    },
+    {
+      "category": "Professional Services",
+      "OLD": 500000,
+      "EJLD": 130000,
+      "LBBLD": 30000,
+      "FPAE": 326000,
+      "total": 986000
+    },
+    {
+      "category": "Contractuals",
+      "OLD": 5731600,
+      "EJLD": 1354400,
+      "LBBLD": 233700,
+      "FPAE": 3875500,
+      "total": 11195200
+    },
+    {
+      "category": "Materials",
+      "OLD": 2554100,
+      "EJLD": 592500,
+      "LBBLD": 112900,
+      "FPAE": 417900,
+      "total": 3677400
+    },
+    {
+      "category": "Equipments",
+      "OLD": 1476800,
+      "EJLD": 1396000,
+      "LBBLD": 338000,
+      "FPAE": 476600,
+      "total": 3687400
+    },
+    {
+      "category": "Other Charges",
+      "OLD": 1098900,
+      "EJLD": 488800,
+      "LBBLD": 99900,
+      "FPAE": 14550,
+      "total": 1702150
+    },
+    {
+      "category": "MMCI",
+      "OLD": 26677880,
+      "EJLD": 9834900,
+      "LBBLD": 3367800,
+      "FPAE": 350000,
+      "total": 40230580
+    },
+    {
+      "category": "CostSharing",
+      "OLD": 9027400,
+      "EJLD": 4495800,
+      "LBBLD": 1822300,
+      "FPAE": 0,
+      "total": 15345500
+    }
+  ],
+  "totalExpenses": {
+    "OLD": 65280580,
+    "EJLD": 24264000,
+    "LBBLD": 7399200,
+    "FPAE": 14671950,
+    "total": 111615730
+  },
+  "sourcesUses": {
+    "OLD": 300000,
+    "EJLD": 250000,
+    "LBBLD": 80000,
+    "FPAE": 8000,
+    "total": 638000
+  },
+  "grandTotal": {
+    "OLD": 65580580,
+    "EJLD": 24514000,
+    "LBBLD": 7479200,
+    "FPAE": 14679950,
+    "total": 112253730
+  }
+}

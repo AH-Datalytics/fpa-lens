@@ -65,8 +65,8 @@ export default function WhatWeDoPage() {
                 </div>
                 <div className="bg-white/10 rounded-lg p-4 text-center">
                   <Droplets className="h-8 w-8 mx-auto mb-2" />
-                  <div className="text-2xl font-bold">Pump Stations</div>
-                  <div className="text-sm text-blue-200">Water removal</div>
+                  <div className="text-2xl font-bold">PCCP Stations</div>
+                  <div className="text-sm text-blue-200">Canal closure pumps</div>
                 </div>
               </div>
             </div>
@@ -148,16 +148,19 @@ export default function WhatWeDoPage() {
           </div>
         </section>
 
-        {/* SLFPA-E vs SWBNO */}
+        {/* Surge vs. Rain */}
         <section className="mb-12">
-          <SectionSubheader title="Understanding the Difference" />
-          <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-6">
-            <div className="flex items-start gap-3">
-              <AlertTriangle className="h-5 w-5 text-amber-600 mt-0.5" />
-              <p className="text-amber-800">
-                <strong>Common Question:</strong> What&apos;s the difference between SLFPA-E and the Sewerage & Water Board?
-              </p>
-            </div>
+          <SectionSubheader title="Surge Protection vs. Drainage" />
+
+          <div className="bg-white rounded-xl shadow-md p-6 mb-6">
+            <p className="text-gray-600 leading-relaxed">
+              Greater New Orleans has two separate flood protection systems run by two separate agencies.
+              SLFPA-E is the <strong>outer perimeter</strong>: we keep hurricane surge and lake water out.
+              The Sewerage &amp; Water Board of New Orleans (SWBNO) handles everything inside that perimeter:
+              drainage pumps, storm drains, drinking water, and sewage. We do not operate drainage pump
+              stations, and SWBNO does not operate levees or floodgates. The two systems are complementary
+              but independent.
+            </p>
           </div>
 
           <div className="grid md:grid-cols-2 gap-6">
@@ -166,31 +169,31 @@ export default function WhatWeDoPage() {
                 <div className="w-10 h-10 bg-[#21355a] rounded-lg flex items-center justify-center">
                   <Shield className="h-5 w-5 text-white" />
                 </div>
-                <h3 className="text-lg font-bold text-[#21355a]">SLFPA-E (Flood Protection Authority)</h3>
+                <h3 className="text-lg font-bold text-[#21355a]">SLFPA-E (Us)</h3>
               </div>
               <p className="text-gray-600 mb-4 font-medium">
-                We protect against <span className="text-[#21355a]">external flooding</span> from hurricanes, storm surge, and high tides.
+                We protect against <span className="text-[#21355a]">storm surge</span> from hurricanes, tropical storms, and high tides.
               </p>
               <ul className="space-y-2 text-sm text-gray-600">
                 <li className="flex items-start gap-2">
-                  <span className="text-[#65bc7b] font-bold">✓</span>
+                  <span className="text-[#65bc7b] font-bold">&#10003;</span>
                   Levees, floodwalls, and surge barriers
                 </li>
                 <li className="flex items-start gap-2">
-                  <span className="text-[#65bc7b] font-bold">✓</span>
+                  <span className="text-[#65bc7b] font-bold">&#10003;</span>
                   Floodgates that close during storms
                 </li>
                 <li className="flex items-start gap-2">
-                  <span className="text-[#65bc7b] font-bold">✓</span>
+                  <span className="text-[#65bc7b] font-bold">&#10003;</span>
                   Permanent Canal Closure Pump Stations (PCCP)
                 </li>
                 <li className="flex items-start gap-2">
-                  <span className="text-[#65bc7b] font-bold">✓</span>
+                  <span className="text-[#65bc7b] font-bold">&#10003;</span>
                   Lake Borgne Surge Barrier
                 </li>
                 <li className="flex items-start gap-2">
-                  <span className="text-[#65bc7b] font-bold">✓</span>
-                  Protection from Lake Pontchartrain & Gulf of Mexico
+                  <span className="text-[#65bc7b] font-bold">&#10003;</span>
+                  Protection from Lake Pontchartrain &amp; Gulf of Mexico
                 </li>
               </ul>
             </div>
@@ -200,30 +203,30 @@ export default function WhatWeDoPage() {
                 <div className="w-10 h-10 bg-gray-400 rounded-lg flex items-center justify-center">
                   <Droplets className="h-5 w-5 text-white" />
                 </div>
-                <h3 className="text-lg font-bold text-gray-700">SWBNO (Sewerage & Water Board)</h3>
+                <h3 className="text-lg font-bold text-gray-700">SWBNO (Sewerage &amp; Water Board)</h3>
               </div>
               <p className="text-gray-600 mb-4 font-medium">
-                They manage <span className="text-gray-700">internal drainage</span> and drinking water/sewage services.
+                They manage <span className="text-gray-700">rainwater drainage</span>, drinking water, and sewage services.
               </p>
               <ul className="space-y-2 text-sm text-gray-600">
                 <li className="flex items-start gap-2">
-                  <span className="text-gray-400 font-bold">•</span>
-                  Drainage pumps that remove rainwater
+                  <span className="text-gray-400 font-bold">&bull;</span>
+                  Drainage pump stations that remove rainwater
                 </li>
                 <li className="flex items-start gap-2">
-                  <span className="text-gray-400 font-bold">•</span>
+                  <span className="text-gray-400 font-bold">&bull;</span>
                   Storm drains and underground canals
                 </li>
                 <li className="flex items-start gap-2">
-                  <span className="text-gray-400 font-bold">•</span>
+                  <span className="text-gray-400 font-bold">&bull;</span>
                   Drinking water treatment and distribution
                 </li>
                 <li className="flex items-start gap-2">
-                  <span className="text-gray-400 font-bold">•</span>
+                  <span className="text-gray-400 font-bold">&bull;</span>
                   Sewage collection and treatment
                 </li>
                 <li className="flex items-start gap-2">
-                  <span className="text-gray-400 font-bold">•</span>
+                  <span className="text-gray-400 font-bold">&bull;</span>
                   Street flooding from heavy rain
                 </li>
               </ul>
@@ -231,13 +234,22 @@ export default function WhatWeDoPage() {
           </div>
 
           <div className="mt-6 bg-blue-50 rounded-lg p-6">
-            <h4 className="font-semibold text-[#21355a] mb-2">How We Work Together</h4>
+            <h4 className="font-semibold text-[#21355a] mb-2">Where the Systems Connect</h4>
             <p className="text-gray-600">
-              During a storm, both agencies play critical roles. SLFPA-E closes the floodgates to keep
-              surge water out, while SWBNO&apos;s drainage pumps remove rainwater that falls inside the
-              protected area. Our Permanent Canal Closure Pump Stations (PCCPs) at the 17th Street,
-              Orleans Avenue, and London Avenue canals pump water from SWBNO&apos;s drainage canals out
-              to Lake Pontchartrain when the gates are closed.
+              During a storm, SLFPA-E closes the floodgates at the outfall canals to block surge from
+              entering the city. While those gates are closed, SWBNO&apos;s drainage pumps push rainwater
+              into those same canals. Our Permanent Canal Closure Pump Stations (PCCPs) at 17th Street,
+              Orleans Avenue, and London Avenue then pump that water over the gates and out to Lake
+              Pontchartrain. That handoff is the one point where the two systems meet.
+            </p>
+          </div>
+
+          <div className="mt-4 bg-gray-50 border border-gray-200 rounded-lg p-4">
+            <p className="text-sm text-gray-500">
+              <strong className="text-gray-600">Reporting an issue?</strong> If your concern is about
+              street flooding, drainage, water service, or sewage, contact the Sewerage &amp; Water Board
+              at <strong>504-529-2837</strong> or <a href="https://www.swbno.org" className="text-[#21355a] underline" target="_blank" rel="noopener noreferrer">swbno.org</a>.
+              For concerns about levees, floodgates, or storm surge protection, contact us.
             </p>
           </div>
         </section>

@@ -231,7 +231,7 @@ export default function SafetyPage() {
                 OSHA-recordable accidents have decreased significantly since 2022, reflecting improved safety practices.
               </p>
             </DataCard>
-            <DataCard title={<>Total Events & <span className="relative cursor-help border-b border-dashed border-gray-400 group">Lost Time Events<span className="invisible group-hover:visible absolute left-1/2 -translate-x-1/2 top-full mt-2 w-64 rounded-lg bg-gray-800 text-white text-xs font-normal p-3 leading-relaxed shadow-lg z-50">Any accident or incident where the injury or illness causes the employee to miss one or more subsequent workdays.</span></span></>} source="FPA Event Logs">
+            <DataCard title={<>Total Events & <span className="relative cursor-default border-b border-dashed border-gray-400 group">Lost Time Events<span className="invisible group-hover:visible absolute left-1/2 -translate-x-1/2 top-full mt-2 w-64 rounded-lg bg-gray-800 text-white text-xs font-normal p-3 leading-relaxed shadow-lg z-50">Any accident or incident where the injury or illness causes the employee to miss one or more subsequent workdays.</span></span></>} source="FPA Event Logs">
               <div className="h-72">
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={yearlyTrendData}>
@@ -251,7 +251,7 @@ export default function SafetyPage() {
                     <Line
                       type="monotone"
                       dataKey="lostTime"
-                      stroke="#ef4444"
+                      stroke="#92400e"
                       strokeWidth={2}
                       name="Lost Time Events"
                       dot={{ r: 5 }}
@@ -277,7 +277,7 @@ export default function SafetyPage() {
                       <th className="text-center py-3 font-semibold text-gray-700">Accidents</th>
                       <th className="text-center py-3 font-semibold text-gray-700">Incidents</th>
                       <th className="text-center py-3 font-semibold text-gray-700">
-                        <span className="relative cursor-help border-b border-dashed border-gray-400 group">
+                        <span className="relative cursor-default border-b border-dashed border-gray-400 group">
                           Lost Time Events
                           <span className="invisible group-hover:visible absolute left-1/2 -translate-x-1/2 top-full mt-2 w-64 rounded-lg bg-gray-800 text-white text-xs font-normal p-3 leading-relaxed shadow-lg z-50">
                             Any accident or incident where the injury or illness causes the employee to miss one or more subsequent workdays.

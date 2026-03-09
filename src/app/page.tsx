@@ -8,23 +8,28 @@ import {
   FileText,
   HardHat,
   ArrowRight,
-  CheckCircle,
 } from "lucide-react";
-import KPICard from "@/components/KPICard";
 import StatusBadge from "@/components/StatusBadge";
-import { siteConfig, kpiMetrics, systemReadiness } from "@/data/siteData";
+import {
+  siteConfig,
+  kpiMetrics,
+  systemReadiness,
+  operationsData,
+  staffingData,
+  StatusLevel,
+} from "@/data/siteData";
 
 const quickLinks = [
   {
     title: "Our System",
-    description: "Learn about the infrastructure protecting Greater New Orleans",
+    description: "Infrastructure protecting Greater New Orleans",
     href: "/our-system",
     icon: Shield,
   },
   {
-    title: "System Readiness",
-    description: "Real-time status of all flood protection systems",
-    href: "/system-readiness",
+    title: "Infrastructure Readiness",
+    description: "Current operational status of all flood protection systems",
+    href: "/our-system#infrastructure-readiness",
     icon: Activity,
   },
   {
@@ -41,13 +46,46 @@ const quickLinks = [
   },
   {
     title: "Safety",
-    description: "Our commitment to workplace safety and accident prevention",
+    description: "Workplace safety and accident prevention",
     href: "/safety",
     icon: HardHat,
   },
 ];
 
+function getCategory(name: string) {
+  return systemReadiness.categories.find((c) => c.name === name);
+}
+
+function statusBorder(status: StatusLevel) {
+  if (status === "RED") return "border-red-500";
+  if (status === "AMBER") return "border-amber-500";
+  return "border-green-500";
+}
+
+function statusBg(status: StatusLevel) {
+  if (status === "RED") return "bg-red-50";
+  if (status === "AMBER") return "bg-amber-50";
+  return "bg-green-50";
+}
+
+function statusText(status: StatusLevel) {
+  if (status === "RED") return "text-red-600";
+  if (status === "AMBER") return "text-amber-600";
+  return "text-green-600";
+}
+
+function statusTooltip(status: StatusLevel) {
+  const defs = systemReadiness.statusDefinitions;
+  if (status === "RED") return `${defs.RED.label}: ${defs.RED.definition}`;
+  if (status === "AMBER") return `${defs.AMBER.label}: ${defs.AMBER.definition}`;
+  return `${defs.GREEN.label}: ${defs.GREEN.definition}`;
+}
+
 export default function Home() {
+  const infra = getCategory("Infrastructure Readiness")!;
+  const staffReadiness = getCategory("Staffing Readiness")!;
+  const financial = getCategory("Financial Readiness")!;
+
   return (
     <div>
       {/* Hero Section */}
@@ -57,7 +95,7 @@ export default function Home() {
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div>
               <div className="flex items-center gap-2 mb-6">
-                <StatusBadge status={systemReadiness.overallStatus} size="md" />
+                <StatusBadge status={systemReadiness.overallStatus} size="md" tooltip={statusTooltip(systemReadiness.overallStatus)} />
                 <span className="text-sm text-blue-200">All Systems Operational</span>
               </div>
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-6">
@@ -68,21 +106,6 @@ export default function Home() {
                 <span className="text-white font-semibold">{siteConfig.organizationShort}</span>{" "}
                 protects our community through world-class flood defense infrastructure.
               </p>
-              <div className="flex flex-wrap gap-4">
-                <Link
-                  href="/system-readiness"
-                  className="inline-flex items-center gap-2 bg-[#65bc7b] hover:bg-[#59ba4d] text-white font-semibold px-6 py-3 rounded-lg transition-colors"
-                >
-                  View System Status
-                  <ArrowRight className="h-5 w-5" />
-                </Link>
-                <Link
-                  href="/our-system"
-                  className="inline-flex items-center gap-2 bg-white/10 hover:bg-white/20 text-white font-semibold px-6 py-3 rounded-lg transition-colors"
-                >
-                  Learn About Our System
-                </Link>
-              </div>
             </div>
             <div className="hidden lg:flex justify-center">
               <div className="relative">
@@ -100,71 +123,130 @@ export default function Home() {
         </div>
       </section>
 
-      {/* KPI Dashboard Section */}
+      {/* Three Readiness Gauges */}
       <section className="relative -mt-12 z-10">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            <KPICard
-              label={kpiMetrics.systemReadiness.label}
-              value="GREEN"
-              status="GREEN"
-              icon={<Shield className="h-6 w-6" />}
-              source={kpiMetrics.systemReadiness.source}
-            />
-            <KPICard
-              label={kpiMetrics.pccpPumps.label}
-              value={kpiMetrics.pccpPumps.value}
-              total={kpiMetrics.pccpPumps.total}
-              unit={kpiMetrics.pccpPumps.unit}
-              icon={<Droplets className="h-6 w-6" />}
-              source={kpiMetrics.pccpPumps.source}
-            />
-            <KPICard
-              label={kpiMetrics.ytdAccidents.label}
-              value={kpiMetrics.ytdAccidents.value}
-              goal={kpiMetrics.ytdAccidents.goal}
-              goalLabel={kpiMetrics.ytdAccidents.goalLabel}
-              icon={<HardHat className="h-6 w-6" />}
-              source={kpiMetrics.ytdAccidents.source}
-            />
-            <KPICard
-              label={kpiMetrics.floodgateInspections.label}
-              value={kpiMetrics.floodgateInspections.value}
-              total={kpiMetrics.floodgateInspections.total}
-              unit={kpiMetrics.floodgateInspections.unit}
-              icon={<CheckCircle className="h-6 w-6" />}
-              source={kpiMetrics.floodgateInspections.source}
-            />
-            <KPICard
-              label={kpiMetrics.staffCount.label}
-              value={kpiMetrics.staffCount.value}
-              subtitle={kpiMetrics.staffCount.breakdown}
-              icon={<Users className="h-6 w-6" />}
-              source={kpiMetrics.staffCount.source}
-            />
-            <KPICard
-              label={kpiMetrics.permitsIssued.label}
-              value={kpiMetrics.permitsIssued.value}
-              unit="permits"
-              icon={<FileText className="h-6 w-6" />}
-              source={kpiMetrics.permitsIssued.source}
-            />
+          <div className="grid md:grid-cols-3 gap-6">
+            {/* Infrastructure Readiness */}
+            <Link
+              href="/our-system#infrastructure-readiness"
+              className={`group bg-white rounded-xl shadow-lg border-l-4 ${statusBorder(infra.status)} p-6 hover:shadow-2xl transition-shadow duration-200`}
+            >
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-3">
+                  <div className={`w-10 h-10 ${statusBg(infra.status)} rounded-lg flex items-center justify-center`}>
+                    <Shield className="h-5 w-5 text-[#21355a]" />
+                  </div>
+                  <h3 className="font-semibold text-[#21355a]">Infrastructure Readiness</h3>
+                </div>
+                <StatusBadge status={infra.status} size="sm" tooltip={statusTooltip(infra.status)} />
+              </div>
+              <div className="grid grid-cols-3 gap-3 mb-4">
+                <div className="text-center">
+                  <div className="text-xl font-bold text-[#21355a]">
+                    {kpiMetrics.pccpPumps.value}/{kpiMetrics.pccpPumps.total}
+                  </div>
+                  <div className="text-xs text-gray-500">PCCP Pumps</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-xl font-bold text-[#21355a]">
+                    {operationsData.floodgateInspections.hurricaneGates.percentComplete}%
+                  </div>
+                  <div className="text-xs text-gray-500">Gate Inspections</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-xl font-bold text-[#21355a]">
+                    {operationsData.floodgateInspections.valveExercises.percentComplete}%
+                  </div>
+                  <div className="text-xs text-gray-500">Valve Exercises</div>
+                </div>
+              </div>
+              <p className="text-sm text-gray-600 line-clamp-2">{infra.description}</p>
+              <div className={`mt-4 flex items-center text-sm font-medium ${statusText(infra.status)}`}>
+                View details
+                <ArrowRight className="h-4 w-4 ml-1 group-hover:translate-x-1 transition-transform" />
+              </div>
+            </Link>
+
+            {/* Staff Readiness */}
+            <Link
+              href="/our-team"
+              className={`group bg-white rounded-xl shadow-lg border-l-4 ${statusBorder(staffReadiness.status)} p-6 hover:shadow-2xl transition-shadow duration-200`}
+            >
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-3">
+                  <div className={`w-10 h-10 ${statusBg(staffReadiness.status)} rounded-lg flex items-center justify-center`}>
+                    <Users className="h-5 w-5 text-[#21355a]" />
+                  </div>
+                  <h3 className="font-semibold text-[#21355a]">Staffing Readiness</h3>
+                </div>
+                <StatusBadge status={staffReadiness.status} size="sm" tooltip={statusTooltip(staffReadiness.status)} />
+              </div>
+              <div className="grid grid-cols-2 gap-3 mb-4">
+                <div className="text-center">
+                  <div className="text-xl font-bold text-[#21355a]">
+                    {kpiMetrics.staffCount.value}
+                  </div>
+                  <div className="text-xs text-gray-500">Total Staff</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-xl font-bold text-amber-500">
+                    {staffingData.headcount.vacancies}
+                  </div>
+                  <div className="text-xs text-gray-500">Vacancies</div>
+                </div>
+              </div>
+              <p className="text-sm text-gray-600 line-clamp-2">{staffReadiness.description}</p>
+              <div className={`mt-4 flex items-center text-sm font-medium ${statusText(staffReadiness.status)}`}>
+                View details
+                <ArrowRight className="h-4 w-4 ml-1 group-hover:translate-x-1 transition-transform" />
+              </div>
+            </Link>
+
+            {/* Financial Readiness */}
+            <Link
+              href="/financial"
+              className={`group bg-white rounded-xl shadow-lg border-l-4 ${statusBorder(financial.status)} p-6 hover:shadow-2xl transition-shadow duration-200`}
+            >
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-3">
+                  <div className={`w-10 h-10 ${statusBg(financial.status)} rounded-lg flex items-center justify-center`}>
+                    <Image src="/dollar-icon.svg" alt="Dollar" width={20} height={20} className="opacity-80" />
+                  </div>
+                  <h3 className="font-semibold text-[#21355a]">Financial Readiness</h3>
+                </div>
+                <StatusBadge status={financial.status} size="sm" tooltip={statusTooltip(financial.status)} />
+              </div>
+              <div className="grid grid-cols-2 gap-3 mb-4">
+                <div className="text-center">
+                  <div className="text-xl font-bold text-[#21355a]">$79.7M</div>
+                  <div className="text-xs text-gray-500">FY26 Revenue</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-xl font-bold text-[#21355a]">$112.3M</div>
+                  <div className="text-xs text-gray-500">FY26 Budget</div>
+                </div>
+              </div>
+              <p className="text-sm text-gray-600 line-clamp-2">{financial.description}</p>
+              <div className={`mt-4 flex items-center text-sm font-medium ${statusText(financial.status)}`}>
+                View details
+                <ArrowRight className="h-4 w-4 ml-1 group-hover:translate-x-1 transition-transform" />
+              </div>
+            </Link>
           </div>
         </div>
       </section>
 
-      {/* About the Dashboard */}
-      <section className="py-20 bg-white">
+      {/* Explore More */}
+      <section className="pt-20 pb-20 -mt-6 bg-white">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="max-w-3xl mx-auto text-center mb-12">
             <h2 className="text-3xl font-bold text-[#21355a] mb-4">
-              About The FPA Lens
+              Explore The FPA Lens
             </h2>
             <p className="text-lg text-gray-600 leading-relaxed">
-              This transparency dashboard provides the public with clear, accessible information
-              about how {siteConfig.organizationShort} manages and maintains the flood protection
-              infrastructure that keeps Greater New Orleans safe. Our commitment to transparency
-              builds public trust and demonstrates responsible stewardship of taxpayer resources.
+              Transparent, accessible information about how {siteConfig.organizationShort} manages
+              and maintains the flood protection infrastructure that keeps Greater New Orleans safe.
             </p>
           </div>
 
@@ -218,31 +300,6 @@ export default function Home() {
         </section>
       )}
 
-      {/* Hurricane Season Notice */}
-      <section className="py-12 bg-gradient-to-r from-[#21355a] to-[#2c3859] text-white">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-            <div className="flex items-center gap-4">
-              <div className="w-16 h-16 bg-white/10 rounded-full flex items-center justify-center">
-                <Shield className="h-8 w-8 text-[#65bc7b]" />
-              </div>
-              <div>
-                <h3 className="text-xl font-semibold">Hurricane Season: June 1 - November 30</h3>
-                <p className="text-blue-200">
-                  Monitoring continues year-round for cold fronts and non-tropical high tide events
-                </p>
-              </div>
-            </div>
-            <Link
-              href="/system-readiness"
-              className="inline-flex items-center gap-2 bg-white text-[#21355a] font-semibold px-6 py-3 rounded-lg hover:bg-gray-100 transition-colors"
-            >
-              Check System Status
-              <ArrowRight className="h-5 w-5" />
-            </Link>
-          </div>
-        </div>
-      </section>
     </div>
   );
 }

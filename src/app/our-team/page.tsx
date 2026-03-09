@@ -45,15 +45,15 @@ export default function OurTeamPage() {
             <div className="bg-white rounded-xl shadow-md border border-gray-100 p-6">
               <div className="flex items-start justify-between mb-3">
                 <span className="text-sm font-medium text-gray-500 uppercase tracking-wide">
-                  Monthly Change
+                  Open Vacancies
                 </span>
-                <TrendingUp className="h-6 w-6 text-green-600" />
+                <TrendingUp className="h-6 w-6 text-amber-500" />
               </div>
               <div className="flex items-baseline gap-2">
-                <span className="text-3xl font-bold text-green-600">
-                  +{staffingData.headcount.changeFromLastMonth}
+                <span className="text-3xl font-bold text-amber-500">
+                  {staffingData.headcount.vacancies}
                 </span>
-                <span className="text-sm text-gray-500">from November</span>
+                <span className="text-sm text-gray-500">agency-wide</span>
               </div>
             </div>
             <div className="bg-white rounded-xl shadow-md border border-gray-100 p-6">

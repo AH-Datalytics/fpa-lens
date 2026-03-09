@@ -27,8 +27,8 @@
     {
       "year": 2025,
       "totalEvents": 42,
-      "accidents": 1,
-      "incidents": 41,
+      "accidents": 2,
+      "incidents": 40,
       "lostTime": 5,
       "propertyDamage": 31
     },
@@ -309,8 +309,8 @@
     {
       "year": 2025,
       "month": 10,
-      "accidents": 1,
-      "incidents": 9
+      "accidents": 2,
+      "incidents": 8
     },
     {
       "year": 2025,
@@ -383,8 +383,8 @@
     {
       "type": "Slip/Trip/Fall",
       "count": 5,
-      "accidents": 0,
-      "incidents": 5
+      "accidents": 1,
+      "incidents": 4
     },
     {
       "type": "Vehicle",
@@ -639,7 +639,7 @@
       "month": "October",
       "year": 2025,
       "eventType": "Slip/Trip/Fall",
-      "isAccident": false,
+      "isAccident": true,
       "isLostTime": false,
       "hasDamage": false,
       "hasPrivatePropertyDamage": false

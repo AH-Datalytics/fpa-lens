@@ -46,10 +46,26 @@ const sizeConfig = {
   },
 };
 
-export default function StatusBadge({ status, size = "md", showLabel = true }: StatusBadgeProps) {
+export default function StatusBadge({ status, size = "md", showLabel = true, tooltip }: StatusBadgeProps & { tooltip?: string }) {
   const config = statusConfig[status];
   const sizes = sizeConfig[size];
   const Icon = config.icon;
+
+  if (tooltip) {
+    return (
+      <span className="relative group/status">
+        <span
+          className={`inline-flex items-center gap-1.5 font-semibold rounded-full border cursor-default ${config.bgColor} ${config.textColor} ${config.borderColor} ${sizes.badge}`}
+        >
+          <Icon className={`${sizes.icon} ${config.iconColor}`} />
+          {showLabel && status}
+        </span>
+        <span className="invisible group-hover/status:visible absolute left-0 top-full mt-2 w-56 rounded-lg bg-gray-800 text-white text-xs font-normal p-3 leading-relaxed shadow-lg z-50 whitespace-normal">
+          {tooltip}
+        </span>
+      </span>
+    );
+  }
 
   return (
     <span
