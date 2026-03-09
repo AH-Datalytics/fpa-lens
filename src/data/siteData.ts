@@ -17,7 +17,7 @@
 // ============================================================================
 
 export const siteConfig = {
-  name: "The FPA Lens",
+  name: "FPA Lens",
   tagline: "Your Flood Defense System",
   organization: "Southeast Louisiana Flood Protection Authority - East",
   organizationShort: "SLFPA-E",
