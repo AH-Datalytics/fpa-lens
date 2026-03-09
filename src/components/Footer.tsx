@@ -49,7 +49,7 @@ export default function Footer() {
                 className="flex items-center gap-2 text-blue-200 hover:text-white transition-colors"
               >
                 <ExternalLink className="h-4 w-4" />
-                Sign up for Alerts
+                Sign Up for Alerts
               </a>
               <a
                 href="https://www.floodauthority.org"
