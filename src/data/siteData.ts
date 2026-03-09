@@ -42,7 +42,7 @@ export const contacts = {
     title: "Regional Director",
     office: "504.286.3173",
     mobile: "504.508.4179",
-    email: "JWilliams@floodauthority.org",
+    email: "jwilliams@floodauthority.org",
   },
   // PLACEHOLDER - awaiting stakeholder input
   publicContact: {
