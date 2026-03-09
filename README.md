@@ -13,8 +13,7 @@ Public transparency dashboard for the Southeast Louisiana Flood Protection Autho
 | `/financial` | FY26 budget by category and district, capital projects, major future projects |
 | `/our-team` | Staffing: headcount, vacancies, department status, recent hires |
 | `/contact` | Regional Director contact info |
-| `/about/what-we-do` | Organization overview |
-| `/about/stay-informed` | Board meeting info and links |
+| `/about/what-we-do` | About Us: organization overview |
 
 ## Getting Started
 

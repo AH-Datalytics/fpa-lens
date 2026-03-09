@@ -8,7 +8,7 @@ export default function WhatWeDoPage() {
     <div className="py-12">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <SectionHeader
-          title="What We Do"
+          title="About Us"
           subtitle="Protecting Greater New Orleans from hurricane and storm surge flooding"
         />
 
