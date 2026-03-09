@@ -43,6 +43,18 @@ const quickLinks = [
     href: "/safety",
     icon: HardHat,
   },
+  {
+    title: "Staffing",
+    description: "Leadership, headcount, and department status",
+    href: "/our-team",
+    icon: Users,
+  },
+  {
+    title: "About Us",
+    description: "What SLFPA-E does and how we protect the region",
+    href: "/about/what-we-do",
+    icon: Shield,
+  },
 ];
 
 function getCategory(name: string) {
@@ -243,7 +255,7 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {quickLinks.map((link) => {
               const Icon = link.icon;
               return (
