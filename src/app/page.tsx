@@ -3,7 +3,6 @@ import Link from "next/link";
 import {
   Shield,
   Droplets,
-  Activity,
   Users,
   FileText,
   HardHat,
@@ -22,15 +21,9 @@ import {
 const quickLinks = [
   {
     title: "Our System",
-    description: "Infrastructure protecting Greater New Orleans",
+    description: "Details and readiness of infrastructure protecting Greater New Orleans",
     href: "/our-system",
     icon: Shield,
-  },
-  {
-    title: "Infrastructure Readiness",
-    description: "Current operational status of all flood protection systems",
-    href: "/our-system#infrastructure-readiness",
-    icon: Activity,
   },
   {
     title: "Financial Transparency",
@@ -250,7 +243,7 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-5 gap-6">
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             {quickLinks.map((link) => {
               const Icon = link.icon;
               return (
