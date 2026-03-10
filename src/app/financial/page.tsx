@@ -2,9 +2,6 @@
 
 import { useEffect, useState } from "react";
 import {
-  DollarSign,
-  TrendingUp,
-  Building2,
   Info,
   Clock,
   ChevronUp,
@@ -185,43 +182,22 @@ export default function FinancialPage() {
         <section className="mb-12">
           <div className="grid md:grid-cols-3 gap-6">
             <div className="bg-white rounded-xl shadow-md p-6">
-              <div className="flex items-center gap-3 mb-2">
-                <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                  <TrendingUp className="h-5 w-5 text-green-600" />
-                </div>
-                <div>
-                  <h3 className="text-sm font-medium text-gray-500">FY26 Total Revenue</h3>
-                  <p className="text-2xl font-bold text-[#21355a]">
-                    {formatCurrency(data.revenue.total)}
-                  </p>
-                </div>
-              </div>
+              <h3 className="text-sm font-medium text-gray-500 mb-1">FY26 Total Revenue</h3>
+              <p className="text-2xl font-bold text-[#21355a]">
+                {formatCurrency(data.revenue.total)}
+              </p>
             </div>
             <div className="bg-white rounded-xl shadow-md p-6">
-              <div className="flex items-center gap-3 mb-2">
-                <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                  <DollarSign className="h-5 w-5 text-blue-600" />
-                </div>
-                <div>
-                  <h3 className="text-sm font-medium text-gray-500">FY26 Total Expenses</h3>
-                  <p className="text-2xl font-bold text-[#21355a]">
-                    {formatCurrency(data.totalExpenses.total)}
-                  </p>
-                </div>
-              </div>
+              <h3 className="text-sm font-medium text-gray-500 mb-1">FY26 Total Expenses</h3>
+              <p className="text-2xl font-bold text-[#21355a]">
+                {formatCurrency(data.totalExpenses.total)}
+              </p>
             </div>
             <div className="bg-white rounded-xl shadow-md p-6">
-              <div className="flex items-center gap-3 mb-2">
-                <div className="w-10 h-10 bg-amber-100 rounded-lg flex items-center justify-center">
-                  <Building2 className="h-5 w-5 text-amber-600" />
-                </div>
-                <div>
-                  <h3 className="text-sm font-medium text-gray-500">FY26 Grand Total</h3>
-                  <p className="text-2xl font-bold text-[#21355a]">
-                    {formatCurrency(data.grandTotal.total)}
-                  </p>
-                </div>
-              </div>
+              <h3 className="text-sm font-medium text-gray-500 mb-1">FY26 Grand Total</h3>
+              <p className="text-2xl font-bold text-[#21355a]">
+                {formatCurrency(data.grandTotal.total)}
+              </p>
             </div>
           </div>
         </section>
@@ -267,7 +243,7 @@ export default function FinancialPage() {
               </div>
             </DataCard>
             <DataCard title="Category Breakdown by District" source="FY26 Budget Summary">
-              <div className="overflow-x-auto">
+              <div>
                 <table className="w-full text-sm">
                   <thead>
                     <tr className="border-b border-gray-200">
@@ -450,7 +426,7 @@ export default function FinancialPage() {
         <section className="mb-12">
           <SectionSubheader title="Major Future Projects" />
           <DataCard title="Long-Term Capital Requirements" source="Oct 2025 SITREP">
-            <div className="overflow-x-auto">
+            <div>
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-gray-200">
