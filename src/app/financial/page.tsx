@@ -231,12 +231,12 @@ export default function FinancialPage() {
           <SectionSubheader title="FY26 Budget by Category" />
           <div className="grid lg:grid-cols-2 gap-6">
             <DataCard title="Expenses by Category" source="FY26 Budget Summary">
-              <div className="h-80">
+              <div className="h-80 -mx-2">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart
                     data={categoryChartData}
                     layout="vertical"
-                    margin={{ left: 0, right: 10 }}
+                    margin={{ left: 0, right: 30 }}
                   >
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis
@@ -254,6 +254,7 @@ export default function FinancialPage() {
                       labelFormatter={(label, payload) =>
                         payload?.[0]?.payload?.fullName || label
                       }
+                      wrapperStyle={{ zIndex: 50, maxWidth: "90vw" }}
                     />
                     <Bar
                       dataKey="value"
@@ -266,8 +267,8 @@ export default function FinancialPage() {
               </div>
             </DataCard>
             <DataCard title="Category Breakdown by District" source="FY26 Budget Summary">
-              <div className="overflow-x-auto">
-                <table className="w-full text-sm">
+              <div className="overflow-x-auto -mx-2 px-2">
+                <table className="w-full text-sm min-w-[500px]">
                   <thead>
                     <tr className="border-b border-gray-200">
                       <th
@@ -449,8 +450,8 @@ export default function FinancialPage() {
         <section className="mb-12">
           <SectionSubheader title="Major Future Projects" />
           <DataCard title="Long-Term Capital Requirements" source="Oct 2025 SITREP">
-            <div>
-              <table className="w-full text-sm">
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm min-w-[480px]">
                 <thead>
                   <tr className="border-b border-gray-200">
                     <th className="text-left py-3 font-semibold text-gray-700">Project</th>
