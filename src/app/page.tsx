@@ -248,7 +248,7 @@ export default function Home() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="max-w-3xl mx-auto text-center mb-12">
             <h2 className="text-3xl font-bold text-[#21355a] mb-4">
-              Explore The FPA Lens
+              Explore the FPA Lens
             </h2>
             <p className="text-lg text-gray-600 leading-relaxed">
               Transparent, accessible information about how {siteConfig.organizationShort} manages

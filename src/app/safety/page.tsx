@@ -231,7 +231,7 @@ export default function SafetyPage() {
                 OSHA-recordable accidents have decreased significantly since 2022, reflecting improved safety practices.
               </p>
             </DataCard>
-            <DataCard title={<>Total Events & <span className="relative cursor-default border-b border-dashed border-gray-400 group">Lost Time Events<span className="invisible group-hover:visible absolute left-1/2 -translate-x-1/2 top-full mt-2 w-64 rounded-lg bg-gray-800 text-white text-xs font-normal p-3 leading-relaxed shadow-lg z-50">Any accident or incident where the injury or illness causes the employee to miss one or more subsequent workdays.</span></span></>} source="FPA Event Logs">
+            <DataCard title={<>Total Events & <span className="relative cursor-default border-b border-dashed border-gray-400 group">Lost Time Events<span className="invisible group-hover:visible absolute left-0 top-full mt-2 w-64 rounded-lg bg-gray-800 text-white text-xs font-normal p-3 leading-relaxed shadow-lg z-50">Any accident or incident where the injury or illness causes the employee to miss one or more subsequent workdays.</span></span></>} source="FPA Event Logs">
               <div className="h-72">
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={yearlyTrendData}>
@@ -279,7 +279,7 @@ export default function SafetyPage() {
                       <th className="text-center py-3 font-semibold text-gray-700">
                         <span className="relative cursor-default border-b border-dashed border-gray-400 group">
                           Lost Time Events
-                          <span className="invisible group-hover:visible absolute left-1/2 -translate-x-1/2 top-full mt-2 w-64 rounded-lg bg-gray-800 text-white text-xs font-normal p-3 leading-relaxed shadow-lg z-50">
+                          <span className="invisible group-hover:visible absolute right-0 top-full mt-2 w-64 rounded-lg bg-gray-800 text-white text-xs font-normal p-3 leading-relaxed shadow-lg z-50">
                             Any accident or incident where the injury or illness causes the employee to miss one or more subsequent workdays.
                           </span>
                         </span>
@@ -320,9 +320,9 @@ export default function SafetyPage() {
 
         {/* Monthly Breakdown with Year Selector */}
         <section className="mb-12">
-          <div className="flex items-center justify-between mb-4">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4">
             <SectionSubheader title="Monthly Breakdown" className="mb-0" />
-            <div className="flex gap-1">
+            <div className="flex flex-wrap gap-1">
               {availableYears.map((year) => (
                 <button
                   key={year}
@@ -378,11 +378,11 @@ export default function SafetyPage() {
                   <BarChart
                     data={categorizedTypes}
                     layout="vertical"
-                    margin={{ left: 20, right: 20 }}
+                    margin={{ left: 0, right: 10 }}
                   >
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis type="number" />
-                    <YAxis type="category" dataKey="type" width={130} tick={{ fontSize: 12 }} />
+                    <YAxis type="category" dataKey="type" width={100} tick={{ fontSize: 11 }} />
                     <Tooltip />
                     <Legend />
                     <Bar

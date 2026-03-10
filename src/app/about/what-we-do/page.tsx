@@ -1,4 +1,4 @@
-import { Shield, Waves, Building2, AlertTriangle, Droplets, Users } from "lucide-react";
+import { Shield, Waves, Building2, Fence, Droplets, Users } from "lucide-react";
 import SectionHeader, { SectionSubheader } from "@/components/SectionHeader";
 import DataCard from "@/components/DataCard";
 import { formatCurrency } from "@/data/siteData";
@@ -59,7 +59,7 @@ export default function WhatWeDoPage() {
                   <div className="text-sm text-blue-200">Concrete barriers</div>
                 </div>
                 <div className="bg-white/10 rounded-lg p-4 text-center">
-                  <Shield className="h-8 w-8 mx-auto mb-2" />
+                  <Fence className="h-8 w-8 mx-auto mb-2" />
                   <div className="text-2xl font-bold">Floodgates</div>
                   <div className="text-sm text-blue-200">Surge barriers</div>
                 </div>

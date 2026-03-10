@@ -236,7 +236,7 @@ export default function FinancialPage() {
                   <BarChart
                     data={categoryChartData}
                     layout="vertical"
-                    margin={{ left: 20, right: 20 }}
+                    margin={{ left: 0, right: 10 }}
                   >
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis
@@ -246,8 +246,8 @@ export default function FinancialPage() {
                     <YAxis
                       type="category"
                       dataKey="name"
-                      width={140}
-                      tick={{ fontSize: 12 }}
+                      width={110}
+                      tick={{ fontSize: 11 }}
                     />
                     <Tooltip
                       formatter={(value) => formatCurrency(Number(value))}
@@ -389,8 +389,9 @@ export default function FinancialPage() {
                       paddingAngle={3}
                       dataKey="value"
                       label={({ name, percent }) =>
-                        `${name} (${((percent || 0) * 100).toFixed(0)}%)`
+                        `${name} ${((percent || 0) * 100).toFixed(0)}%`
                       }
+                      labelLine={false}
                     >
                       {districtChartData.map((entry) => (
                         <Cell
