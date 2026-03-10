@@ -231,7 +231,7 @@ export default function FinancialPage() {
           <SectionSubheader title="FY26 Budget by Category" />
           <div className="grid lg:grid-cols-2 gap-6">
             <DataCard title="Expenses by Category" source="FY26 Budget Summary">
-              <div className="h-80 -mx-2">
+              <div className="h-80">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart
                     data={categoryChartData}
@@ -267,7 +267,7 @@ export default function FinancialPage() {
               </div>
             </DataCard>
             <DataCard title="Category Breakdown by District" source="FY26 Budget Summary">
-              <div className="overflow-x-auto -mx-2 px-2">
+              <div className="overflow-x-auto">
                 <table className="w-full text-sm min-w-[500px]">
                   <thead>
                     <tr className="border-b border-gray-200">
