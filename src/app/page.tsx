@@ -221,7 +221,7 @@ export default function Home() {
                   </div>
                   <h3 className="font-semibold text-[#21355a]">Financial Readiness</h3>
                 </div>
-                <StatusBadge status={financial.status} size="sm" tooltip={statusTooltip(financial.status)} />
+                <StatusBadge status={financial.status} size="sm" tooltip={statusTooltip(financial.status)} tooltipAlign="right" />
               </div>
               <div className="grid grid-cols-2 gap-3 mb-4">
                 <div className="text-center">
