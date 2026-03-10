@@ -251,7 +251,7 @@ export default function SafetyPage() {
                     <Line
                       type="monotone"
                       dataKey="lostTime"
-                      stroke="#d97706"
+                      stroke="#eab308"
                       strokeWidth={2}
                       name="Lost Time Events"
                       dot={{ r: 5 }}
