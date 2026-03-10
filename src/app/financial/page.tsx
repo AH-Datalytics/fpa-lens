@@ -268,7 +268,7 @@ export default function FinancialPage() {
             </DataCard>
             <DataCard title="Category Breakdown by District" source="FY26 Budget Summary">
               <div className="overflow-x-auto">
-                <table className="w-full text-sm min-w-[500px]">
+                <table className="w-full text-sm">
                   <thead>
                     <tr className="border-b border-gray-200">
                       <th
@@ -451,7 +451,7 @@ export default function FinancialPage() {
           <SectionSubheader title="Major Future Projects" />
           <DataCard title="Long-Term Capital Requirements" source="Oct 2025 SITREP">
             <div className="overflow-x-auto">
-              <table className="w-full text-sm min-w-[480px]">
+              <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-gray-200">
                     <th className="text-left py-3 font-semibold text-gray-700">Project</th>
