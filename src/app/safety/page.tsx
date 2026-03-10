@@ -243,7 +243,7 @@ export default function SafetyPage() {
                     <Line
                       type="monotone"
                       dataKey="totalEvents"
-                      stroke="#21355a"
+                      stroke="#9ca3af"
                       strokeWidth={2}
                       name="Total Events"
                       dot={{ r: 5 }}
@@ -251,7 +251,7 @@ export default function SafetyPage() {
                     <Line
                       type="monotone"
                       dataKey="lostTime"
-                      stroke="#eab308"
+                      stroke="#111827"
                       strokeWidth={2}
                       name="Lost Time Events"
                       dot={{ r: 5 }}
