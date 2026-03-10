@@ -70,11 +70,11 @@ function IncidentBarShape(props: Record<string, unknown>) {
   if (!width || width <= 0) return null;
   const hasAccidents = payload?.accidents > 0;
   if (hasAccidents) {
-    return <rect x={x} y={y} width={width} height={height} fill="#60a5fa" />;
+    return <rect x={x} y={y} width={width} height={height} fill="#fb923c" />;
   }
   const r = 4;
   const d = `M${x},${y} L${x + width - r},${y} Q${x + width},${y} ${x + width},${y + r} L${x + width},${y + height - r} Q${x + width},${y + height} ${x + width - r},${y + height} L${x},${y + height} Z`;
-  return <path d={d} fill="#60a5fa" />;
+  return <path d={d} fill="#fb923c" />;
 }
 
 export default function SafetyPage() {
@@ -177,12 +177,12 @@ export default function SafetyPage() {
         <section className="mb-12">
           <SectionSubheader title="Definitions" />
           <div className="grid md:grid-cols-2 gap-6">
-            <div className="bg-orange-50 rounded-xl border border-orange-200 p-6">
+            <div className="bg-red-50 rounded-xl border border-red-200 p-6">
               <div className="flex items-start gap-3">
-                <ShieldAlert className="h-6 w-6 text-orange-500 flex-shrink-0 mt-0.5" />
+                <ShieldAlert className="h-6 w-6 text-red-800 flex-shrink-0 mt-0.5" />
                 <div>
-                  <h4 className="font-semibold text-orange-800 mb-2">Accident</h4>
-                  <p className="text-sm text-orange-700 leading-relaxed">
+                  <h4 className="font-semibold text-red-900 mb-2">Accident</h4>
+                  <p className="text-sm text-red-800 leading-relaxed">
                     An unplanned work-related event that results in injury, illness, or property
                     damage and meets OSHA&apos;s recordability criteria (for example, medical treatment
                     beyond first aid, lost time, or restricted duty).
@@ -190,12 +190,12 @@ export default function SafetyPage() {
                 </div>
               </div>
             </div>
-            <div className="bg-blue-50 rounded-xl border border-blue-200 p-6">
+            <div className="bg-orange-50 rounded-xl border border-orange-200 p-6">
               <div className="flex items-start gap-3">
-                <FileWarning className="h-6 w-6 text-blue-400 flex-shrink-0 mt-0.5" />
+                <FileWarning className="h-6 w-6 text-orange-500 flex-shrink-0 mt-0.5" />
                 <div>
-                  <h4 className="font-semibold text-blue-800 mb-2">Incident</h4>
-                  <p className="text-sm text-blue-700 leading-relaxed">
+                  <h4 className="font-semibold text-orange-800 mb-2">Incident</h4>
+                  <p className="text-sm text-orange-700 leading-relaxed">
                     Any unplanned or undesired work-related event that disrupts operations
                     or had the potential to cause harm but did not result in an OSHA-recordable case
                     (for example, near-miss, first-aid-only, or minor property damage).
@@ -220,7 +220,7 @@ export default function SafetyPage() {
                     <Tooltip />
                     <Bar
                       dataKey="accidents"
-                      fill="#fb923c"
+                      fill="#991b1b"
                       name="Accidents (OSHA Recordable)"
                       radius={[4, 4, 0, 0]}
                     />
@@ -251,7 +251,7 @@ export default function SafetyPage() {
                     <Line
                       type="monotone"
                       dataKey="lostTime"
-                      stroke="#92400e"
+                      stroke="#d97706"
                       strokeWidth={2}
                       name="Lost Time Events"
                       dot={{ r: 5 }}
@@ -298,12 +298,12 @@ export default function SafetyPage() {
                         </td>
                         <td className="py-3 text-center text-[#21355a] font-semibold">{y.totalEvents}</td>
                         <td className="py-3 text-center">
-                          <span className="font-semibold text-orange-400">
+                          <span className="font-semibold text-red-800">
                             {y.accidents}
                           </span>
                         </td>
                         <td className="py-3 text-center">
-                          <span className="font-semibold text-blue-400">
+                          <span className="font-semibold text-orange-500">
                             {y.incidents}
                           </span>
                         </td>
@@ -352,13 +352,13 @@ export default function SafetyPage() {
                   <Legend />
                   <Bar
                     dataKey="accidents"
-                    fill="#fb923c"
+                    fill="#991b1b"
                     name="Accidents"
                     radius={[4, 4, 0, 0]}
                   />
                   <Bar
                     dataKey="incidents"
-                    fill="#60a5fa"
+                    fill="#fb923c"
                     name="Incidents"
                     radius={[4, 4, 0, 0]}
                   />
@@ -387,14 +387,14 @@ export default function SafetyPage() {
                     <Legend />
                     <Bar
                       dataKey="incidents"
-                      fill="#60a5fa"
+                      fill="#fb923c"
                       name="Incidents"
                       stackId="stack"
                       shape={<IncidentBarShape />}
                     />
                     <Bar
                       dataKey="accidents"
-                      fill="#fb923c"
+                      fill="#991b1b"
                       name="Accidents"
                       stackId="stack"
                       radius={[0, 4, 4, 0]}
