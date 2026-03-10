@@ -15,8 +15,10 @@
   --font-sans: var(--font-inter);
 }
 
-/* Smooth scrolling */
-html {
+/* Smooth scrolling and prevent horizontal overflow on mobile */
+html,
+body {
+  overflow-x: hidden;
   scroll-behavior: smooth;
 }
 
