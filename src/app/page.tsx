@@ -6,10 +6,12 @@ import {
   Users,
   FileText,
   HardHat,
+  Wind,
   ArrowRight,
   Info,
 } from "lucide-react";
 import StatusBadge from "@/components/StatusBadge";
+import EnvironmentalCard from "@/components/EnvironmentalCard";
 import {
   siteConfig,
   kpiMetrics,
@@ -49,6 +51,12 @@ const quickLinks = [
     description: "Leadership, headcount, and department status",
     href: "/our-team",
     icon: Users,
+  },
+  {
+    title: "Environmental",
+    description: "Real-time lakefront flood risk and weather conditions",
+    href: "/environmental",
+    icon: Wind,
   },
   {
     title: "About Us",
@@ -132,7 +140,7 @@ export default function Home() {
       {/* Three Readiness Gauges */}
       <section className="relative -mt-12 z-10">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="grid md:grid-cols-3 gap-6">
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             {/* Infrastructure Readiness */}
             <Link
               href="/our-system#infrastructure-readiness"
@@ -239,6 +247,9 @@ export default function Home() {
                 <ArrowRight className="h-4 w-4 ml-1 group-hover:translate-x-1 transition-transform" />
               </div>
             </Link>
+
+            {/* Environmental Conditions */}
+            <EnvironmentalCard />
           </div>
         </div>
       </section>
@@ -256,7 +267,7 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4">
             {quickLinks.map((link) => {
               const Icon = link.icon;
               return (
