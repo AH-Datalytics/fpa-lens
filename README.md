@@ -12,6 +12,7 @@ Public transparency dashboard for the Southeast Louisiana Flood Protection Autho
 | `/safety` | Accident/incident trends, events by category, lost time tracking |
 | `/financial` | FY26 budget by category and district, capital projects, major future projects |
 | `/our-team` | Staffing: leadership, headcount, vacancies, department status, recent hires |
+| `/environmental` | **Real-time lakefront flood risk indicator** (see below) |
 | `/about/what-we-do` | About Us: organization overview |
 
 ## Getting Started
@@ -28,8 +29,10 @@ Open http://localhost:3000.
 ```
 src/
   app/                    # Next.js App Router pages
+    api/lakefront/        # Server-side API route for real-time environmental data
   components/             # Shared components (DataCard, KPICard, Header, Footer, etc.)
   data/siteData.ts        # Central data file for most pages
+  lib/                    # Pure logic modules (lakefrontRisk.ts risk engine)
 public/data/              # JSON data files loaded at runtime
 scripts/                  # Data extraction scripts (Python, Node.js)
 data-sources/             # Raw source files (Excel, KMZ, shapefiles, SITREPs)
@@ -49,6 +52,7 @@ The site pulls from four types of source data:
 2. **Budget spreadsheets** (FY budget summary from Finance) - annual budget data
 3. **Safety event logs** (Excel workbooks from Safety) - detailed incident/accident records
 4. **GIS/infrastructure files** (KMZ and shapefiles from Engineering) - map data, updated rarely
+5. **Real-time environmental APIs** (NOAA CO-OPS + NWS) - live lakefront conditions, fetched server-side every 5 minutes
 
 ### Source 1: Monthly SITREPs
 
@@ -138,6 +142,56 @@ All fields referenced above are in `src/data/siteData.ts`. Each field has a `sou
 **Displayed on:** `/our-system`
 
 **How to update:** These change infrequently. If Engineering provides updated KMZ or shapefiles, place them in the appropriate `data-sources/` folder and run the conversion script.
+
+### Source 5: Real-Time Environmental Data (Lakefront Flood Risk)
+
+**What it is:** Live wind, water level, barometric pressure, and forecast data used to compute a 4-tier lakefront flood risk indicator. This is the only data source that requires no manual updates — it's fetched automatically from public APIs.
+
+**Data sources:**
+- **NOAA CO-OPS Station 8761927** (New Canal Station, on the lakefront): water level, tidal predictions, wind speed/direction, barometric pressure, NGOFS2 48-hr storm surge model forecast. 6-minute update interval. Free, no API key.
+- **NWS API** (api.weather.gov, grid point LIX/67,92): hourly wind forecasts (156 hrs), active weather alerts. Free, requires only a `User-Agent` header.
+
+**How it works:**
+- `src/app/api/lakefront/route.ts` — Server-side API route that fetches from 5 NOAA endpoints + 2 NWS endpoints in parallel, computes surge anomaly (actual water level minus tidal prediction), merges forecasts, and runs the risk engine. Cached for 5 minutes via ISR (`revalidate = 300`).
+- `src/lib/lakefrontRisk.ts` — Pure logic risk engine. Evaluates current conditions and forecast against configurable thresholds to produce a risk level (GREEN/YELLOW/ORANGE/RED). Key factors: onshore wind direction (N/NE/NW, 315-045°), wind speed (15/25/35 kt tiers), surge anomaly (0.5/1.0/1.5 ft tiers), gust escalation, and 6-hour forecast lookahead.
+
+**Risk levels and operational actions:**
+
+| Level | Wind (onshore) | Surge Anomaly | Action |
+|-------|----------------|---------------|--------|
+| GREEN | < 15 kt or offshore | < 0.5 ft | No action needed |
+| YELLOW | 15-25 kt | 0.5-1.0 ft | Monitor conditions |
+| ORANGE | 25-35 kt sustained | 1.0-1.5 ft | Stage barricades |
+| RED | > 35 kt | > 1.5 ft | Close roadway |
+
+Either condition (wind OR surge) alone can trigger a level. Forecast escalation: if conditions are predicted to cross a higher tier within 6 hours, the current level bumps up one tier.
+
+**Displayed on:** `/environmental` (full dashboard with current conditions, 48-hr forecast chart, NWS alerts, threshold reference table) and `/` (homepage gauge card showing wind, surge anomaly, and risk level).
+
+**Components:**
+- `src/components/RiskBadge.tsx` — 4-tier status badge (parallels `StatusBadge` but with GREEN/YELLOW/ORANGE/RED). Also exports `RiskIndicator` (large hero variant) and helper functions (`riskBorder`, `riskBg`, `riskText`).
+- `src/components/EnvironmentalCard.tsx` — Self-contained `"use client"` homepage gauge card. Fetches from `/api/lakefront` on mount.
+
+**Status: Feature branch only (`feature/lakefront-risk`).** Not yet merged to main or deployed. See "Next Steps" section below.
+
+---
+
+### Next Steps — Lakefront Risk Feature
+
+This feature is built and functional on `feature/lakefront-risk` but needs calibration and client approval before deploying.
+
+**Threshold calibration:**
+- Current thresholds (15/25/35 kt wind, 0.5/1.0/1.5 ft surge) are starting points based on general coastal flooding patterns. They need validation against the Director's operational experience.
+- **NOAA Climate Data Online** (https://www.ncei.noaa.gov/cdo-web/) has decades of hourly weather data from Lakefront Airport. This historical data can be used to backtest thresholds against known flooding events on Lakeshore Drive to validate and refine the trigger points.
+- The onshore wind direction range (315-045°, i.e., NW through NE) may need adjustment based on actual lakefront geometry and local wind patterns.
+- Gust escalation logic (gusts above a higher tier bump risk up) may be too aggressive or too conservative — needs real-world validation.
+- All thresholds are configurable in `src/lib/lakefrontRisk.ts` in the `RISK_THRESHOLDS` constant.
+
+**Before deploying:**
+1. Review thresholds with the Regional Director using historical flooding events as test cases
+2. Confirm the operational action text for each level matches their protocols
+3. Discuss pricing with the client
+4. Merge `feature/lakefront-risk` into `main` (Vercel auto-deploys from main)
 
 ---
 
