@@ -1,6 +1,6 @@
 "use client";
 
-import { Users, TrendingUp, CheckCircle, UserPlus, User } from "lucide-react";
+import { Users, TrendingUp, CheckCircle, User } from "lucide-react";
 import {
   PieChart,
   Pie,
@@ -148,29 +148,6 @@ export default function OurTeamPage() {
               </div>
             ))}
           </div>
-        </section>
-
-        {/* Recent Hires */}
-        <section className="mb-12">
-          <SectionSubheader title="Recent Hires" />
-          <DataCard title="New Team Members" source={staffingData.source}>
-            <div className="space-y-3">
-              {staffingData.recentHires.map((hire, index) => (
-                <div
-                  key={index}
-                  className="flex items-center gap-4 p-4 bg-green-50 rounded-lg"
-                >
-                  <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
-                    <UserPlus className="h-5 w-5 text-green-600" />
-                  </div>
-                  <div>
-                    <p className="font-semibold text-green-800">{hire.position}</p>
-                    <p className="text-sm text-green-600">{hire.location}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </DataCard>
         </section>
 
         {/* Leadership */}
