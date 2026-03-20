@@ -27,6 +27,13 @@ export interface ForecastSnapshot {
   water: number | null;
   savedAt: string; // ISO timestamp of when this forecast was captured
   leadTimeHours: number; // hours between capture time and target time
+  // 24-hour-out forecast for comparison with "first seen" (~48h out).
+  // Filled in when the target hour is 22-26h away (closest pass to 24h).
+  forecast24h?: {
+    wind: number | null;
+    water: number | null;
+    savedAt: string;
+  };
 }
 
 type ForecastStore = Record<string, ForecastSnapshot>;
@@ -110,17 +117,31 @@ export async function saveForecastSnapshot(
     }
   }
 
-  // Add new entries (only if not already stored)
   for (const f of forecasts) {
     const key = f.timestamp;
-    if (!store[key] && (f.windSpeed != null || f.waterLevel != null)) {
-      const targetMs = new Date(f.timestamp).getTime();
-      const leadHours = Math.round((targetMs - nowMs) / (60 * 60 * 1000));
+    if (f.windSpeed == null && f.waterLevel == null) continue;
+
+    const targetMs = new Date(f.timestamp).getTime();
+    const leadHours = Math.round((targetMs - nowMs) / (60 * 60 * 1000));
+
+    // First forecast seen for this target hour — save it
+    if (!store[key]) {
       store[key] = {
         wind: f.windSpeed,
         water: f.waterLevel,
         savedAt: now,
         leadTimeHours: leadHours,
+      };
+      changed = true;
+    }
+
+    // Fill in the 24-hour-out snapshot when lead time is 22-26h (closest pass to 24h).
+    // Only written once — the first reading in that window.
+    if (!store[key].forecast24h && leadHours >= 22 && leadHours <= 26) {
+      store[key].forecast24h = {
+        wind: f.windSpeed,
+        water: f.waterLevel,
+        savedAt: now,
       };
       changed = true;
     }
