@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import {
   Wind,
   Waves,
   Gauge,
+  Activity,
   TrendingUp,
   TrendingDown,
   Minus,
@@ -12,6 +13,8 @@ import {
   Info,
   RefreshCw,
   ExternalLink,
+  Download,
+  Camera,
 } from "lucide-react";
 import {
   ComposedChart,
@@ -22,9 +25,9 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  Legend,
   ReferenceLine,
 } from "recharts";
+import { toPng } from "html-to-image";
 import SectionHeader, { SectionSubheader } from "@/components/SectionHeader";
 import DataCard from "@/components/DataCard";
 import { RiskIndicator } from "@/components/RiskBadge";
@@ -59,29 +62,56 @@ const TRENDING_COLORS = {
   worsening: "text-red-600",
 };
 
-function formatTime(isoStr: string): string {
+const CENTRAL_TZ = "America/Chicago";
+
+/**
+ * Normalize a timestamp to a proper Date. NOAA timestamps come back
+ * as "YYYY-MM-DD HH:MM" in Central Time (we request time_zone=lst_ldt)
+ * but without timezone info. We append the Central offset so JS doesn't
+ * misinterpret them as UTC. NWS timestamps already include offset (-05:00).
+ */
+function parseCentralTimestamp(ts: string): Date {
+  // Already has timezone info (ISO 8601 with offset or Z)
+  if (ts.includes("T") && (ts.includes("+") || ts.includes("Z") || ts.match(/-\d{2}:\d{2}$/))) {
+    return new Date(ts);
+  }
+  // NOAA format: "YYYY-MM-DD HH:MM" — treat as Central Time.
+  // Determine offset by checking if CDT or CST applies.
+  // CDT (UTC-5) runs second Sunday of March through first Sunday of November.
+  const d = new Date(ts + "Z"); // parse as UTC first to get the date
+  const year = d.getUTCFullYear();
+  const marchSecondSun = new Date(Date.UTC(year, 2, 8 + (7 - new Date(Date.UTC(year, 2, 8)).getUTCDay()) % 7, 8)); // 2am CDT = 8am UTC
+  const novFirstSun = new Date(Date.UTC(year, 10, 1 + (7 - new Date(Date.UTC(year, 10, 1)).getUTCDay()) % 7, 7)); // 2am CDT = 7am UTC
+  const isCDT = d >= marchSecondSun && d < novFirstSun;
+  const offset = isCDT ? "-05:00" : "-06:00";
+  return new Date(ts.replace(" ", "T") + ":00" + offset);
+}
+
+function formatTime(ts: string): string {
   try {
-    return new Date(isoStr).toLocaleTimeString("en-US", {
+    return parseCentralTimestamp(ts).toLocaleTimeString("en-US", {
       hour: "numeric",
       minute: "2-digit",
       hour12: true,
+      timeZone: CENTRAL_TZ,
     });
   } catch {
-    return isoStr;
+    return ts;
   }
 }
 
-function formatDateTime(isoStr: string): string {
+function formatDateTime(ts: string): string {
   try {
-    return new Date(isoStr).toLocaleString("en-US", {
+    return parseCentralTimestamp(ts).toLocaleString("en-US", {
       month: "short",
       day: "numeric",
       hour: "numeric",
       minute: "2-digit",
       hour12: true,
+      timeZone: CENTRAL_TZ,
     });
   } catch {
-    return isoStr;
+    return ts;
   }
 }
 
@@ -90,10 +120,18 @@ export default function EnvironmentalPage() {
   const [error, setError] = useState<string | null>(null);
   const [refreshing, setRefreshing] = useState(false);
 
-  const fetchData = useCallback(async (manual = false) => {
+  const [historyHours, setHistoryHours] = useState(24);
+  const [showForecastOverlay, setShowForecastOverlay] = useState(false);
+
+  // Chart refs for PNG export
+  const windChartRef = useRef<HTMLDivElement>(null);
+  const waterChartRef = useRef<HTMLDivElement>(null);
+
+  const fetchData = useCallback(async (manual = false, range?: number) => {
     if (manual) setRefreshing(true);
     try {
-      const res = await fetch("/api/lakefront");
+      const params = range ? `?range=${range}` : "";
+      const res = await fetch(`/api/lakefront${params}`);
       if (!res.ok) throw new Error("Failed to fetch");
       const json = await res.json();
       setData(json);
@@ -107,10 +145,10 @@ export default function EnvironmentalPage() {
   }, []);
 
   useEffect(() => {
-    fetchData();
-    const interval = setInterval(() => fetchData(), REFRESH_INTERVAL);
+    fetchData(false, historyHours);
+    const interval = setInterval(() => fetchData(false, historyHours), REFRESH_INTERVAL);
     return () => clearInterval(interval);
-  }, [fetchData]);
+  }, [fetchData, historyHours]);
 
   // Loading state
   if (!data && !error) {
@@ -146,19 +184,126 @@ export default function EnvironmentalPage() {
 
   if (!data) return null;
 
-  const { risk, current, forecast, alerts } = data;
+  const { risk, current, forecast, alerts, structureGauges, windHistory, waterLevelHistory, storedForecasts } = data;
   const TrendIcon = TRENDING_ICONS[risk.trending];
 
-  // Build forecast chart data
-  const chartData = forecast
+  // Build combined chart: 12 hrs observed (past) + 48 hrs forecast (future)
+  const now = Date.now();
+
+  // Format chart axis label: time only, but include date on midnight/noon boundaries
+  function formatChartTime(ts: string): string {
+    const d = parseCentralTimestamp(ts);
+    const h = d.toLocaleString("en-US", { hour: "numeric", hour12: true, timeZone: CENTRAL_TZ });
+    return h;
+  }
+  function formatChartLabel(ts: string): string {
+    const d = parseCentralTimestamp(ts);
+    const month = d.toLocaleString("en-US", { month: "short", timeZone: CENTRAL_TZ });
+    const day = d.toLocaleString("en-US", { day: "numeric", timeZone: CENTRAL_TZ });
+    const time = d.toLocaleString("en-US", { hour: "numeric", minute: "2-digit", hour12: true, timeZone: CENTRAL_TZ });
+    return `${month} ${day}, ${time}`;
+  }
+
+  // Index water level history by timestamp for easy lookup
+  const waterHistoryMap = new Map(
+    (waterLevelHistory || []).map((w) => [w.timestamp, w.level])
+  );
+
+  // Build stored forecast lookup: map hour-bucket → { wind, water }
+  const storedByHour = new Map<number, { wind: number | null; water: number | null }>();
+  if (storedForecasts) {
+    for (const [ts, snap] of Object.entries(storedForecasts)) {
+      const t = parseCentralTimestamp(ts).getTime();
+      storedByHour.set(Math.round(t / (60 * 60 * 1000)), snap);
+    }
+  }
+
+  // Observed history — always sample at ~30-min intervals (every 5th 6-min reading)
+  const historyPoints = (windHistory || [])
+    .filter((_, i) => i % 5 === 0)
+    .map((w) => {
+      let closestWater: number | null = null;
+      const wTime = parseCentralTimestamp(w.timestamp).getTime();
+      for (const [ts, level] of waterHistoryMap) {
+        if (Math.abs(parseCentralTimestamp(ts).getTime() - wTime) < 10 * 60 * 1000) {
+          closestWater = Math.round(level * 100) / 100;
+          break;
+        }
+      }
+      // Look up what was originally forecast for this hour
+      const hourKey = Math.round(wTime / (60 * 60 * 1000));
+      const stored = storedByHour.get(hourKey);
+      return {
+        time: formatChartTime(w.timestamp),
+        fullTime: formatChartLabel(w.timestamp),
+        ts: wTime,
+        observedWind: Math.round(w.speed * 10) / 10,
+        forecastWind: null as number | null,
+        storedWind: stored?.wind != null ? Math.round(stored.wind * 10) / 10 : null,
+        observedWater: closestWater,
+        forecastWater: null as number | null,
+        storedWater: stored?.water != null ? Math.round(stored.water * 100) / 100 : null,
+      };
+    });
+
+  // Forecast — every hourly point, starting from where observed data ends.
+  // Trim end to where both wind and water data are available.
+  const windHistoryArr = windHistory || [];
+  const lastObservedTime = windHistoryArr.length > 0
+    ? parseCentralTimestamp(windHistoryArr[windHistoryArr.length - 1].timestamp).getTime()
+    : now;
+  const futureForecasts = forecast.filter(
+    (p) => parseCentralTimestamp(p.timestamp).getTime() >= lastObservedTime
+  );
+  const lastBothIdx = futureForecasts.reduce(
+    (last, p, i) => (p.windSpeed !== null && p.waterLevel !== null ? i : last),
+    -1
+  );
+  const forecastPoints = futureForecasts
+    .slice(0, lastBothIdx + 1)
     .filter((p) => p.windSpeed !== null || p.waterLevel !== null)
     .map((p) => ({
-      time: formatTime(p.timestamp),
-      fullTime: formatDateTime(p.timestamp),
-      windSpeed: p.windSpeed !== null ? Math.round(p.windSpeed * 10) / 10 : null,
-      waterLevel: p.waterLevel !== null ? Math.round(p.waterLevel * 100) / 100 : null,
-    }))
-    .filter((_, i) => i % 2 === 0); // Every 2 hours for readability
+      time: formatChartTime(p.timestamp),
+      fullTime: formatChartLabel(p.timestamp),
+      ts: parseCentralTimestamp(p.timestamp).getTime(),
+      observedWind: null as number | null,
+      forecastWind: p.windSpeed !== null ? Math.round(p.windSpeed * 10) / 10 : null,
+      storedWind: null as number | null,
+      observedWater: null as number | null,
+      forecastWater: p.waterLevel !== null ? Math.round(p.waterLevel * 100) / 100 : null,
+      storedWater: null as number | null,
+    }));
+
+  const chartData = [...historyPoints, ...forecastPoints];
+
+  // Download helpers
+  function downloadPng(ref: React.RefObject<HTMLDivElement | null>, filename: string) {
+    if (!ref.current) return;
+    toPng(ref.current, { backgroundColor: "#ffffff", pixelRatio: 2 })
+      .then((dataUrl) => {
+        const link = document.createElement("a");
+        link.download = filename;
+        link.href = dataUrl;
+        link.click();
+      });
+  }
+
+  function downloadCsv(fields: { key: string; label: string }[], filename: string) {
+    const header = ["Timestamp", ...fields.map((f) => f.label)].join(",");
+    const rows = chartData.map((d) => {
+      const values = fields.map((f) => {
+        const v = d[f.key as keyof typeof d];
+        return v != null ? v : "";
+      });
+      return [d.fullTime, ...values].join(",");
+    });
+    const csv = [header, ...rows].join("\n");
+    const blob = new Blob([csv], { type: "text/csv" });
+    const link = document.createElement("a");
+    link.download = filename;
+    link.href = URL.createObjectURL(blob);
+    link.click();
+  }
 
   return (
     <div className="py-12">
@@ -241,18 +386,43 @@ export default function EnvironmentalPage() {
               </div>
               <div className="flex items-baseline gap-2">
                 <span className="text-3xl font-bold text-[#21355a]">
-                  {current.wind.speed.toFixed(0)}
+                  {current.wind.speed.toFixed(1)}
                 </span>
                 <span className="text-sm text-gray-500">kt from {current.wind.cardinal}</span>
               </div>
               {current.wind.gust > current.wind.speed && (
                 <p className="text-xs text-gray-500 mt-1">
-                  Gusts to {current.wind.gust.toFixed(0)} kt
+                  Gusts to {current.wind.gust.toFixed(1)} kt
                 </p>
               )}
               <p className="text-xs text-gray-400 mt-2">
                 {risk.isOnshore ? "Onshore (pushing toward Lakeshore Dr.)" : "Offshore (away from shore)"}
               </p>
+              {risk.windPersistence && risk.windPersistence.hoursAnalyzed > 0 && (
+                <div className="mt-3 pt-3 border-t border-gray-100">
+                  <div className="flex items-center justify-between mb-1.5">
+                    <span className="text-xs font-medium text-gray-500">Wind Persistence</span>
+                    <span className={`text-xs font-semibold ${risk.windPersistence.isSustained ? "text-amber-600" : "text-gray-400"}`}>
+                      {risk.windPersistence.isSustained ? "Sustained" : "Not sustained"}
+                    </span>
+                  </div>
+                  <div className="w-full bg-gray-100 rounded-full h-2 mb-1">
+                    <div
+                      className={`h-2 rounded-full transition-all ${
+                        risk.windPersistence.sustainedFraction >= 0.7
+                          ? "bg-amber-500"
+                          : risk.windPersistence.sustainedFraction >= 0.4
+                            ? "bg-yellow-400"
+                            : "bg-gray-300"
+                      }`}
+                      style={{ width: `${Math.min(risk.windPersistence.sustainedFraction * 100, 100)}%` }}
+                    />
+                  </div>
+                  <p className="text-xs text-gray-400">
+                    ~{risk.windPersistence.effectiveHours} of {risk.windPersistence.hoursAnalyzed} hrs onshore above threshold (need 70%)
+                  </p>
+                </div>
+              )}
             </div>
 
             {/* Lake Level */}
@@ -270,7 +440,10 @@ export default function EnvironmentalPage() {
                 <span className="text-sm text-gray-500">ft MLLW</span>
               </div>
               <p className="text-xs text-gray-500 mt-1">
-                Predicted: {current.waterLevel.predicted.toFixed(2)} ft
+                Tide prediction: {current.waterLevel.predicted.toFixed(2)} ft
+              </p>
+              <p className="text-xs text-gray-400 mt-1">
+                Actual water height at the station
               </p>
             </div>
 
@@ -296,7 +469,9 @@ export default function EnvironmentalPage() {
                 <span className="text-sm text-gray-500">ft</span>
               </div>
               <p className="text-xs text-gray-400 mt-1">
-                Difference from tidal prediction
+                Lake Level minus Tide Prediction. Positive = water is higher than
+                tides alone explain, typically from wind pushing water toward shore.
+                This is what drives the surge component of the risk level.
               </p>
             </div>
 
@@ -304,7 +479,7 @@ export default function EnvironmentalPage() {
             <div className="bg-white rounded-xl shadow-md border border-gray-100 p-6">
               <div className="flex items-start justify-between mb-3">
                 <span className="text-sm font-medium text-gray-500 uppercase tracking-wide">
-                  Pressure
+                  Barometric Pressure
                 </span>
                 <Gauge className="h-6 w-6 text-[#21355a]" />
               </div>
@@ -314,6 +489,10 @@ export default function EnvironmentalPage() {
                 </span>
                 <span className="text-sm text-gray-500">mb</span>
               </div>
+              <p className="text-xs text-gray-400 mt-1">
+                New Canal Station. Dropping pressure often signals an approaching
+                storm system; rapid drops can indicate strong winds ahead.
+              </p>
             </div>
           </div>
         </section>
@@ -321,81 +500,186 @@ export default function EnvironmentalPage() {
         {/* Forecast Timeline */}
         {chartData.length > 0 && (
           <section className="mb-12">
-            <SectionSubheader title="48-Hour Forecast" />
-            <DataCard title="Wind Speed & Water Level Forecast" source="NWS Hourly Forecast & NOAA NGOFS2 Model">
-              <div className="h-80">
+            <SectionSubheader
+              title="Conditions Timeline"
+              subtitle={`${historyHours} hours observed & 2-day forecast`}
+            />
+            {/* Chart controls */}
+            <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-gray-500">Observed:</span>
+                {[6, 12, 24, 48, 72].map((h) => (
+                  <button
+                    key={h}
+                    onClick={() => setHistoryHours(h)}
+                    className={`px-2.5 py-1 text-xs rounded transition-colors ${
+                      historyHours === h
+                        ? "bg-[#21355a] text-white"
+                        : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                    }`}
+                  >
+                    {h}h
+                  </button>
+                ))}
+              </div>
+              <label className="flex items-center gap-2 text-xs text-gray-600 cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  checked={showForecastOverlay}
+                  onChange={(e) => setShowForecastOverlay(e.target.checked)}
+                  className="rounded border-gray-300 text-[#21355a] focus:ring-[#21355a]"
+                />
+                Show original forecast over observed
+              </label>
+            </div>
+
+            {/* Wind Speed Chart */}
+            <DataCard title="Wind Speed" source="NOAA Observed & NWS Forecast">
+              <div className="flex items-center justify-end gap-1 mb-2">
+                <button onClick={() => downloadPng(windChartRef, "wind-speed.png")} className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded transition-colors" title="Download PNG">
+                  <Camera className="h-3.5 w-3.5" />
+                </button>
+                <button onClick={() => downloadCsv([{ key: "observedWind", label: "Observed (kt)" }, { key: "forecastWind", label: "Forecast (kt)" }, { key: "storedWind", label: "Original Forecast (kt)" }], "wind-speed.csv")} className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded transition-colors" title="Download CSV">
+                  <Download className="h-3.5 w-3.5" />
+                </button>
+              </div>
+              <div ref={windChartRef} className="h-56">
                 <ResponsiveContainer width="100%" height="100%">
                   <ComposedChart data={chartData}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis
-                      dataKey="time"
-                      tick={{ fontSize: 11 }}
-                      interval="preserveStartEnd"
+                      dataKey="ts"
+                      type="number"
+                      scale="time"
+                      domain={["dataMin", "dataMax"]}
+                      tickCount={11}
+                      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                      tick={(props: any) => {
+                        const { x, y, payload } = props;
+                        const d = new Date(payload.value);
+                        const hours = d.toLocaleString("en-US", { hour: "numeric", hour12: true, timeZone: CENTRAL_TZ });
+                        const dayLabel = d.toLocaleString("en-US", { weekday: "short", month: "short", day: "numeric", timeZone: CENTRAL_TZ });
+                        return (
+                          <g transform={`translate(${x},${y})`}>
+                            <text x={0} y={0} dy={12} textAnchor="middle" fontSize={10} fill="#6b7280">{hours}</text>
+                            <text x={0} y={0} dy={24} textAnchor="middle" fontSize={8} fill="#9ca3af">{dayLabel}</text>
+                          </g>
+                        );
+                      }}
+                      height={40}
                     />
                     <YAxis
-                      yAxisId="wind"
-                      orientation="right"
+                      domain={[0, (max: number) => Math.max(Math.ceil(max + 2), RISK_THRESHOLDS.WIND_YELLOW + 5)]}
+                      allowDataOverflow={false}
                       tick={{ fontSize: 11 }}
-                      label={{ value: "Wind (kt)", angle: 90, position: "insideRight", style: { fontSize: 11 } }}
+                      label={{ value: "Wind (kt)", angle: -90, position: "insideLeft", style: { fontSize: 11 } }}
+                    />
+                    <Tooltip
+                      labelFormatter={(_, payload) => payload?.[0]?.payload?.fullTime || ""}
+                      formatter={(value, name) => {
+                        const labels: Record<string, string> = { observedWind: "Observed", forecastWind: "Forecast", storedWind: "Original forecast" };
+                        return [`${value} kt`, labels[name as string] || String(name)];
+                      }}
+                    />
+                    <ReferenceLine y={RISK_THRESHOLDS.WIND_YELLOW} stroke="#ca8a04" strokeDasharray="4 4" strokeWidth={1} label={{ value: "15 kt \u2014 Yellow wind threshold", position: "insideTopRight", fontSize: 10, fill: "#ca8a04" }} />
+                    <ReferenceLine y={RISK_THRESHOLDS.WIND_ORANGE} stroke="#ea580c" strokeDasharray="4 4" strokeWidth={1} label={{ value: "25 kt \u2014 Orange wind threshold", position: "insideTopRight", fontSize: 10, fill: "#ea580c" }} />
+                    <Line type="monotone" dataKey="observedWind" stroke="#21355a" strokeWidth={2.5} dot={false} name="observedWind" connectNulls />
+                    <Line type="monotone" dataKey="forecastWind" stroke="#94a3b8" strokeWidth={2} strokeDasharray="6 3" dot={false} name="forecastWind" connectNulls />
+                    {showForecastOverlay && (
+                      <Line type="monotone" dataKey="storedWind" stroke="#ef4444" strokeWidth={1.5} strokeDasharray="3 3" dot={false} name="storedWind" connectNulls />
+                    )}
+                  </ComposedChart>
+                </ResponsiveContainer>
+              </div>
+              <div className="flex flex-wrap gap-x-6 gap-y-2 mt-2">
+                <div className="flex items-center gap-2">
+                  <div className="w-6 h-0.5 bg-[#21355a]" />
+                  <span className="text-xs text-gray-600">Observed</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-6 h-0.5 border-t-2 border-dashed border-[#94a3b8]" />
+                  <span className="text-xs text-gray-400">Forecast</span>
+                </div>
+                {showForecastOverlay && (
+                  <div className="flex items-center gap-2">
+                    <div className="w-6 h-0.5 border-t-2 border-dashed border-red-400" />
+                    <span className="text-xs text-red-400">Original forecast</span>
+                  </div>
+                )}
+              </div>
+            </DataCard>
+
+            {/* Water Level Chart */}
+            <DataCard title="Water Level at New Canal Station" source="NOAA Observed & NGOFS2 Model. Datum: MLLW (Mean Lower Low Water) — height relative to average low tide, where 0.0 ft = typical low tide level." className="mt-4">
+              <div className="flex items-center justify-end gap-1 mb-2">
+                <button onClick={() => downloadPng(waterChartRef, "water-level.png")} className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded transition-colors" title="Download PNG">
+                  <Camera className="h-3.5 w-3.5" />
+                </button>
+                <button onClick={() => downloadCsv([{ key: "observedWater", label: "Observed (ft)" }, { key: "forecastWater", label: "Forecast (ft)" }, { key: "storedWater", label: "Original Forecast (ft)" }], "water-level.csv")} className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded transition-colors" title="Download CSV">
+                  <Download className="h-3.5 w-3.5" />
+                </button>
+              </div>
+              <div ref={waterChartRef} className="h-56">
+                <ResponsiveContainer width="100%" height="100%">
+                  <ComposedChart data={chartData}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis
+                      dataKey="ts"
+                      type="number"
+                      scale="time"
+                      domain={["dataMin", "dataMax"]}
+                      tickCount={11}
+                      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                      tick={(props: any) => {
+                        const { x, y, payload } = props;
+                        const d = new Date(payload.value);
+                        const hours = d.toLocaleString("en-US", { hour: "numeric", hour12: true, timeZone: CENTRAL_TZ });
+                        const dayLabel = d.toLocaleString("en-US", { weekday: "short", month: "short", day: "numeric", timeZone: CENTRAL_TZ });
+                        return (
+                          <g transform={`translate(${x},${y})`}>
+                            <text x={0} y={0} dy={12} textAnchor="middle" fontSize={10} fill="#6b7280">{hours}</text>
+                            <text x={0} y={0} dy={24} textAnchor="middle" fontSize={8} fill="#9ca3af">{dayLabel}</text>
+                          </g>
+                        );
+                      }}
+                      height={40}
                     />
                     <YAxis
-                      yAxisId="water"
-                      orientation="left"
+                      domain={[(min: number) => Math.floor((min - 0.2) * 10) / 10, "auto"]}
                       tick={{ fontSize: 11 }}
                       label={{ value: "Water Level (ft)", angle: -90, position: "insideLeft", style: { fontSize: 11 } }}
                     />
                     <Tooltip
                       labelFormatter={(_, payload) => payload?.[0]?.payload?.fullTime || ""}
                       formatter={(value, name) => {
-                        if (name === "Wind Speed") return [`${value} kt`, name];
-                        if (name === "Water Level") return [`${value} ft`, name];
-                        return [value, name];
+                        const labels: Record<string, string> = { observedWater: "Observed", forecastWater: "Forecast", storedWater: "Original forecast" };
+                        return [`${value} ft`, labels[name as string] || String(name)];
                       }}
                     />
-                    <Legend />
-                    <ReferenceLine
-                      yAxisId="wind"
-                      y={RISK_THRESHOLDS.WIND_YELLOW}
-                      stroke="#ca8a04"
-                      strokeDasharray="4 4"
-                      strokeWidth={1}
-                      label={{ value: "15 kt", position: "right", fontSize: 10, fill: "#ca8a04" }}
-                    />
-                    <ReferenceLine
-                      yAxisId="wind"
-                      y={RISK_THRESHOLDS.WIND_ORANGE}
-                      stroke="#ea580c"
-                      strokeDasharray="4 4"
-                      strokeWidth={1}
-                      label={{ value: "25 kt", position: "right", fontSize: 10, fill: "#ea580c" }}
-                    />
-                    <Area
-                      yAxisId="water"
-                      type="monotone"
-                      dataKey="waterLevel"
-                      fill="#60a5fa"
-                      fillOpacity={0.2}
-                      stroke="#3b82f6"
-                      strokeWidth={2}
-                      name="Water Level"
-                      connectNulls
-                    />
-                    <Line
-                      yAxisId="wind"
-                      type="monotone"
-                      dataKey="windSpeed"
-                      stroke="#21355a"
-                      strokeWidth={2}
-                      dot={false}
-                      name="Wind Speed"
-                      connectNulls
-                    />
+                    <Area type="monotone" dataKey="observedWater" fill="#3b82f6" fillOpacity={0.25} stroke="#3b82f6" strokeWidth={2.5} name="observedWater" connectNulls />
+                    <Area type="monotone" dataKey="forecastWater" fill="#93c5fd" fillOpacity={0.12} stroke="#93c5fd" strokeWidth={2} strokeDasharray="6 3" name="forecastWater" connectNulls />
+                    {showForecastOverlay && (
+                      <Line type="monotone" dataKey="storedWater" stroke="#ef4444" strokeWidth={1.5} strokeDasharray="3 3" dot={false} name="storedWater" connectNulls />
+                    )}
                   </ComposedChart>
                 </ResponsiveContainer>
               </div>
-              <p className="text-xs text-gray-500 mt-3">
-                Wind speed thresholds shown assume onshore (northerly) direction. Water level from NOAA NGOFS2 model.
-              </p>
+              <div className="flex flex-wrap gap-x-6 gap-y-2 mt-2">
+                <div className="flex items-center gap-2">
+                  <div className="w-6 h-3 bg-[#3b82f6] rounded-sm opacity-40" />
+                  <span className="text-xs text-gray-600">Observed</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-6 h-3 bg-[#93c5fd] rounded-sm opacity-25" />
+                  <span className="text-xs text-gray-400">Forecast</span>
+                </div>
+                {showForecastOverlay && (
+                  <div className="flex items-center gap-2">
+                    <div className="w-6 h-0.5 border-t-2 border-dashed border-red-400" />
+                    <span className="text-xs text-red-400">Original forecast</span>
+                  </div>
+                )}
+              </div>
             </DataCard>
           </section>
         )}
@@ -465,19 +749,28 @@ export default function EnvironmentalPage() {
                   </tr>
                   <tr className="border-b border-gray-100 bg-yellow-50/50">
                     <td className="py-3"><RiskBadge level="YELLOW" size="sm" /></td>
-                    <td className="py-3 text-gray-600">15 - 25 kt</td>
+                    <td className="py-3 text-gray-600">
+                      15 - 25 kt
+                      <span className="block text-xs text-gray-400">sustained ~{Math.round(RISK_THRESHOLDS.WIND_SUSTAINED_FRACTION * RISK_THRESHOLDS.WIND_HISTORY_HOURS * 10) / 10}+ hrs</span>
+                    </td>
                     <td className="py-3 text-gray-600">0.5 - 1.0 ft</td>
                     <td className="py-3 text-gray-600">Monitor conditions</td>
                   </tr>
                   <tr className="border-b border-gray-100 bg-orange-50/50">
                     <td className="py-3"><RiskBadge level="ORANGE" size="sm" /></td>
-                    <td className="py-3 text-gray-600">25 - 35 kt</td>
+                    <td className="py-3 text-gray-600">
+                      25 - 35 kt
+                      <span className="block text-xs text-gray-400">sustained ~{Math.round(RISK_THRESHOLDS.WIND_SUSTAINED_FRACTION * RISK_THRESHOLDS.WIND_HISTORY_HOURS * 10) / 10}+ hrs</span>
+                    </td>
                     <td className="py-3 text-gray-600">1.0 - 1.5 ft</td>
                     <td className="py-3 text-gray-600">Stage barricades</td>
                   </tr>
                   <tr className="bg-red-50/50">
                     <td className="py-3"><RiskBadge level="RED" size="sm" /></td>
-                    <td className="py-3 text-gray-600">&gt; 35 kt</td>
+                    <td className="py-3 text-gray-600">
+                      &gt; 35 kt
+                      <span className="block text-xs text-gray-400">immediate (no duration req.)</span>
+                    </td>
                     <td className="py-3 text-gray-600">&gt; 1.5 ft</td>
                     <td className="py-3 text-gray-600">Close roadway</td>
                   </tr>
@@ -490,11 +783,79 @@ export default function EnvironmentalPage() {
               The risk level is the <strong>higher</strong> of the wind-based and surge-based assessments.
               If the forecast shows worse conditions within 6 hours, the current level is escalated by one tier.
             </p>
+            <p className="text-xs text-gray-500 mt-2">
+              <strong>Duration gating:</strong> Yellow and Orange wind levels require sustained onshore winds
+              (at least 70% of readings over the previous {RISK_THRESHOLDS.WIND_HISTORY_HOURS} hours).
+              Red triggers immediately regardless of duration. Surge anomaly thresholds are not duration-gated.
+            </p>
             <p className="text-xs text-amber-600 mt-2">
               These thresholds are preliminary and subject to calibration based on operational experience.
             </p>
           </DataCard>
         </section>
+
+        {/* Structure Gauges - Secondary Reference */}
+        {structureGauges && structureGauges.length > 0 && (
+          <section className="mb-12">
+            <SectionSubheader title="Flood Structure Gauges" />
+            <DataCard
+              title="Secondary reference for validating conditions"
+              source="USGS Water Services"
+            >
+              <p className="text-sm text-gray-600 mb-4">
+                These are live water levels at flood control structures near Lake Pontchartrain,
+                pulled from the same USGS gauges FPA operations monitors. Use them to corroborate
+                the risk level above: if the indicator shows elevated risk from sustained northerly
+                winds, rising levels at these structures confirm that lake water is actually being
+                pushed toward shore and into the flood protection system.
+              </p>
+              <div className="grid sm:grid-cols-3 gap-4 mb-4">
+                {structureGauges.map((gauge) => (
+                  <div key={gauge.siteId} className="bg-gray-50 rounded-lg p-4">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-sm font-medium text-gray-700">{gauge.name}</span>
+                      <Activity className="h-4 w-4 text-gray-400" />
+                    </div>
+                    {gauge.level !== null ? (
+                      <>
+                        <div className="flex items-baseline gap-1">
+                          <span className="text-2xl font-bold text-[#21355a]">
+                            {gauge.level.toFixed(2)}
+                          </span>
+                          <span className="text-xs text-gray-500">ft</span>
+                        </div>
+                        {gauge.timestamp && (
+                          <p className="text-xs text-gray-400 mt-1">
+                            {formatDateTime(gauge.timestamp)}
+                          </p>
+                        )}
+                      </>
+                    ) : (
+                      <span className="text-sm text-gray-400">Unavailable</span>
+                    )}
+                  </div>
+                ))}
+              </div>
+              <div className="bg-blue-50 border border-blue-100 rounded-lg p-3 text-xs text-blue-800 space-y-1">
+                <p>
+                  <strong>How to read these:</strong> Seabrook sits where Lake Pontchartrain
+                  meets the Inner Harbor Navigation Canal. Rising levels there during onshore
+                  wind events are direct evidence of wind-driven surge. The Surge Barrier and
+                  Bayou Dupre gauges show conditions farther east along the HSDRRS. If all three
+                  are rising while the risk indicator is elevated, conditions are consistent with
+                  active wind setup.
+                </p>
+                <p>
+                  Normal levels fluctuate near 0 ft. Values climbing above +0.5 ft during sustained
+                  northerly winds suggest meaningful water movement toward the flood protection system.
+                </p>
+              </div>
+              <p className="text-xs text-amber-600 mt-3">
+                Gauge selection is preliminary and subject to confirmation with FPA operations.
+              </p>
+            </DataCard>
+          </section>
+        )}
 
         {/* Data Sources */}
         <section>
@@ -519,6 +880,11 @@ export default function EnvironmentalPage() {
                   Wind forecasts from the National Weather Service (NWS Slidell, LA office).
                   Water level forecasts from NOAA&apos;s NGOFS2 operational model.
                   Weather alerts from NWS.
+                </p>
+                <p>
+                  Structure gauge levels from USGS Water Services (Seabrook, Surge Barrier, Bayou Dupre).
+                  These are the same gauges monitored by FPA operations and serve as secondary
+                  corroboration of lakefront conditions.
                 </p>
                 <p>
                   The risk indicator is a rule-based decision-support tool. It does not replace

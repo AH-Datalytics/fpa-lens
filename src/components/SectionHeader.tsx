@@ -18,10 +18,15 @@ export default function SectionHeader({ title, subtitle, source }: SectionHeader
   );
 }
 
-export function SectionSubheader({ title, className = "" }: { title: string; className?: string }) {
+export function SectionSubheader({ title, subtitle, className = "" }: { title: string; subtitle?: string; className?: string }) {
   return (
-    <h2 className={`text-xl md:text-2xl font-semibold text-[#21355a] mb-4 ${className}`}>
-      {title}
-    </h2>
+    <div className={`mb-4 ${className}`}>
+      <h2 className="text-xl md:text-2xl font-semibold text-[#21355a]">
+        {title}
+      </h2>
+      {subtitle && (
+        <p className="mt-1 text-sm text-gray-500">{subtitle}</p>
+      )}
+    </div>
   );
 }

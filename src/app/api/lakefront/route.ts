@@ -16,6 +16,7 @@ import {
   computeRiskLevel,
   cardinalToDegrees,
   degreesToCardinal,
+  RISK_THRESHOLDS,
   type LakefrontConditions,
   type LakefrontData,
   type ForecastPoint,
@@ -23,7 +24,9 @@ import {
   type WindReading,
   type WaterLevelReading,
   type PressureReading,
+  type StructureGauge,
 } from "@/lib/lakefrontRisk";
+import { saveForecastSnapshot, getStoredForecasts } from "@/lib/forecastStore";
 
 export const revalidate = 300; // 5-minute ISR cache
 
@@ -35,6 +38,8 @@ const NOAA_BASE = "https://api.tidesandcurrents.noaa.gov/api/prod/datagetter";
 const STATION_ID = "8761927";
 const STATION_NAME = "New Canal Station";
 const FETCH_TIMEOUT = 10_000; // 10 seconds
+const WIND_HISTORY_HOURS = RISK_THRESHOLDS.WIND_HISTORY_HOURS; // 3 hrs for risk engine persistence
+const CHART_HISTORY_HOURS = 24; // 24 hrs of observed data for the chart
 
 const NWS_HEADERS = {
   "User-Agent": "FPALens/1.0 (fpalens@floodauthority.org)",
@@ -118,6 +123,26 @@ async function fetchWaterLevel(): Promise<{ level: number; timestamp: string }> 
   };
 }
 
+/**
+ * Fetch recent water level history for the chart.
+ * Uses CHART_HISTORY_HOURS (12) for a longer observed window.
+ */
+async function fetchWaterLevelHistory(hours: number = CHART_HISTORY_HOURS): Promise<{ level: number; timestamp: string }[]> {
+  const url = buildNOAAUrl("water_level", {
+    range: String(hours),
+    datum: "MLLW",
+  });
+  const res = await fetchWithTimeout(url);
+  const json = await res.json();
+  const entries = (json.data || []) as NOAAWaterEntry[];
+  if (entries.length === 0) throw new Error("No water level history data");
+
+  return entries.map((e) => ({
+    level: parseFloat(e.v) || 0,
+    timestamp: e.t,
+  }));
+}
+
 async function fetchPredictions(): Promise<{ predicted: number; timestamp: string }> {
   // Get today's predictions and find the one closest to now
   const now = new Date();
@@ -161,6 +186,34 @@ async function fetchPressure(): Promise<PressureReading> {
     value: parseFloat(entry.v) || 0,
     timestamp: entry.t,
   };
+}
+
+/**
+ * Fetch recent wind history (12 hours of 6-minute observations).
+ *
+ * Full 12-hour window powers the observed data on the chart.
+ * The last 3 hours are sliced separately for the risk engine's
+ * duration gating (sustained onshore wind analysis).
+ *
+ * On failure, returns null — risk engine falls back to
+ * instantaneous-only behavior (no duration gating).
+ */
+async function fetchWindHistory(hours: number = CHART_HISTORY_HOURS): Promise<WindReading[]> {
+  const url = buildNOAAUrl("wind", {
+    range: String(hours),
+  });
+  const res = await fetchWithTimeout(url);
+  const json = await res.json();
+  const entries = (json.data || []) as NOAAWindEntry[];
+  if (entries.length === 0) throw new Error("No wind history data");
+
+  return entries.map((e) => ({
+    speed: parseFloat(e.s) || 0,
+    direction: parseFloat(e.d) || 0,
+    gust: parseFloat(e.g) || 0,
+    cardinal: e.dr || degreesToCardinal(parseFloat(e.d) || 0),
+    timestamp: e.t,
+  }));
 }
 
 async function fetchOFSForecast(): Promise<ForecastPoint[]> {
@@ -256,6 +309,61 @@ async function fetchNWSAlerts(): Promise<NWSAlert[]> {
 }
 
 // ============================================================================
+// USGS STRUCTURE GAUGE FETCHERS
+// ============================================================================
+
+/**
+ * USGS flood control structure gauges monitored by FPA operations.
+ * These are the same gauges shown on info.floodauthority.org/gages.htm
+ * in the EOC. Used as secondary corroboration of lakefront conditions.
+ *
+ * Station IDs identified from the FPA depth gauge page. Subject to
+ * confirmation with the Regional Director's team.
+ *
+ * Data source: USGS Water Services (waterservices.usgs.gov)
+ * Parameter 00065 = gauge height (feet)
+ */
+const USGS_STRUCTURE_GAUGES = [
+  { siteId: "073802332", name: "Seabrook" },
+  { siteId: "073802339", name: "Surge Barrier" },
+  { siteId: "073745235", name: "Bayou Dupre" },
+] as const;
+
+interface USGSTimeSeriesValue {
+  value: string;
+  dateTime: string;
+}
+
+interface USGSTimeSeries {
+  sourceInfo: { siteCode: { value: string }[] };
+  values: { value: USGSTimeSeriesValue[] }[];
+}
+
+async function fetchStructureGauges(): Promise<StructureGauge[]> {
+  const siteIds = USGS_STRUCTURE_GAUGES.map((g) => g.siteId).join(",");
+  const url = `https://waterservices.usgs.gov/nwis/iv/?format=json&sites=${siteIds}&parameterCd=00065&siteStatus=all`;
+  const res = await fetchWithTimeout(url);
+  const json = await res.json();
+
+  const timeSeries = (json.value?.timeSeries || []) as USGSTimeSeries[];
+
+  return USGS_STRUCTURE_GAUGES.map((gauge) => {
+    // Find matching time series for this site
+    const series = timeSeries.find((ts) =>
+      ts.sourceInfo?.siteCode?.some((sc) => sc.value === gauge.siteId)
+    );
+    const latest = series?.values?.[0]?.value?.slice(-1)?.[0];
+
+    return {
+      siteId: gauge.siteId,
+      name: gauge.name,
+      level: latest ? parseFloat(latest.value) || null : null,
+      timestamp: latest?.dateTime || "",
+    };
+  });
+}
+
+// ============================================================================
 // FORECAST MERGING
 // ============================================================================
 
@@ -299,10 +407,20 @@ function mergeForecasts(
 // MAIN HANDLER
 // ============================================================================
 
-export async function GET() {
+export async function GET(request: Request) {
+  // Allow client to request more or less observed history for the chart.
+  // Defaults to CHART_HISTORY_HOURS (24). Clamped to 6-168 (1 week max).
+  const url = new URL(request.url);
+  const rangeParam = url.searchParams.get("range");
+  const chartHours = rangeParam
+    ? Math.max(6, Math.min(168, parseInt(rangeParam, 10) || CHART_HISTORY_HOURS))
+    : CHART_HISTORY_HOURS;
+
   try {
-    // Fetch all data sources in parallel; partial failures are handled gracefully
-    const [windResult, waterResult, predResult, pressureResult, ofsResult, nwsForecastResult, alertsResult] =
+    // Fetch all data sources in parallel; partial failures are handled gracefully.
+    // Wind history (8th fetch) powers duration gating; if it fails, risk engine
+    // falls back to instantaneous-only behavior.
+    const [windResult, waterResult, predResult, pressureResult, ofsResult, nwsForecastResult, alertsResult, windHistoryResult, gaugesResult, waterHistoryResult] =
       await Promise.allSettled([
         fetchCurrentWind(),
         fetchWaterLevel(),
@@ -311,6 +429,9 @@ export async function GET() {
         fetchOFSForecast(),
         fetchNWSHourlyForecast(),
         fetchNWSAlerts(),
+        fetchWindHistory(chartHours),
+        fetchStructureGauges(),
+        fetchWaterLevelHistory(chartHours),
       ]);
 
     // Extract values with fallbacks
@@ -334,6 +455,22 @@ export async function GET() {
     const nwsForecast = nwsForecastResult.status === "fulfilled" ? nwsForecastResult.value : [];
     const alerts = alertsResult.status === "fulfilled" ? alertsResult.value : [];
 
+    // Wind history for duration gating. null = unavailable, risk engine
+    // will fall back to instantaneous-only assessment.
+    const windHistory = windHistoryResult.status === "fulfilled"
+      ? windHistoryResult.value
+      : null;
+
+    // USGS structure gauges for secondary corroboration
+    const structureGauges = gaugesResult.status === "fulfilled"
+      ? gaugesResult.value
+      : [];
+
+    // Observed water level history for the chart
+    const waterLevelHistory = waterHistoryResult.status === "fulfilled"
+      ? waterHistoryResult.value
+      : [];
+
     // Build current conditions
     const waterLevel: WaterLevelReading = {
       level: water.level,
@@ -351,8 +488,14 @@ export async function GET() {
     // Merge forecasts
     const forecast = mergeForecasts(ofsForecast, nwsForecast);
 
-    // Compute risk
-    const risk = computeRiskLevel(current, forecast);
+    // Slice the last 3 hours of wind history for the risk engine's
+    // duration gating (~30 readings at 6-min intervals).
+    // Full 12-hour history goes to the chart.
+    const readingsFor3Hours = Math.ceil((WIND_HISTORY_HOURS * 60) / 6);
+    const recentWindHistory = windHistory
+      ? windHistory.slice(-readingsFor3Hours)
+      : null;
+    const risk = computeRiskLevel(current, forecast, recentWindHistory);
 
     // Track which sources failed
     const dataGaps: string[] = [];
@@ -361,16 +504,29 @@ export async function GET() {
     if (predResult.status === "rejected") dataGaps.push("predictions");
     if (ofsResult.status === "rejected") dataGaps.push("OFS forecast");
     if (nwsForecastResult.status === "rejected") dataGaps.push("NWS forecast");
+    if (windHistoryResult.status === "rejected") dataGaps.push("wind history (duration gating disabled)");
+    if (gaugesResult.status === "rejected") dataGaps.push("structure gauges");
 
     if (dataGaps.length > 0) {
       risk.factors.push(`Note: Some data sources unavailable (${dataGaps.join(", ")})`);
     }
 
+    // Store forecast snapshots for historical accuracy comparison.
+    // Only the first forecast seen for each target hour is saved.
+    if (forecast.length > 0) {
+      saveForecastSnapshot(forecast);
+    }
+    const storedForecasts = getStoredForecasts();
+
     const response: LakefrontData = {
       risk,
       current,
+      windHistory: windHistory || [],
+      waterLevelHistory,
       forecast,
+      storedForecasts,
       alerts,
+      structureGauges,
       lastUpdated: new Date().toISOString(),
       stationId: STATION_ID,
       stationName: STATION_NAME,
