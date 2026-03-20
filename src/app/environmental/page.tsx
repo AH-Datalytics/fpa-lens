@@ -581,8 +581,8 @@ export default function EnvironmentalPage() {
                         return [`${value} kt`, labels[name as string] || String(name)];
                       }}
                     />
-                    <ReferenceLine y={RISK_THRESHOLDS.WIND_YELLOW} stroke="#ca8a04" strokeDasharray="4 4" strokeWidth={1} label={{ value: "15 kt \u2014 Yellow wind threshold", position: "insideTopRight", fontSize: 10, fill: "#ca8a04" }} />
-                    <ReferenceLine y={RISK_THRESHOLDS.WIND_ORANGE} stroke="#ea580c" strokeDasharray="4 4" strokeWidth={1} label={{ value: "25 kt \u2014 Orange wind threshold", position: "insideTopRight", fontSize: 10, fill: "#ea580c" }} />
+                    <ReferenceLine y={RISK_THRESHOLDS.WIND_YELLOW} stroke="#ca8a04" strokeDasharray="4 4" strokeWidth={1} label={{ value: "15 kt \u2014 Yellow risk threshold", position: "insideTopRight", fontSize: 10, fill: "#ca8a04" }} />
+                    <ReferenceLine y={RISK_THRESHOLDS.WIND_ORANGE} stroke="#ea580c" strokeDasharray="4 4" strokeWidth={1} label={{ value: "25 kt \u2014 Orange risk threshold", position: "insideTopRight", fontSize: 10, fill: "#ea580c" }} />
                     <Line type="monotone" dataKey="observedWind" stroke="#21355a" strokeWidth={2.5} dot={false} name="observedWind" connectNulls />
                     <Line type="monotone" dataKey="forecastWind" stroke="#94a3b8" strokeWidth={2} strokeDasharray="6 3" dot={false} name="forecastWind" connectNulls />
                     {showForecastOverlay && (

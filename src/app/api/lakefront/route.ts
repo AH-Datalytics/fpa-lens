@@ -354,10 +354,11 @@ async function fetchStructureGauges(): Promise<StructureGauge[]> {
     );
     const latest = series?.values?.[0]?.value?.slice(-1)?.[0];
 
+    const parsed = latest ? parseFloat(latest.value) : NaN;
     return {
       siteId: gauge.siteId,
       name: gauge.name,
-      level: latest ? parseFloat(latest.value) || null : null,
+      level: isNaN(parsed) ? null : parsed,
       timestamp: latest?.dateTime || "",
     };
   });
