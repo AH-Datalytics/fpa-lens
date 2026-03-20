@@ -515,9 +515,9 @@ export async function GET(request: Request) {
     // Store forecast snapshots for historical accuracy comparison.
     // Only the first forecast seen for each target hour is saved.
     if (forecast.length > 0) {
-      saveForecastSnapshot(forecast);
+      await saveForecastSnapshot(forecast);
     }
-    const storedForecasts = getStoredForecasts();
+    const storedForecasts = await getStoredForecasts();
 
     const response: LakefrontData = {
       risk,
