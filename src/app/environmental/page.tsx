@@ -218,9 +218,17 @@ export default function EnvironmentalPage() {
     }
   }
 
-  // Observed history — always sample at ~30-min intervals (every 5th 6-min reading)
+  // Observed history — sample interval scales with the time range so shorter
+  // windows are more granular and longer windows don't overwhelm the chart.
+  // NOAA provides 6-minute readings, so step=N means every N*6 minutes.
+  const thinningStep =
+    historyHours <= 6 ? 2 :    // ~12 min
+    historyHours <= 12 ? 3 :   // ~18 min
+    historyHours <= 24 ? 5 :   // ~30 min
+    historyHours <= 48 ? 8 :   // ~48 min
+    10;                         // ~60 min (hourly)
   const historyPoints = (windHistory || [])
-    .filter((_, i) => i % 5 === 0)
+    .filter((_, i) => i % thinningStep === 0)
     .map((w) => {
       let closestWater: number | null = null;
       const wTime = parseCentralTimestamp(w.timestamp).getTime();
