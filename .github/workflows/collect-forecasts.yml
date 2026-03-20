@@ -1,0 +1,184 @@
+name: Collect Forecast Snapshots
+
+# Runs every 5 minutes to accumulate forecast data for accuracy comparison.
+# Fetches directly from NOAA/NWS and writes to Vercel Blob store.
+# Independent of app deployment — works while laptop is closed.
+
+on:
+  schedule:
+    - cron: '*/5 * * * *'
+  workflow_dispatch: # Allow manual trigger for testing
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Vercel Blob SDK
+        run: npm install @vercel/blob
+
+      - name: Fetch forecasts and store snapshots
+        env:
+          BLOB_READ_WRITE_TOKEN: ${{ secrets.BLOB_READ_WRITE_TOKEN }}
+        run: |
+          node << 'EOF'
+          const { put, list } = require("@vercel/blob");
+
+          const BLOB_KEY = "forecast-snapshots.json";
+          const MAX_AGE_DAYS = 7;
+
+          async function readStore() {
+            try {
+              const { blobs } = await list({ prefix: BLOB_KEY, limit: 1 });
+              if (blobs.length === 0) return {};
+              const res = await fetch(blobs[0].downloadUrl, {
+                headers: { Authorization: `Bearer ${process.env.BLOB_READ_WRITE_TOKEN}` },
+              });
+              return await res.json();
+            } catch (e) {
+              console.log("No existing store found, starting fresh:", e.message);
+              return {};
+            }
+          }
+
+          async function writeStore(store) {
+            await put(BLOB_KEY, JSON.stringify(store), {
+              access: "private",
+              addRandomSuffix: false,
+              allowOverwrite: true,
+              contentType: "application/json",
+            });
+          }
+
+          function parseMphToKnots(windSpeedStr) {
+            const match = windSpeedStr.match(/(\d+)/);
+            return match ? parseFloat(match[1]) / 1.151 : 0;
+          }
+
+          async function main() {
+            const nowMs = Date.now();
+            const now = new Date().toISOString();
+            const cutoff = nowMs - MAX_AGE_DAYS * 24 * 60 * 60 * 1000;
+
+            // Fetch NWS wind forecast
+            console.log("Fetching NWS wind forecast...");
+            let nwsPeriods = [];
+            try {
+              const nwsRes = await fetch(
+                "https://api.weather.gov/gridpoints/LIX/67,92/forecast/hourly",
+                { headers: { "User-Agent": "FPALens/1.0 (fpalens@floodauthority.org)" } }
+              );
+              const nws = await nwsRes.json();
+              const cutoff48h = nowMs + 48 * 60 * 60 * 1000;
+              nwsPeriods = (nws.properties?.periods || []).filter(
+                (p) => new Date(p.startTime).getTime() <= cutoff48h
+              );
+              console.log(`  Got ${nwsPeriods.length} hourly periods`);
+            } catch (e) {
+              console.error("  NWS fetch failed:", e.message);
+            }
+
+            // Fetch NOAA NGOFS2 water level forecast
+            console.log("Fetching NOAA water level forecast...");
+            let ofsEntries = [];
+            try {
+              const today = new Date().toISOString().slice(0, 10).replace(/-/g, "");
+              const end = new Date(nowMs + 48 * 60 * 60 * 1000).toISOString().slice(0, 10).replace(/-/g, "");
+              const ofsRes = await fetch(
+                `https://api.tidesandcurrents.noaa.gov/api/prod/datagetter?station=8761927&product=ofs_water_level&datum=MLLW&units=english&time_zone=gmt&format=json&application=fpa_lens&begin_date=${today}&end_date=${end}`
+              );
+              const ofs = await ofsRes.json();
+              ofsEntries = ofs.data || [];
+              console.log(`  Got ${ofsEntries.length} water level points`);
+            } catch (e) {
+              console.error("  OFS fetch failed:", e.message);
+            }
+
+            // Build water level lookup
+            const waterByTime = new Map();
+            for (const entry of ofsEntries) {
+              const t = new Date(entry.t + "Z").getTime();
+              waterByTime.set(t, parseFloat(entry.v) || null);
+            }
+
+            function findClosestWater(targetMs) {
+              let closest = null;
+              let bestDiff = Infinity;
+              for (const [t, level] of waterByTime) {
+                const diff = Math.abs(t - targetMs);
+                if (diff < bestDiff && diff < 2 * 60 * 60 * 1000) {
+                  bestDiff = diff;
+                  closest = level;
+                }
+              }
+              return closest;
+            }
+
+            // Read existing store
+            console.log("Reading existing store...");
+            const store = await readStore();
+            let changed = false;
+
+            // Prune old entries
+            for (const key of Object.keys(store)) {
+              if (new Date(key).getTime() < cutoff) {
+                delete store[key];
+                changed = true;
+              }
+            }
+
+            // Process NWS forecasts
+            for (const period of nwsPeriods) {
+              const ts = period.startTime;
+              const targetMs = new Date(ts).getTime();
+              const leadHours = Math.round((targetMs - nowMs) / (60 * 60 * 1000));
+              const windKt = Math.round(parseMphToKnots(period.windSpeed || "0") * 10) / 10;
+              const water = findClosestWater(targetMs);
+
+              // First forecast for this hour
+              if (!store[ts]) {
+                store[ts] = {
+                  wind: windKt,
+                  water: water != null ? Math.round(water * 100) / 100 : null,
+                  savedAt: now,
+                  leadTimeHours: leadHours,
+                };
+                changed = true;
+              }
+
+              // 24h-out snapshot
+              if (store[ts] && !store[ts].forecast24h && leadHours >= 22 && leadHours <= 26) {
+                store[ts].forecast24h = {
+                  wind: windKt,
+                  water: water != null ? Math.round(water * 100) / 100 : null,
+                  savedAt: now,
+                };
+                changed = true;
+              }
+            }
+
+            // Summary
+            const entries = Object.keys(store).length;
+            const with24h = Object.values(store).filter((v) => v.forecast24h).length;
+            const leads = Object.values(store).slice(-5).map((v) => v.leadTimeHours);
+            console.log(`Total entries: ${entries} (${with24h} with 24h snapshot)`);
+            console.log(`Recent lead times: ${JSON.stringify(leads)}`);
+
+            if (changed) {
+              console.log("Writing updated store...");
+              await writeStore(store);
+              console.log("Done!");
+            } else {
+              console.log("No changes needed.");
+            }
+          }
+
+          main().catch((e) => {
+            console.error("Fatal error:", e);
+            process.exit(1);
+          });
+          EOF
