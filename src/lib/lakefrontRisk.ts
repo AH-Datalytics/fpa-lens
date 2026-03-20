@@ -107,6 +107,7 @@ export interface StoredForecast {
   wind: number | null;
   water: number | null;
   savedAt: string;
+  leadTimeHours: number; // hours between capture time and target time
 }
 
 export interface LakefrontData {

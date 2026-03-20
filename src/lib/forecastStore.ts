@@ -25,6 +25,7 @@ export interface ForecastSnapshot {
   wind: number | null;
   water: number | null;
   savedAt: string; // ISO timestamp of when this forecast was captured
+  leadTimeHours: number; // hours between capture time and target time
 }
 
 type ForecastStore = Record<string, ForecastSnapshot>;
@@ -71,13 +72,17 @@ export function saveForecastSnapshot(
   }
 
   // Add new entries (only if not already stored)
+  const nowMs = Date.now();
   for (const f of forecasts) {
     const key = f.timestamp;
     if (!store[key] && (f.windSpeed != null || f.waterLevel != null)) {
+      const targetMs = new Date(f.timestamp).getTime();
+      const leadHours = Math.round((targetMs - nowMs) / (60 * 60 * 1000));
       store[key] = {
         wind: f.windSpeed,
         water: f.waterLevel,
         savedAt: now,
+        leadTimeHours: leadHours,
       };
       changed = true;
     }
