@@ -6,9 +6,10 @@
  *
  * Storage format: { [isoTimestamp]: { wind, water, savedAt, leadTimeHours } }
  * - Only the first forecast for a given hour is stored (never overwritten).
+ * - A second snapshot (forecast24h) is captured when lead time hits 22-26h.
  * - Entries older than MAX_AGE_DAYS are pruned on each write.
  *
- * On Vercel (KV_REST_API_URL set): uses Vercel KV (persistent across deployments).
+ * On Vercel (BLOB_READ_WRITE_TOKEN set): uses Vercel Blob (persistent).
  * Locally: uses filesystem (data/forecast-history.json).
  */
 
@@ -16,7 +17,7 @@ import { readFileSync, writeFileSync, existsSync, mkdirSync } from "fs";
 import { join } from "path";
 
 const MAX_AGE_DAYS = 7;
-const KV_KEY = "forecast-snapshots";
+const BLOB_KEY = "forecast-snapshots.json";
 
 // Local filesystem fallback
 const DATA_DIR = join(process.cwd(), "data");
@@ -42,34 +43,36 @@ type ForecastStore = Record<string, ForecastSnapshot>;
 // STORAGE BACKENDS
 // ============================================================================
 
-const isVercel = !!process.env.KV_REST_API_URL;
+const isVercel = !!process.env.BLOB_READ_WRITE_TOKEN;
 
-/** Lazy-load @vercel/kv only on Vercel to avoid import errors locally. */
-async function getKV() {
-  const { kv } = await import("@vercel/kv");
-  return kv;
-}
+// --- Vercel Blob backend (async) ---
 
-// --- Vercel KV backend (async) ---
-
-async function readStoreKV(): Promise<ForecastStore> {
+async function readStoreBlob(): Promise<ForecastStore> {
   try {
-    const store = await getKV().then((kv) => kv.get<ForecastStore>(KV_KEY));
-    return store || {};
+    const { list, getDownloadUrl } = await import("@vercel/blob");
+    const { blobs } = await list({ prefix: BLOB_KEY, limit: 1 });
+    if (blobs.length === 0) return {};
+    const url = getDownloadUrl(blobs[0].url);
+    const res = await fetch(url);
+    return (await res.json()) as ForecastStore;
   } catch {
     return {};
   }
 }
 
-async function writeStoreKV(store: ForecastStore): Promise<void> {
+async function writeStoreBlob(store: ForecastStore): Promise<void> {
   try {
-    await getKV().then((kv) => kv.set(KV_KEY, store));
+    const { put } = await import("@vercel/blob");
+    await put(BLOB_KEY, JSON.stringify(store), {
+      access: "public",
+      addRandomSuffix: false,
+    });
   } catch {
     // Non-fatal — store is best-effort
   }
 }
 
-// --- Filesystem backend (sync, wrapped as async for uniform interface) ---
+// --- Filesystem backend (sync) ---
 
 function readStoreFS(): ForecastStore {
   try {
@@ -103,7 +106,7 @@ function writeStoreFS(store: ForecastStore): void {
 export async function saveForecastSnapshot(
   forecasts: { timestamp: string; windSpeed: number | null; waterLevel: number | null }[]
 ): Promise<void> {
-  const store = isVercel ? await readStoreKV() : readStoreFS();
+  const store = isVercel ? await readStoreBlob() : readStoreFS();
   const now = new Date().toISOString();
   const nowMs = Date.now();
   const cutoff = nowMs - MAX_AGE_DAYS * 24 * 60 * 60 * 1000;
@@ -149,7 +152,7 @@ export async function saveForecastSnapshot(
 
   if (changed) {
     if (isVercel) {
-      await writeStoreKV(store);
+      await writeStoreBlob(store);
     } else {
       writeStoreFS(store);
     }
@@ -160,5 +163,5 @@ export async function saveForecastSnapshot(
  * Get all stored forecast snapshots, keyed by target timestamp.
  */
 export async function getStoredForecasts(): Promise<ForecastStore> {
-  return isVercel ? readStoreKV() : readStoreFS();
+  return isVercel ? readStoreBlob() : readStoreFS();
 }
