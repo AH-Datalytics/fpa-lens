@@ -49,11 +49,13 @@ const isVercel = !!process.env.BLOB_READ_WRITE_TOKEN;
 
 async function readStoreBlob(): Promise<ForecastStore> {
   try {
-    const { list, getDownloadUrl } = await import("@vercel/blob");
+    const { list } = await import("@vercel/blob");
     const { blobs } = await list({ prefix: BLOB_KEY, limit: 1 });
     if (blobs.length === 0) return {};
-    const url = getDownloadUrl(blobs[0].url);
-    const res = await fetch(url);
+    // Private blobs need the token to download
+    const res = await fetch(blobs[0].downloadUrl, {
+      headers: { Authorization: `Bearer ${process.env.BLOB_READ_WRITE_TOKEN}` },
+    });
     return (await res.json()) as ForecastStore;
   } catch {
     return {};
