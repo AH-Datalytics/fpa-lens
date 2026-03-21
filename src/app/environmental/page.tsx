@@ -209,13 +209,24 @@ export default function EnvironmentalPage() {
     (waterLevelHistory || []).map((w) => [w.timestamp, w.level])
   );
 
-  // Build stored forecast lookup: map hour-bucket → { wind, water }
-  const storedByHour = new Map<number, { wind: number | null; water: number | null }>();
+  // Build stored forecast lookup: array of { time (ms), wind, water }
+  // sorted by time for efficient closest-match searching.
+  const storedEntries: { time: number; wind: number | null; water: number | null }[] = [];
   if (storedForecasts) {
     for (const [ts, snap] of Object.entries(storedForecasts)) {
-      const t = parseCentralTimestamp(ts).getTime();
-      storedByHour.set(Math.round(t / (60 * 60 * 1000)), snap);
+      storedEntries.push({ time: parseCentralTimestamp(ts).getTime(), wind: snap.wind, water: snap.water });
     }
+    storedEntries.sort((a, b) => a.time - b.time);
+  }
+  function findClosestStored(targetMs: number) {
+    let best: (typeof storedEntries)[0] | null = null;
+    let bestDiff = Infinity;
+    for (const entry of storedEntries) {
+      const diff = Math.abs(entry.time - targetMs);
+      if (diff < bestDiff) { bestDiff = diff; best = entry; }
+      if (entry.time > targetMs) break; // sorted, won't get closer
+    }
+    return bestDiff <= 30 * 60 * 1000 ? best : null; // within 30 min
   }
 
   // Observed history — sample interval scales with the time range so shorter
@@ -238,9 +249,8 @@ export default function EnvironmentalPage() {
           break;
         }
       }
-      // Look up what was originally forecast for this hour
-      const hourKey = Math.round(wTime / (60 * 60 * 1000));
-      const stored = storedByHour.get(hourKey);
+      // Look up what was originally forecast for this time
+      const stored = findClosestStored(wTime);
       return {
         time: formatChartTime(w.timestamp),
         fullTime: formatChartLabel(w.timestamp),
