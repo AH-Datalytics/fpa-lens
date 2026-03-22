@@ -121,6 +121,7 @@ export default function EnvironmentalPage() {
   const [refreshing, setRefreshing] = useState(false);
 
   const [historyHours, setHistoryHours] = useState(24);
+  const [renderedHours, setRenderedHours] = useState(24); // tracks what the current data was fetched for
   const [showForecastOverlay, setShowForecastOverlay] = useState(false);
 
   // Chart refs for PNG export
@@ -135,6 +136,7 @@ export default function EnvironmentalPage() {
       if (!res.ok) throw new Error("Failed to fetch");
       const json = await res.json();
       setData(json);
+      if (range) setRenderedHours(range);
       setError(null);
     } catch {
       if (!data) setError("Unable to load environmental data.");
@@ -233,10 +235,10 @@ export default function EnvironmentalPage() {
   // windows are more granular and longer windows don't overwhelm the chart.
   // NOAA provides 6-minute readings, so step=N means every N*6 minutes.
   const thinningStep =
-    historyHours <= 6 ? 2 :    // ~12 min
-    historyHours <= 12 ? 3 :   // ~18 min
-    historyHours <= 24 ? 5 :   // ~30 min
-    historyHours <= 48 ? 8 :   // ~48 min
+    renderedHours <= 6 ? 2 :    // ~12 min
+    renderedHours <= 12 ? 3 :   // ~18 min
+    renderedHours <= 24 ? 5 :   // ~30 min
+    renderedHours <= 48 ? 8 :   // ~48 min
     10;                         // ~60 min (hourly)
   const historyPoints = (windHistory || [])
     .filter((_, i) => i % thinningStep === 0)
@@ -264,14 +266,15 @@ export default function EnvironmentalPage() {
       };
     });
 
-  // Forecast — every hourly point, starting from where observed data ends.
-  // Trim end to where both wind and water data are available.
-  const windHistoryArr = windHistory || [];
-  const lastObservedTime = windHistoryArr.length > 0
-    ? parseCentralTimestamp(windHistoryArr[windHistoryArr.length - 1].timestamp).getTime()
+  // Forecast — every hourly point, starting from the later of the last displayed
+  // observed point or now. Using the displayed point (after thinning) avoids a
+  // visual gap; using now prevents showing forecast for times that already passed.
+  const lastDisplayedTime = historyPoints.length > 0
+    ? historyPoints[historyPoints.length - 1].ts
     : now;
+  const forecastStart = Math.max(lastDisplayedTime, now);
   const futureForecasts = forecast.filter(
-    (p) => parseCentralTimestamp(p.timestamp).getTime() >= lastObservedTime
+    (p) => parseCentralTimestamp(p.timestamp).getTime() >= forecastStart
   );
   const lastBothIdx = futureForecasts.reduce(
     (last, p, i) => (p.windSpeed !== null && p.waterLevel !== null ? i : last),
@@ -604,7 +607,7 @@ export default function EnvironmentalPage() {
                     <Line type="monotone" dataKey="observedWind" stroke="#21355a" strokeWidth={2.5} dot={false} name="observedWind" connectNulls />
                     <Line type="monotone" dataKey="forecastWind" stroke="#94a3b8" strokeWidth={2} strokeDasharray="6 3" dot={false} name="forecastWind" connectNulls />
                     {showForecastOverlay && (
-                      <Line type="monotone" dataKey="storedWind" stroke="#ef4444" strokeWidth={1.5} strokeDasharray="3 3" dot={false} name="storedWind" connectNulls />
+                      <Line type="monotone" dataKey="storedWind" stroke="#c8ced6" strokeWidth={2} strokeDasharray="6 3" dot={false} name="storedWind" connectNulls />
                     )}
                   </ComposedChart>
                 </ResponsiveContainer>
@@ -620,8 +623,8 @@ export default function EnvironmentalPage() {
                 </div>
                 {showForecastOverlay && (
                   <div className="flex items-center gap-2">
-                    <div className="w-6 h-0.5 border-t-2 border-dashed border-red-400" />
-                    <span className="text-xs text-red-400">Original forecast</span>
+                    <div className="w-6 h-0.5 border-t-2 border-dashed border-[#c8ced6]" />
+                    <span className="text-xs text-gray-400">Original forecast</span>
                   </div>
                 )}
               </div>
@@ -677,7 +680,7 @@ export default function EnvironmentalPage() {
                     <Area type="monotone" dataKey="observedWater" fill="#3b82f6" fillOpacity={0.25} stroke="#3b82f6" strokeWidth={2.5} name="observedWater" connectNulls />
                     <Area type="monotone" dataKey="forecastWater" fill="#93c5fd" fillOpacity={0.12} stroke="#93c5fd" strokeWidth={2} strokeDasharray="6 3" name="forecastWater" connectNulls />
                     {showForecastOverlay && (
-                      <Line type="monotone" dataKey="storedWater" stroke="#ef4444" strokeWidth={1.5} strokeDasharray="3 3" dot={false} name="storedWater" connectNulls />
+                      <Line type="monotone" dataKey="storedWater" stroke="#bdd5f9" strokeWidth={2} strokeDasharray="6 3" dot={false} name="storedWater" connectNulls />
                     )}
                   </ComposedChart>
                 </ResponsiveContainer>
@@ -693,8 +696,8 @@ export default function EnvironmentalPage() {
                 </div>
                 {showForecastOverlay && (
                   <div className="flex items-center gap-2">
-                    <div className="w-6 h-0.5 border-t-2 border-dashed border-red-400" />
-                    <span className="text-xs text-red-400">Original forecast</span>
+                    <div className="w-6 h-0.5 border-t-2 border-dashed border-[#bdd5f9]" />
+                    <span className="text-xs text-gray-400">Original forecast</span>
                   </div>
                 )}
               </div>
