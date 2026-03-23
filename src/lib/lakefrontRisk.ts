@@ -464,18 +464,18 @@ export function computeRiskLevel(
   const instantWindLevel = windRiskLevel(current.wind.speed, onshore);
 
   // Step 2: Duration gating
-  // Always compute persistence when onshore + history available, so the UI
-  // can show the tracking bar even during calm (GREEN) conditions.
+  // Always compute persistence when history is available, regardless of wind
+  // direction, so the UI can show the tracking bar at all times.
   let effectiveWindLevel = instantWindLevel;
   let persistence: WindPersistence | null = null;
 
-  if (windHistory && windHistory.length > 0 && onshore) {
+  if (windHistory && windHistory.length > 0) {
     // Compute persistence at the YELLOW threshold as the baseline for display.
     // This shows how close current conditions are to triggering duration-gated alerts.
     persistence = computeWindPersistence(windHistory, RISK_THRESHOLDS.WIND_YELLOW);
 
-    if (instantWindLevel !== "GREEN") {
-      // Actually apply duration gating for non-GREEN levels
+    if (onshore && instantWindLevel !== "GREEN") {
+      // Actually apply duration gating for non-GREEN onshore levels
       const gateResult = applyDurationGate(instantWindLevel, windHistory);
       effectiveWindLevel = gateResult.gatedLevel;
       persistence = gateResult.persistence;
@@ -496,9 +496,14 @@ export function computeRiskLevel(
           `Onshore wind at ${current.wind.speed.toFixed(0)} kt from ${current.wind.cardinal} but not yet sustained (${Math.round(persistence.sustainedFraction * 100)}% of readings, need ${Math.round(RISK_THRESHOLDS.WIND_SUSTAINED_FRACTION * 100)}%)`
         );
       }
+    } else if (instantWindLevel !== "GREEN") {
+      // No history available or offshore; use instantaneous level without gating
+      factors.push(
+        `Onshore wind at ${current.wind.speed.toFixed(0)} kt from ${current.wind.cardinal}`
+      );
     }
   } else if (instantWindLevel !== "GREEN") {
-    // No history available; use instantaneous level without gating
+    // No history at all; use instantaneous level without gating
     factors.push(
       `Onshore wind at ${current.wind.speed.toFixed(0)} kt from ${current.wind.cardinal}`
     );

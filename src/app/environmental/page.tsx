@@ -311,13 +311,15 @@ export default function EnvironmentalPage() {
 
   function downloadCsv(fields: { key: string; label: string }[], filename: string) {
     const header = ["Timestamp", ...fields.map((f) => f.label)].join(",");
-    const rows = chartData.map((d) => {
-      const values = fields.map((f) => {
-        const v = d[f.key as keyof typeof d];
-        return v != null ? v : "";
+    const rows = chartData
+      .filter((d) => fields.some((f) => d[f.key as keyof typeof d] != null))
+      .map((d) => {
+        const values = fields.map((f) => {
+          const v = d[f.key as keyof typeof d];
+          return v != null ? v : "";
+        });
+        return [d.fullTime, ...values].join(",");
       });
-      return [d.fullTime, ...values].join(",");
-    });
     const csv = [header, ...rows].join("\n");
     const blob = new Blob([csv], { type: "text/csv" });
     const link = document.createElement("a");
@@ -422,9 +424,9 @@ export default function EnvironmentalPage() {
               {risk.windPersistence && risk.windPersistence.hoursAnalyzed > 0 && (
                 <div className="mt-3 pt-3 border-t border-gray-100">
                   <div className="flex items-center justify-between mb-1.5">
-                    <span className="text-xs font-medium text-gray-500">Wind Persistence</span>
+                    <span className="text-xs font-medium text-gray-500">Onshore Persistence</span>
                     <span className={`text-xs font-semibold ${risk.windPersistence.isSustained ? "text-amber-600" : "text-gray-400"}`}>
-                      {risk.windPersistence.isSustained ? "Sustained" : "Not sustained"}
+                      {risk.windPersistence.isSustained ? "Sustained" : risk.isOnshore ? "Not yet sustained" : "Offshore"}
                     </span>
                   </div>
                   <div className="w-full bg-gray-100 rounded-full h-2 mb-1">
@@ -436,11 +438,13 @@ export default function EnvironmentalPage() {
                             ? "bg-yellow-400"
                             : "bg-gray-300"
                       }`}
-                      style={{ width: `${Math.min(risk.windPersistence.sustainedFraction * 100, 100)}%` }}
+                      style={{ width: `${Math.max(Math.min(risk.windPersistence.sustainedFraction * 100, 100), 2)}%` }}
                     />
                   </div>
                   <p className="text-xs text-gray-400">
-                    ~{risk.windPersistence.effectiveHours} of {risk.windPersistence.hoursAnalyzed} hrs onshore above threshold (need 70%)
+                    {risk.windPersistence.effectiveHours > 0
+                      ? `~${risk.windPersistence.effectiveHours} of ${risk.windPersistence.hoursAnalyzed} hrs onshore above threshold (need 70%)`
+                      : `No onshore wind in last ${risk.windPersistence.hoursAnalyzed} hrs — currently ${risk.isOnshore ? "onshore" : "offshore"} (${current.wind.cardinal})`}
                   </p>
                 </div>
               )}
@@ -560,7 +564,7 @@ export default function EnvironmentalPage() {
                 <button onClick={() => downloadPng(windChartRef, "wind-speed.png")} className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded transition-colors" title="Download PNG">
                   <Camera className="h-3.5 w-3.5" />
                 </button>
-                <button onClick={() => downloadCsv([{ key: "observedWind", label: "Observed (kt)" }, { key: "forecastWind", label: "Forecast (kt)" }, { key: "storedWind", label: "Original Forecast (kt)" }], "wind-speed.csv")} className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded transition-colors" title="Download CSV">
+                <button onClick={() => downloadCsv([{ key: "observedWind", label: "Observed (kt)" }, { key: "storedWind", label: "Historic Forecast (kt)" }, { key: "forecastWind", label: "Future Forecast (kt)" }], "wind-speed.csv")} className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded transition-colors" title="Download CSV">
                   <Download className="h-3.5 w-3.5" />
                 </button>
               </div>
@@ -636,7 +640,7 @@ export default function EnvironmentalPage() {
                 <button onClick={() => downloadPng(waterChartRef, "water-level.png")} className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded transition-colors" title="Download PNG">
                   <Camera className="h-3.5 w-3.5" />
                 </button>
-                <button onClick={() => downloadCsv([{ key: "observedWater", label: "Observed (ft)" }, { key: "forecastWater", label: "Forecast (ft)" }, { key: "storedWater", label: "Original Forecast (ft)" }], "water-level.csv")} className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded transition-colors" title="Download CSV">
+                <button onClick={() => downloadCsv([{ key: "observedWater", label: "Observed (ft)" }, { key: "storedWater", label: "Historic Forecast (ft)" }, { key: "forecastWater", label: "Future Forecast (ft)" }], "water-level.csv")} className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded transition-colors" title="Download CSV">
                   <Download className="h-3.5 w-3.5" />
                 </button>
               </div>
