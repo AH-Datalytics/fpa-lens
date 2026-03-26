@@ -196,7 +196,8 @@ When a new SITREP arrives:
   1. Save the new `.xlsm` file to `data-sources/budget/`
   2. Update the `FILENAME` in `scripts/extractActualsData.py`
   3. Run: `python3 scripts/extractActualsData.py`
-  4. Verify output, deploy
+  4. Update the homepage O&M numbers in `src/app/page.tsx` (search for `omActual`, `omAnnualBudget`, `omDataDate`)
+  5. Verify output, deploy
 
 ## Annual Updates
 
