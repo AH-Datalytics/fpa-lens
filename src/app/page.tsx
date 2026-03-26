@@ -92,6 +92,15 @@ export default function Home() {
   const staffReadiness = getCategory("Staffing Readiness")!;
   const financial = getCategory("Financial Readiness")!;
 
+  // O&M actuals — update these when new Dashboard Reports data arrives
+  const omActual = 34_222_772;        // YTD actual through Jan 31, 2026
+  const omAnnualBudget = 71_467_750;  // FY26 annual O&M budget
+  const omDataDate = "2026-01-31";    // Data through date
+  const omPct = Math.round((omActual / omAnnualBudget) * 100);
+  const fyStart = new Date(2025, 6, 1);
+  const fyEnd = new Date(2026, 5, 30);
+  const fyElapsedPct = Math.min(100, Math.max(0, Math.round(((new Date(omDataDate + "T00:00:00").getTime() - fyStart.getTime()) / (fyEnd.getTime() - fyStart.getTime())) * 100)));
+
   return (
     <div>
       {/* Hero Section */}
@@ -223,17 +232,23 @@ export default function Home() {
                 </div>
                 <StatusBadge status={financial.status} size="sm" tooltip={statusTooltip(financial.status)} tooltipAlign="right" />
               </div>
-              <div className="grid grid-cols-2 gap-3 mb-4">
+              <div className="grid grid-cols-2 gap-3 mb-3">
                 <div className="text-center">
-                  <div className="text-xl font-bold text-[#21355a]">$79.7M</div>
-                  <div className="text-xs text-gray-500">FY26 Revenue</div>
+                  <div className="text-xl font-bold text-[#21355a]">${(omActual / 1_000_000).toFixed(1)}M</div>
+                  <div className="text-xs text-gray-500">O&M Spent (YTD)</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-xl font-bold text-[#21355a]">$112.3M</div>
-                  <div className="text-xs text-gray-500">FY26 Budget</div>
+                  <div className="text-xl font-bold text-[#21355a]">${(omAnnualBudget / 1_000_000).toFixed(1)}M</div>
+                  <div className="text-xs text-gray-500">Annual O&M Budget</div>
                 </div>
               </div>
-              <p className="text-sm text-gray-600 line-clamp-2">{financial.description}</p>
+              <div className="flex items-center gap-2">
+                <div className="flex-1 h-2 bg-gray-100 rounded-full">
+                  <div className={`h-2 rounded-full ${omPct > 100 ? "bg-red-400" : "bg-green-400"}`} style={{ width: `${Math.min(omPct, 100)}%` }} />
+                </div>
+                <span className="text-xs font-medium text-gray-500">{omPct}%</span>
+              </div>
+              <p className="text-[10px] text-gray-400 mt-1">{omPct}% of annual budget used, {fyElapsedPct}% through fiscal year</p>
               <div className={`mt-4 flex items-center text-sm font-medium ${statusText(financial.status)}`}>
                 View details
                 <ArrowRight className="h-4 w-4 ml-1 group-hover:translate-x-1 transition-transform" />

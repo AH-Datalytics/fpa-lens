@@ -296,7 +296,7 @@ export default function FinancialPage() {
                     </div>
                     <span className="text-xs font-medium text-gray-500">{omUsedPct}%</span>
                   </div>
-                  <p className="text-[10px] text-gray-400 mt-1">{omUsedPct}% of annual budget used through {fyElapsedPct}% of year</p>
+                  <p className="text-[10px] text-gray-400 mt-1">{omUsedPct}% of annual budget used, {fyElapsedPct}% through fiscal year</p>
                 </div>
 
                 {/* Projects */}
@@ -659,8 +659,6 @@ export default function FinancialPage() {
                 </p>
                 <p>
                   Future projects and capital projects sourced from SITREP reports.
-                  The full <HoverDef term="FY26" /> Adopted Budget is available on the{" "}
-                  <a href="https://www.slfpae.com/budget" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">SLFPA-E website</a>.
                 </p>
               </div>
             </div>
