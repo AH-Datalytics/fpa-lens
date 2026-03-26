@@ -175,6 +175,7 @@ export default function FinancialPage() {
         <SectionHeader
           title="Financial Transparency"
           subtitle="How your tax dollars are invested in flood protection"
+          source="FY26 Adopted Budget & Dashboard Reports"
         />
 
         {/* ================================================================
