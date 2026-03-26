@@ -579,7 +579,7 @@ export default function FinancialPage() {
         <section className="mb-12">
           <SectionSubheader title="Major Future Projects" />
           <DataCard title="Long-Term Capital Requirements" source="Oct 2025 SITREP">
-            <div className="overflow-x-auto">
+            <div className="overflow-x-auto lg:overflow-visible">
               <table className="w-full min-w-[600px] lg:min-w-0 text-sm tabular-nums">
                 <thead>
                   <tr className="border-b border-gray-200">
