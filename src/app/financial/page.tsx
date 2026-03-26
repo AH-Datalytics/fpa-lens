@@ -343,7 +343,7 @@ export default function FinancialPage() {
                           <button
                             key={view}
                             onClick={() => setChartView(view)}
-                            className={`px-2.5 py-1 text-[11px] font-medium capitalize transition-colors ${
+                            className={`px-1.5 sm:px-2.5 py-1 text-[10px] sm:text-[11px] font-medium capitalize transition-colors ${
                               chartView === view
                                 ? "bg-[#21355a] text-white"
                                 : "bg-white text-gray-500 hover:bg-gray-50"
@@ -356,7 +356,7 @@ export default function FinancialPage() {
                     </div>
                   }
                   source={`Dashboard Reports, ${actuals.periodLabel}`}
-                  contentClassName="pl-2 pr-6 pt-6 pb-2"
+                  contentClassName="pl-1 pr-2 lg:pl-2 lg:pr-6 pt-6 pb-2"
                 >
                   <div className="h-80 lg:h-full lg:min-h-60">
                     <ResponsiveContainer width="100%" height="100%">
@@ -439,7 +439,7 @@ export default function FinancialPage() {
                 >
                   <div className="overflow-x-auto">
                     {tableView === "category" ? (
-                      <table className="w-full text-sm tabular-nums">
+                      <table className="w-full min-w-[600px] text-sm tabular-nums">
                         <thead>
                           <tr className="border-b border-gray-200">
                             <th
@@ -518,7 +518,7 @@ export default function FinancialPage() {
                         </tbody>
                       </table>
                     ) : (
-                      <table className="w-full text-sm tabular-nums">
+                      <table className="w-full min-w-[600px] text-sm tabular-nums">
                         <thead>
                           <tr className="border-b border-gray-200">
                             <th
@@ -580,7 +580,7 @@ export default function FinancialPage() {
           <SectionSubheader title="Major Future Projects" />
           <DataCard title="Long-Term Capital Requirements" source="Oct 2025 SITREP">
             <div className="overflow-x-auto">
-              <table className="w-full text-sm tabular-nums">
+              <table className="w-full min-w-[600px] text-sm tabular-nums">
                 <thead>
                   <tr className="border-b border-gray-200">
                     <th className="text-left py-3 font-semibold text-gray-700">Project</th>
