@@ -244,9 +244,9 @@ export default function FinancialPage() {
 
           return (
             <section className="mb-12">
-              <div className="flex items-center justify-between mb-2">
+              <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between mb-2">
                 <SectionSubheader title="Year-to-Date Spending vs Budget" />
-                <span className="inline-flex items-center gap-1.5 text-xs text-gray-500 bg-gray-50 border border-gray-200 rounded-full px-3 py-1">
+                <span className="inline-flex items-center gap-1.5 text-xs text-gray-500 bg-gray-50 border border-gray-200 rounded-full px-3 py-1 self-start sm:self-auto">
                   <CalendarDays className="h-3 w-3" />
                   Data through {new Date(actuals.lastUpdated + "T00:00:00").toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}
                 </span>
@@ -336,7 +336,7 @@ export default function FinancialPage() {
                 <DataCard
                   subgrid
                   title={
-                    <div className="flex items-center justify-between w-full">
+                    <div className="flex flex-wrap items-center justify-between gap-2 w-full">
                       <span>Budget vs Actual</span>
                       <div className="flex rounded-md border border-gray-200 overflow-hidden">
                         {(["category", "department", "district"] as const).map((view) => (
@@ -358,7 +358,7 @@ export default function FinancialPage() {
                   source={`Dashboard Reports, ${actuals.periodLabel}`}
                   contentClassName="pl-2 pr-6 pt-6 pb-2"
                 >
-                  <div className="h-full min-h-60">
+                  <div className="h-80 lg:h-full lg:min-h-60">
                     <ResponsiveContainer width="100%" height="100%">
                         <BarChart
                           data={
@@ -403,7 +403,7 @@ export default function FinancialPage() {
                 <DataCard
                   subgrid
                   title={
-                    <div className="flex items-center justify-between w-full">
+                    <div className="flex flex-wrap items-center justify-between gap-2 w-full">
                       <div className="flex items-center gap-3">
                         <span>Variance Detail</span>
                         <div className="flex rounded-md border border-gray-200 overflow-hidden">
@@ -437,7 +437,7 @@ export default function FinancialPage() {
                   }
                   note="Note: When filtering by district, some categories and departments may not appear because not all expense types and departments exist within every district."
                 >
-                  <div>
+                  <div className="overflow-x-auto">
                     {tableView === "category" ? (
                       <table className="w-full text-sm tabular-nums">
                         <thead>
@@ -579,7 +579,7 @@ export default function FinancialPage() {
         <section className="mb-12">
           <SectionSubheader title="Major Future Projects" />
           <DataCard title="Long-Term Capital Requirements" source="Oct 2025 SITREP">
-            <div>
+            <div className="overflow-x-auto">
               <table className="w-full text-sm tabular-nums">
                 <thead>
                   <tr className="border-b border-gray-200">
