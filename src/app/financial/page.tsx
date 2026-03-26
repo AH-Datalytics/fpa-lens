@@ -332,7 +332,7 @@ export default function FinancialPage() {
               </div>
 
               {/* Chart + Category Table */}
-              <div className="grid lg:grid-cols-2 lg:grid-rows-[auto_1fr_auto] gap-6 mb-6">
+              <div className="grid lg:grid-cols-2 lg:grid-rows-[auto_1fr_auto] gap-6 mb-6 min-w-0">
                 <DataCard
                   subgrid
                   title={
@@ -358,7 +358,7 @@ export default function FinancialPage() {
                   source={`Dashboard Reports, ${actuals.periodLabel}`}
                   contentClassName="pl-1 pr-2 lg:pl-2 lg:pr-6 pt-6 pb-2"
                 >
-                  <div className="h-80 lg:h-full lg:min-h-60">
+                  <div className="h-80 lg:h-full lg:min-h-60 overflow-hidden">
                     <ResponsiveContainer width="100%" height="100%">
                         <BarChart
                           data={
