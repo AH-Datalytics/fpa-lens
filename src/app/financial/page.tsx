@@ -439,7 +439,7 @@ export default function FinancialPage() {
                 >
                   <div className="overflow-x-auto">
                     {tableView === "category" ? (
-                      <table className="w-full min-w-[600px] text-sm tabular-nums">
+                      <table className="w-full min-w-[600px] lg:min-w-0 text-sm tabular-nums">
                         <thead>
                           <tr className="border-b border-gray-200">
                             <th
@@ -518,7 +518,7 @@ export default function FinancialPage() {
                         </tbody>
                       </table>
                     ) : (
-                      <table className="w-full min-w-[600px] text-sm tabular-nums">
+                      <table className="w-full min-w-[600px] lg:min-w-0 text-sm tabular-nums">
                         <thead>
                           <tr className="border-b border-gray-200">
                             <th
@@ -580,7 +580,7 @@ export default function FinancialPage() {
           <SectionSubheader title="Major Future Projects" />
           <DataCard title="Long-Term Capital Requirements" source="Oct 2025 SITREP">
             <div className="overflow-x-auto">
-              <table className="w-full min-w-[600px] text-sm tabular-nums">
+              <table className="w-full min-w-[600px] lg:min-w-0 text-sm tabular-nums">
                 <thead>
                   <tr className="border-b border-gray-200">
                     <th className="text-left py-3 font-semibold text-gray-700">Project</th>
