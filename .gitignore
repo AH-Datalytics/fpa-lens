@@ -39,6 +39,12 @@ yarn-error.log*
 # converter temp files
 .kmz-tmp
 
+# raw source data files (Excel workbooks from Finance, etc.)
+/data-sources/
+
+# forecast history store (local runtime data)
+/data/
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts

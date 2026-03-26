@@ -10,7 +10,7 @@ Public transparency dashboard for the Southeast Louisiana Flood Protection Autho
 | `/our-system` | Interactive map, infrastructure assets, infrastructure readiness status, real-time alerts |
 | `/operations` | Permits, inspections, valve exercises, PCCP repairs, maintenance activities |
 | `/safety` | Accident/incident trends, events by category, lost time tracking |
-| `/financial` | FY26 budget by category and district, capital projects, major future projects |
+| `/financial` | FY26 budget by category/district, budget vs actuals (YTD), capital projects |
 | `/our-team` | Staffing: leadership, headcount, vacancies, department status, recent hires |
 | `/about/what-we-do` | About Us: organization overview |
 
@@ -99,7 +99,32 @@ All fields referenced above are in `src/data/siteData.ts`. Each field has a `sou
 4. Verify the output JSON totals match the spreadsheet
 5. The financial page loads this JSON at runtime, so no code changes needed for budget numbers
 
-**Quarterly Spending Actuals (not yet implemented).** The financial page has a "coming soon" section for budget-vs-actuals comparison. Finance will provide quarterly spending reports (actual expenditures by category and district). Each quarter, the new spending data will need to be uploaded, an extraction script built (similar to the budget extractor), and the financial page updated to show budget-vs-actual comparisons by category and by department. This is the next major addition to the financial page.
+### Source 2b: Budget vs Actuals (YTD Spending)
+
+**What it is:** Year-to-date actual expenditures vs budget from the FPA Dashboard Reports workbook, produced by Finance. Shows spending by category and department for each district. O&M expenses are separated from Projects per Regional Director's guidance.
+
+**Source file:** `data-sources/budget/Dashboard_Reports through MM.DD.YY.xlsm`
+
+**Extraction script:** `scripts/extractActualsData.py`
+
+**Output:** `public/data/actuals-fy26.json`
+
+**Displayed on:** `/financial` (Budget vs Actuals section: KPI cards, category charts, department tables)
+
+**How to update:**
+1. Place the new Dashboard Reports file in `data-sources/budget/`
+2. Update the `FILENAME` variable in `scripts/extractActualsData.py` to match the new file name
+3. Run: `python3 scripts/extractActualsData.py`
+4. Review the summary output to confirm totals look right
+5. The financial page loads this JSON at runtime; no code changes needed
+
+**Variance color scale:**
+- Green: 0-5% absolute variance
+- Yellow: 5-15%
+- Amber: 15-25%
+- Red: >25%
+
+See `data-sources/budget/UPDATE-GUIDE.md` for detailed instructions to share with the Finance team.
 
 ### Source 3: Safety Event Logs
 
@@ -165,9 +190,13 @@ When a new SITREP arrives:
 - The Operations page auto-derives the latest month label and count from the last entry in the `permitsIssued` array, so no separate KPI update is needed for permits.
 - The homepage readiness gauge cards auto-derive from `systemReadiness.categories` and `.overallStatus`.
 
-## Quarterly Updates
+## Monthly/Quarterly Updates
 
-- **Spending actuals:** When Finance provides quarterly spending data, upload to `data-sources/budget/`, run extraction script, and update the financial page to show budget-vs-actual comparisons. (Script and page support to be built when first actuals arrive.)
+- **Spending actuals:** When Finance provides an updated Dashboard Reports file:
+  1. Save the new `.xlsm` file to `data-sources/budget/`
+  2. Update the `FILENAME` in `scripts/extractActualsData.py`
+  3. Run: `python3 scripts/extractActualsData.py`
+  4. Verify output, deploy
 
 ## Annual Updates
 
