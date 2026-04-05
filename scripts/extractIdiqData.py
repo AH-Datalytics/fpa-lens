@@ -1,0 +1,188 @@
+#!/usr/bin/env python3
+"""
+Extract IDIQ contract data from Excel and output JSON for the dashboard.
+
+Reads from: ~/Development/fpa/data/sources/idiq/IDIQ Tracker.xlsx
+Outputs to:  ~/Development/fpa/public/data/idiq-contracts.json
+"""
+
+import json
+import os
+from collections import OrderedDict
+from datetime import datetime
+
+import openpyxl
+
+BASE_DIR = os.path.expanduser("~/Development/fpa/data/sources/idiq")
+OUTPUT_PATH = os.path.expanduser("~/Development/fpa/public/data/idiq-contracts.json")
+
+SHEETS = [
+    ("2022 IDIQ ", "2022", "2022 IDIQ Contracts"),
+    ("2025 IDIQ", "2025", "2025 IDIQ Contracts"),
+]
+
+
+def fmt_date(val):
+    if isinstance(val, datetime):
+        return val.strftime("%Y-%m-%d")
+    if isinstance(val, str) and val.strip():
+        return val.strip()
+    return None
+
+
+def safe_float(val):
+    if val is None:
+        return 0.0
+    try:
+        return float(val)
+    except (ValueError, TypeError):
+        return 0.0
+
+
+def extract_pool(ws, pool_id, pool_name):
+    contracts_by_service = OrderedDict()
+    current = None  # current contract-level record
+
+    for row in ws.iter_rows(min_row=2, values_only=True):
+        if all(v is None for v in row):
+            continue
+
+        contract_num = str(row[0]).strip() if row[0] else None
+
+        # New contract row (has a contract number)
+        if contract_num:
+            service = str(row[1]).strip() if row[1] else "Uncategorized"
+            current = {
+                "number": contract_num,
+                "consultant": str(row[2]).strip() if row[2] else "",
+                "contractDate": fmt_date(row[3]),
+                "endDate": fmt_date(row[4]),
+                "maximum": safe_float(row[6]),
+                "remaining": safe_float(row[7]),
+                "service": service,
+                "taskOrders": [],
+            }
+            current["utilized"] = max(0, current["maximum"] - current["remaining"])
+            current["utilizationPct"] = (
+                round(current["utilized"] / current["maximum"] * 100)
+                if current["maximum"] > 0
+                else 0
+            )
+
+            if service not in contracts_by_service:
+                contracts_by_service[service] = []
+            contracts_by_service[service].append(current)
+
+        # Task order row (or continuation)
+        to_num = str(row[8]).strip() if row[8] else None
+        to_status = str(row[9]).strip() if row[9] else None
+
+        if current and to_num and to_status:
+            current["taskOrders"].append({
+                "number": to_num,
+                "status": to_status,
+                "description": str(row[10]).strip() if row[10] else "",
+                "projectNumber": str(row[11]).strip() if row[11] else "",
+                "leveeDistrict": str(row[12]).strip() if row[12] else "",
+                "maximum": safe_float(row[13]),
+                "costToDate": safe_float(row[14]),
+                "startDate": fmt_date(row[15]),
+                "endDate": fmt_date(row[16]),
+            })
+
+    # Build service type summaries
+    service_types = []
+    for service, contracts in contracts_by_service.items():
+        total_max = sum(c["maximum"] for c in contracts)
+        total_utilized = sum(c["utilized"] for c in contracts)
+        # Remove service key from individual contracts
+        clean_contracts = []
+        for c in contracts:
+            cc = {k: v for k, v in c.items() if k != "service"}
+            clean_contracts.append(cc)
+
+        service_types.append({
+            "service": service,
+            "contractCount": len(contracts),
+            "totalMaximum": total_max,
+            "totalUtilized": max(0, total_utilized),
+            "utilizationPct": round(total_utilized / total_max * 100) if total_max > 0 else 0,
+            "contracts": clean_contracts,
+        })
+
+    return {
+        "id": pool_id,
+        "name": pool_name,
+        "serviceTypes": service_types,
+    }
+
+
+def build_summary(pools):
+    total_contracts = 0
+    total_max = 0
+    total_utilized = 0
+    active_tos = 0
+    completed_tos = 0
+    all_services = set()
+    all_firms = set()
+
+    for pool in pools:
+        for st in pool["serviceTypes"]:
+            all_services.add(st["service"])
+            total_contracts += st["contractCount"]
+            total_max += st["totalMaximum"]
+            total_utilized += max(0, st["totalUtilized"])
+            for c in st["contracts"]:
+                all_firms.add(c["consultant"])
+                for to in c["taskOrders"]:
+                    if to["status"] == "Active":
+                        active_tos += 1
+                    elif to["status"] == "Complete":
+                        completed_tos += 1
+
+    return {
+        "totalContracts": total_contracts,
+        "totalMaxValue": total_max,
+        "totalUtilized": total_utilized,
+        "activeTaskOrders": active_tos,
+        "completedTaskOrders": completed_tos,
+        "serviceTypes": len(all_services),
+        "firms": len(all_firms),
+    }
+
+
+def main():
+    filepath = os.path.join(BASE_DIR, "IDIQ Tracker.xlsx")
+    wb = openpyxl.load_workbook(filepath, read_only=True, data_only=True)
+
+    pools = []
+    for sheet_name, pool_id, pool_name in SHEETS:
+        ws = wb[sheet_name]
+        pool = extract_pool(ws, pool_id, pool_name)
+        pools.append(pool)
+        contract_count = sum(st["contractCount"] for st in pool["serviceTypes"])
+        to_count = sum(
+            len(c["taskOrders"])
+            for st in pool["serviceTypes"]
+            for c in st["contracts"]
+        )
+        print(f"{pool_name}: {contract_count} contracts, {to_count} task orders")
+
+    wb.close()
+
+    summary = build_summary(pools)
+    output = {"contractPools": pools, "summary": summary}
+
+    os.makedirs(os.path.dirname(OUTPUT_PATH), exist_ok=True)
+    with open(OUTPUT_PATH, "w") as f:
+        json.dump(output, f, indent=2)
+
+    print(f"\nSummary: {summary['totalContracts']} contracts, "
+          f"{summary['firms']} firms, "
+          f"{summary['activeTaskOrders']} active / {summary['completedTaskOrders']} completed TOs, "
+          f"${summary['totalMaxValue']:,.0f} total value")
+    print(f"Output written to {OUTPUT_PATH}")
+
+
+if __name__ == "__main__":
+    main()

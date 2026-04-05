@@ -1,0 +1,1232 @@
+{
+  "contractPools": [
+    {
+      "id": "2022",
+      "name": "2022 IDIQ Contracts",
+      "serviceTypes": [
+        {
+          "service": "Civil Engineering",
+          "contractCount": 10,
+          "totalMaximum": 10000000.0,
+          "totalUtilized": 3492128.45,
+          "utilizationPct": 35,
+          "contracts": [
+            {
+              "number": "33-01",
+              "consultant": "Linfield, Hunter & Junius",
+              "contractDate": "2022-08-18",
+              "endDate": "2025-08-18",
+              "maximum": 1000000.0,
+              "remaining": 662333.0,
+              "taskOrders": [
+                {
+                  "number": "01",
+                  "status": "Complete",
+                  "description": "Franklin Building Entrance Access Improvements Deisgn",
+                  "projectNumber": "O3000142",
+                  "leveeDistrict": "OLD",
+                  "maximum": 138126.0,
+                  "costToDate": 10711.5,
+                  "startDate": "2023-04-01",
+                  "endDate": "2024-04-01"
+                },
+                {
+                  "number": "02",
+                  "status": "Complete",
+                  "description": "Hayne Blvd Relief Well Drainage",
+                  "projectNumber": "O2280027",
+                  "leveeDistrict": "OLD",
+                  "maximum": 96169.0,
+                  "costToDate": 84024.0,
+                  "startDate": "2023-08-01",
+                  "endDate": "2023-12-31"
+                },
+                {
+                  "number": "03",
+                  "status": "Complete",
+                  "description": "Orleans Marina Parking Lot - Deisgn",
+                  "projectNumber": "O5060112",
+                  "leveeDistrict": "OLD",
+                  "maximum": 39496.0,
+                  "costToDate": 35535.3,
+                  "startDate": "2024-01-01",
+                  "endDate": "2024-04-30"
+                },
+                {
+                  "number": "04",
+                  "status": "Complete",
+                  "description": "Orleans Marina Bulkhead Post Construction Assessment",
+                  "projectNumber": "O5060107",
+                  "leveeDistrict": "OLD",
+                  "maximum": 28036.0,
+                  "costToDate": 18677.5,
+                  "startDate": "2024-06-01",
+                  "endDate": "2024-08-31"
+                },
+                {
+                  "number": "05",
+                  "status": "Complete",
+                  "description": "Orleans Marina Parking Lot - Resident Inspection",
+                  "projectNumber": "O5060118",
+                  "leveeDistrict": "OLD",
+                  "maximum": 35840.0,
+                  "costToDate": 17664.0,
+                  "startDate": "2024-06-01",
+                  "endDate": "2024-08-31"
+                }
+              ],
+              "utilized": 337667.0,
+              "utilizationPct": 34
+            },
+            {
+              "number": "33-02",
+              "consultant": "AECOM",
+              "contractDate": "2022-08-18",
+              "endDate": "2025-08-18",
+              "maximum": 1000000.0,
+              "remaining": 851339.1,
+              "taskOrders": [
+                {
+                  "number": "01",
+                  "status": "Complete",
+                  "description": "Slope Paving Inspection",
+                  "projectNumber": "O2430458",
+                  "leveeDistrict": "OLD",
+                  "maximum": 148660.9,
+                  "costToDate": 133536.93999999997,
+                  "startDate": "2023-12-22",
+                  "endDate": "2024-10-04"
+                }
+              ],
+              "utilized": 148660.90000000002,
+              "utilizationPct": 15
+            },
+            {
+              "number": "33-03",
+              "consultant": "Arcadis",
+              "contractDate": "2022-08-18",
+              "endDate": "2025-08-18",
+              "maximum": 1000000.0,
+              "remaining": 925014.0,
+              "taskOrders": [
+                {
+                  "number": "01",
+                  "status": "Complete",
+                  "description": "Seawall Step Mitigation Study",
+                  "projectNumber": "O2780751",
+                  "leveeDistrict": "OLD",
+                  "maximum": 74986.0,
+                  "costToDate": 74364.75,
+                  "startDate": "2024-02-29",
+                  "endDate": "2024-10-30"
+                }
+              ],
+              "utilized": 74986.0,
+              "utilizationPct": 7
+            },
+            {
+              "number": "33-04",
+              "consultant": "Burk-Kleinpeter",
+              "contractDate": "2022-08-18",
+              "endDate": "2025-08-18",
+              "maximum": 1000000.0,
+              "remaining": 818221.75,
+              "taskOrders": [
+                {
+                  "number": "01",
+                  "status": "Complete",
+                  "description": "PCCP Pump Bearing Failure Technical Assistance 2023",
+                  "projectNumber": "O8200081",
+                  "leveeDistrict": "OLD",
+                  "maximum": 49588.0,
+                  "costToDate": 49160.13,
+                  "startDate": "2023-05-16",
+                  "endDate": "TBD"
+                },
+                {
+                  "number": "02",
+                  "status": "Complete",
+                  "description": "PCCP Pump Stations Operator Training",
+                  "projectNumber": "O8200091",
+                  "leveeDistrict": "OLD",
+                  "maximum": 95126.0,
+                  "costToDate": 50214.38,
+                  "startDate": "2023-08-10",
+                  "endDate": "2025-10-09"
+                },
+                {
+                  "number": "03",
+                  "status": "Active",
+                  "description": "Seawall Step Mitigation Design",
+                  "projectNumber": "O8300072",
+                  "leveeDistrict": "OLD",
+                  "maximum": 37064.25,
+                  "costToDate": 32180.13,
+                  "startDate": "2024-08-01",
+                  "endDate": "2024-12-31"
+                }
+              ],
+              "utilized": 181778.25,
+              "utilizationPct": 18
+            },
+            {
+              "number": "33-05",
+              "consultant": "Evans-Graves",
+              "contractDate": "2022-08-18",
+              "endDate": "2025-08-18",
+              "maximum": 1000000.0,
+              "remaining": 289204.69999999995,
+              "taskOrders": [
+                {
+                  "number": "01",
+                  "status": "Complete",
+                  "description": "London Ave Canal - Hydraulic Analysis",
+                  "projectNumber": "O2150179",
+                  "leveeDistrict": "OLD",
+                  "maximum": 15616.0,
+                  "costToDate": 15480.0,
+                  "startDate": "2022-11-29",
+                  "endDate": "2023-07-31"
+                },
+                {
+                  "number": "02",
+                  "status": "Complete",
+                  "description": "Floodgate E-13 Sill Raising - Const. Admin & Resident Inspection",
+                  "projectNumber": "O2280587",
+                  "leveeDistrict": "OLD",
+                  "maximum": 100460.0,
+                  "costToDate": 40027.5,
+                  "startDate": "2022-11-29",
+                  "endDate": "2023-05-31"
+                },
+                {
+                  "number": "03",
+                  "status": "Active",
+                  "description": "London Ave Canal - North Erosion Mitigation - CA & RPR",
+                  "projectNumber": "O2150167",
+                  "leveeDistrict": "OLD",
+                  "maximum": 126740.0,
+                  "costToDate": 54375.0,
+                  "startDate": "2022-10-24",
+                  "endDate": "2023-04-30"
+                },
+                {
+                  "number": "04",
+                  "status": "Complete",
+                  "description": "London Ave Canal North - West Erosion Control Mitigation Design",
+                  "projectNumber": "O2150182",
+                  "leveeDistrict": "OLD",
+                  "maximum": 67923.3,
+                  "costToDate": 68214.5,
+                  "startDate": "2023-05-31",
+                  "endDate": "2024-05-31"
+                },
+                {
+                  "number": "05",
+                  "status": "Complete",
+                  "description": "Erosion Mitigation 17th St. Canal- Old Hammond Hwy. to Veterans- CA & RI",
+                  "projectNumber": "O2430327",
+                  "leveeDistrict": "OLD",
+                  "maximum": 291560.0,
+                  "costToDate": 232894.0,
+                  "startDate": "2024-03-18",
+                  "endDate": "2024-04-18"
+                },
+                {
+                  "number": "06",
+                  "status": "Complete",
+                  "description": "London Avenue Canal North-West Erosion Mitigation CA & RI",
+                  "projectNumber": "O2150187",
+                  "leveeDistrict": "OLD",
+                  "maximum": 108496.0,
+                  "costToDate": 108484.0,
+                  "startDate": "2023-05-31",
+                  "endDate": "2024-05-31"
+                }
+              ],
+              "utilized": 710795.3,
+              "utilizationPct": 71
+            },
+            {
+              "number": "33-06",
+              "consultant": "Aptim Enviromental",
+              "contractDate": "2022-08-18",
+              "endDate": "2025-08-18",
+              "maximum": 1000000.0,
+              "remaining": 811145.0,
+              "taskOrders": [
+                {
+                  "number": "01",
+                  "status": "Active",
+                  "description": "Lakeshore Dr/Canal Blvd Intersection Design",
+                  "projectNumber": "O2440182",
+                  "leveeDistrict": "OLD",
+                  "maximum": 90425.0,
+                  "costToDate": 90260.25,
+                  "startDate": "2023-01-31",
+                  "endDate": "2023-12-31"
+                },
+                {
+                  "number": "02",
+                  "status": "Active",
+                  "description": "Lakeshore Dr. Conceptual Design",
+                  "projectNumber": "O2440192",
+                  "leveeDistrict": "OLD",
+                  "maximum": 35560.0,
+                  "costToDate": 19434.25,
+                  "startDate": "2024-06-20",
+                  "endDate": "2024-09-30"
+                },
+                {
+                  "number": "03",
+                  "status": "Active",
+                  "description": "Seawall Plaza Erosion Mitigation",
+                  "projectNumber": "O2780842",
+                  "leveeDistrict": "OLD",
+                  "maximum": 42870.0,
+                  "costToDate": 16974.75,
+                  "startDate": "2025-01-02",
+                  "endDate": "2025-10-18"
+                },
+                {
+                  "number": "04",
+                  "status": "Active",
+                  "description": "Lakeshore Dr. Improvements-CA",
+                  "projectNumber": "O2440187",
+                  "leveeDistrict": "OLD",
+                  "maximum": 20000.0,
+                  "costToDate": 8280.0,
+                  "startDate": "2025-11-04",
+                  "endDate": "2026-02-28"
+                }
+              ],
+              "utilized": 188855.0,
+              "utilizationPct": 19
+            },
+            {
+              "number": "33-07",
+              "consultant": "HNTB",
+              "contractDate": "2022-08-18",
+              "endDate": "2025-08-18",
+              "maximum": 1000000.0,
+              "remaining": 144974.90000000002,
+              "taskOrders": [
+                {
+                  "number": "01",
+                  "status": "Complete",
+                  "description": "FPA Pipe Culvert Inspections - MRL and HSDRRS",
+                  "projectNumber": "O2990431",
+                  "leveeDistrict": "OLD",
+                  "maximum": 24767.0,
+                  "costToDate": 23014.29,
+                  "startDate": "2022-12-09",
+                  "endDate": "2023-01-31"
+                },
+                {
+                  "number": "02",
+                  "status": "Complete",
+                  "description": "FPA Pipe Culvert Inspections - MRL and HSDRRS - Phase 1B",
+                  "projectNumber": "O2990441",
+                  "leveeDistrict": "OLD",
+                  "maximum": 125307.5,
+                  "costToDate": 124733.43,
+                  "startDate": "2023-03-10",
+                  "endDate": "2023-08-15"
+                },
+                {
+                  "number": "03",
+                  "status": "Complete",
+                  "description": "Outfall Canal Slop Paving Construction Admin.",
+                  "projectNumber": "O2430457",
+                  "leveeDistrict": "OLD",
+                  "maximum": 94022.0,
+                  "costToDate": 91663.21999999999,
+                  "startDate": "2023-08-10",
+                  "endDate": "2024-08-10"
+                },
+                {
+                  "number": "04",
+                  "status": "Complete",
+                  "description": "FPA Pipe Culvert Inspections - MRL and HSDRRS - Phase 1C",
+                  "projectNumber": "O2990451",
+                  "leveeDistrict": "OLD",
+                  "maximum": 582806.0,
+                  "costToDate": 580086.42,
+                  "startDate": "2023-08-10",
+                  "endDate": "2024-08-10"
+                },
+                {
+                  "number": "05",
+                  "status": "Complete",
+                  "description": "40 Arpent Valve Inspection",
+                  "projectNumber": "L2820056",
+                  "leveeDistrict": "LBBLD",
+                  "maximum": 28122.6,
+                  "costToDate": 20923.22,
+                  "startDate": "2024-11-12",
+                  "endDate": "2024-12-31"
+                }
+              ],
+              "utilized": 855025.1,
+              "utilizationPct": 86
+            },
+            {
+              "number": "33-08",
+              "consultant": "N-Y Associates",
+              "contractDate": "2022-08-18",
+              "endDate": "2025-08-18",
+              "maximum": 1000000.0,
+              "remaining": 334817.1,
+              "taskOrders": [
+                {
+                  "number": "01",
+                  "status": "Complete",
+                  "description": "40 Arpent Sheet Pile Rehabilitation - Phase 1 - Design",
+                  "projectNumber": "L2820042",
+                  "leveeDistrict": "LBBLD",
+                  "maximum": 93958.0,
+                  "costToDate": 90131.0,
+                  "startDate": "2023-06-26",
+                  "endDate": "2023-12-26"
+                },
+                {
+                  "number": "02",
+                  "status": "Complete",
+                  "description": "PCCP 17th St Tanks 5 & 6 Drain and Inspect",
+                  "projectNumber": "O8200122",
+                  "leveeDistrict": "OLD",
+                  "maximum": 75187.4,
+                  "costToDate": 66479.55,
+                  "startDate": "2024-09-04",
+                  "endDate": "2024-12-04"
+                },
+                {
+                  "number": "03",
+                  "status": "Complete",
+                  "description": "40 Arpent Sheet Pile Rehabilitation- Phase 1 CA",
+                  "projectNumber": "L2820047",
+                  "leveeDistrict": "OLD",
+                  "maximum": 90692.0,
+                  "costToDate": 90691.48000000001,
+                  "startDate": "2024-05-01",
+                  "endDate": "2025-09-30"
+                },
+                {
+                  "number": "04",
+                  "status": "Complete",
+                  "description": "40 Arpent Sheet Pile Rehabilitation- Phase I RI",
+                  "projectNumber": "L2820048",
+                  "leveeDistrict": "OLD",
+                  "maximum": 182400.0,
+                  "costToDate": 169955.0,
+                  "startDate": "2024-05-01",
+                  "endDate": "2025-09-30"
+                },
+                {
+                  "number": "05",
+                  "status": "Active",
+                  "description": "LPV 111 Bypass Bridge",
+                  "projectNumber": "O2640162",
+                  "leveeDistrict": "OLD",
+                  "maximum": 98738.0,
+                  "costToDate": 80672.5,
+                  "startDate": "2024-09-02",
+                  "endDate": "2025-01-14"
+                },
+                {
+                  "number": "06",
+                  "status": "Active",
+                  "description": "PCCP Bulk Tank Recert",
+                  "projectNumber": "O8200222",
+                  "leveeDistrict": "OLD",
+                  "maximum": 45145.0,
+                  "costToDate": 23285.0,
+                  "startDate": "2025-07-07",
+                  "endDate": "2026-01-06"
+                },
+                {
+                  "number": "07",
+                  "status": "Active",
+                  "description": "LPV 111 Bridge CA & Field Ins",
+                  "projectNumber": "O2640167",
+                  "leveeDistrict": "OLD",
+                  "maximum": 79062.5,
+                  "costToDate": 0.0,
+                  "startDate": "2025-11-03",
+                  "endDate": "2026-12-25"
+                }
+              ],
+              "utilized": 665182.9,
+              "utilizationPct": 67
+            },
+            {
+              "number": "33-09",
+              "consultant": "Jacobs",
+              "contractDate": "2022-08-18",
+              "endDate": "2025-08-18",
+              "maximum": 1000000.0,
+              "remaining": 1000000.0,
+              "taskOrders": [],
+              "utilized": 0,
+              "utilizationPct": 0
+            },
+            {
+              "number": "33-10",
+              "consultant": "T. Baker Smith",
+              "contractDate": "2022-08-18",
+              "endDate": "2025-08-18",
+              "maximum": 1000000.0,
+              "remaining": 670822.0,
+              "taskOrders": [
+                {
+                  "number": "01",
+                  "status": "Complete",
+                  "description": "OLD Lakeshore Dr Bayou St. John Bridge Approach Deisgn",
+                  "projectNumber": "O2440172",
+                  "leveeDistrict": "OLD",
+                  "maximum": 99530.0,
+                  "costToDate": 98004.0,
+                  "startDate": "2023-01-01",
+                  "endDate": "2023-12-31"
+                },
+                {
+                  "number": "02",
+                  "status": "Complete",
+                  "description": "OLD Lakeshore Dr Bayou St. John Bridge Approach CA",
+                  "projectNumber": "O2440177",
+                  "leveeDistrict": "OLD",
+                  "maximum": 44432.0,
+                  "costToDate": 44308.22,
+                  "startDate": "2024-01-01",
+                  "endDate": "2024-07-31"
+                },
+                {
+                  "number": "03",
+                  "status": "Complete",
+                  "description": "Frankline Fire Line Replacement - SUE",
+                  "projectNumber": "O3000179",
+                  "leveeDistrict": "OLD",
+                  "maximum": 13100.0,
+                  "costToDate": 13100.0,
+                  "startDate": "2023-10-01",
+                  "endDate": "2024-01-31"
+                },
+                {
+                  "number": "04",
+                  "status": "Active",
+                  "description": "OLD Lakeshore Dr. Bayou St. John Bridge Approach Inspection",
+                  "projectNumber": "O2440178",
+                  "leveeDistrict": "OLD",
+                  "maximum": 85248.0,
+                  "costToDate": 27889.55,
+                  "startDate": "2024-01-01",
+                  "endDate": "2024-07-31"
+                },
+                {
+                  "number": "05",
+                  "status": "Active",
+                  "description": "EJLD West Return Wall Splash Pad & Turnaround Pad Rehabilitation",
+                  "projectNumber": "E2780162",
+                  "leveeDistrict": "EJLD",
+                  "maximum": 86868.0,
+                  "costToDate": 86862.25,
+                  "startDate": "2024-01-01",
+                  "endDate": "2024-07-31"
+                }
+              ],
+              "utilized": 329178.0,
+              "utilizationPct": 33
+            }
+          ]
+        },
+        {
+          "service": "Surveying",
+          "contractCount": 4,
+          "totalMaximum": 2000000.0,
+          "totalUtilized": 818124.0,
+          "utilizationPct": 41,
+          "contracts": [
+            {
+              "number": "34-01",
+              "consultant": "C.H. Fenstermaker",
+              "contractDate": "2022-08-18",
+              "endDate": "2025-08-18",
+              "maximum": 500000.0,
+              "remaining": 272976.0,
+              "taskOrders": [
+                {
+                  "number": "01",
+                  "status": "Complete",
+                  "description": "Lakeshore Dr at Canal Blvd Survey",
+                  "projectNumber": "O2440183",
+                  "leveeDistrict": "OLD",
+                  "maximum": 15335.0,
+                  "costToDate": 15335.0,
+                  "startDate": "2023-03-13",
+                  "endDate": "2023-05-31"
+                },
+                {
+                  "number": "02",
+                  "status": "Complete",
+                  "description": "Hardened Tide Gage Survey 2023",
+                  "projectNumber": "A2990673",
+                  "leveeDistrict": "FPAE",
+                  "maximum": 27217.0,
+                  "costToDate": 26161.25,
+                  "startDate": "2023-10-02",
+                  "endDate": "2023-12-02"
+                },
+                {
+                  "number": "03",
+                  "status": "Complete",
+                  "description": "2024 Topo & Bathymetric Survey of 17th ST, Orleans Ave, & London Ave Canals",
+                  "projectNumber": "O2430463",
+                  "leveeDistrict": "OLD",
+                  "maximum": 150957.0,
+                  "costToDate": 150925.0,
+                  "startDate": "2023-10-02",
+                  "endDate": "2023-12-02"
+                },
+                {
+                  "number": "04",
+                  "status": "Active",
+                  "description": "West Return Rip-Rap Survey",
+                  "projectNumber": "E2780153",
+                  "leveeDistrict": "EJLD",
+                  "maximum": 33515.0,
+                  "costToDate": 28947.5,
+                  "startDate": "2024-12-05",
+                  "endDate": "2025-05-01"
+                }
+              ],
+              "utilized": 227024.0,
+              "utilizationPct": 45
+            },
+            {
+              "number": "34-02",
+              "consultant": "Linfield, Hunter & Junius",
+              "contractDate": "2022-08-18",
+              "endDate": "2025-08-18",
+              "maximum": 500000.0,
+              "remaining": 242742.0,
+              "taskOrders": [
+                {
+                  "number": "01",
+                  "status": "Complete",
+                  "description": "40 Arpent Sheet Pile Rehabilitation - Phase 1 - Survey",
+                  "projectNumber": "L2820043",
+                  "leveeDistrict": "LBBLD",
+                  "maximum": 33164.0,
+                  "costToDate": 32896.0,
+                  "startDate": "2023-08-01",
+                  "endDate": "2023-12-25"
+                },
+                {
+                  "number": "02",
+                  "status": "Complete",
+                  "description": "West Return Wall Splash Pad & Turnaround Pad Survey",
+                  "projectNumber": "E2780163",
+                  "leveeDistrict": "EJLD",
+                  "maximum": 45979.0,
+                  "costToDate": 45979.0,
+                  "startDate": "2024-11-11",
+                  "endDate": "2025-12-31"
+                },
+                {
+                  "number": "03",
+                  "status": "Complete",
+                  "description": "Earthen Levee Survey 2025",
+                  "projectNumber": "A2990083",
+                  "leveeDistrict": "FPAE",
+                  "maximum": 178115.0,
+                  "costToDate": 178115.0,
+                  "startDate": "2025-03-01",
+                  "endDate": "2025-07-31"
+                }
+              ],
+              "utilized": 257258.0,
+              "utilizationPct": 51
+            },
+            {
+              "number": "34-03",
+              "consultant": "EMC Inc",
+              "contractDate": "2022-08-18",
+              "endDate": "2025-08-18",
+              "maximum": 500000.0,
+              "remaining": 397280.0,
+              "taskOrders": [
+                {
+                  "number": "01",
+                  "status": "Complete",
+                  "description": "2023 Bathymetric Survey - Complex Structures",
+                  "projectNumber": "O8300043",
+                  "leveeDistrict": "OLD",
+                  "maximum": 37960.0,
+                  "costToDate": 37960.0,
+                  "startDate": "2023-04-10",
+                  "endDate": "2023-06-10"
+                },
+                {
+                  "number": "02",
+                  "status": "Complete",
+                  "description": "2023 Bathymetric Survey - North of Seabrook and Lakefront Airport",
+                  "projectNumber": "O2780619",
+                  "leveeDistrict": "OLD",
+                  "maximum": 25300.0,
+                  "costToDate": 25300.0,
+                  "startDate": "2023-04-10",
+                  "endDate": "2023-06-10"
+                },
+                {
+                  "number": "03",
+                  "status": "Complete",
+                  "description": "2024 Bathymetric Survey - Complex Structures",
+                  "projectNumber": "O8300063",
+                  "leveeDistrict": "OLD",
+                  "maximum": 29540.0,
+                  "costToDate": 29540.0,
+                  "startDate": "2024-06-01",
+                  "endDate": "2024-07-15"
+                },
+                {
+                  "number": "04",
+                  "status": "Complete",
+                  "description": "2024 Bathymetric Survey - North of Seabrook",
+                  "projectNumber": "O2780823",
+                  "leveeDistrict": "OLD",
+                  "maximum": 9920.0,
+                  "costToDate": 9920.0,
+                  "startDate": "2024-06-01",
+                  "endDate": "2024-07-15"
+                }
+              ],
+              "utilized": 102720.0,
+              "utilizationPct": 21
+            },
+            {
+              "number": "34-04",
+              "consultant": "Bryant Hammett & Associates",
+              "contractDate": "2022-08-18",
+              "endDate": "2025-08-18",
+              "maximum": 500000.0,
+              "remaining": 268878.0,
+              "taskOrders": [
+                {
+                  "number": "01",
+                  "status": "Complete",
+                  "description": "Lakeshore Dr. Bayou St. Bridge Survery",
+                  "projectNumber": "O2440173",
+                  "leveeDistrict": "OLD",
+                  "maximum": 20116.0,
+                  "costToDate": 20116.0,
+                  "startDate": "2023-02-27",
+                  "endDate": "2023-05-31"
+                },
+                {
+                  "number": "02",
+                  "status": "Complete",
+                  "description": "Lake Borgne Surge Barrier Survey",
+                  "projectNumber": "A2990073",
+                  "leveeDistrict": "LBBLD/OLD",
+                  "maximum": 37280.0,
+                  "costToDate": 37280.0,
+                  "startDate": "2024-05-06",
+                  "endDate": "2024-06-30"
+                },
+                {
+                  "number": "03",
+                  "status": "Complete",
+                  "description": "2024 Settlement Monument Survey",
+                  "projectNumber": "O2780833",
+                  "leveeDistrict": "OLD",
+                  "maximum": 30796.0,
+                  "costToDate": 30796.0,
+                  "startDate": "2024-08-28",
+                  "endDate": "2024-11-01"
+                },
+                {
+                  "number": "04",
+                  "status": "Complete",
+                  "description": "2024 Settlement Marker Survey",
+                  "projectNumber": "L8160033",
+                  "leveeDistrict": "LBBLD",
+                  "maximum": 17010.0,
+                  "costToDate": 17010.0,
+                  "startDate": "2024-11-11",
+                  "endDate": "2025-01-10"
+                },
+                {
+                  "number": "05",
+                  "status": "Complete",
+                  "description": "Floodwall & Sheetpile Survey 2025",
+                  "projectNumber": "A2990093",
+                  "leveeDistrict": "FPAE",
+                  "maximum": 125920.0,
+                  "costToDate": 125920.0,
+                  "startDate": "2025-03-01",
+                  "endDate": "2025-07-31"
+                }
+              ],
+              "utilized": 231122.0,
+              "utilizationPct": 46
+            }
+          ]
+        },
+        {
+          "service": "Geotechnical Engineering",
+          "contractCount": 3,
+          "totalMaximum": 1500000.0,
+          "totalUtilized": 94440.79999999999,
+          "utilizationPct": 6,
+          "contracts": [
+            {
+              "number": "35-01",
+              "consultant": "Ardaman & Associates",
+              "contractDate": "2022-08-18",
+              "endDate": "2025-08-18",
+              "maximum": 500000.0,
+              "remaining": 500000.0,
+              "taskOrders": [],
+              "utilized": 0,
+              "utilizationPct": 0
+            },
+            {
+              "number": "35-02",
+              "consultant": "PSI",
+              "contractDate": "2022-08-18",
+              "endDate": "2025-08-18",
+              "maximum": 500000.0,
+              "remaining": 419508.2,
+              "taskOrders": [
+                {
+                  "number": "01",
+                  "status": "Complete",
+                  "description": "Lakeshore Dr Bayou St John Approach - Geo",
+                  "projectNumber": "O2440174",
+                  "leveeDistrict": "OLD",
+                  "maximum": 6600.0,
+                  "costToDate": 5090.06,
+                  "startDate": "2022-12-14",
+                  "endDate": "2023-12-24"
+                },
+                {
+                  "number": "02",
+                  "status": "Complete",
+                  "description": "FY24 As Needed General Sampling and Testing",
+                  "projectNumber": "A3000025",
+                  "leveeDistrict": "FPAE",
+                  "maximum": 10000.0,
+                  "costToDate": 2632.0,
+                  "startDate": "2023-06-08",
+                  "endDate": "2024-06-30"
+                },
+                {
+                  "number": "03",
+                  "status": "Active",
+                  "description": "40 Arpent Sheet Pile Rehabilitation- Phase 1- PSI",
+                  "projectNumber": "L2820044",
+                  "leveeDistrict": "LBBLD",
+                  "maximum": 43891.8,
+                  "costToDate": 33280.31,
+                  "startDate": "2024-09-03",
+                  "endDate": "2025-06-30"
+                },
+                {
+                  "number": "04",
+                  "status": "Complete",
+                  "description": "FY25 As Needed General Sampling and Testing",
+                  "projectNumber": "A3000035",
+                  "leveeDistrict": "FPAE",
+                  "maximum": 20000.0,
+                  "costToDate": 9797.0,
+                  "startDate": "2024-12-05",
+                  "endDate": "2025-06-30"
+                }
+              ],
+              "utilized": 80491.79999999999,
+              "utilizationPct": 16
+            },
+            {
+              "number": "35-03",
+              "consultant": "Eustis Engineering",
+              "contractDate": "2022-08-18",
+              "endDate": "2025-08-18",
+              "maximum": 500000.0,
+              "remaining": 486051.0,
+              "taskOrders": [
+                {
+                  "number": "01",
+                  "status": "Complete",
+                  "description": "Seawall Step Mitigation Geotech 2022",
+                  "projectNumber": "O2780754",
+                  "leveeDistrict": "OLD",
+                  "maximum": 13949.0,
+                  "costToDate": 13947.0,
+                  "startDate": "2022-11-01",
+                  "endDate": "2023-04-01"
+                }
+              ],
+              "utilized": 13949.0,
+              "utilizationPct": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "2025",
+      "name": "2025 IDIQ Contracts",
+      "serviceTypes": [
+        {
+          "service": "Constuction Materials & Testing",
+          "contractCount": 3,
+          "totalMaximum": 900000.0,
+          "totalUtilized": 4876.25,
+          "utilizationPct": 1,
+          "contracts": [
+            {
+              "number": "37-01",
+              "consultant": "Terracon Consultants",
+              "contractDate": "2025-01-16",
+              "endDate": "2028-01-16",
+              "maximum": 300000.0,
+              "remaining": 295123.75,
+              "taskOrders": [
+                {
+                  "number": "01",
+                  "status": "Active",
+                  "description": "West Return Splash & Turnaaround Pad Rehab-Testing",
+                  "projectNumber": "E2780165",
+                  "leveeDistrict": "EJLD",
+                  "maximum": 33616.5,
+                  "costToDate": 4876.25,
+                  "startDate": "2025-12-01",
+                  "endDate": "2026-05-01"
+                }
+              ],
+              "utilized": 4876.25,
+              "utilizationPct": 2
+            },
+            {
+              "number": "37-02",
+              "consultant": "Gulf South Engineering & Testing",
+              "contractDate": "2025-01-16",
+              "endDate": "2028-01-16",
+              "maximum": 300000.0,
+              "remaining": 300000.0,
+              "taskOrders": [
+                {
+                  "number": "01",
+                  "status": "Active",
+                  "description": "Lakeshore Dr. Imporvements -Materials Testing",
+                  "projectNumber": "O2440185",
+                  "leveeDistrict": "OLD",
+                  "maximum": 5820.0,
+                  "costToDate": 0.0,
+                  "startDate": "2025-10-06",
+                  "endDate": "2025-12-31"
+                }
+              ],
+              "utilized": 0,
+              "utilizationPct": 0
+            },
+            {
+              "number": "37-03",
+              "consultant": "PSI",
+              "contractDate": "2025-01-16",
+              "endDate": "2028-01-16",
+              "maximum": 300000.0,
+              "remaining": 300000.0,
+              "taskOrders": [],
+              "utilized": 0,
+              "utilizationPct": 0
+            }
+          ]
+        },
+        {
+          "service": "MEP Services",
+          "contractCount": 3,
+          "totalMaximum": 1500000.0,
+          "totalUtilized": 0,
+          "utilizationPct": 0,
+          "contracts": [
+            {
+              "number": "38-01",
+              "consultant": "Marrero, Couvillon & Associates",
+              "contractDate": "2025-01-16",
+              "endDate": "2028-01-16",
+              "maximum": 500000.0,
+              "remaining": 500000.0,
+              "taskOrders": [],
+              "utilized": 0,
+              "utilizationPct": 0
+            },
+            {
+              "number": "38-02",
+              "consultant": "Infinity Engineering Consultants",
+              "contractDate": "2025-01-16",
+              "endDate": "2028-01-16",
+              "maximum": 500000.0,
+              "remaining": 500000.0,
+              "taskOrders": [
+                {
+                  "number": "01",
+                  "status": "Active",
+                  "description": "Seabrook Equipment Tower HVAC-Study",
+                  "projectNumber": "O8300081",
+                  "leveeDistrict": "OLD",
+                  "maximum": 23259.0,
+                  "costToDate": 0.0,
+                  "startDate": "2026-01-13",
+                  "endDate": "2026-06-13"
+                }
+              ],
+              "utilized": 0,
+              "utilizationPct": 0
+            },
+            {
+              "number": "38-03",
+              "consultant": "IMC Consulting Engineers",
+              "contractDate": "2025-01-16",
+              "endDate": "2028-01-16",
+              "maximum": 500000.0,
+              "remaining": 500000.0,
+              "taskOrders": [],
+              "utilized": 0,
+              "utilizationPct": 0
+            }
+          ]
+        },
+        {
+          "service": "Surveying Services",
+          "contractCount": 4,
+          "totalMaximum": 2000000.0,
+          "totalUtilized": 0,
+          "utilizationPct": 0,
+          "contracts": [
+            {
+              "number": "39-01",
+              "consultant": "Bryant Hammet & Associates",
+              "contractDate": "2025-10-14",
+              "endDate": "2028-10-14",
+              "maximum": 500000.0,
+              "remaining": 500000.0,
+              "taskOrders": [
+                {
+                  "number": "01",
+                  "status": "Active",
+                  "description": "Floodwall, Floodgate, & Levee Transution Survey (2026)",
+                  "projectNumber": "O2990663",
+                  "leveeDistrict": "OLD",
+                  "maximum": 99777.0,
+                  "costToDate": 0.0,
+                  "startDate": "2026-03-02",
+                  "endDate": "2026-06-01"
+                }
+              ],
+              "utilized": 0,
+              "utilizationPct": 0
+            },
+            {
+              "number": "39-02",
+              "consultant": "EMC, Inc",
+              "contractDate": "2025-10-14",
+              "endDate": "2028-10-14",
+              "maximum": 500000.0,
+              "remaining": 500000.0,
+              "taskOrders": [],
+              "utilized": 0,
+              "utilizationPct": 0
+            },
+            {
+              "number": "39-03",
+              "consultant": "CH Fenstermaker",
+              "contractDate": "2025-10-14",
+              "endDate": "2028-10-14",
+              "maximum": 500000.0,
+              "remaining": 500000.0,
+              "taskOrders": [],
+              "utilized": 0,
+              "utilizationPct": 0
+            },
+            {
+              "number": "39-04",
+              "consultant": "Linfield, Hunter, & Junius",
+              "contractDate": "2026-01-07",
+              "endDate": "2029-01-07",
+              "maximum": 500000.0,
+              "remaining": 500000.0,
+              "taskOrders": [],
+              "utilized": 0,
+              "utilizationPct": 0
+            }
+          ]
+        },
+        {
+          "service": "Civil Engineering",
+          "contractCount": 9,
+          "totalMaximum": 8100000.0,
+          "totalUtilized": 14326.439999999944,
+          "utilizationPct": 0,
+          "contracts": [
+            {
+              "number": "40-02",
+              "consultant": "Burk-Kleinpeter",
+              "contractDate": "2025-10-14",
+              "endDate": "2028-10-14",
+              "maximum": 1000000.0,
+              "remaining": 1000000.0,
+              "taskOrders": [],
+              "utilized": 0,
+              "utilizationPct": 0
+            },
+            {
+              "number": "40-03",
+              "consultant": "Digital Engineering & Imaging",
+              "contractDate": "2025-10-14",
+              "endDate": "2028-10-14",
+              "maximum": 100000.0,
+              "remaining": 1000000.0,
+              "taskOrders": [
+                {
+                  "number": "01",
+                  "status": "Active",
+                  "description": "2026 MS4 & LDEQ Pemits",
+                  "projectNumber": "O3000219",
+                  "leveeDistrict": "OLD",
+                  "maximum": 34228.58,
+                  "costToDate": 1592.37,
+                  "startDate": "2026-01-01",
+                  "endDate": "2027-01-21"
+                }
+              ],
+              "utilized": 0,
+              "utilizationPct": 0
+            },
+            {
+              "number": "40-04",
+              "consultant": "Evans-Graves Engineers",
+              "contractDate": "2025-09-16",
+              "endDate": "2028-09-16",
+              "maximum": 1000000.0,
+              "remaining": 1000000.0,
+              "taskOrders": [
+                {
+                  "number": "01",
+                  "status": "Active",
+                  "description": "Mitigation of London Ave Outfall Canal Erosion Phase 1",
+                  "projectNumber": "O2150172",
+                  "leveeDistrict": "OLD",
+                  "maximum": 86944.0,
+                  "costToDate": 0.0,
+                  "startDate": "2026-02-23",
+                  "endDate": "2026-07-03"
+                }
+              ],
+              "utilized": 0,
+              "utilizationPct": 0
+            },
+            {
+              "number": "40-05",
+              "consultant": "HNTB",
+              "contractDate": "2026-02-04",
+              "endDate": "2029-02-04",
+              "maximum": 1000000.0,
+              "remaining": 1000000.0,
+              "taskOrders": [],
+              "utilized": 0,
+              "utilizationPct": 0
+            },
+            {
+              "number": "40-06",
+              "consultant": "Jacobs Engineering",
+              "contractDate": "2026-02-03",
+              "endDate": "2029-02-03",
+              "maximum": 1000000.0,
+              "remaining": 1000000.0,
+              "taskOrders": [],
+              "utilized": 0,
+              "utilizationPct": 0
+            },
+            {
+              "number": "40-07",
+              "consultant": "Linfield, Hunter, & Junius",
+              "contractDate": "2026-01-07",
+              "endDate": "2029-01-07",
+              "maximum": 1000000.0,
+              "remaining": 1000000.0,
+              "taskOrders": [],
+              "utilized": 0,
+              "utilizationPct": 0
+            },
+            {
+              "number": "40-08",
+              "consultant": "Richard C. Lambert Consultants",
+              "contractDate": "2025-10-14",
+              "endDate": "2028-10-14",
+              "maximum": 1000000.0,
+              "remaining": 1000000.0,
+              "taskOrders": [],
+              "utilized": 0,
+              "utilizationPct": 0
+            },
+            {
+              "number": "40-09",
+              "consultant": "Shread-Kuyrkendall & Associates",
+              "contractDate": "2025-10-14",
+              "endDate": "2028-10-14",
+              "maximum": 1000000.0,
+              "remaining": 1000000.0,
+              "taskOrders": [],
+              "utilized": 0,
+              "utilizationPct": 0
+            },
+            {
+              "number": "40-10",
+              "consultant": "T. Baker Smith",
+              "contractDate": "2025-11-04",
+              "endDate": "2028-11-04",
+              "maximum": 1000000.0,
+              "remaining": 985673.56,
+              "taskOrders": [
+                {
+                  "number": "01",
+                  "status": "Active",
+                  "description": "EJLD West Return Wall Splash Pad Contruction Admin",
+                  "projectNumber": "E2780167",
+                  "leveeDistrict": "EJLD",
+                  "maximum": 41000.0,
+                  "costToDate": 13926.439999999999,
+                  "startDate": "2025-11-10",
+                  "endDate": "2026-06-01"
+                },
+                {
+                  "number": "02",
+                  "status": "Active",
+                  "description": "EJLD West Return Wall Splash Pad Resident Inspection",
+                  "projectNumber": "E2780168",
+                  "leveeDistrict": "EJLD",
+                  "maximum": 80000.0,
+                  "costToDate": 400.0,
+                  "startDate": "2025-11-10",
+                  "endDate": "2026-06-01"
+                }
+              ],
+              "utilized": 14326.439999999944,
+              "utilizationPct": 1
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "totalContracts": 36,
+    "totalMaxValue": 26000000.0,
+    "totalUtilized": 4423895.9399999995,
+    "activeTaskOrders": 21,
+    "completedTaskOrders": 45,
+    "serviceTypes": 6,
+    "firms": 30
+  }
+}

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { FileText, Wrench, CheckCircle, Clock, ArrowRight } from "lucide-react";
 import {
   BarChart,
@@ -30,11 +31,20 @@ export default function OperationsPage() {
   return (
     <div className="py-12">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <SectionHeader
-          title="Operations & Maintenance"
-          subtitle="Ongoing work to maintain our flood defense systems"
-          source={latestPermit.source}
-        />
+        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-8">
+          <div>
+            <h1 className="text-3xl md:text-4xl font-bold text-[#21355a]">Operations & Maintenance</h1>
+            <p className="mt-2 text-lg text-gray-600">Ongoing work to maintain our flood defense systems</p>
+            <p className="mt-2 text-sm text-gray-400">Data source: {latestPermit.source}</p>
+          </div>
+          <Link
+            href="/operations/idiq"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm font-medium text-[#21355a] hover:bg-gray-50 hover:border-gray-300 transition-colors whitespace-nowrap self-start"
+          >
+            IDIQ Contract Tracker
+            <ArrowRight className="h-4 w-4 text-[#65bc7b]" />
+          </Link>
+        </div>
 
         {/* Key Metrics */}
         <section className="mb-12">
