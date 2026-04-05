@@ -29,7 +29,7 @@ const quickLinks = [
     icon: Shield,
   },
   {
-    title: "Financial Transparency",
+    title: "Finance",
     description: "How your tax dollars are being invested",
     href: "/financial",
     icon: FileText,

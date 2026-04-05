@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { MapPin, Phone, Mail, ExternalLink } from "lucide-react";
-import { siteConfig, contacts } from "@/data/siteData";
+import { MapPin, Phone, ExternalLink } from "lucide-react";
+import { siteConfig } from "@/data/siteData";
 
 export default function Footer() {
   return (
@@ -27,14 +27,17 @@ export default function Footer() {
             <div className="space-y-2 text-sm text-blue-200">
               <div className="flex items-center gap-2">
                 <Phone className="h-4 w-4" />
-                <span>{contacts.regionalDirector.office}</span>
+                <span>(504) 286-3100</span>
               </div>
-              <div className="flex items-center gap-2">
-                <Mail className="h-4 w-4" />
-                <a href={`mailto:${contacts.regionalDirector.email}`} className="hover:text-white transition-colors">
-                  {contacts.regionalDirector.email}
-                </a>
-              </div>
+              <a
+                href="https://www.floodauthority.org/contact/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 hover:text-white transition-colors"
+              >
+                <ExternalLink className="h-4 w-4" />
+                Contact form
+              </a>
             </div>
           </div>
 
@@ -76,7 +79,7 @@ export default function Footer() {
         {/* Bottom bar */}
         <div className="mt-8 pt-8 border-t border-white/20">
           <div className="flex flex-col sm:flex-row justify-between items-center gap-4 text-sm text-blue-200">
-            <p>&copy; {new Date().getFullYear()} {siteConfig.organizationShort}. All rights reserved.</p>
+            <p>&copy; {new Date().getFullYear()} {siteConfig.organizationShort}</p>
             <p className="flex items-center gap-2">
               <span className="inline-block w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
               Data last updated: {siteConfig.lastUpdated}
