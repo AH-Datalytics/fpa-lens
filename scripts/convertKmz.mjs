@@ -92,7 +92,7 @@ function convertKmz(kmzPath, outputPath, name) {
 }
 
 function main() {
-  const kmzDir = join(__dirname, '..', 'data-sources', 'kmz');
+  const kmzDir = join(__dirname, '..', 'data', 'sources', 'kmz');
   const outputDir = join(__dirname, '..', 'public', 'data');
   mkdirSync(outputDir, { recursive: true });
 

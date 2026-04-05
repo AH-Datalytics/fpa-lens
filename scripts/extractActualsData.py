@@ -2,7 +2,7 @@
 """
 Extract FY26 YTD actuals data from the Dashboard Reports workbook.
 
-Reads from: ~/Development/fpa/data-sources/budget/Dashboard_Reports through 01.31.26.xlsm
+Reads from: ~/Development/fpa/data/sources/budget/Dashboard_Reports through 01.31.26.xlsm
 Outputs to:  ~/Development/fpa/public/data/actuals-fy26.json
 
 Separates Projects from O&M expenses per Jeff Williams' directive:
@@ -15,7 +15,7 @@ import os
 
 import openpyxl
 
-BASE_DIR = os.path.expanduser("~/Development/fpa/data-sources/budget")
+BASE_DIR = os.path.expanduser("~/Development/fpa/data/sources/budget")
 OUTPUT_PATH = os.path.expanduser("~/Development/fpa/public/data/actuals-fy26.json")
 
 FILENAME = "Dashboard_Reports through 01.31.26.xlsm"

@@ -2,7 +2,7 @@
 """
 Extract safety event data from Excel files and output anonymized JSON for a dashboard.
 
-Reads from: ~/Development/fpa/data-sources/safety-event-logs/*.xlsx
+Reads from: ~/Development/fpa/data/sources/safety-event-logs/*.xlsx
 Outputs to:  ~/Development/fpa/public/data/safety-events.json
 
 Anonymization: strips employee names, group codes, locations, unit numbers,
@@ -17,7 +17,7 @@ from datetime import datetime
 
 import openpyxl
 
-BASE_DIR = os.path.expanduser("~/Development/fpa/data-sources/safety-event-logs")
+BASE_DIR = os.path.expanduser("~/Development/fpa/data/sources/safety-event-logs")
 OUTPUT_PATH = os.path.expanduser("~/Development/fpa/public/data/safety-events.json")
 
 # File configurations: (filename, sheet_name, has_event_type_column)

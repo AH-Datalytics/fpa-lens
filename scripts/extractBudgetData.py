@@ -2,7 +2,7 @@
 """
 Extract FY26 budget data from Excel and output JSON for the financial dashboard.
 
-Reads from: ~/Development/fpa/data-sources/budget/Budget Summary w Projects FY26.xlsx
+Reads from: ~/Development/fpa/data/sources/budget/Budget Summary w Projects FY26.xlsx
 Outputs to:  ~/Development/fpa/public/data/budget-fy26.json
 """
 
@@ -11,7 +11,7 @@ import os
 
 import openpyxl
 
-BASE_DIR = os.path.expanduser("~/Development/fpa/data-sources/budget")
+BASE_DIR = os.path.expanduser("~/Development/fpa/data/sources/budget")
 OUTPUT_PATH = os.path.expanduser("~/Development/fpa/public/data/budget-fy26.json")
 
 FILENAME = "Budget Summary w Projects FY26.xlsx"
