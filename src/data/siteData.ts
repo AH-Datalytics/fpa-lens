@@ -390,6 +390,18 @@ export const operationsData = {
     ],
   },
 
+  // Source: FPA Engineering Department (last 4 complete quarters)
+  permitProcessing: {
+    period: "Last 4 Quarters",
+    submitted: 502,
+    approved: 420,
+    approvalRate: 84,
+    avgDaysToLNO: 69,
+    avgDaysToApproval: 38,
+    avgTotalDays: 107,
+    source: "FPA Engineering Department",
+  },
+
   // Source: Mar 2026 SITREP
   maintenanceActivities: [
     "USACE annual inspections completed with no issues identified",

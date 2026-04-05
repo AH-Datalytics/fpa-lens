@@ -1,6 +1,7 @@
 "use client";
 
-import { FileText, Wrench, CheckCircle, Clock } from "lucide-react";
+import { useState } from "react";
+import { FileText, Wrench, CheckCircle, Clock, ArrowRight } from "lucide-react";
 import {
   BarChart,
   Bar,
@@ -16,6 +17,8 @@ import KPICard from "@/components/KPICard";
 import { operationsData, kpiMetrics } from "@/data/siteData";
 
 export default function OperationsPage() {
+  const [showFullPipeline, setShowFullPipeline] = useState(false);
+
   const permitChartData = operationsData.permitsIssued.map((item) => ({
     month: item.month.split(" ")[0].substring(0, 3),
     count: item.count,
@@ -76,7 +79,109 @@ export default function OperationsPage() {
                 Managed by: {operationsData.pccpRepairStatus.managedBy}
               </p>
             </div>
+            <KPICard
+              label="Permit Approval Rate"
+              value={operationsData.permitProcessing.approvalRate}
+              total={100}
+              unit="%"
+              icon={<CheckCircle className="h-6 w-6" />}
+              source={operationsData.permitProcessing.source}
+            />
+            <KPICard
+              label="Avg Processing Time"
+              value={operationsData.permitProcessing.avgTotalDays}
+              unit="days"
+              icon={<Clock className="h-6 w-6" />}
+              subtitle={`${operationsData.permitProcessing.period}`}
+              source={operationsData.permitProcessing.source}
+            />
           </div>
+        </section>
+
+        {/* Permit Pipeline */}
+        <section className="mb-12">
+          <SectionSubheader title="Permit Processing Pipeline" />
+          <DataCard
+            title={
+              <div className="flex items-center justify-between">
+                <span>{showFullPipeline ? "Life of a permit" : `Permit flow (${operationsData.permitProcessing.period.toLowerCase()})`}</span>
+                <button
+                  onClick={() => setShowFullPipeline(!showFullPipeline)}
+                  className="text-xs font-medium text-[#21355a] hover:text-[#21355a]/70 border border-gray-300 rounded-md px-2.5 py-1 transition-colors"
+                >
+                  {showFullPipeline ? "Show timing" : "Full workflow"}
+                </button>
+              </div>
+            }
+            source={operationsData.permitProcessing.source}
+            note={`Avg 69 days submittal to LNO, 38 days LNO to approval (${operationsData.permitProcessing.period.toLowerCase()})`}
+          >
+            {showFullPipeline ? (
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-0 py-4 flex-wrap">
+                {[
+                  { label: "Permit Submittal", highlight: true },
+                  { label: "FPA-E Review" },
+                  { label: "External Agency Coordination" },
+                  { label: "Receipt of LNO" },
+                  { label: "Final Review" },
+                  { label: "Permit Issued", highlight: true, success: true },
+                ].map((step, i, arr) => (
+                  <div key={step.label} className="flex flex-col sm:flex-row items-center">
+                    <div className={`flex flex-col items-center px-4 py-3 border-2 rounded-lg min-w-[100px] text-center ${
+                      step.success
+                        ? "border-[#65bc7b]"
+                        : step.highlight
+                          ? "border-[#21355a]"
+                          : "border-gray-300 bg-gray-50"
+                    }`}>
+                      <span className={`text-xs font-medium uppercase tracking-wide ${
+                        step.success ? "text-[#65bc7b]" : step.highlight ? "text-[#21355a]" : "text-gray-500"
+                      }`}>
+                        {step.label}
+                      </span>
+                    </div>
+                    {i < arr.length - 1 && (
+                      <>
+                        <ArrowRight className="hidden sm:block h-4 w-4 text-gray-400 mx-1 flex-shrink-0" />
+                        <ArrowRight className="sm:hidden h-4 w-4 text-gray-400 rotate-90 my-1" />
+                      </>
+                    )}
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-0 py-4">
+                <div className="flex flex-col items-center px-6 py-4 border-2 border-[#21355a] rounded-lg min-w-[120px]">
+                  <span className="text-xs font-medium text-gray-500 uppercase tracking-wide">Submitted</span>
+                  <span className="text-2xl font-bold text-[#21355a]">{operationsData.permitProcessing.submitted}</span>
+                </div>
+                <div className="flex flex-col items-center px-4">
+                  <span className="text-xs font-medium text-gray-500 mb-1">69 days avg</span>
+                  <div className="hidden sm:flex items-center">
+                    <div className="w-16 h-px bg-gray-300" />
+                    <ArrowRight className="h-4 w-4 text-gray-400 -ml-1" />
+                  </div>
+                  <ArrowRight className="h-4 w-4 text-gray-400 rotate-90 sm:hidden" />
+                </div>
+                <div className="flex flex-col items-center px-6 py-4 border-2 border-gray-300 rounded-lg min-w-[120px] bg-gray-50">
+                  <span className="text-xs font-medium text-gray-500 uppercase tracking-wide">LNO Review</span>
+                  <span className="text-sm text-gray-600 mt-1">Levee District</span>
+                </div>
+                <div className="flex flex-col items-center px-4">
+                  <span className="text-xs font-medium text-gray-500 mb-1">38 days avg</span>
+                  <div className="hidden sm:flex items-center">
+                    <div className="w-16 h-px bg-gray-300" />
+                    <ArrowRight className="h-4 w-4 text-gray-400 -ml-1" />
+                  </div>
+                  <ArrowRight className="h-4 w-4 text-gray-400 rotate-90 sm:hidden" />
+                </div>
+                <div className="flex flex-col items-center px-6 py-4 border-2 border-[#65bc7b] rounded-lg min-w-[120px]">
+                  <span className="text-xs font-medium text-gray-500 uppercase tracking-wide">Approved</span>
+                  <span className="text-2xl font-bold text-[#65bc7b]">{operationsData.permitProcessing.approved}</span>
+                </div>
+              </div>
+            )}
+          </DataCard>
         </section>
 
         {/* Permits Chart */}
