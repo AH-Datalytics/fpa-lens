@@ -834,7 +834,7 @@ export default function EnvironmentalPage() {
                   <tr className="border-b border-gray-100 bg-green-50/50">
                     <td className="py-3"><RiskBadge level="GREEN" size="sm" /></td>
                     <td className="py-3 text-gray-600">&lt; 15 kt or offshore</td>
-                    <td className="py-3 text-gray-600">&lt; 0.5 ft</td>
+                    <td className="py-3 text-gray-600">&lt; 0.75 ft</td>
                     <td className="py-3 text-gray-600">No action</td>
                   </tr>
                   <tr className="border-b border-gray-100 bg-yellow-50/50">
@@ -843,7 +843,7 @@ export default function EnvironmentalPage() {
                       15 - 25 kt
                       <span className="block text-xs text-gray-400">sustained ~{Math.round(RISK_THRESHOLDS.WIND_SUSTAINED_FRACTION * RISK_THRESHOLDS.WIND_HISTORY_HOURS * 10) / 10}+ hrs</span>
                     </td>
-                    <td className="py-3 text-gray-600">0.5 - 1.0 ft</td>
+                    <td className="py-3 text-gray-600">0.75 - 1.0 ft</td>
                     <td className="py-3 text-gray-600">Monitor conditions</td>
                   </tr>
                   <tr className="border-b border-gray-100 bg-orange-50/50">

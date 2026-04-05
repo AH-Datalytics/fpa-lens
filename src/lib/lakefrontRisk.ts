@@ -152,7 +152,10 @@ export const RISK_THRESHOLDS = {
   WIND_RED: 35,
 
   // Surge anomaly tiers (feet above predicted tidal level)
-  SURGE_YELLOW: 0.5,
+  // YELLOW raised from 0.5 to 0.75 after backtesting against 16 historical
+  // closures: 0.5 ft triggered on 71% of non-closure winter days (surge-only
+  // false alarms). 0.75 ft cuts false alarms to 43% with zero closure loss.
+  SURGE_YELLOW: 0.75,
   SURGE_ORANGE: 1.0,
   SURGE_RED: 1.5,
 
