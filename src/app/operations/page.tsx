@@ -57,39 +57,6 @@ export default function OperationsPage() {
               source={latestPermit.source}
             />
             <KPICard
-              label="Hurricane Gate Inspections"
-              value={operationsData.floodgateInspections.hurricaneGates.percentComplete}
-              total={100}
-              unit="% complete"
-              icon={<CheckCircle className="h-6 w-6" />}
-              source={operationsData.floodgateInspections.source}
-            />
-            <KPICard
-              label="Valve Exercises"
-              value={operationsData.floodgateInspections.valveExercises.percentComplete}
-              total={100}
-              unit="% complete"
-              icon={<CheckCircle className="h-6 w-6" />}
-              source={operationsData.floodgateInspections.source}
-            />
-            <div className="bg-white rounded-xl shadow-md border border-gray-100 p-6">
-              <div className="flex items-start justify-between mb-3">
-                <span className="text-sm font-medium text-gray-500 uppercase tracking-wide">
-                  PCCP Repairs
-                </span>
-                <Clock className="h-6 w-6 text-[#21355a]" />
-              </div>
-              <p className="text-sm text-gray-600 mt-2">
-                Most items near completion pending final acceptance.
-              </p>
-              <p className="text-sm text-green-600 font-medium mt-2">
-                All 17 pumps remain available. Repair work does not impact pumping capacity.
-              </p>
-              <p className="text-xs text-gray-400 mt-2">
-                Managed by: {operationsData.pccpRepairStatus.managedBy}
-              </p>
-            </div>
-            <KPICard
               label="Permit Approval Rate"
               value={operationsData.permitProcessing.approvalRate}
               total={100}

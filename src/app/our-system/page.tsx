@@ -1,8 +1,8 @@
 import {
   Shield,
   Droplets,
-  Landmark,
-  LandPlot,
+  Layers,
+  Building2,
   Fence,
   CheckCircle,
   AlertTriangle,
@@ -87,7 +87,7 @@ export default function OurSystemPage() {
           <SectionSubheader title="System at a Glance" />
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
             <div className="bg-white rounded-xl shadow-md p-6 text-center">
-              <LandPlot className="h-6 w-6 mx-auto mb-2 text-[#65bc7b]" />
+              <Layers className="h-6 w-6 mx-auto mb-2 text-[#65bc7b]" />
               <div className="text-3xl font-bold text-[#21355a]">{infrastructureAssets.totalLeveeMiles.value}</div>
               <div className="text-sm text-gray-600">Miles of Levees</div>
             </div>
@@ -102,7 +102,7 @@ export default function OurSystemPage() {
               <div className="text-sm text-gray-600">Valves</div>
             </div>
             <div className="bg-white rounded-xl shadow-md p-6 text-center">
-              <Landmark className="h-6 w-6 mx-auto mb-2 text-[#65bc7b]" />
+              <Building2 className="h-6 w-6 mx-auto mb-2 text-[#65bc7b]" />
               <div className="text-3xl font-bold text-[#21355a]">{infrastructureAssets.complexStructures.list.length}</div>
               <div className="text-sm text-gray-600">Complex Structures</div>
             </div>
