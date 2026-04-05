@@ -115,6 +115,14 @@ export interface StoredForecast {
   };
 }
 
+export interface RiverLevel {
+  level: number | null;     // feet at Carrollton gauge
+  floodStage: number;       // 17 ft
+  timestamp: string;
+  forecast: number | null;  // NWS forecast crest
+  forecastTime: string | null;
+}
+
 export interface LakefrontData {
   risk: RiskAssessment;
   current: LakefrontConditions;
@@ -124,6 +132,7 @@ export interface LakefrontData {
   storedForecasts: Record<string, StoredForecast>;  // historical forecast snapshots
   alerts: NWSAlert[];
   structureGauges: StructureGauge[];
+  riverLevel: RiverLevel | null;
   dataGaps: string[];                     // which data sources are currently unavailable
   lastUpdated: string;
   stationId: string;

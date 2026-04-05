@@ -583,23 +583,44 @@ export default function EnvironmentalPage() {
                 </span>
                 <Activity className="h-6 w-6 text-[#21355a]" />
               </div>
-              <div className="flex items-baseline gap-2">
-                <span className="text-3xl font-bold text-[#21355a]">3.78</span>
-                <span className="text-sm text-gray-500">ft at Carrollton</span>
-              </div>
-              <p className="text-xs text-green-600 mt-1">Below flood stage</p>
-              <div className="mt-3">
-                <div className="h-2 bg-gray-200 rounded-full w-full">
-                  <div
-                    className="h-2 bg-[#65bc7b] rounded-full"
-                    style={{ width: `${Math.min((3.78 / 20) * 100, 100)}%` }}
-                  />
-                </div>
-                <div className="flex justify-between mt-1">
-                  <span className="text-[9px] text-gray-400">0 ft</span>
-                  <span className="text-[9px] text-red-400">17 ft flood stage</span>
-                </div>
-              </div>
+              {data?.riverLevel?.level != null ? (() => {
+                const rl = data.riverLevel!;
+                const level = rl.level!;
+                const flood = rl.floodStage;
+                const barMax = flood + 3;
+                const pct = Math.min((level / barMax) * 100, 100);
+                const floodPct = (flood / barMax) * 100;
+                const isAboveFlood = level >= flood;
+                return (
+                  <>
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-3xl font-bold text-[#21355a]">{level.toFixed(1)}</span>
+                      <span className="text-sm text-gray-500">ft at Carrollton</span>
+                    </div>
+                    <p className={`text-xs mt-1 ${isAboveFlood ? "text-red-600 font-medium" : "text-green-600"}`}>
+                      {isAboveFlood ? "Above flood stage" : "Below flood stage"}
+                    </p>
+                    <div className="mt-3 relative">
+                      <div className="h-2 bg-gray-200 rounded-full w-full">
+                        <div
+                          className={`h-2 rounded-full ${isAboveFlood ? "bg-red-400" : "bg-[#65bc7b]"}`}
+                          style={{ width: `${pct}%` }}
+                        />
+                      </div>
+                      <div
+                        className="absolute top-0 w-px h-2 bg-red-400"
+                        style={{ left: `${floodPct}%` }}
+                      />
+                      <div className="flex justify-between mt-1">
+                        <span className="text-[9px] text-gray-400">0 ft</span>
+                        <span className="text-[9px] text-red-400">{flood} ft flood stage</span>
+                      </div>
+                    </div>
+                  </>
+                );
+              })() : (
+                <p className="text-sm text-gray-400 mt-2">Unavailable</p>
+              )}
               <a
                 href="https://water.noaa.gov/gauges/norl1"
                 target="_blank"

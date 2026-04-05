@@ -25,6 +25,7 @@ import {
   type WaterLevelReading,
   type PressureReading,
   type StructureGauge,
+  type RiverLevel,
 } from "@/lib/lakefrontRisk";
 import { saveForecastSnapshot, getStoredForecasts } from "@/lib/forecastStore";
 
@@ -365,6 +366,25 @@ async function fetchStructureGauges(): Promise<StructureGauge[]> {
 }
 
 // ============================================================================
+// MISSISSIPPI RIVER LEVEL (NWS)
+// ============================================================================
+
+const NWS_RIVER_URL = "https://api.water.noaa.gov/nwps/v1/gauges/norl1";
+
+async function fetchRiverLevel(): Promise<RiverLevel> {
+  const res = await fetchWithTimeout(NWS_RIVER_URL);
+  const json = await res.json();
+
+  const level = json.status?.observed?.primary ?? null;
+  const timestamp = json.status?.observed?.validTime ?? "";
+  const floodStage = json.flood?.categories?.minor?.stage ?? 17;
+  const forecast = json.status?.forecast?.primary ?? null;
+  const forecastTime = json.status?.forecast?.validTime ?? null;
+
+  return { level, floodStage, timestamp, forecast, forecastTime };
+}
+
+// ============================================================================
 // FORECAST MERGING
 // ============================================================================
 
@@ -421,7 +441,7 @@ export async function GET(request: Request) {
     // Fetch all data sources in parallel; partial failures are handled gracefully.
     // Wind history (8th fetch) powers duration gating; if it fails, risk engine
     // falls back to instantaneous-only behavior.
-    const [windResult, waterResult, predResult, pressureResult, ofsResult, nwsForecastResult, alertsResult, windHistoryResult, gaugesResult, waterHistoryResult] =
+    const [windResult, waterResult, predResult, pressureResult, ofsResult, nwsForecastResult, alertsResult, windHistoryResult, gaugesResult, waterHistoryResult, riverResult] =
       await Promise.allSettled([
         fetchCurrentWind(),
         fetchWaterLevel(),
@@ -433,6 +453,7 @@ export async function GET(request: Request) {
         fetchWindHistory(chartHours),
         fetchStructureGauges(),
         fetchWaterLevelHistory(chartHours),
+        fetchRiverLevel(),
       ]);
 
     // Extract values with fallbacks
@@ -472,6 +493,11 @@ export async function GET(request: Request) {
       ? waterHistoryResult.value
       : [];
 
+    // Mississippi River level from NWS
+    const riverLevel = riverResult.status === "fulfilled"
+      ? riverResult.value
+      : null;
+
     // Build current conditions
     const waterLevel: WaterLevelReading = {
       level: water.level,
@@ -508,6 +534,7 @@ export async function GET(request: Request) {
     if (nwsForecastResult.status === "rejected") dataGaps.push("NWS forecast");
     if (windHistoryResult.status === "rejected") dataGaps.push("wind history");
     if (gaugesResult.status === "rejected") dataGaps.push("structure gauges");
+    if (riverResult.status === "rejected") dataGaps.push("river level");
 
     if (dataGaps.length > 0) {
       risk.factors.push(`Note: Some data sources unavailable (${dataGaps.join(", ")})`);
@@ -529,6 +556,7 @@ export async function GET(request: Request) {
       storedForecasts,
       alerts,
       structureGauges,
+      riverLevel,
       dataGaps,
       lastUpdated: new Date().toISOString(),
       stationId: STATION_ID,
