@@ -47,7 +47,7 @@ export default function OurSystemPage() {
     <div className="py-12">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <SectionHeader
-          title="Our System"
+          title="Infrastructure"
           subtitle="Learn about the flood protection infrastructure that keeps Greater New Orleans safe"
         />
 

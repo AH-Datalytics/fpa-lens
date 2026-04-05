@@ -23,7 +23,7 @@ import {
 
 const quickLinks = [
   {
-    title: "Our System",
+    title: "Infrastructure",
     description: "Details and readiness of infrastructure protecting Greater New Orleans",
     href: "/our-system",
     icon: Shield,
@@ -191,6 +191,43 @@ export default function Home() {
               </div>
             </Link>
 
+            {/* Financial Readiness */}
+            <Link
+              href="/financial"
+              className={`group bg-white rounded-xl shadow-lg border-l-4 ${statusBorder(financial.status)} p-6 hover:shadow-2xl transition-shadow duration-200`}
+            >
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-3">
+                  <div className={`w-10 h-10 ${statusBg(financial.status)} rounded-lg flex items-center justify-center`}>
+                    <Image src="/dollar-icon.svg" alt="Dollar" width={20} height={20} className="opacity-80" />
+                  </div>
+                  <h3 className="font-semibold text-[#21355a]">Financial Readiness</h3>
+                </div>
+                <StatusBadge status={financial.status} size="sm" tooltip={statusTooltip(financial.status)} />
+              </div>
+              <div className="grid grid-cols-2 gap-3 mb-3">
+                <div className="text-center">
+                  <div className="text-xl font-bold text-[#21355a]">${(omActual / 1_000_000).toFixed(1)}M</div>
+                  <div className="text-xs text-gray-500">O&M Spent (YTD)</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-xl font-bold text-[#21355a]">${(omAnnualBudget / 1_000_000).toFixed(1)}M</div>
+                  <div className="text-xs text-gray-500">Annual O&M Budget</div>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="flex-1 h-2 bg-gray-100 rounded-full">
+                  <div className={`h-2 rounded-full ${omPct > 100 ? "bg-red-400" : "bg-green-400"}`} style={{ width: `${Math.min(omPct, 100)}%` }} />
+                </div>
+                <span className="text-xs font-medium text-gray-500">{omPct}%</span>
+              </div>
+              <p className="text-[10px] text-gray-400 mt-1">{omPct}% of annual budget used, {fyElapsedPct}% through fiscal year</p>
+              <div className={`mt-4 flex items-center text-sm font-medium ${statusText(financial.status)}`}>
+                View details
+                <ArrowRight className="h-4 w-4 ml-1 group-hover:translate-x-1 transition-transform" />
+              </div>
+            </Link>
+
             {/* Staff Readiness */}
             <Link
               href="/our-team"
@@ -221,43 +258,6 @@ export default function Home() {
               </div>
               <p className="text-sm text-gray-600 line-clamp-2">{staffReadiness.description}</p>
               <div className={`mt-4 flex items-center text-sm font-medium ${statusText(staffReadiness.status)}`}>
-                View details
-                <ArrowRight className="h-4 w-4 ml-1 group-hover:translate-x-1 transition-transform" />
-              </div>
-            </Link>
-
-            {/* Financial Readiness */}
-            <Link
-              href="/financial"
-              className={`group bg-white rounded-xl shadow-lg border-l-4 ${statusBorder(financial.status)} p-6 hover:shadow-2xl transition-shadow duration-200`}
-            >
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-3">
-                  <div className={`w-10 h-10 ${statusBg(financial.status)} rounded-lg flex items-center justify-center`}>
-                    <Image src="/dollar-icon.svg" alt="Dollar" width={20} height={20} className="opacity-80" />
-                  </div>
-                  <h3 className="font-semibold text-[#21355a]">Financial Readiness</h3>
-                </div>
-                <StatusBadge status={financial.status} size="sm" tooltip={statusTooltip(financial.status)} tooltipAlign="right" />
-              </div>
-              <div className="grid grid-cols-2 gap-3 mb-3">
-                <div className="text-center">
-                  <div className="text-xl font-bold text-[#21355a]">${(omActual / 1_000_000).toFixed(1)}M</div>
-                  <div className="text-xs text-gray-500">O&M Spent (YTD)</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-xl font-bold text-[#21355a]">${(omAnnualBudget / 1_000_000).toFixed(1)}M</div>
-                  <div className="text-xs text-gray-500">Annual O&M Budget</div>
-                </div>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="flex-1 h-2 bg-gray-100 rounded-full">
-                  <div className={`h-2 rounded-full ${omPct > 100 ? "bg-red-400" : "bg-green-400"}`} style={{ width: `${Math.min(omPct, 100)}%` }} />
-                </div>
-                <span className="text-xs font-medium text-gray-500">{omPct}%</span>
-              </div>
-              <p className="text-[10px] text-gray-400 mt-1">{omPct}% of annual budget used, {fyElapsedPct}% through fiscal year</p>
-              <div className={`mt-4 flex items-center text-sm font-medium ${statusText(financial.status)}`}>
                 View details
                 <ArrowRight className="h-4 w-4 ml-1 group-hover:translate-x-1 transition-transform" />
               </div>
