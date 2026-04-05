@@ -6,10 +6,12 @@ export default function Footer() {
   return (
     <footer className="bg-[#21355a] text-white">
       <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-16">
           {/* Organization Info */}
           <div>
-            <h3 className="text-lg font-semibold mb-4">{siteConfig.organization}</h3>
+            <h3 className="text-lg font-semibold mb-4">
+              Southeast Louisiana Flood<br />Protection Authority - East
+            </h3>
             <div className="space-y-2 text-sm text-blue-200">
               <div className="flex items-start gap-2">
                 <MapPin className="h-4 w-4 mt-0.5 flex-shrink-0" />

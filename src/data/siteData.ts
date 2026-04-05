@@ -69,13 +69,6 @@ export const systemReadiness = {
   // Source: Mar 2026 SITREP
   lastUpdated: "March 2026",
   overallStatus: "GREEN" as StatusLevel,
-  riverConditions: {
-    level: 3.78,
-    unit: "ft",
-    status: "Below flood stage",
-    forecast: "Forecast to rise to 4.5 ft in early March, then slow fall to 3.0 ft",
-    source: "Mar 2026 SITREP",
-  },
   categories: [
     {
       name: "Infrastructure Readiness",
