@@ -188,14 +188,14 @@ export default function OurSystemPage() {
         {/* Stay Informed */}
         <section className="mb-12">
           <SectionSubheader title="Stay Informed" />
-          <div className="bg-gradient-to-r from-[#21355a] to-[#2c3859] rounded-xl p-6 text-white">
+          <div className="bg-white rounded-xl shadow-md border border-gray-100 p-6">
             <div className="flex flex-col md:flex-row items-start gap-6">
               <div className="flex-1">
                 <div className="flex items-center gap-3 mb-3">
-                  <Bell className="h-5 w-5" />
-                  <h3 className="text-lg font-bold">Real-Time Alerts</h3>
+                  <Bell className="h-5 w-5 text-[#21355a]" />
+                  <h3 className="text-lg font-bold text-[#21355a]">Real-Time Alerts</h3>
                 </div>
-                <p className="text-blue-100 text-sm mb-4">
+                <p className="text-gray-600 text-sm mb-4">
                   Get notified about floodgate operations, road closures, river levels, and high tide
                   events. Operations issues Rave alerts for maintenance work and any activity that may
                   affect travel through structures.
@@ -204,15 +204,15 @@ export default function OurSystemPage() {
                   {smsKeywords.map((item) => (
                     <span
                       key={item.keyword}
-                      className="bg-white/10 rounded px-3 py-1 text-sm font-mono"
+                      className="bg-gray-100 text-[#21355a] rounded px-3 py-1 text-sm font-mono"
                       title={item.description}
                     >
                       {item.keyword}
                     </span>
                   ))}
                 </div>
-                <p className="text-blue-200 text-xs">
-                  Text any keyword to <strong className="text-white">77295</strong> or <strong className="text-white">333111</strong>
+                <p className="text-gray-500 text-xs">
+                  Text any keyword to <strong className="text-[#21355a]">77295</strong> or <strong className="text-[#21355a]">333111</strong>
                 </p>
               </div>
               <div className="flex flex-col gap-3">
@@ -220,21 +220,21 @@ export default function OurSystemPage() {
                   href="https://www.getrave.com/login/floodauthority"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 bg-white/10 hover:bg-white/20 transition-colors px-4 py-2 rounded-lg text-sm font-medium"
+                  className="inline-flex items-center gap-2 border border-gray-200 hover:bg-gray-50 transition-colors px-4 py-2 rounded-lg text-sm font-medium text-[#21355a]"
                 >
                   <MessageSquare className="h-4 w-4" />
                   Sign Up for Alerts
-                  <ExternalLink className="h-3 w-3" />
+                  <ExternalLink className="h-3 w-3 text-gray-400" />
                 </a>
                 <a
                   href="https://www.floodauthority.org/news/public-alerts/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 bg-white/10 hover:bg-white/20 transition-colors px-4 py-2 rounded-lg text-sm font-medium"
+                  className="inline-flex items-center gap-2 border border-gray-200 hover:bg-gray-50 transition-colors px-4 py-2 rounded-lg text-sm font-medium text-[#21355a]"
                 >
                   <Bell className="h-4 w-4" />
                   View Active Alerts
-                  <ExternalLink className="h-3 w-3" />
+                  <ExternalLink className="h-3 w-3 text-gray-400" />
                 </a>
               </div>
             </div>
