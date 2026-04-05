@@ -574,6 +574,41 @@ export default function EnvironmentalPage() {
                 </>
               )}
             </div>
+
+            {/* Mississippi River */}
+            <div className="bg-white rounded-xl shadow-md border border-gray-100 p-6">
+              <div className="flex items-start justify-between mb-3">
+                <span className="text-sm font-medium text-gray-500 uppercase tracking-wide">
+                  Mississippi River
+                </span>
+                <Activity className="h-6 w-6 text-[#21355a]" />
+              </div>
+              <div className="flex items-baseline gap-2">
+                <span className="text-3xl font-bold text-[#21355a]">3.78</span>
+                <span className="text-sm text-gray-500">ft at Carrollton</span>
+              </div>
+              <p className="text-xs text-green-600 mt-1">Below flood stage</p>
+              <div className="mt-3">
+                <div className="h-2 bg-gray-200 rounded-full w-full">
+                  <div
+                    className="h-2 bg-[#65bc7b] rounded-full"
+                    style={{ width: `${Math.min((3.78 / 20) * 100, 100)}%` }}
+                  />
+                </div>
+                <div className="flex justify-between mt-1">
+                  <span className="text-[9px] text-gray-400">0 ft</span>
+                  <span className="text-[9px] text-red-400">17 ft flood stage</span>
+                </div>
+              </div>
+              <a
+                href="https://water.noaa.gov/gauges/norl1"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[9px] text-blue-500 hover:underline mt-1 inline-block"
+              >
+                NOAA Carrollton Gauge
+              </a>
+            </div>
           </div>
         </section>
 

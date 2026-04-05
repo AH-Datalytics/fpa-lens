@@ -10,7 +10,6 @@ import {
   Bell,
   MessageSquare,
   ExternalLink,
-  Waves,
 } from "lucide-react";
 import SectionHeader, { SectionSubheader } from "@/components/SectionHeader";
 import StatusBadge from "@/components/StatusBadge";
@@ -134,36 +133,7 @@ export default function OurSystemPage() {
               </div>
               <p className="text-xs text-gray-400">Last updated: {systemReadiness.lastUpdated}</p>
             </div>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <div className="bg-green-50 rounded-lg p-4 text-center">
-                <Waves className="h-6 w-6 mx-auto mb-2 text-[#65bc7b]" />
-                <div className="text-2xl font-bold text-[#21355a]">
-                  {systemReadiness.riverConditions.level} {systemReadiness.riverConditions.unit}
-                </div>
-                <div className="text-xs text-gray-600">Mississippi River Level</div>
-                <div className="text-xs text-gray-400 mt-1">{systemReadiness.riverConditions.status}</div>
-                {/* Gauge context bar */}
-                <div className="mt-3 relative">
-                  <div className="h-2 bg-gray-200 rounded-full w-full">
-                    <div
-                      className="h-2 bg-[#65bc7b] rounded-full"
-                      style={{ width: `${Math.min((systemReadiness.riverConditions.level / 20) * 100, 100)}%` }}
-                    />
-                  </div>
-                  <div className="flex justify-between mt-1">
-                    <span className="text-[9px] text-gray-400">0 ft</span>
-                    <span className="text-[9px] text-red-400">17 ft flood stage</span>
-                  </div>
-                </div>
-                <a
-                  href="https://water.noaa.gov/gauges/norl1"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-[9px] text-blue-500 hover:underline mt-1 inline-block"
-                >
-                  NOAA Carrollton Gauge
-                </a>
-              </div>
+            <div className="grid grid-cols-3 gap-4">
               <div className="bg-green-50 rounded-lg p-4 text-center">
                 <Droplets className="h-6 w-6 mx-auto mb-2 text-[#65bc7b]" />
                 <div className="text-2xl font-bold text-[#21355a]">
