@@ -124,6 +124,7 @@ export interface LakefrontData {
   storedForecasts: Record<string, StoredForecast>;  // historical forecast snapshots
   alerts: NWSAlert[];
   structureGauges: StructureGauge[];
+  dataGaps: string[];                     // which data sources are currently unavailable
   lastUpdated: string;
   stationId: string;
   stationName: string;

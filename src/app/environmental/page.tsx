@@ -186,7 +186,7 @@ export default function EnvironmentalPage() {
 
   if (!data) return null;
 
-  const { risk, current, forecast, alerts, structureGauges, windHistory, waterLevelHistory, storedForecasts } = data;
+  const { risk, current, forecast, alerts, structureGauges, windHistory, waterLevelHistory, storedForecasts, dataGaps = [] } = data;
   const TrendIcon = TRENDING_ICONS[risk.trending];
 
   // Build combined chart: 12 hrs observed (past) + 48 hrs forecast (future)
@@ -240,31 +240,52 @@ export default function EnvironmentalPage() {
     renderedHours <= 24 ? 5 :   // ~30 min
     renderedHours <= 48 ? 8 :   // ~48 min
     10;                         // ~60 min (hourly)
-  const historyPoints = (windHistory || [])
-    .filter((_, i) => i % thinningStep === 0)
-    .map((w) => {
-      let closestWater: number | null = null;
-      const wTime = parseCentralTimestamp(w.timestamp).getTime();
-      for (const [ts, level] of waterHistoryMap) {
-        if (Math.abs(parseCentralTimestamp(ts).getTime() - wTime) < 10 * 60 * 1000) {
-          closestWater = Math.round(level * 100) / 100;
-          break;
-        }
-      }
-      // Look up what was originally forecast for this time
-      const stored = findClosestStored(wTime);
-      return {
-        time: formatChartTime(w.timestamp),
-        fullTime: formatChartLabel(w.timestamp),
-        ts: wTime,
-        observedWind: Math.round(w.speed * 10) / 10,
-        forecastWind: null as number | null,
-        storedWind: stored?.wind != null ? Math.round(stored.wind * 10) / 10 : null,
-        observedWater: closestWater,
-        forecastWater: null as number | null,
-        storedWater: stored?.water != null ? Math.round(stored.water * 100) / 100 : null,
-      };
-    });
+  // Build history points from wind data (primary) or water level data (fallback
+  // when wind sensor is offline). This ensures the water level chart still shows
+  // observed data even when wind observations are unavailable.
+  const hasWindHistory = windHistory && windHistory.length > 0;
+  const historyPoints = hasWindHistory
+    ? windHistory
+        .filter((_, i) => i % thinningStep === 0)
+        .map((w) => {
+          let closestWater: number | null = null;
+          const wTime = parseCentralTimestamp(w.timestamp).getTime();
+          for (const [ts, level] of waterHistoryMap) {
+            if (Math.abs(parseCentralTimestamp(ts).getTime() - wTime) < 10 * 60 * 1000) {
+              closestWater = Math.round(level * 100) / 100;
+              break;
+            }
+          }
+          const stored = findClosestStored(wTime);
+          return {
+            time: formatChartTime(w.timestamp),
+            fullTime: formatChartLabel(w.timestamp),
+            ts: wTime,
+            observedWind: Math.round(w.speed * 10) / 10,
+            forecastWind: null as number | null,
+            storedWind: stored?.wind != null ? Math.round(stored.wind * 10) / 10 : null,
+            observedWater: closestWater,
+            forecastWater: null as number | null,
+            storedWater: stored?.water != null ? Math.round(stored.water * 100) / 100 : null,
+          };
+        })
+    : (waterLevelHistory || [])
+        .filter((_, i) => i % thinningStep === 0)
+        .map((w) => {
+          const wTime = parseCentralTimestamp(w.timestamp).getTime();
+          const stored = findClosestStored(wTime);
+          return {
+            time: formatChartTime(w.timestamp),
+            fullTime: formatChartLabel(w.timestamp),
+            ts: wTime,
+            observedWind: null as number | null,
+            forecastWind: null as number | null,
+            storedWind: stored?.wind != null ? Math.round(stored.wind * 10) / 10 : null,
+            observedWater: Math.round(w.level * 100) / 100,
+            forecastWater: null as number | null,
+            storedWater: stored?.water != null ? Math.round(stored.water * 100) / 100 : null,
+          };
+        });
 
   // Forecast — every hourly point, starting from the later of the last displayed
   // observed point or now. Using the displayed point (after thinning) avoids a
@@ -345,6 +366,18 @@ export default function EnvironmentalPage() {
           </div>
         )}
 
+        {/* Sensor offline banner */}
+        {dataGaps.length > 0 && (
+          <div className="mb-6 bg-amber-50 border border-amber-200 rounded-lg p-3 flex items-start gap-2 text-sm text-amber-700">
+            <AlertTriangle className="h-4 w-4 flex-shrink-0 mt-0.5" />
+            <div>
+              <span className="font-medium">Some station sensors are currently offline: </span>
+              <span>{dataGaps.join(", ")}. </span>
+              <span className="text-amber-600">Affected readings are marked below. Forecast data from NWS remains available.</span>
+            </div>
+          </div>
+        )}
+
         {/* Hero Risk Indicator */}
         <section className="mb-12">
           <div className="bg-white rounded-xl shadow-md p-8">
@@ -407,46 +440,57 @@ export default function EnvironmentalPage() {
                 </span>
                 <Wind className="h-6 w-6 text-[#21355a]" />
               </div>
-              <div className="flex items-baseline gap-2">
-                <span className="text-3xl font-bold text-[#21355a]">
-                  {current.wind.speed.toFixed(1)}
-                </span>
-                <span className="text-sm text-gray-500">kt from {current.wind.cardinal}</span>
-              </div>
-              {current.wind.gust > current.wind.speed && (
-                <p className="text-xs text-gray-500 mt-1">
-                  Gusts to {current.wind.gust.toFixed(1)} kt
-                </p>
-              )}
-              <p className="text-xs text-gray-400 mt-2">
-                {risk.isOnshore ? "Onshore (pushing toward Lakeshore Dr.)" : "Offshore (away from shore)"}
-              </p>
-              {risk.windPersistence && risk.windPersistence.hoursAnalyzed > 0 && (
-                <div className="mt-3 pt-3 border-t border-gray-100">
-                  <div className="flex items-center justify-between mb-1.5">
-                    <span className="text-xs font-medium text-gray-500">Onshore Persistence</span>
-                    <span className={`text-xs font-semibold ${risk.windPersistence.isSustained ? "text-amber-600" : "text-gray-400"}`}>
-                      {risk.windPersistence.isSustained ? "Sustained" : risk.isOnshore ? "Not yet sustained" : "Offshore"}
-                    </span>
-                  </div>
-                  <div className="w-full bg-gray-100 rounded-full h-2 mb-1">
-                    <div
-                      className={`h-2 rounded-full transition-all ${
-                        risk.windPersistence.sustainedFraction >= 0.7
-                          ? "bg-amber-500"
-                          : risk.windPersistence.sustainedFraction >= 0.4
-                            ? "bg-yellow-400"
-                            : "bg-gray-300"
-                      }`}
-                      style={{ width: `${Math.max(Math.min(risk.windPersistence.sustainedFraction * 100, 100), 2)}%` }}
-                    />
-                  </div>
-                  <p className="text-xs text-gray-400">
-                    {risk.windPersistence.effectiveHours > 0
-                      ? `~${risk.windPersistence.effectiveHours} of ${risk.windPersistence.hoursAnalyzed} hrs onshore above threshold (need 70%)`
-                      : `No onshore wind in last ${risk.windPersistence.hoursAnalyzed} hrs — currently ${risk.isOnshore ? "onshore" : "offshore"} (${current.wind.cardinal})`}
+              {dataGaps.includes("wind") ? (
+                <>
+                  <span className="text-2xl font-semibold text-gray-300">Unavailable</span>
+                  <p className="text-xs text-amber-600 mt-2">
+                    Wind sensor offline at {data.stationName}
                   </p>
-                </div>
+                </>
+              ) : (
+                <>
+                  <div className="flex items-baseline gap-2">
+                    <span className="text-3xl font-bold text-[#21355a]">
+                      {current.wind.speed.toFixed(1)}
+                    </span>
+                    <span className="text-sm text-gray-500">kt from {current.wind.cardinal}</span>
+                  </div>
+                  {current.wind.gust > current.wind.speed && (
+                    <p className="text-xs text-gray-500 mt-1">
+                      Gusts to {current.wind.gust.toFixed(1)} kt
+                    </p>
+                  )}
+                  <p className="text-xs text-gray-400 mt-2">
+                    {risk.isOnshore ? "Onshore (pushing toward Lakeshore Dr.)" : "Offshore (away from shore)"}
+                  </p>
+                  {risk.windPersistence && risk.windPersistence.hoursAnalyzed > 0 && (
+                    <div className="mt-3 pt-3 border-t border-gray-100">
+                      <div className="flex items-center justify-between mb-1.5">
+                        <span className="text-xs font-medium text-gray-500">Onshore Persistence</span>
+                        <span className={`text-xs font-semibold ${risk.windPersistence.isSustained ? "text-amber-600" : "text-gray-400"}`}>
+                          {risk.windPersistence.isSustained ? "Sustained" : risk.isOnshore ? "Not yet sustained" : "Offshore"}
+                        </span>
+                      </div>
+                      <div className="w-full bg-gray-100 rounded-full h-2 mb-1">
+                        <div
+                          className={`h-2 rounded-full transition-all ${
+                            risk.windPersistence.sustainedFraction >= 0.7
+                              ? "bg-amber-500"
+                              : risk.windPersistence.sustainedFraction >= 0.4
+                                ? "bg-yellow-400"
+                                : "bg-gray-300"
+                          }`}
+                          style={{ width: `${Math.max(Math.min(risk.windPersistence.sustainedFraction * 100, 100), 2)}%` }}
+                        />
+                      </div>
+                      <p className="text-xs text-gray-400">
+                        {risk.windPersistence.effectiveHours > 0
+                          ? `~${risk.windPersistence.effectiveHours} of ${risk.windPersistence.hoursAnalyzed} hrs onshore above threshold (need 70%)`
+                          : `No onshore wind in last ${risk.windPersistence.hoursAnalyzed} hrs — currently ${risk.isOnshore ? "onshore" : "offshore"} (${current.wind.cardinal})`}
+                      </p>
+                    </div>
+                  )}
+                </>
               )}
             </div>
 
@@ -508,16 +552,27 @@ export default function EnvironmentalPage() {
                 </span>
                 <Gauge className="h-6 w-6 text-[#21355a]" />
               </div>
-              <div className="flex items-baseline gap-2">
-                <span className="text-3xl font-bold text-[#21355a]">
-                  {current.pressure.value.toFixed(1)}
-                </span>
-                <span className="text-sm text-gray-500">mb</span>
-              </div>
-              <p className="text-xs text-gray-400 mt-1">
-                New Canal Station. Dropping pressure often signals an approaching
-                storm system; rapid drops can indicate strong winds ahead.
-              </p>
+              {dataGaps.includes("pressure") ? (
+                <>
+                  <span className="text-2xl font-semibold text-gray-300">Unavailable</span>
+                  <p className="text-xs text-amber-600 mt-2">
+                    Pressure sensor offline at {data.stationName}
+                  </p>
+                </>
+              ) : (
+                <>
+                  <div className="flex items-baseline gap-2">
+                    <span className="text-3xl font-bold text-[#21355a]">
+                      {current.pressure.value.toFixed(1)}
+                    </span>
+                    <span className="text-sm text-gray-500">mb</span>
+                  </div>
+                  <p className="text-xs text-gray-400 mt-1">
+                    New Canal Station. Dropping pressure often signals an approaching
+                    storm system; rapid drops can indicate strong winds ahead.
+                  </p>
+                </>
+              )}
             </div>
           </div>
         </section>
@@ -547,15 +602,17 @@ export default function EnvironmentalPage() {
                   </button>
                 ))}
               </div>
-              <label className="flex items-center gap-2 text-xs text-gray-600 cursor-pointer select-none">
-                <input
-                  type="checkbox"
-                  checked={showForecastOverlay}
-                  onChange={(e) => setShowForecastOverlay(e.target.checked)}
-                  className="rounded border-gray-300 text-[#21355a] focus:ring-[#21355a]"
-                />
-                Show original forecast over observed
-              </label>
+              {historyPoints.some((p) => p.storedWind != null || p.storedWater != null) && (
+                <label className="flex items-center gap-2 text-xs text-gray-600 cursor-pointer select-none">
+                  <input
+                    type="checkbox"
+                    checked={showForecastOverlay}
+                    onChange={(e) => setShowForecastOverlay(e.target.checked)}
+                    className="rounded border-gray-300 text-[#21355a] focus:ring-[#21355a]"
+                  />
+                  Show original forecast over observed
+                </label>
+              )}
             </div>
 
             {/* Wind Speed Chart */}
@@ -568,7 +625,15 @@ export default function EnvironmentalPage() {
                   <Download className="h-3.5 w-3.5" />
                 </button>
               </div>
-              <div ref={windChartRef} className="h-56">
+              <div ref={windChartRef} className="h-56 relative">
+                {dataGaps.includes("wind") && (
+                  <div className="absolute inset-0 z-10 flex items-center justify-center pointer-events-none">
+                    <div className="bg-white/80 rounded-lg px-4 py-2 text-center">
+                      <p className="text-sm font-medium text-gray-500">Wind sensor offline</p>
+                      <p className="text-xs text-gray-400">No observed data available. NWS forecast shown.</p>
+                    </div>
+                  </div>
+                )}
                 <ResponsiveContainer width="100%" height="100%">
                   <ComposedChart data={chartData}>
                     <CartesianGrid strokeDasharray="3 3" />
@@ -611,7 +676,7 @@ export default function EnvironmentalPage() {
                     <Line type="monotone" dataKey="observedWind" stroke="#21355a" strokeWidth={2.5} dot={false} name="observedWind" connectNulls />
                     <Line type="monotone" dataKey="forecastWind" stroke="#94a3b8" strokeWidth={2} strokeDasharray="6 3" dot={false} name="forecastWind" connectNulls />
                     {showForecastOverlay && (
-                      <Line type="monotone" dataKey="storedWind" stroke="#c8ced6" strokeWidth={2} strokeDasharray="6 3" dot={false} name="storedWind" connectNulls />
+                      <Line type="monotone" dataKey="storedWind" stroke="#d4d4d8" strokeWidth={2} strokeDasharray="4 4" dot={false} name="storedWind" connectNulls />
                     )}
                   </ComposedChart>
                 </ResponsiveContainer>
@@ -627,7 +692,7 @@ export default function EnvironmentalPage() {
                 </div>
                 {showForecastOverlay && (
                   <div className="flex items-center gap-2">
-                    <div className="w-6 h-0.5 border-t-2 border-dashed border-[#c8ced6]" />
+                    <div className="w-6 h-0.5 border-t-2 border-dashed border-[#d4d4d8]" />
                     <span className="text-xs text-gray-400">Original forecast</span>
                   </div>
                 )}
@@ -681,26 +746,26 @@ export default function EnvironmentalPage() {
                         return [`${value} ft`, labels[name as string] || String(name)];
                       }}
                     />
-                    <Area type="monotone" dataKey="observedWater" fill="#3b82f6" fillOpacity={0.25} stroke="#3b82f6" strokeWidth={2.5} name="observedWater" connectNulls />
-                    <Area type="monotone" dataKey="forecastWater" fill="#93c5fd" fillOpacity={0.12} stroke="#93c5fd" strokeWidth={2} strokeDasharray="6 3" name="forecastWater" connectNulls />
+                    <Area type="monotone" dataKey="observedWater" fill="#2563eb" fillOpacity={0.2} stroke="#2563eb" strokeWidth={2.5} name="observedWater" connectNulls />
+                    <Area type="monotone" dataKey="forecastWater" fill="#93c5fd" fillOpacity={0.15} stroke="#3b82f6" strokeWidth={2} strokeDasharray="6 3" name="forecastWater" connectNulls />
                     {showForecastOverlay && (
-                      <Line type="monotone" dataKey="storedWater" stroke="#bdd5f9" strokeWidth={2} strokeDasharray="6 3" dot={false} name="storedWater" connectNulls />
+                      <Line type="monotone" dataKey="storedWater" stroke="#d4d4d8" strokeWidth={2} strokeDasharray="4 4" dot={false} name="storedWater" connectNulls />
                     )}
                   </ComposedChart>
                 </ResponsiveContainer>
               </div>
               <div className="flex flex-wrap gap-x-6 gap-y-2 mt-2">
                 <div className="flex items-center gap-2">
-                  <div className="w-6 h-3 bg-[#3b82f6] rounded-sm opacity-40" />
+                  <div className="w-6 h-3 bg-[#2563eb] rounded-sm opacity-40" />
                   <span className="text-xs text-gray-600">Observed</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className="w-6 h-3 bg-[#93c5fd] rounded-sm opacity-25" />
+                  <div className="w-6 h-3 rounded-sm opacity-40" style={{ background: "#3b82f6", border: "1px dashed #3b82f6" }} />
                   <span className="text-xs text-gray-400">Forecast</span>
                 </div>
                 {showForecastOverlay && (
                   <div className="flex items-center gap-2">
-                    <div className="w-6 h-0.5 border-t-2 border-dashed border-[#bdd5f9]" />
+                    <div className="w-6 h-0.5 border-t-2 border-dashed border-[#d4d4d8]" />
                     <span className="text-xs text-gray-400">Original forecast</span>
                   </div>
                 )}

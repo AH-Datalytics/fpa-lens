@@ -138,6 +138,17 @@ export async function saveForecastSnapshot(
         leadTimeHours: leadHours,
       };
       changed = true;
+    } else {
+      // Backfill missing fields if a later fetch provides data that was
+      // unavailable on the first save (e.g. OFS water level was down).
+      if (store[key].wind == null && f.windSpeed != null) {
+        store[key].wind = f.windSpeed;
+        changed = true;
+      }
+      if (store[key].water == null && f.waterLevel != null) {
+        store[key].water = f.waterLevel;
+        changed = true;
+      }
     }
 
     // Fill in the 24-hour-out snapshot when lead time is 22-26h (closest pass to 24h).

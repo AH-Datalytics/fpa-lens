@@ -503,9 +503,10 @@ export async function GET(request: Request) {
     if (windResult.status === "rejected") dataGaps.push("wind");
     if (waterResult.status === "rejected") dataGaps.push("water level");
     if (predResult.status === "rejected") dataGaps.push("predictions");
+    if (pressureResult.status === "rejected") dataGaps.push("pressure");
     if (ofsResult.status === "rejected") dataGaps.push("OFS forecast");
     if (nwsForecastResult.status === "rejected") dataGaps.push("NWS forecast");
-    if (windHistoryResult.status === "rejected") dataGaps.push("wind history (duration gating disabled)");
+    if (windHistoryResult.status === "rejected") dataGaps.push("wind history");
     if (gaugesResult.status === "rejected") dataGaps.push("structure gauges");
 
     if (dataGaps.length > 0) {
@@ -528,6 +529,7 @@ export async function GET(request: Request) {
       storedForecasts,
       alerts,
       structureGauges,
+      dataGaps,
       lastUpdated: new Date().toISOString(),
       stationId: STATION_ID,
       stationName: STATION_NAME,

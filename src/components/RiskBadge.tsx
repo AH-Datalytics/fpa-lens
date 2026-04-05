@@ -91,7 +91,7 @@ export default function RiskBadge({
     return (
       <span className="relative group/risk">
         <span
-          className={`inline-flex items-center gap-1.5 font-semibold rounded-full border cursor-default ${config.bgColor} ${config.textColor} ${config.borderColor} ${sizes.badge}`}
+          className={`inline-flex items-center gap-1.5 font-semibold rounded-full border cursor-default whitespace-nowrap ${config.bgColor} ${config.textColor} ${config.borderColor} ${sizes.badge}`}
         >
           <Icon className={`${sizes.icon} ${config.iconColor}`} />
           {showLabel && config.label}
@@ -107,7 +107,7 @@ export default function RiskBadge({
 
   return (
     <span
-      className={`inline-flex items-center gap-1.5 font-semibold rounded-full border ${config.bgColor} ${config.textColor} ${config.borderColor} ${sizes.badge}`}
+      className={`inline-flex items-center gap-1.5 font-semibold rounded-full border whitespace-nowrap ${config.bgColor} ${config.textColor} ${config.borderColor} ${sizes.badge}`}
     >
       <Icon className={`${sizes.icon} ${config.iconColor}`} />
       {showLabel && config.label}
