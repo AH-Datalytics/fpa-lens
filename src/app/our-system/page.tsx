@@ -14,11 +14,9 @@ import {
 } from "lucide-react";
 import SectionHeader, { SectionSubheader } from "@/components/SectionHeader";
 import StatusBadge from "@/components/StatusBadge";
-import PlaceholderBox from "@/components/PlaceholderBox";
 import SystemMap from "@/components/SystemMap";
 import {
   infrastructureAssets,
-  educationalContent,
   systemReadiness,
   kpiMetrics,
   operationsData,
@@ -273,17 +271,6 @@ export default function OurSystemPage() {
           </div>
         </section>
 
-        {/* How Flood Protection Works */}
-        <section className="mb-12">
-          <SectionSubheader title="How Flood Protection Works" />
-          <PlaceholderBox
-            title="Educational Content"
-            description="Explanation of how the various components of the flood protection system work together to protect the Greater New Orleans area."
-            stakeholderNeeded={educationalContent.howFloodProtectionWorks.stakeholderNeeded}
-            type="content"
-            height="h-64"
-          />
-        </section>
 
       </div>
     </div>
