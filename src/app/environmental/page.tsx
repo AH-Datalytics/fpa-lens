@@ -4,7 +4,6 @@ import { useEffect, useState, useCallback, useRef } from "react";
 import {
   Wind,
   Waves,
-  Gauge,
   Activity,
   TrendingUp,
   TrendingDown,
@@ -542,37 +541,6 @@ export default function EnvironmentalPage() {
                 tides alone explain, typically from wind pushing water toward shore.
                 This is what drives the surge component of the risk level.
               </p>
-            </div>
-
-            {/* Barometric Pressure */}
-            <div className="bg-white rounded-xl shadow-md border border-gray-100 p-6">
-              <div className="flex items-start justify-between mb-3">
-                <span className="text-sm font-medium text-gray-500 uppercase tracking-wide">
-                  Barometric Pressure
-                </span>
-                <Gauge className="h-6 w-6 text-[#21355a]" />
-              </div>
-              {dataGaps.includes("pressure") ? (
-                <>
-                  <span className="text-2xl font-semibold text-gray-300">Unavailable</span>
-                  <p className="text-xs text-amber-600 mt-2">
-                    Pressure sensor offline at {data.stationName}
-                  </p>
-                </>
-              ) : (
-                <>
-                  <div className="flex items-baseline gap-2">
-                    <span className="text-3xl font-bold text-[#21355a]">
-                      {current.pressure.value.toFixed(1)}
-                    </span>
-                    <span className="text-sm text-gray-500">mb</span>
-                  </div>
-                  <p className="text-xs text-gray-400 mt-1">
-                    New Canal Station. Dropping pressure often signals an approaching
-                    storm system; rapid drops can indicate strong winds ahead.
-                  </p>
-                </>
-              )}
             </div>
 
             {/* Mississippi River */}

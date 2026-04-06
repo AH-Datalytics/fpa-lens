@@ -18,7 +18,7 @@ const navigation: NavItem[] = [
   { name: "Operations", href: "/operations" },
   { name: "Safety", href: "/safety" },
   { name: "Staffing", href: "/our-team" },
-  { name: "Environmental", href: "/environmental" },
+  { name: "Environment", href: "/environmental" },
   { name: "About Us", href: "/about/what-we-do" },
 ];
 
