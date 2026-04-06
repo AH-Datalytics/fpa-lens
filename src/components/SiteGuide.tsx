@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import {
   Info,
   X,
@@ -66,9 +67,9 @@ export default function SiteGuide() {
         <Info className="h-4 w-4 text-blue-200" />
       </button>
 
-      {open && (
+      {open && createPortal(
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          className="fixed inset-0 z-[1050] flex items-center justify-center p-4"
           onClick={() => setOpen(false)}
         >
           <div className="absolute inset-0 bg-black/50" />
@@ -114,7 +115,8 @@ export default function SiteGuide() {
               </p>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </>
   );

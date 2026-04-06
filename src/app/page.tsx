@@ -116,15 +116,15 @@ export default function Home() {
       <section className="relative bg-gradient-to-br from-[#21355a] via-[#2c3859] to-[#21355a] text-white">
         <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-5"></div>
         <div className="relative mx-auto max-w-7xl px-4 pt-10 pb-28 sm:px-6 lg:px-8 lg:pt-12 lg:pb-32">
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center gap-2">
-              <StatusBadge status={systemReadiness.overallStatus} size="md" tooltip={statusTooltip(systemReadiness.overallStatus)} />
-              <span className="text-sm text-blue-200">All Systems Operational</span>
-            </div>
+          <div className="absolute top-10 right-4 sm:right-6 lg:right-8 z-10">
             <SiteGuide />
           </div>
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div>
+              <div className="flex items-center gap-2 mb-6">
+                <StatusBadge status={systemReadiness.overallStatus} size="md" tooltip={statusTooltip(systemReadiness.overallStatus)} />
+                <span className="text-sm text-blue-200">All Systems Operational</span>
+              </div>
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-6">
                 Protecting Greater New Orleans
               </h1>
