@@ -21,7 +21,7 @@ export const siteConfig = {
   tagline: "Your Flood Defense System",
   organization: "Southeast Louisiana Flood Protection Authority - East",
   organizationShort: "SLFPA-E",
-  lastUpdated: "March 2026", // Source: Mar 2026 SITREP
+  lastUpdated: "April 2026", // Source: Apr 2026 SITREP
   address: {
     street: "6920 Franklin Avenue",
     city: "New Orleans",
@@ -66,33 +66,33 @@ export interface ReadinessCategory {
 }
 
 export const systemReadiness = {
-  // Source: Mar 2026 SITREP
-  lastUpdated: "March 2026",
+  // Source: Apr 2026 SITREP
+  lastUpdated: "April 2026",
   overallStatus: "GREEN" as StatusLevel,
   categories: [
     {
       name: "Infrastructure Readiness",
       status: "GREEN" as StatusLevel,
-      description: "Q4 inspections submitted to CPRA; Q1 inspections underway and on schedule; all 17 PCCP pumps available; all USACE levee and floodwall inspections complete",
-      source: "Mar 2026 SITREP",
+      description: "Q1 field inspections complete and under engineering review; all 17 PCCP pumps operational; all LPV levee and floodwall USACE inspections complete with no significant findings",
+      source: "Apr 2026 SITREP",
     },
     {
       name: "Staffing Readiness",
       status: "AMBER" as StatusLevel,
       description: "45 vacancies agency-wide; recruitment efforts ongoing",
-      source: "Mar 2026 SITREP",
+      source: "Apr 2026 SITREP",
     },
     {
       name: "Financial Readiness",
       status: "GREEN" as StatusLevel,
       description: "Nothing significant to report",
-      source: "Mar 2026 SITREP",
+      source: "Apr 2026 SITREP",
     },
     {
       name: "Media Coverage",
       status: "GREEN" as StatusLevel,
       description: "Nothing significant to report",
-      source: "Mar 2026 SITREP",
+      source: "Apr 2026 SITREP",
     },
   ],
   alerts: [] as { title: string; description: string; severity: string; source: string }[],
@@ -120,45 +120,45 @@ export const systemReadiness = {
 // ============================================================================
 
 export const kpiMetrics = {
-  // All from Mar 2026 SITREP unless noted
+  // All from Apr 2026 SITREP unless noted
   systemReadiness: {
     label: "System Readiness",
     value: "GREEN",
     type: "status" as const,
-    source: "Mar 2026 SITREP",
+    source: "Apr 2026 SITREP",
   },
   pccpPumps: {
     label: "PCCP Pumps Available",
     value: 17,
     total: 17,
     unit: "pumps",
-    source: "Mar 2026 SITREP",
+    source: "Apr 2026 SITREP",
   },
   ytdAccidents: {
     label: "YTD Accidents",
     value: 5,
     goal: 6,
     goalLabel: "FY26 Goal: ≤6",
-    source: "Mar 2026 SITREP",
+    source: "Apr 2026 SITREP",
   },
   floodgateInspections: {
     label: "Hurricane Gate Inspections",
     value: 45,
     total: 100,
     unit: "% complete",
-    source: "Mar 2026 SITREP",
+    source: "Apr 2026 SITREP",
   },
   staffCount: {
     label: "Total Staff",
-    value: 267,
-    breakdown: "255 classified, 12 unclassified",
-    asOf: "Mar 1, 2026",
-    source: "Mar 2026 SITREP",
+    value: 256,
+    breakdown: "244 classified, 12 unclassified",
+    asOf: "Apr 1, 2026",
+    source: "Apr 2026 SITREP",
   },
   permitsIssued: {
-    label: "Permits Issued (Feb)",
-    value: 25,
-    source: "Mar 2026 SITREP",
+    label: "Permits Issued (Mar)",
+    value: 27,
+    source: "Apr 2026 SITREP",
   },
 };
 
@@ -293,37 +293,43 @@ export const financialData = {
     },
   ],
 
-  // Source: Mar 2026 SITREP
+  // Source: Apr 2026 SITREP
   capitalProjects: [
     {
       name: "Foreshore Erosion Repair",
       status: "In Progress",
       description: "USACE has determined path forward; target award June 2026",
-      source: "Mar 2026 SITREP",
+      source: "Apr 2026 SITREP",
     },
     {
       name: "West Return Wall Splash Pad",
       status: "In Progress",
-      description: "Construction ongoing, approximately 45% complete",
-      source: "Mar 2026 SITREP",
+      description: "Construction ongoing, approximately 95% complete",
+      source: "Apr 2026 SITREP",
     },
     {
       name: "LPV Access Bridge",
       status: "Awarded",
-      description: "Awarded during February Board Meeting; contract execution ongoing",
-      source: "Mar 2026 SITREP",
+      description: "Contract executed; preconstruction meeting scheduled",
+      source: "Apr 2026 SITREP",
     },
     {
       name: "Orpheum Slope Paving",
       status: "Awarded",
       description: "Awarded during February Board Meeting; contract execution ongoing",
-      source: "Mar 2026 SITREP",
+      source: "Apr 2026 SITREP",
     },
     {
-      name: "Franklin Vault 4 Generator",
-      status: "Design Complete",
-      description: "Design complete, FY26 schedule",
-      source: "Jan 2026 SITREP",
+      name: "Lakeside Drive (Elysian Fields to Franklin Ave)",
+      status: "Complete",
+      description: "Safety improvement project completed on schedule",
+      source: "Apr 2026 SITREP",
+    },
+    {
+      name: "Franklin Ave Vault 4",
+      status: "In Bidding",
+      description: "Final bid documents under review; advertisement to follow",
+      source: "Apr 2026 SITREP",
     },
   ],
 };
@@ -333,7 +339,7 @@ export const financialData = {
 // ============================================================================
 
 export const operationsData = {
-  // Source: SITREPs (Jan-Mar 2026)
+  // Source: SITREPs (Jan-Apr 2026)
   permitsIssued: [
     { month: "September 2025", count: 25, source: "Oct 2025 SITREP" },
     { month: "October 2025", count: 50, source: "Nov 2025 SITREP" },
@@ -341,20 +347,21 @@ export const operationsData = {
     { month: "December 2025", count: 10, source: "Jan 2026 SITREP" },
     { month: "January 2026", count: 42, source: "Feb 2026 SITREP" },
     { month: "February 2026", count: 25, source: "Mar 2026 SITREP" },
+    { month: "March 2026", count: 27, source: "Apr 2026 SITREP" },
   ],
 
   floodgateInspections: {
     hurricaneGates: { percentComplete: 45, status: "Annual inspections and exercises underway" },
-    valveExercises: { percentComplete: 92, status: "Quarterly valve exercises ongoing" },
-    usaceInspections: "All LPV levee and floodwall USACE inspections complete; PCCP/Complex inspections scheduled April 2026",
-    source: "Mar 2026 SITREP",
+    valveExercises: { percentComplete: 92, status: "Q1 2026 valve inspections and exercises complete" },
+    usaceInspections: "All LPV levee and floodwall USACE inspections complete with no significant findings; PCCP/Complex inspections in progress April 14-28, 2026",
+    source: "Apr 2026 SITREP",
   },
 
-  // Source: Mar 2026 SITREP
+  // Source: Apr 2026 SITREP
   pccpRepairStatus: {
-    overallStatus: "Substantial completion expected early 2026; most items near completion pending final acceptance",
+    overallStatus: "Most items substantially complete and pending final acceptance (basement cracks, pump leaks, CP system); continuity testing of pumps underway. Climber screen gearbox replacement remains priority issue with delivery expected late April-early May 2026 and ~3-4 month installation.",
     managedBy: "JV/USACE",
-    source: "Mar 2026 SITREP",
+    source: "Apr 2026 SITREP",
     repairs: [
       {
         issue: "Climber Screen Gearbox",
@@ -395,14 +402,17 @@ export const operationsData = {
     source: "FPA Engineering Department",
   },
 
-  // Source: Mar 2026 SITREP
+  // Source: Apr 2026 SITREP
   maintenanceActivities: [
-    "USACE annual inspections completed with no issues identified",
-    "17 structural repairs completed across Lakefront Seawall and HSDRRS system",
-    "Second levee access gate installed at Violet Canal; fabrication underway for Deslonde Street gate",
-    "Quarterly valve exercises 92% complete",
+    "Completed 24 earthen levee repairs from in-house work orders",
+    "Completed 27 floodwall surface spall repairs on sections, joints, and slope pavement",
+    "Hurricane gate annual inspections 45% complete",
+    "Q1 2026 valve inspections and exercises complete",
+    "Deslonde Street levee access gate installed",
+    "New wiring installed at police station for camera monitors; chiller 3 water meter installed with weekly usage tracking",
+    "Assisting CPRA with 500-tree planting for ongoing mitigation project",
   ],
-  maintenanceSource: "Mar 2026 SITREP",
+  maintenanceSource: "Apr 2026 SITREP",
 };
 
 // ============================================================================
@@ -410,11 +420,11 @@ export const operationsData = {
 // ============================================================================
 
 export const safetyData = {
-  // Source: Mar 2026 SITREP (KPI metadata only; detailed event data in public/data/safety-events.json)
+  // Source: Apr 2026 SITREP (KPI metadata only; detailed event data in public/data/safety-events.json)
   fy26Goal: "≤6 reportable accidents and maintain zero lost-time, fatal, or catastrophic events",
   ytdAccidents: 5,
   goalMax: 6,
-  source: "Mar 2026 SITREP",
+  source: "Apr 2026 SITREP",
 };
 
 // ============================================================================
@@ -422,13 +432,13 @@ export const safetyData = {
 // ============================================================================
 
 export const staffingData = {
-  // Source: Mar 2026 SITREP
-  asOfDate: "March 1, 2026",
-  source: "Mar 2026 SITREP",
+  // Source: Apr 2026 SITREP
+  asOfDate: "April 1, 2026",
+  source: "Apr 2026 SITREP",
 
   headcount: {
-    total: 267,
-    classified: 255,
+    total: 256,
+    classified: 244,
     unclassified: 12,
     vacancies: 45,
   },
@@ -452,6 +462,11 @@ export const staffingData = {
   ],
 
   recentHires: [
+    {
+      position: "Special Projects Manager",
+      note: "Reports to Regional Director; start date April 27, 2026",
+      source: "Apr 2026 SITREP",
+    },
     {
       position: "MEO Light",
       name: "Keith Hampton",
