@@ -2,7 +2,7 @@
 """
 Extract FY26 YTD actuals data from the Dashboard Reports workbook.
 
-Reads from: ~/Development/fpa/data/sources/budget/Dashboard_Reports through 01.31.26.xlsm
+Reads from: ~/Development/fpa/data/sources/budget/Dashboard_Reports through 02.28.26.xlsm
 Outputs to:  ~/Development/fpa/public/data/actuals-fy26.json
 
 Separates Projects from O&M expenses per Jeff Williams' directive:
@@ -18,7 +18,7 @@ import openpyxl
 BASE_DIR = os.path.expanduser("~/Development/fpa/data/sources/budget")
 OUTPUT_PATH = os.path.expanduser("~/Development/fpa/public/data/actuals-fy26.json")
 
-FILENAME = "Dashboard_Reports through 01.31.26.xlsm"
+FILENAME = "Dashboard_Reports through 02.28.26.xlsm"
 
 # Sheet name mappings: key = our entity ID, value = (category sheet, dept sheet)
 ENTITY_SHEETS = {
@@ -235,9 +235,9 @@ def main():
     wb.close()
 
     output = {
-        "period": "FY26 YTD through January 31, 2026",
-        "periodLabel": "Jul 2025 - Jan 2026",
-        "lastUpdated": "2026-01-31",
+        "period": "FY26 YTD through February 28, 2026",
+        "periodLabel": "Jul 2025 - Feb 2026",
+        "lastUpdated": "2026-02-28",
         "fiscalYear": 2026,
         "entities": entities,
     }

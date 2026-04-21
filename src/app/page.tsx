@@ -103,9 +103,9 @@ export default function Home() {
   const financial = getCategory("Financial Readiness")!;
 
   // O&M actuals — update these when new Dashboard Reports data arrives
-  const omActual = 34_222_772;        // YTD actual through Jan 31, 2026
-  const omAnnualBudget = 71_467_750;  // FY26 annual O&M budget
-  const omDataDate = "2026-01-31";    // Data through date
+  const omActual = 38_227_061;        // YTD actual through Feb 28, 2026
+  const omAnnualBudget = 72_354_250;  // FY26 annual O&M budget
+  const omDataDate = "2026-02-28";    // Data through date
   const omPct = Math.round((omActual / omAnnualBudget) * 100);
   const fyStart = new Date(2025, 6, 1);
   const fyEnd = new Date(2026, 5, 30);
