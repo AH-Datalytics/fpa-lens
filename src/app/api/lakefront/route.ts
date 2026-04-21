@@ -42,6 +42,17 @@ const FETCH_TIMEOUT = 10_000; // 10 seconds
 const WIND_HISTORY_HOURS = RISK_THRESHOLDS.WIND_HISTORY_HOURS; // 3 hrs for risk engine persistence
 const CHART_HISTORY_HOURS = 24; // 24 hrs of observed data for the chart
 
+// Wind fallback: if the primary NOAA CO-OPS wind sensor at New Canal Station
+// goes offline OR its most recent reading is older than this threshold, fall
+// back to the KNEW (New Orleans Lakefront Airport) METAR feed from NWS. The
+// threshold is intentionally generous (1 day) so brief sensor hiccups or
+// short network outages do not cause the displayed source to flap. We only
+// swap when the primary looks genuinely down.
+const WIND_FALLBACK_STALENESS_MIN = 24 * 60;
+const KNEW_STATION_ID = "KNEW";
+const KNEW_STATION_NAME = "New Orleans Lakefront Airport";
+const MS_TO_KNOTS = 1.94384;
+
 const NWS_HEADERS = {
   "User-Agent": "FPALens/1.0 (fpalens@floodauthority.org)",
   Accept: "application/geo+json",
@@ -215,6 +226,82 @@ async function fetchWindHistory(hours: number = CHART_HISTORY_HOURS): Promise<Wi
     cardinal: e.dr || degreesToCardinal(parseFloat(e.d) || 0),
     timestamp: e.t,
   }));
+}
+
+// --- KNEW (NWS METAR) fallback wind source ---
+
+interface KNEWObservation {
+  properties: {
+    timestamp: string; // ISO8601 UTC, e.g. 2026-04-21T15:53:00+00:00
+    windSpeed: { value: number | null; unitCode: string };
+    windDirection: { value: number | null; unitCode: string };
+    windGust: { value: number | null; unitCode: string };
+  };
+}
+
+/**
+ * Normalize an NWS station observation into our WindReading shape. NWS
+ * returns wind in m/s (unitCode wmoUnit:km_h-1 is also possible per station);
+ * we convert to knots and reuse the NOAA timestamp convention by stripping the
+ * trailing Z and converting UTC to the Central timezone tag the rest of the
+ * pipeline expects. parseCentralTimestamp handles ISO8601 with offset, so we
+ * leave the timestamp as-is (with its +00:00 offset) and downstream code
+ * tolerates it.
+ */
+function knewObsToWindReading(obs: KNEWObservation): WindReading {
+  const p = obs.properties;
+  const windMs = p.windSpeed.value ?? 0;
+  const gustMs = p.windGust.value ?? 0;
+  const toKnots = (v: number, unit: string) => {
+    if (unit === "wmoUnit:km_h-1") return (v / 3.6) * MS_TO_KNOTS;
+    return v * MS_TO_KNOTS;
+  };
+  const speedKt = toKnots(windMs, p.windSpeed.unitCode);
+  const gustKt = toKnots(gustMs, p.windGust.unitCode);
+  const dir = p.windDirection.value ?? 0;
+  return {
+    speed: Math.round(speedKt * 10) / 10,
+    direction: dir,
+    gust: Math.round(gustKt * 10) / 10,
+    cardinal: degreesToCardinal(dir),
+    timestamp: p.timestamp,
+  };
+}
+
+async function fetchKNEWWindHistory(hours: number): Promise<WindReading[]> {
+  // NWS returns the most recent observations first; request enough rows to
+  // cover the window (METAR typically 1/hour, sometimes more during adverse
+  // weather). limit=200 covers 72h comfortably.
+  const url = `https://api.weather.gov/stations/${KNEW_STATION_ID}/observations?limit=200`;
+  const res = await fetchWithTimeout(url, NWS_HEADERS);
+  if (!res.ok) throw new Error(`KNEW observations HTTP ${res.status}`);
+  const json = await res.json();
+  const features = (json.features || []) as KNEWObservation[];
+  if (features.length === 0) throw new Error("KNEW returned no observations");
+
+  const cutoff = Date.now() - hours * 60 * 60 * 1000;
+  // Keep only observations with a wind speed value, inside the requested
+  // window, and sorted ascending by time so downstream charting is correct.
+  return features
+    .filter((f) => f.properties.windSpeed.value !== null)
+    .filter((f) => new Date(f.properties.timestamp).getTime() >= cutoff)
+    .map(knewObsToWindReading)
+    .sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
+}
+
+async function fetchKNEWCurrentWind(): Promise<WindReading> {
+  const history = await fetchKNEWWindHistory(6);
+  if (history.length === 0) throw new Error("No recent KNEW wind reading");
+  return history[history.length - 1];
+}
+
+/** Minutes since a given NOAA or ISO8601 timestamp, or Infinity if unparsable. */
+function minutesSince(ts: string | undefined | null): number {
+  if (!ts) return Infinity;
+  const d = ts.includes("T") ? new Date(ts) : new Date(ts.replace(" ", "T") + "Z");
+  const ms = d.getTime();
+  if (!Number.isFinite(ms)) return Infinity;
+  return (Date.now() - ms) / (60 * 1000);
 }
 
 async function fetchOFSForecast(): Promise<ForecastPoint[]> {
@@ -457,7 +544,7 @@ export async function GET(request: Request) {
       ]);
 
     // Extract values with fallbacks
-    const wind: WindReading = windResult.status === "fulfilled"
+    let wind: WindReading = windResult.status === "fulfilled"
       ? windResult.value
       : { speed: 0, direction: 0, gust: 0, cardinal: "N/A", timestamp: "" };
 
@@ -479,9 +566,78 @@ export async function GET(request: Request) {
 
     // Wind history for duration gating. null = unavailable, risk engine
     // will fall back to instantaneous-only assessment.
-    const windHistory = windHistoryResult.status === "fulfilled"
+    let windHistory = windHistoryResult.status === "fulfilled"
       ? windHistoryResult.value
       : null;
+
+    // KNEW (Lakefront Airport) fallback. Triggers when the primary New Canal
+    // sensor is fully offline OR its latest reading is older than the
+    // staleness threshold. This guards against flapping on a single missed
+    // 6-minute reading while still cutting in quickly when the sensor is
+    // actually down. The fallback source is reported on the response so the
+    // UI can annotate the chart / card, and is excluded from dataGaps when
+    // it succeeds.
+    const primaryCurrentFresh =
+      windResult.status === "fulfilled" &&
+      minutesSince(wind.timestamp) <= WIND_FALLBACK_STALENESS_MIN;
+    const primaryHistoryFresh =
+      windHistoryResult.status === "fulfilled" &&
+      windHistory !== null &&
+      windHistory.length > 0 &&
+      minutesSince(windHistory[windHistory.length - 1].timestamp) <= WIND_FALLBACK_STALENESS_MIN;
+    const needCurrentFallback = !primaryCurrentFresh;
+    const needHistoryFallback = !primaryHistoryFresh;
+
+    let windSource: {
+      id: string;
+      name: string;
+      fallback: boolean;
+      primaryStaleMinutes: number | null;
+    } = {
+      id: STATION_ID,
+      name: STATION_NAME,
+      fallback: false,
+      primaryStaleMinutes: null,
+    };
+
+    if (needCurrentFallback || needHistoryFallback) {
+      const [knewCurrentResult, knewHistoryResult] = await Promise.allSettled([
+        needCurrentFallback ? fetchKNEWCurrentWind() : Promise.reject(new Error("not needed")),
+        needHistoryFallback ? fetchKNEWWindHistory(chartHours) : Promise.reject(new Error("not needed")),
+      ]);
+
+      if (needCurrentFallback && knewCurrentResult.status === "fulfilled") {
+        wind = knewCurrentResult.value;
+      }
+      if (needHistoryFallback && knewHistoryResult.status === "fulfilled" && knewHistoryResult.value.length > 0) {
+        windHistory = knewHistoryResult.value;
+      }
+
+      const anyFallbackUsed =
+        (needCurrentFallback && knewCurrentResult.status === "fulfilled") ||
+        (needHistoryFallback && knewHistoryResult.status === "fulfilled" && knewHistoryResult.value.length > 0);
+
+      if (anyFallbackUsed) {
+        // Compute how stale the primary was, for UI transparency.
+        const primaryTs =
+          windResult.status === "fulfilled" ? wind.timestamp : null;
+        // wind has now been overwritten with KNEW's timestamp; use the
+        // original primary reading's staleness if we had it.
+        const primaryStale = windResult.status === "fulfilled"
+          ? minutesSince(windResult.value.timestamp)
+          : null;
+        windSource = {
+          id: KNEW_STATION_ID,
+          name: KNEW_STATION_NAME,
+          fallback: true,
+          primaryStaleMinutes: primaryStale !== null && Number.isFinite(primaryStale)
+            ? Math.round(primaryStale)
+            : null,
+        };
+        // Unused-var guard
+        void primaryTs;
+      }
+    }
 
     // USGS structure gauges for secondary corroboration
     const structureGauges = gaugesResult.status === "fulfilled"
@@ -526,13 +682,16 @@ export async function GET(request: Request) {
 
     // Track which sources failed
     const dataGaps: string[] = [];
-    if (windResult.status === "rejected") dataGaps.push("wind");
+    // Only flag wind as a gap if the fallback also failed to supply data.
+    // windSource.fallback being true means KNEW filled in; if wind.timestamp
+    // is still empty, we really have nothing.
+    if (!wind.timestamp) dataGaps.push("wind");
     if (waterResult.status === "rejected") dataGaps.push("water level");
     if (predResult.status === "rejected") dataGaps.push("predictions");
     if (pressureResult.status === "rejected") dataGaps.push("pressure");
     if (ofsResult.status === "rejected") dataGaps.push("OFS forecast");
     if (nwsForecastResult.status === "rejected") dataGaps.push("NWS forecast");
-    if (windHistoryResult.status === "rejected") dataGaps.push("wind history");
+    if (!windHistory || windHistory.length === 0) dataGaps.push("wind history");
     if (gaugesResult.status === "rejected") dataGaps.push("structure gauges");
     if (riverResult.status === "rejected") dataGaps.push("river level");
 
@@ -561,6 +720,7 @@ export async function GET(request: Request) {
       lastUpdated: new Date().toISOString(),
       stationId: STATION_ID,
       stationName: STATION_NAME,
+      windSource,
     };
 
     return NextResponse.json(response);

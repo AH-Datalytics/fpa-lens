@@ -137,6 +137,15 @@ export interface LakefrontData {
   lastUpdated: string;
   stationId: string;
   stationName: string;
+  // Active wind observation source. `fallback: true` means the primary sensor
+  // was down or stale and data is coming from the KNEW (Lakefront Airport)
+  // METAR feed instead.
+  windSource?: {
+    id: string;
+    name: string;
+    fallback: boolean;
+    primaryStaleMinutes: number | null;
+  };
 }
 
 // ============================================================================
