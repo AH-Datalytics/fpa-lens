@@ -26,8 +26,8 @@ const pages = [
   },
   {
     icon: Droplets,
-    name: "Operations",
-    desc: "Permit processing metrics, maintenance activities, and IDIQ contract tracker.",
+    name: "Engineering",
+    desc: "Permits, inspections, maintenance activities, and IDIQ contract tracker.",
   },
   {
     icon: HardHat,

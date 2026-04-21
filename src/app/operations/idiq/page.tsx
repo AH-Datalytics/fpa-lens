@@ -10,9 +10,10 @@ import {
   ClipboardList,
   DollarSign,
   ArrowLeft,
+  Lightbulb,
+  CalendarDays,
 } from "lucide-react";
 import SectionHeader, { SectionSubheader } from "@/components/SectionHeader";
-import DataCard from "@/components/DataCard";
 import KPICard from "@/components/KPICard";
 
 interface TaskOrder {
@@ -67,6 +68,39 @@ interface IdiqData {
   };
 }
 
+const ACCENT = "#2FA4A9";
+
+// Micro-descriptions per director feedback (Apr 2026). Keys cover both the
+// 2022-cycle and 2025-cycle naming variants for the same service category.
+const SERVICE_DESCRIPTIONS: Record<string, string> = {
+  "Civil Engineering": "Levee repair, site development, and infrastructure design",
+  "Surveying": "Levee and structure elevation surveys and mapping",
+  "Surveying Services": "Levee and structure elevation surveys and mapping",
+  "Geotechnical Engineering": "Soil analysis, subsurface investigations, and testing",
+  "Construction Materials & Testing": "Materials and soil testing for construction quality control",
+  "Constuction Materials & Testing": "Materials and soil testing for construction quality control",
+  "MEP Services": "Mechanical and electrical systems for facilities and pump stations",
+};
+
+const processSteps = [
+  {
+    label: "Qualifications-Based Selection",
+    description: "Firms respond to a public solicitation and are evaluated based on qualifications and experience",
+  },
+  {
+    label: "Pre-Approved Contract Pool",
+    description: "Selected firms are placed under contract with pre-established rates and terms",
+  },
+  {
+    label: "Task Order Awarded",
+    description: "As project needs arise, specific work is assigned to a qualified firm without a full procurement",
+  },
+  {
+    label: "Project Execution & Oversight",
+    description: "The firm completes the work, with costs tracked against the contract ceiling",
+  },
+];
+
 function formatCurrency(amount: number): string {
   if (amount >= 1_000_000) return `$${(amount / 1_000_000).toFixed(1)}M`;
   if (amount >= 1_000) return `$${(amount / 1_000).toFixed(0)}K`;
@@ -79,34 +113,15 @@ function formatDate(dateStr: string | null): string {
   return d.toLocaleDateString("en-US", { month: "short", year: "numeric" });
 }
 
-const processSteps = [
-  {
-    label: "Competitive Selection",
-    description: "Firms respond to a public solicitation and are evaluated based on qualifications and experience",
-  },
-  {
-    label: "Pre-Qualified Pool",
-    description: "Selected firms are placed under contract with pre-established rates and terms",
-  },
-  {
-    label: "Task Order Issued",
-    description: "As project needs arise, specific work is assigned to a qualified firm without a full procurement",
-  },
-  {
-    label: "Project Delivered",
-    description: "The firm completes the work, with costs tracked against the contract ceiling",
-  },
-];
-
 function ContractRow({ contract }: { contract: Contract }) {
   const [expanded, setExpanded] = useState(false);
   const hasTaskOrders = contract.taskOrders.length > 0;
 
   return (
-    <div className="border border-gray-100 rounded-lg">
+    <div className="border border-gray-200 rounded-lg bg-white hover:border-gray-300 hover:shadow-sm transition-all">
       <button
         onClick={() => hasTaskOrders && setExpanded(!expanded)}
-        className={`w-full text-left px-4 py-3 flex items-center justify-between ${hasTaskOrders ? "cursor-pointer hover:bg-gray-50" : "cursor-default"}`}
+        className={`w-full text-left px-4 py-3 flex items-center justify-between ${hasTaskOrders ? "cursor-pointer" : "cursor-default"}`}
       >
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-3 flex-wrap">
@@ -119,21 +134,21 @@ function ContractRow({ contract }: { contract: Contract }) {
             <span className="text-xs text-gray-500">{contract.taskOrders.length} task order{contract.taskOrders.length !== 1 ? "s" : ""}</span>
           </div>
           <div className="mt-2 w-full max-w-xs">
-            <div className="h-1.5 bg-gray-100 rounded-full">
+            <div className="h-2 bg-gray-100 rounded-full">
               <div
-                className="h-1.5 bg-[#65bc7b] rounded-full transition-all"
-                style={{ width: `${Math.min(contract.utilizationPct, 100)}%` }}
+                className="h-2 rounded-full transition-all"
+                style={{ width: `${Math.min(contract.utilizationPct, 100)}%`, backgroundColor: ACCENT }}
               />
             </div>
           </div>
         </div>
         {hasTaskOrders && (
-          <ChevronDown className={`h-4 w-4 text-gray-400 flex-shrink-0 ml-2 transition-transform ${expanded ? "rotate-180" : ""}`} />
+          <ChevronDown className={`h-5 w-5 text-gray-500 flex-shrink-0 ml-2 transition-transform duration-200 ${expanded ? "rotate-180" : ""}`} />
         )}
       </button>
 
       {expanded && (
-        <div className="border-t border-gray-100 px-4 py-3 bg-gray-50/50">
+        <div className="border-t border-gray-200 px-4 py-3 bg-slate-50/70">
           <div className="overflow-x-auto">
             <table className="w-full text-xs">
               <thead>
@@ -176,10 +191,101 @@ function ContractRow({ contract }: { contract: Contract }) {
   );
 }
 
+function ServiceCategory({ st, poolId }: { st: ServiceType; poolId: string }) {
+  const [expanded, setExpanded] = useState(false);
+  const micro = SERVICE_DESCRIPTIONS[st.service];
+  const sortedContracts = [...st.contracts].sort((a, b) => a.consultant.localeCompare(b.consultant));
+
+  return (
+    <div
+      className="rounded-xl border border-gray-200 bg-white shadow-sm hover:shadow-md hover:border-gray-300 transition-all overflow-hidden"
+      style={{ borderLeft: `4px solid ${ACCENT}` }}
+    >
+      <button
+        onClick={() => setExpanded(!expanded)}
+        className="w-full text-left px-5 py-4 hover:bg-slate-50/60 transition-colors"
+      >
+        <div className="flex items-start justify-between gap-4">
+          <div className="flex-1 min-w-0">
+            <div className="flex items-baseline gap-3 flex-wrap">
+              <h3 className="text-lg font-semibold text-[#21355a]">{st.service}</h3>
+              <span className="text-sm font-normal text-gray-500">
+                {st.contractCount} firm{st.contractCount !== 1 ? "s" : ""}
+              </span>
+            </div>
+            {micro && (
+              <p className="text-sm text-gray-600 mt-1 leading-snug">{micro}</p>
+            )}
+          </div>
+          <ChevronDown
+            className={`h-5 w-5 text-gray-500 flex-shrink-0 mt-1 transition-transform duration-200 ${expanded ? "rotate-180" : ""}`}
+          />
+        </div>
+
+        {/* Utilization bar */}
+        <div className="flex items-center gap-4 mt-4">
+          <div className="flex-1">
+            <div className="h-3 bg-gray-100 rounded-full overflow-hidden">
+              <div
+                className="h-3 rounded-full transition-all"
+                style={{ width: `${Math.min(st.utilizationPct, 100)}%`, backgroundColor: ACCENT }}
+              />
+            </div>
+          </div>
+          <span className="text-sm font-semibold text-gray-700 w-12 text-right">{st.utilizationPct}%</span>
+        </div>
+        <div className="flex justify-between text-xs text-gray-500 mt-2">
+          <span>{formatCurrency(st.totalUtilized)} utilized</span>
+          <span>{formatCurrency(st.totalMaximum)} total capacity</span>
+        </div>
+      </button>
+
+      {expanded && (
+        <div className="border-t border-gray-200 px-5 py-4 bg-slate-50/60 space-y-2">
+          {sortedContracts.map((c) => (
+            <ContractRow key={`${poolId}-${c.number}`} contract={c} />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function poolSummary(pool: ContractPool) {
+  let totalContracts = 0;
+  let totalMaxValue = 0;
+  let totalUtilized = 0;
+  let activeTaskOrders = 0;
+  let completedTaskOrders = 0;
+  const firmNames = new Set<string>();
+
+  for (const st of pool.serviceTypes) {
+    totalContracts += st.contractCount;
+    totalMaxValue += st.totalMaximum;
+    totalUtilized += st.totalUtilized;
+    for (const c of st.contracts) {
+      firmNames.add(c.consultant);
+      for (const to of c.taskOrders) {
+        if (to.status === "Active") activeTaskOrders += 1;
+        else if (to.status === "Complete") completedTaskOrders += 1;
+      }
+    }
+  }
+
+  return {
+    totalContracts,
+    totalMaxValue,
+    totalUtilized,
+    activeTaskOrders,
+    completedTaskOrders,
+    firms: firmNames.size,
+    serviceTypes: pool.serviceTypes.length,
+  };
+}
+
 export default function IdiqPage() {
   const [data, setData] = useState<IdiqData | null>(null);
-  const [activePool, setActivePool] = useState("2022");
-  const [expandedServices, setExpandedServices] = useState<Set<string>>(new Set());
+  const [activePool, setActivePool] = useState("2025");
 
   useEffect(() => {
     fetch("/data/idiq-contracts.json")
@@ -205,19 +311,12 @@ export default function IdiqPage() {
     );
   }
 
-  const pool = data.contractPools.find((p) => p.id === activePool);
-
-  const toggleService = (service: string) => {
-    setExpandedServices((prev) => {
-      const next = new Set(prev);
-      if (next.has(service)) next.delete(service);
-      else next.add(service);
-      return next;
-    });
-  };
+  const pool = data.contractPools.find((p) => p.id === activePool) ?? data.contractPools[0];
+  const summary = poolSummary(pool);
+  const sortedServices = [...pool.serviceTypes].sort((a, b) => a.service.localeCompare(b.service));
 
   return (
-    <div className="py-12">
+    <div className="py-12 bg-slate-50/40">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mb-4">
           <Link
@@ -225,7 +324,7 @@ export default function IdiqPage() {
             className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-[#21355a] transition-colors"
           >
             <ArrowLeft className="h-4 w-4" />
-            Operations & Maintenance
+            Engineering
           </Link>
         </div>
 
@@ -234,36 +333,73 @@ export default function IdiqPage() {
           subtitle="How we procure and assign engineering and professional services work"
         />
 
+        {/* Key Takeaway */}
+        <section className="mb-8">
+          <div
+            className="rounded-xl p-5 flex items-start gap-4 shadow-sm"
+            style={{ backgroundColor: `${ACCENT}15`, borderLeft: `4px solid ${ACCENT}` }}
+          >
+            <div
+              className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
+              style={{ backgroundColor: `${ACCENT}25` }}
+            >
+              <Lightbulb className="h-5 w-5" style={{ color: ACCENT }} />
+            </div>
+            <div>
+              <h3 className="text-sm font-semibold uppercase tracking-wide mb-1" style={{ color: ACCENT }}>
+                Key Takeaway
+              </h3>
+              <p className="text-[15px] text-gray-800 leading-relaxed">
+                IDIQ contracts allow the Authority to respond quickly to project needs by working with
+                pre-qualified firms. Work is assigned based on project requirements and expertise, not
+                preset allocation, so utilization will vary across firms.
+              </p>
+            </div>
+          </div>
+        </section>
+
         {/* Educational Intro */}
         <section className="mb-12">
-          <DataCard title="What is an IDIQ contract?">
-            <p className="text-sm text-gray-700 leading-relaxed mb-6">
-              An IDIQ (Indefinite Delivery, Indefinite Quantity) contract allows the Authority to pre-qualify
-              a group of engineering and professional service firms through a competitive process. These firms
-              are selected based on their qualifications and experience, and are placed under contract with
-              pre-established rates and terms. As project needs arise, the Authority issues task orders to
-              these firms for specific work -- such as inspections, design, construction support, etc. --
-              without having to conduct a full procurement each time. This approach allows us to respond more
-              efficiently while maintaining accountability and oversight.
-            </p>
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 md:p-8">
+            <h2 className="text-xl font-bold text-[#21355a] mb-4">What is an IDIQ contract?</h2>
+            <div className="space-y-4 text-sm text-gray-700 leading-relaxed">
+              <p>
+                IDIQ (Indefinite Delivery, Indefinite Quantity) contracts allow the Authority to
+                pre-qualify engineering and professional service firms through a competitive,
+                qualifications-based process. Task orders are issued as project needs arise, such as
+                inspections, design, construction support, and facility improvements, without
+                requiring a full procurement each time.
+              </p>
+              <p>
+                IDIQ contracts are awarded in multi-year cycles (typically three years). The 2022
+                contracts were active through 2025, and the 2025 contracts represent the current
+                cycle.
+              </p>
+              <p>
+                Work is assigned based on project needs, timing, and expertise. As a result,
+                utilization varies across firms within each service category; this is expected and
+                reflects how IDIQ programs are designed to function.
+              </p>
+            </div>
 
             {/* Process Flow */}
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-0 py-2">
+            <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-0">
               {processSteps.map((step, i) => (
                 <div key={step.label} className="flex flex-col sm:flex-row items-center">
                   <div
-                    className={`flex flex-col items-center px-4 py-3 border-2 rounded-lg min-w-[100px] text-center ${
-                      i === 0 || i === processSteps.length - 1
-                        ? i === processSteps.length - 1
-                          ? "border-[#65bc7b]"
-                          : "border-[#21355a]"
-                        : "border-gray-300 bg-gray-50"
-                    }`}
+                    className="flex flex-col items-center justify-center px-3 py-3 border-2 rounded-lg min-w-[140px] text-center"
+                    style={{
+                      borderColor: i === processSteps.length - 1 ? "#65bc7b" : i === 0 ? "#21355a" : "#d1d5db",
+                      backgroundColor: i > 0 && i < processSteps.length - 1 ? "#f9fafb" : undefined,
+                    }}
                     title={step.description}
                   >
-                    <span className={`text-xs font-medium uppercase tracking-wide ${
-                      i === processSteps.length - 1 ? "text-[#65bc7b]" : i === 0 ? "text-[#21355a]" : "text-gray-500"
-                    }`}>
+                    <span
+                      className="text-[11px] font-semibold uppercase tracking-wide leading-tight"
+                      style={{
+                        color: i === processSteps.length - 1 ? "#65bc7b" : i === 0 ? "#21355a" : "#6b7280",
+                      }}
+                    >
                       {step.label}
                     </span>
                   </div>
@@ -276,113 +412,69 @@ export default function IdiqPage() {
                 </div>
               ))}
             </div>
-          </DataCard>
-        </section>
-
-        {/* KPI Cards */}
-        <section className="mb-12">
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <KPICard
-              label="Total Contracts"
-              value={data.summary.totalContracts}
-              icon={<FileText className="h-6 w-6" />}
-              subtitle={`Across ${data.summary.serviceTypes} service types`}
-            />
-            <KPICard
-              label="Pre-Qualified Firms"
-              value={data.summary.firms}
-              icon={<Users className="h-6 w-6" />}
-              subtitle="Engineering and professional services"
-            />
-            <KPICard
-              label="Active Task Orders"
-              value={data.summary.activeTaskOrders}
-              icon={<ClipboardList className="h-6 w-6" />}
-              subtitle={`${data.summary.completedTaskOrders} completed`}
-            />
-            <KPICard
-              label="Total Contract Value"
-              value={formatCurrency(data.summary.totalMaxValue)}
-              icon={<DollarSign className="h-6 w-6" />}
-              subtitle={`${formatCurrency(data.summary.totalUtilized)} utilized`}
-            />
           </div>
         </section>
 
-        {/* Contract Pools */}
+        {/* Contract Cycle Selector */}
         <section>
-          <SectionSubheader title="Contract Pools" />
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+            <SectionSubheader title="Contract Cycle" className="mb-0" />
+            <div className="flex items-center gap-2 text-xs text-gray-500">
+              <CalendarDays className="h-3 w-3" />
+              Monthly updates
+            </div>
+          </div>
 
-          {/* Pool toggle */}
           <div className="flex gap-2 mb-6">
             {data.contractPools.map((p) => (
               <button
                 key={p.id}
                 onClick={() => setActivePool(p.id)}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                className={`px-5 py-2.5 rounded-lg text-sm font-semibold transition-all border ${
                   activePool === p.id
-                    ? "bg-[#21355a] text-white"
-                    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                    ? "bg-[#21355a] text-white border-[#21355a] shadow-sm"
+                    : "bg-white text-gray-600 border-gray-200 hover:border-gray-300 hover:bg-slate-50"
                 }`}
               >
-                {p.name}
+                {p.id === "2022" ? "2022 Cycle (2022-2025)" : "2025 Cycle (current)"}
               </button>
             ))}
           </div>
 
-          {pool && (
-            <div className="space-y-6">
-              {pool.serviceTypes.map((st) => {
-                const isExpanded = expandedServices.has(`${pool.id}-${st.service}`);
-                const serviceKey = `${pool.id}-${st.service}`;
+          {/* KPI Cards for selected pool */}
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+            <KPICard
+              label="Total Contracts"
+              value={summary.totalContracts}
+              icon={<FileText className="h-6 w-6" />}
+              subtitle={`Across ${summary.serviceTypes} service type${summary.serviceTypes !== 1 ? "s" : ""}`}
+            />
+            <KPICard
+              label="Pre-Qualified Firms"
+              value={summary.firms}
+              icon={<Users className="h-6 w-6" />}
+              subtitle="Engineering and professional services"
+            />
+            <KPICard
+              label="Active Task Orders"
+              value={summary.activeTaskOrders}
+              icon={<ClipboardList className="h-6 w-6" />}
+              subtitle={`${summary.completedTaskOrders} completed`}
+            />
+            <KPICard
+              label="Total Contract Value"
+              value={formatCurrency(summary.totalMaxValue)}
+              icon={<DollarSign className="h-6 w-6" />}
+              subtitle={`${formatCurrency(summary.totalUtilized)} utilized`}
+            />
+          </div>
 
-                return (
-                  <DataCard
-                    key={serviceKey}
-                    title={
-                      <button
-                        onClick={() => toggleService(serviceKey)}
-                        className="w-full text-left flex items-center justify-between"
-                      >
-                        <div>
-                          <span>{st.service}</span>
-                          <span className="text-sm font-normal text-gray-500 ml-3">
-                            {st.contractCount} contract{st.contractCount !== 1 ? "s" : ""}
-                          </span>
-                        </div>
-                        <ChevronDown className={`h-4 w-4 text-gray-400 transition-transform ${isExpanded ? "rotate-180" : ""}`} />
-                      </button>
-                    }
-                  >
-                    {/* Utilization bar */}
-                    <div className="flex items-center gap-4 mb-2">
-                      <div className="flex-1">
-                        <div className="h-3 bg-gray-100 rounded-full">
-                          <div
-                            className="h-3 bg-[#65bc7b] rounded-full transition-all"
-                            style={{ width: `${Math.min(st.utilizationPct, 100)}%` }}
-                          />
-                        </div>
-                      </div>
-                      <span className="text-sm font-medium text-gray-600 w-12 text-right">{st.utilizationPct}%</span>
-                    </div>
-                    <div className="flex justify-between text-xs text-gray-500 mb-4">
-                      <span>{formatCurrency(st.totalUtilized)} utilized</span>
-                      <span>{formatCurrency(st.totalMaximum)} total capacity</span>
-                    </div>
-
-                    {isExpanded && (
-                      <div className="space-y-2">
-                        {st.contracts.map((c) => (
-                          <ContractRow key={c.number} contract={c} />
-                        ))}
-                      </div>
-                    )}
-                  </DataCard>
-                );
-              })}
-            </div>
-          )}
+          {/* Service Categories */}
+          <div className="space-y-4">
+            {sortedServices.map((st) => (
+              <ServiceCategory key={`${pool.id}-${st.service}`} st={st} poolId={pool.id} />
+            ))}
+          </div>
         </section>
       </div>
     </div>

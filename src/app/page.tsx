@@ -37,8 +37,8 @@ const quickLinks = [
     icon: FileText,
   },
   {
-    title: "Operations & Maintenance",
-    description: "Ongoing work to maintain our defenses",
+    title: "Engineering",
+    description: "Permits, inspections, and engineering contracts",
     href: "/operations",
     icon: Droplets,
   },
@@ -55,7 +55,7 @@ const quickLinks = [
     icon: Users,
   },
   {
-    title: "Environmental",
+    title: "Environment",
     description: "Real-time lakefront flood risk and weather conditions",
     href: "/environmental",
     icon: Wind,

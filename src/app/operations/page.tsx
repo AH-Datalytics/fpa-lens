@@ -33,16 +33,17 @@ export default function OperationsPage() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-8">
           <div>
-            <h1 className="text-3xl md:text-4xl font-bold text-[#21355a]">Operations & Maintenance</h1>
-            <p className="mt-2 text-lg text-gray-600">Ongoing work to maintain our flood defense systems</p>
+            <h1 className="text-3xl md:text-4xl font-bold text-[#21355a]">Engineering</h1>
+            <p className="mt-2 text-lg text-gray-600">Permits, inspections, and engineering contracts</p>
             <p className="mt-2 text-sm text-gray-400">Data source: {latestPermit.source}</p>
           </div>
           <Link
             href="/operations/idiq"
-            className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm font-medium text-[#21355a] hover:bg-gray-50 hover:border-gray-300 transition-colors whitespace-nowrap self-start"
+            className="group inline-flex items-center gap-2 px-5 py-3 bg-[#21355a] hover:bg-[#2c4470] text-white rounded-lg text-sm font-semibold shadow-md hover:shadow-lg transition-all whitespace-nowrap self-start"
           >
-            IDIQ Contract Tracker
-            <ArrowRight className="h-4 w-4 text-[#65bc7b]" />
+            <FileText className="h-4 w-4" />
+            Engineering Contracts (IDIQ)
+            <ArrowRight className="h-4 w-4 text-[#65bc7b] group-hover:translate-x-0.5 transition-transform" />
           </Link>
         </div>
 
@@ -91,7 +92,7 @@ export default function OperationsPage() {
               </div>
             }
             source={operationsData.permitProcessing.source}
-            note={`Avg 69 days submittal to LNO, 38 days LNO to approval (${operationsData.permitProcessing.period.toLowerCase()})`}
+            note={`Avg 69 days submittal to LNO (Letter of No Objection), 38 days LNO to approval (${operationsData.permitProcessing.period.toLowerCase()})`}
           >
             {showFullPipeline ? (
               <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-0 py-4 flex-wrap">
@@ -99,18 +100,21 @@ export default function OperationsPage() {
                   { label: "Permit Submittal", highlight: true },
                   { label: "FPA-E Review" },
                   { label: "External Agency Coordination" },
-                  { label: "Receipt of LNO" },
+                  { label: "Receipt of LNO", tooltip: "Letter of No Objection from the Levee District" },
                   { label: "Final Review" },
                   { label: "Permit Issued", highlight: true, success: true },
                 ].map((step, i, arr) => (
                   <div key={step.label} className="flex flex-col sm:flex-row items-center">
-                    <div className={`flex flex-col items-center px-4 py-3 border-2 rounded-lg min-w-[100px] text-center ${
-                      step.success
-                        ? "border-[#65bc7b]"
-                        : step.highlight
-                          ? "border-[#21355a]"
-                          : "border-gray-300 bg-gray-50"
-                    }`}>
+                    <div
+                      className={`flex flex-col items-center px-4 py-3 border-2 rounded-lg min-w-[100px] text-center ${
+                        step.success
+                          ? "border-[#65bc7b]"
+                          : step.highlight
+                            ? "border-[#21355a]"
+                            : "border-gray-300 bg-gray-50"
+                      } ${step.tooltip ? "cursor-help" : ""}`}
+                      title={step.tooltip}
+                    >
                       <span className={`text-xs font-medium uppercase tracking-wide ${
                         step.success ? "text-[#65bc7b]" : step.highlight ? "text-[#21355a]" : "text-gray-500"
                       }`}>
@@ -141,7 +145,12 @@ export default function OperationsPage() {
                   <ArrowRight className="h-4 w-4 text-gray-400 rotate-90 sm:hidden" />
                 </div>
                 <div className="flex flex-col items-center px-6 py-4 border-2 border-gray-300 rounded-lg min-w-[120px] bg-gray-50">
-                  <span className="text-xs font-medium text-gray-500 uppercase tracking-wide">LNO Review</span>
+                  <span
+                    className="text-xs font-medium text-gray-500 uppercase tracking-wide border-b border-dashed border-gray-300 cursor-help"
+                    title="LNO: Letter of No Objection issued by the Levee District"
+                  >
+                    LNO Review
+                  </span>
                   <span className="text-sm text-gray-600 mt-1">Levee District</span>
                 </div>
                 <div className="flex flex-col items-center px-4">
