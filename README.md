@@ -7,12 +7,13 @@ Public transparency dashboard for the Southeast Louisiana Flood Protection Autho
 | Route | Description |
 |---|---|
 | `/` | Homepage with readiness gauge cards, KPIs, and quick links |
-| `/our-system` | Interactive map, infrastructure assets, infrastructure readiness status, real-time alerts |
-| `/operations` | Permits, inspections, valve exercises, PCCP repairs, maintenance activities |
-| `/safety` | Accident/incident trends, events by category, lost time tracking |
-| `/financial` | FY26 budget by category/district, budget vs actuals (YTD), capital projects |
-| `/our-team` | Staffing: leadership, headcount, vacancies, department status, recent hires |
-| `/environmental` | **Real-time lakefront flood risk indicator** (see below) |
+| `/our-system` | Infrastructure page: interactive map, "System We Manage" table (per-district), 7 infrastructure readiness cards graded against straight-line monthly progress, real-time alerts |
+| `/operations` | Engineering (nav label): permits, inspections, valve exercises, PCCP repairs, maintenance activities |
+| `/operations/idiq` | IDIQ Contract Tracker: 2022 and 2025 cycles, service categories with micro-descriptions, firm-level utilization |
+| `/safety` | Accident/incident trends, events by category, lost time tracking. FY26 YTD accident count sourced from Safety Officer |
+| `/financial` | FY26 budget by category/district, budget vs actuals (monthly YTD refresh), capital projects |
+| `/our-team` | Staffing: leadership, headcount, vacancies, department status |
+| `/environmental` | Real-time lakefront flood risk indicator with KNEW fallback wind source (see below) |
 | `/about/what-we-do` | About Us: organization overview |
 
 ## Getting Started
@@ -152,7 +153,7 @@ See `data-sources/budget/UPDATE-GUIDE.md` for detailed instructions to share wit
 
 ### Source 4: Map/Infrastructure Data
 
-**What it is:** Geographic data for the interactive system map: levee centerlines (183 mi), floodgates (248), valves (103), PCCP pump stations (3), and complex structures (7).
+**What it is:** Geographic data for the interactive system map. Per-district counts are sourced from the Regional Director (Apr 2026): 192 miles of levee/floodwall, 244 land-based flood gates, 8 navigable floodgates, 3 Permanent Canal Closures and Pumps, 3,530 acres of turf maintenance area, 103 valves. The map geometry still comes from the KMZ/shapefiles below.
 
 **Source files:**
 - `data-sources/kmz/` - KMZ files (Floodgates.kmz, Valves.kmz, PCCP.kmz, Complex Structures.kmz, Levee Centerline.kmz)
@@ -173,8 +174,11 @@ See `data-sources/budget/UPDATE-GUIDE.md` for detailed instructions to share wit
 **What it is:** Live wind, water level, barometric pressure, and forecast data used to compute a 4-tier lakefront flood risk indicator. This is the only data source that requires no manual updates — it's fetched automatically from public APIs.
 
 **Data sources:**
-- **NOAA CO-OPS Station 8761927** (New Canal Station, on the lakefront): water level, tidal predictions, wind speed/direction, barometric pressure, NGOFS2 48-hr storm surge model forecast. 6-minute update interval. Free, no API key.
+- **NOAA CO-OPS Station 8761927** (New Canal Station, primary): water level, tidal predictions, wind speed/direction, NGOFS2 48-hr storm surge model forecast. 6-minute update interval. Free, no API key.
 - **NWS API** (api.weather.gov, grid point LIX/67,92): hourly wind forecasts (156 hrs), active weather alerts. Free, requires only a `User-Agent` header.
+- **KNEW (New Orleans Lakefront Airport) METAR** via `api.weather.gov/stations/KNEW/observations`: wind fallback. Kicks in when the primary New Canal wind sensor has been silent for 24+ hours (configurable via `WIND_FALLBACK_STALENESS_MIN` in `src/app/api/lakefront/route.ts`). UI surfaces an amber note and updates the chart source line when the fallback is active.
+
+**Forecast snapshot history:** `src/lib/forecastStore.ts` captures the first forecast seen for each future hour (~48h lead) plus a second snapshot at the 22-26h lead window. Used by the "Show original forecast over observed" toggle on the Conditions Timeline. Backed by Vercel Blob (private store) in production, local JSON fallback in dev. Pruned after 7 days.
 
 **How it works:**
 - `src/app/api/lakefront/route.ts` — Server-side API route that fetches from 5 NOAA endpoints + 2 NWS endpoints in parallel, computes surge anomaly (actual water level minus tidal prediction), merges forecasts, and runs the risk engine. Cached for 5 minutes via ISR (`revalidate = 300`).
@@ -197,26 +201,12 @@ Either condition (wind OR surge) alone can trigger a level. Forecast escalation:
 - `src/components/RiskBadge.tsx` — 4-tier status badge (parallels `StatusBadge` but with GREEN/YELLOW/ORANGE/RED). Also exports `RiskIndicator` (large hero variant) and helper functions (`riskBorder`, `riskBg`, `riskText`).
 - `src/components/EnvironmentalCard.tsx` — Self-contained `"use client"` homepage gauge card. Fetches from `/api/lakefront` on mount.
 
-**Status: Feature branch only (`feature/lakefront-risk`).** Not yet merged to main or deployed. See "Next Steps" section below.
+**Status:** Live on `main`. Deployed to production.
 
----
-
-### Next Steps — Lakefront Risk Feature
-
-This feature is built and functional on `feature/lakefront-risk` but needs calibration and client approval before deploying.
-
-**Threshold calibration:**
-- Current thresholds (15/25/35 kt wind, 0.5/1.0/1.5 ft surge) are starting points based on general coastal flooding patterns. They need validation against the Director's operational experience.
-- **NOAA Climate Data Online** (https://www.ncei.noaa.gov/cdo-web/) has decades of hourly weather data from Lakefront Airport. This historical data can be used to backtest thresholds against known flooding events on Lakeshore Drive to validate and refine the trigger points.
-- The onshore wind direction range (315-045°, i.e., NW through NE) may need adjustment based on actual lakefront geometry and local wind patterns.
-- Gust escalation logic (gusts above a higher tier bump risk up) may be too aggressive or too conservative — needs real-world validation.
-- All thresholds are configurable in `src/lib/lakefrontRisk.ts` in the `RISK_THRESHOLDS` constant.
-
-**Before deploying:**
-1. Review thresholds with the Regional Director using historical flooding events as test cases
-2. Confirm the operational action text for each level matches their protocols
-3. Discuss pricing with the client
-4. Merge `feature/lakefront-risk` into `main` (Vercel auto-deploys from main)
+**Open calibration work:**
+- Current thresholds (15/25/35 kt wind, 0.5/1.0/1.5 ft surge) are starting points accepted by the Director as a starting point in March 2026. Chief Rondeno is gathering a historical closure log (~10-15 cold-front events since Nov/Dec 2025) for backtesting against NOAA historical data. Adjust in `RISK_THRESHOLDS` in `src/lib/lakefrontRisk.ts` once backtesting is done.
+- Onshore wind direction range (NW through NE, 315-045°) confirmed by the Director.
+- Yellow-tier sensitivity may need to be tightened after backtesting if it fires too often on routine north wind events.
 
 ---
 
@@ -230,12 +220,14 @@ When a new SITREP arrives:
    - [ ] `systemReadiness.lastUpdated`, `.overallStatus`, `.categories`, `.alerts`
    - [ ] `systemReadiness.riverConditions` (level, status, forecast)
    - [ ] `kpiMetrics` (pccpPumps, ytdAccidents, floodgateInspections, staffCount)
+   - [ ] `readinessMetrics` (data-as-of date + any card values provided in the SITREP: hurricane gate %, valve exercises %, CPRA/USACE inspection status). Cards auto-grade against the straight-line monthly rates.
    - [ ] `operationsData.permitsIssued` - **append** the new month's entry (page auto-derives the latest month for display)
    - [ ] `operationsData.floodgateInspections` (hurricaneGates %, valveExercises %, usaceInspections text)
    - [ ] `operationsData.pccpRepairStatus`, `.maintenanceActivities`
    - [ ] `staffingData` (headcount, vacancies, recentHires, departmentStatus)
    - [ ] `financialData.capitalProjects` (status and description updates)
-3. If a new safety event log is provided, run `python3 scripts/extractSafetyData.py`
+   - [ ] `safetyData.ytdAccidents` - FY26 YTD count from the Safety Officer, not from the calendar-year event logs
+3. If a new safety event log is provided, run `python3 scripts/extractSafetyData.py`. Script treats "UNK"/"TBD"/"pending" recordable flags as not-an-accident.
 4. Run `npm run build` to verify no type errors
 5. Deploy (push to main; Vercel auto-deploys)
 
