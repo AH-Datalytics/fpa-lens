@@ -52,9 +52,17 @@ async function readStoreBlob(): Promise<ForecastStore> {
     const { list } = await import("@vercel/blob");
     const { blobs } = await list({ prefix: BLOB_KEY, limit: 1 });
     if (blobs.length === 0) return {};
-    // Private blobs need the token to download
-    const res = await fetch(blobs[0].downloadUrl, {
+    // addRandomSuffix: false means we overwrite the same key each save, but
+    // Vercel's public-blob CDN will cache the response and return stale data
+    // to readers. Bust the cache with a query param tied to the latest
+    // uploadedAt, and disable fetch caching explicitly. Without this, in-place
+    // updates (e.g. backfilling water=null with a later forecast that has
+    // water) are written successfully but never read back, so fields stay null.
+    const bust = blobs[0].uploadedAt?.toString() ?? Date.now().toString();
+    const url = `${blobs[0].downloadUrl}${blobs[0].downloadUrl.includes("?") ? "&" : "?"}_=${encodeURIComponent(bust)}`;
+    const res = await fetch(url, {
       headers: { Authorization: `Bearer ${process.env.BLOB_READ_WRITE_TOKEN}` },
+      cache: "no-store",
     });
     return (await res.json()) as ForecastStore;
   } catch {
@@ -65,9 +73,18 @@ async function readStoreBlob(): Promise<ForecastStore> {
 async function writeStoreBlob(store: ForecastStore): Promise<void> {
   try {
     const { put } = await import("@vercel/blob");
+    // NOTE: the blob store is configured as private. Passing access: "public"
+    // causes every put to throw `Cannot use public access on a private store`,
+    // which the silent catch below swallows. That was the root cause of water
+    // forecasts never persisting: writes appeared to succeed, but the blob on
+    // disk never changed, so the "first seen" water value stayed null even as
+    // the in-memory backfill kept computing the correct value.
     await put(BLOB_KEY, JSON.stringify(store), {
-      access: "public",
+      access: "private",
       addRandomSuffix: false,
+      allowOverwrite: true,
+      // Minimise CDN caching since we overwrite this blob every few minutes.
+      cacheControlMaxAge: 0,
     });
   } catch {
     // Non-fatal — store is best-effort

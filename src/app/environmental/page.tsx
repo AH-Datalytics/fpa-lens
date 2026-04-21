@@ -122,10 +122,12 @@ export default function EnvironmentalPage() {
   const [historyHours, setHistoryHours] = useState(24);
   const [renderedHours, setRenderedHours] = useState(24); // tracks what the current data was fetched for
   const [showForecastOverlay, setShowForecastOverlay] = useState(false);
+  const [rangeLoading, setRangeLoading] = useState(false);
 
-  // Chart refs for PNG export
-  const windChartRef = useRef<HTMLDivElement>(null);
-  const waterChartRef = useRef<HTMLDivElement>(null);
+  // Chart refs for PNG export — wrap the full DataCard so screenshots
+  // include title, chart, legend, and source footer.
+  const windCardRef = useRef<HTMLDivElement>(null);
+  const waterCardRef = useRef<HTMLDivElement>(null);
 
   const fetchData = useCallback(async (manual = false, range?: number) => {
     if (manual) setRefreshing(true);
@@ -141,6 +143,7 @@ export default function EnvironmentalPage() {
       if (!data) setError("Unable to load environmental data.");
     } finally {
       if (manual) setRefreshing(false);
+      setRangeLoading(false);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -150,6 +153,15 @@ export default function EnvironmentalPage() {
     const interval = setInterval(() => fetchData(false, historyHours), REFRESH_INTERVAL);
     return () => clearInterval(interval);
   }, [fetchData, historyHours]);
+
+  // Wrap range changes to surface a loading state, so the chart does not
+  // render stale data against the new subtitle/axis during the brief
+  // in-flight window between click and fetch resolution.
+  const handleRangeChange = useCallback((h: number) => {
+    if (h === historyHours) return;
+    setRangeLoading(true);
+    setHistoryHours(h);
+  }, [historyHours]);
 
   // Loading state
   if (!data && !error) {
@@ -320,7 +332,13 @@ export default function EnvironmentalPage() {
   // Download helpers
   function downloadPng(ref: React.RefObject<HTMLDivElement | null>, filename: string) {
     if (!ref.current) return;
-    toPng(ref.current, { backgroundColor: "#ffffff", pixelRatio: 2 })
+    toPng(ref.current, {
+      backgroundColor: "#ffffff",
+      pixelRatio: 2,
+      // Hide the camera/download icon cluster inside the card so the exported
+      // PNG shows only the title, chart, legend, and source footer.
+      filter: (node) => !(node instanceof HTMLElement && node.hasAttribute("data-screenshot-hide")),
+    })
       .then((dataUrl) => {
         const link = document.createElement("a");
         link.download = filename;
@@ -444,6 +462,22 @@ export default function EnvironmentalPage() {
                   <span className="text-2xl font-semibold text-gray-300">Unavailable</span>
                   <p className="text-xs text-amber-600 mt-2">
                     Wind sensor offline at {data.stationName}
+                  </p>
+                </>
+              ) : data.windSource?.fallback ? (
+                <>
+                  <div className="flex items-baseline gap-2">
+                    <span className="text-3xl font-bold text-[#21355a]">
+                      {current.wind.speed.toFixed(1)}
+                    </span>
+                    <span className="text-sm text-gray-500">kt {current.wind.cardinal}</span>
+                  </div>
+                  <p className="text-xs text-amber-600 mt-2">
+                    {data.stationName} offline
+                    {data.windSource.primaryStaleMinutes != null
+                      ? ` for ${data.windSource.primaryStaleMinutes} min`
+                      : ""}
+                    . Using backup: {data.windSource.name}.
                   </p>
                 </>
               ) : (
@@ -615,16 +649,20 @@ export default function EnvironmentalPage() {
                 {[6, 12, 24, 48, 72].map((h) => (
                   <button
                     key={h}
-                    onClick={() => setHistoryHours(h)}
+                    onClick={() => handleRangeChange(h)}
+                    disabled={rangeLoading}
                     className={`px-2.5 py-1 text-xs rounded transition-colors ${
                       historyHours === h
                         ? "bg-[#21355a] text-white"
-                        : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                        : "bg-gray-100 text-gray-600 hover:bg-gray-200 disabled:opacity-60"
                     }`}
                   >
                     {h}h
                   </button>
                 ))}
+                {rangeLoading && (
+                  <RefreshCw className="h-3 w-3 text-gray-400 animate-spin ml-1" />
+                )}
               </div>
               {historyPoints.some((p) => p.storedWind != null || p.storedWater != null) && (
                 <label className="flex items-center gap-2 text-xs text-gray-600 cursor-pointer select-none">
@@ -640,16 +678,29 @@ export default function EnvironmentalPage() {
             </div>
 
             {/* Wind Speed Chart */}
-            <DataCard title="Wind Speed" source="NOAA Observed & NWS Forecast">
-              <div className="flex items-center justify-end gap-1 mb-2">
-                <button onClick={() => downloadPng(windChartRef, "wind-speed.png")} className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded transition-colors" title="Download PNG">
+            <div ref={windCardRef}>
+            <DataCard
+              title="Wind Speed"
+              source={
+                data.windSource?.fallback
+                  ? `Observed from ${data.windSource.name} (Station ${data.windSource.id}) via NWS METAR, with ${data.stationName} as primary source (currently offline). NWS Forecast. Wind speed in knots (kt).`
+                  : `NOAA Observed at ${data.stationName} (Station ${data.stationId}) & NWS Forecast. Wind speed in knots (kt) measured at standard 10-meter anemometer height.`
+              }
+            >
+              <div className="flex items-center justify-end gap-1 mb-2" data-screenshot-hide>
+                <button onClick={() => downloadPng(windCardRef, "wind-speed.png")} className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded transition-colors" title="Download PNG">
                   <Camera className="h-3.5 w-3.5" />
                 </button>
                 <button onClick={() => downloadCsv([{ key: "observedWind", label: "Observed (kt)" }, { key: "storedWind", label: "Historic Forecast (kt)" }, { key: "forecastWind", label: "Future Forecast (kt)" }], "wind-speed.csv")} className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded transition-colors" title="Download CSV">
                   <Download className="h-3.5 w-3.5" />
                 </button>
               </div>
-              <div ref={windChartRef} className="h-56 relative">
+              <div className="h-56 relative">
+                {rangeLoading && (
+                  <div className="absolute inset-0 z-20 flex items-center justify-center bg-white/60 backdrop-blur-sm rounded" data-screenshot-hide>
+                    <RefreshCw className="h-5 w-5 text-gray-400 animate-spin" />
+                  </div>
+                )}
                 {dataGaps.includes("wind") && (
                   <div className="absolute inset-0 z-10 flex items-center justify-center pointer-events-none">
                     <div className="bg-white/80 rounded-lg px-4 py-2 text-center">
@@ -722,18 +773,25 @@ export default function EnvironmentalPage() {
                 )}
               </div>
             </DataCard>
+            </div>
 
             {/* Water Level Chart */}
-            <DataCard title="Water Level at New Canal Station" source="NOAA Observed & NGOFS2 Model. Datum: MLLW (Mean Lower Low Water) — height relative to average low tide, where 0.0 ft = typical low tide level." className="mt-4">
-              <div className="flex items-center justify-end gap-1 mb-2">
-                <button onClick={() => downloadPng(waterChartRef, "water-level.png")} className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded transition-colors" title="Download PNG">
+            <div ref={waterCardRef} className="mt-4">
+            <DataCard title="Water Level at New Canal Station" source="NOAA Observed & NGOFS2 Model. Datum: MLLW (Mean Lower Low Water) — height relative to average low tide, where 0.0 ft = typical low tide level.">
+              <div className="flex items-center justify-end gap-1 mb-2" data-screenshot-hide>
+                <button onClick={() => downloadPng(waterCardRef, "water-level.png")} className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded transition-colors" title="Download PNG">
                   <Camera className="h-3.5 w-3.5" />
                 </button>
                 <button onClick={() => downloadCsv([{ key: "observedWater", label: "Observed (ft)" }, { key: "storedWater", label: "Historic Forecast (ft)" }, { key: "forecastWater", label: "Future Forecast (ft)" }], "water-level.csv")} className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded transition-colors" title="Download CSV">
                   <Download className="h-3.5 w-3.5" />
                 </button>
               </div>
-              <div ref={waterChartRef} className="h-56">
+              <div className="h-56 relative">
+                {rangeLoading && (
+                  <div className="absolute inset-0 z-20 flex items-center justify-center bg-white/60 backdrop-blur-sm rounded" data-screenshot-hide>
+                    <RefreshCw className="h-5 w-5 text-gray-400 animate-spin" />
+                  </div>
+                )}
                 <ResponsiveContainer width="100%" height="100%">
                   <ComposedChart data={chartData}>
                     <CartesianGrid strokeDasharray="3 3" />
@@ -795,6 +853,7 @@ export default function EnvironmentalPage() {
                 )}
               </div>
             </DataCard>
+            </div>
           </section>
         )}
 
