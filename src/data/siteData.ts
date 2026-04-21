@@ -166,6 +166,11 @@ export const kpiMetrics = {
 // INFRASTRUCTURE ASSETS
 // ============================================================================
 
+// ============================================================================
+// Source: "The System We Manage" table provided by Regional Director Jeff Williams,
+// Apr 9, 2026. These counts supersede our prior GIS-derived values for the
+// System at a Glance display.
+// ============================================================================
 export const infrastructureAssets = {
   pccpStations: {
     count: 3,
@@ -173,29 +178,105 @@ export const infrastructureAssets = {
     stations: ["17th Street", "Orleans Avenue", "London Avenue"],
     source: "Dec 2025 SITREP",
   },
-  complexStructures: {
-    list: [
-      "IHNC Surge Barrier North",
-      "IHNC Surge Barrier South",
-      "Seabrook",
-      "Bayou St. John Sector Gate",
-      "Dupre",
-      "Caernarvon",
-      "GIWW Sector Gate",
-    ],
-    source: "SLFPA-E project documentation",
+  navigableFloodgates: {
+    total: 8,
+    byDistrict: { EJLD: 0, OLD: 6, LBBLD: 2 },
+    source: "Regional Director, Apr 2026",
   },
-  totalLeveeMiles: {
-    value: 183,
-    source: "SLFPA-E levee centerline GIS data",
+  leveeFloodwall: {
+    miles: 192,
+    byDistrict: { EJLD: 28, OLD: 107, LBBLD: 57 },
+    source: "Regional Director, Apr 2026",
   },
-  totalFloodgates: {
-    value: 248,
-    source: "SLFPA-E floodgate GIS data",
+  turfMaintenance: {
+    acres: 3530,
+    byDistrict: { EJLD: 730, OLD: 1400, LBBLD: 1400 },
+    source: "Regional Director, Apr 2026",
+  },
+  landFloodgates: {
+    total: 244,
+    byDistrict: { EJLD: 12, OLD: 200, LBBLD: 32 },
+    source: "Regional Director, Apr 2026",
+  },
+  permanentCanalClosures: {
+    total: 3,
+    byDistrict: { EJLD: 0, OLD: 3, LBBLD: 0 },
+    source: "Regional Director, Apr 2026",
   },
   totalValves: {
     value: 103,
     source: "SLFPA-E valve GIS data",
+  },
+};
+
+// ============================================================================
+// Infrastructure Readiness cards (per Director, Apr 2026)
+// Each card has a straight-line monthly rate and is graded 90+ Green / 80-90
+// Amber / <80 Red against expected progress for the current date.
+// ============================================================================
+export const readinessMetrics = {
+  // Source: Apr 2026 SITREP (data reported as of report generation)
+  dataAsOf: "2026-04-01",
+  // Hurricane gate annual inspections: 161 gates, Jan 1 - May 31, 26.83/month
+  hurricaneGateInspections: {
+    total: 161,
+    completed: Math.round(161 * 0.45), // 45% per SITREP
+    percentComplete: 45,
+    periodStart: "2026-01-01",
+    periodEnd: "2026-05-31",
+    monthlyRate: 26.83,
+    mandate: "USACE O&M Manual",
+    source: "Apr 2026 SITREP",
+  },
+  // River gate annual inspections: 84 gates, Jun 1 - Dec 31, 14/month
+  riverGateInspections: {
+    total: 84,
+    completed: 0,
+    percentComplete: 0,
+    periodStart: "2026-06-01",
+    periodEnd: "2026-12-31",
+    monthlyRate: 14,
+    mandate: "USACE O&M Manual",
+    source: "FY26 schedule (season begins Jun 1, 2026)",
+  },
+  // Quarterly valve exercises: 34.33/month expected rate
+  valveExercises: {
+    percentComplete: 92,
+    monthlyRate: 34.33,
+    mandate: "USACE O&M Manual",
+    currentQuarterStatus: "Q1 2026 inspections and exercises complete",
+    source: "Apr 2026 SITREP",
+  },
+  // Monthly turf maintenance: 7,060 acres/month target (3,530 acres cut twice)
+  turfMaintenance: {
+    monthlyTargetAcres: 7060,
+    currentMonthAcres: null as number | null, // data pending from Maintenance Dept
+    mandate: "Internal O&M schedule",
+    source: "Pending from Maintenance Dept",
+  },
+  // CPRA quarterly system inspection: 33.33%/month
+  cpraQuarterlyInspection: {
+    currentQuarter: "Q1 2026",
+    currentQuarterPercent: 100,
+    monthlyRate: 33.33,
+    mandate: "CPRA",
+    reportSubmittedDate: null, // pending confirmation in next SITREP
+    source: "Apr 2026 SITREP (Q1 field inspections complete and under engineering review)",
+  },
+  // USACE semi-annual inspection: 16.67%/month
+  usaceSemiAnnualInspection: {
+    currentHalfPercent: 50, // LPV complete, PCCP/Complex in progress Apr 14-28
+    monthlyRate: 16.67,
+    mandate: "USACE",
+    reportSubmittedDate: null,
+    status: "LPV Levee/Floodwall inspections complete, no significant findings; PCCP/Complex inspections in progress Apr 14-28, 2026",
+    source: "Apr 2026 SITREP",
+  },
+  // Navigable floodgates operability
+  navigableFloodgatesOperable: {
+    operable: 8,
+    total: 8,
+    source: "Regional Director, Apr 2026",
   },
 };
 

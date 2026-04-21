@@ -181,7 +181,7 @@ function MapLegend({
           <div className="w-5 flex-shrink-0 flex justify-center">
             <div className="w-4 h-4 bg-[#f59e0b] rounded-full border-2 border-white shadow"></div>
           </div>
-          <span className="text-gray-600">Complex Structures ({structureCount})</span>
+          <span className="text-gray-600">Navigable Floodgates ({structureCount})</span>
         </div>
 
         {/* Toggleable layers */}
