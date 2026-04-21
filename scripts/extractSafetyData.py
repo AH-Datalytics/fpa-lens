@@ -43,7 +43,7 @@ def parse_bool(value):
     if value is None:
         return False
     s = str(value).strip().lower()
-    if s in ("", "no", "none", "n/a", "na", "unknown"):
+    if s in ("", "no", "none", "n/a", "na", "unknown", "unk", "tbd", "pending"):
         return False
     # Anything else (including "yes", "yes, minor", "Tractor door", etc.) is truthy
     return True

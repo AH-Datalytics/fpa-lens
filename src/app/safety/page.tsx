@@ -135,7 +135,7 @@ export default function SafetyPage() {
         <SectionHeader
           title="Safety Performance"
           subtitle="Our commitment to a safe workplace"
-          source="FPA Event Logs (2022-2026)"
+          source="FPA Safety Officer & Event Logs (2022-2026)"
         />
 
         {/* Key Metrics */}
@@ -143,11 +143,11 @@ export default function SafetyPage() {
           <div className="grid md:grid-cols-3 gap-6">
             <KPICard
               label="FY26 YTD Accidents"
-              value={currentYearData?.accidents ?? kpiMetrics.ytdAccidents.value}
+              value={safetyData.ytdAccidents}
               goal={kpiMetrics.ytdAccidents.goal}
               goalLabel={kpiMetrics.ytdAccidents.goalLabel}
               icon={<HardHat className="h-6 w-6" />}
-              source="FPA Event Log 2026"
+              source="FPA Safety Officer, FY26 YTD (Jul 1, 2025 - present)"
             />
             <div className="bg-white rounded-xl shadow-md border border-gray-100 p-6">
               <div className="flex items-start justify-between mb-3">
@@ -164,7 +164,7 @@ export default function SafetyPage() {
                 <span className="text-lg font-bold text-green-800">On Track</span>
               </div>
               <p className="text-sm text-green-700">
-                {currentYearData?.accidents ?? safetyData.ytdAccidents} accident{(currentYearData?.accidents ?? safetyData.ytdAccidents) !== 1 ? "s" : ""} YTD vs goal of {"\u2264"}{safetyData.goalMax}
+                {safetyData.ytdAccidents} accident{safetyData.ytdAccidents !== 1 ? "s" : ""} YTD vs goal of {"\u2264"}{safetyData.goalMax}
               </p>
               <p className="text-xs text-green-600 mt-1">
                 {currentYearData?.lostTime ?? 0} lost-time events
@@ -422,6 +422,11 @@ export default function SafetyPage() {
                 <p>
                   Source data: FPA Event Logs 2022-2026. An &quot;accident&quot; is an OSHA-recordable event;
                   all other reported events are classified as &quot;incidents.&quot; &quot;Lost time events&quot; are accidents or incidents where employees missed subsequent workdays.
+                </p>
+                <p>
+                  FY26 YTD accident count reflects fiscal year (Jul 1, 2025 - Jun 30, 2026) and is sourced
+                  directly from the FPA Safety Officer. Multi-year totals and monthly breakdowns below are
+                  shown by calendar year and are being reviewed for reclassification under current standards.
                 </p>
               </div>
             </div>

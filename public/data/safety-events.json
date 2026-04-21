@@ -27,18 +27,18 @@
     {
       "year": 2025,
       "totalEvents": 42,
-      "accidents": 2,
-      "incidents": 40,
+      "accidents": 5,
+      "incidents": 37,
       "lostTime": 5,
       "propertyDamage": 31
     },
     {
       "year": 2026,
-      "totalEvents": 14,
-      "accidents": 1,
-      "incidents": 13,
+      "totalEvents": 24,
+      "accidents": 2,
+      "incidents": 22,
       "lostTime": 0,
-      "propertyDamage": 12
+      "propertyDamage": 21
     }
   ],
   "monthlyData": [
@@ -255,8 +255,8 @@
     {
       "year": 2025,
       "month": 1,
-      "accidents": 0,
-      "incidents": 1
+      "accidents": 1,
+      "incidents": 0
     },
     {
       "year": 2025,
@@ -297,8 +297,8 @@
     {
       "year": 2025,
       "month": 8,
-      "accidents": 0,
-      "incidents": 5
+      "accidents": 3,
+      "incidents": 2
     },
     {
       "year": 2025,
@@ -309,8 +309,8 @@
     {
       "year": 2025,
       "month": 10,
-      "accidents": 2,
-      "incidents": 8
+      "accidents": 1,
+      "incidents": 9
     },
     {
       "year": 2025,
@@ -327,7 +327,7 @@
     {
       "year": 2026,
       "month": 1,
-      "accidents": 1,
+      "accidents": 2,
       "incidents": 8
     },
     {
@@ -335,6 +335,18 @@
       "month": 2,
       "accidents": 0,
       "incidents": 5
+    },
+    {
+      "year": 2026,
+      "month": 3,
+      "accidents": 0,
+      "incidents": 8
+    },
+    {
+      "year": 2026,
+      "month": 4,
+      "accidents": 0,
+      "incidents": 1
     }
   ],
   "eventTypes": [
@@ -353,8 +365,8 @@
     {
       "type": "Illness",
       "count": 1,
-      "accidents": 0,
-      "incidents": 1
+      "accidents": 1,
+      "incidents": 0
     },
     {
       "type": "Insect Related",
@@ -364,9 +376,9 @@
     },
     {
       "type": "Mobile Equipment",
-      "count": 8,
-      "accidents": 1,
-      "incidents": 7
+      "count": 11,
+      "accidents": 2,
+      "incidents": 9
     },
     {
       "type": "Not categorized",
@@ -376,24 +388,114 @@
     },
     {
       "type": "Sharp Edge",
-      "count": 1,
+      "count": 2,
       "accidents": 0,
-      "incidents": 1
+      "incidents": 2
     },
     {
       "type": "Slip/Trip/Fall",
-      "count": 5,
-      "accidents": 1,
-      "incidents": 4
+      "count": 6,
+      "accidents": 3,
+      "incidents": 3
     },
     {
       "type": "Vehicle",
-      "count": 37,
+      "count": 42,
       "accidents": 1,
-      "incidents": 36
+      "incidents": 41
     }
   ],
   "recentEvents": [
+    {
+      "date": "2026-04-07",
+      "month": "April",
+      "year": 2026,
+      "eventType": "Vehicle",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": true
+    },
+    {
+      "date": "2026-03-30",
+      "month": "March",
+      "year": 2026,
+      "eventType": "Mobile Equipment",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2026-03-30",
+      "month": "March",
+      "year": 2026,
+      "eventType": "Vehicle",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": true
+    },
+    {
+      "date": "2026-03-26",
+      "month": "March",
+      "year": 2026,
+      "eventType": "Vehicle",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": true
+    },
+    {
+      "date": "2026-03-26",
+      "month": "March",
+      "year": 2026,
+      "eventType": "Sharp Edge",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": false,
+      "hasPrivatePropertyDamage": true
+    },
+    {
+      "date": "2026-03-26",
+      "month": "March",
+      "year": 2026,
+      "eventType": "Mobile Equipment",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2026-03-25",
+      "month": "March",
+      "year": 2026,
+      "eventType": "Mobile Equipment",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": true
+    },
+    {
+      "date": "2026-03-09",
+      "month": "March",
+      "year": 2026,
+      "eventType": "Vehicle",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": true
+    },
+    {
+      "date": "2026-03-04",
+      "month": "March",
+      "year": 2026,
+      "eventType": "Vehicle",
+      "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": false
+    },
     {
       "date": "2026-02-13",
       "month": "February",
@@ -440,6 +542,16 @@
       "year": 2026,
       "eventType": "Ergonomic",
       "isAccident": false,
+      "isLostTime": false,
+      "hasDamage": false,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2026-01-29",
+      "month": "January",
+      "year": 2026,
+      "eventType": "Slip/Trip/Fall",
+      "isAccident": true,
       "isLostTime": false,
       "hasDamage": false,
       "hasPrivatePropertyDamage": false
@@ -639,7 +751,7 @@
       "month": "October",
       "year": 2025,
       "eventType": "Slip/Trip/Fall",
-      "isAccident": true,
+      "isAccident": false,
       "isLostTime": false,
       "hasDamage": false,
       "hasPrivatePropertyDamage": false
@@ -769,7 +881,7 @@
       "month": "August",
       "year": 2025,
       "eventType": "Slip/Trip/Fall",
-      "isAccident": false,
+      "isAccident": true,
       "isLostTime": true,
       "hasDamage": false,
       "hasPrivatePropertyDamage": false
@@ -799,7 +911,7 @@
       "month": "August",
       "year": 2025,
       "eventType": "Illness",
-      "isAccident": false,
+      "isAccident": true,
       "isLostTime": true,
       "hasDamage": false,
       "hasPrivatePropertyDamage": false
@@ -809,7 +921,7 @@
       "month": "August",
       "year": 2025,
       "eventType": "Mobile Equipment",
-      "isAccident": false,
+      "isAccident": true,
       "isLostTime": true,
       "hasDamage": true,
       "hasPrivatePropertyDamage": false
@@ -949,7 +1061,7 @@
       "month": "January",
       "year": 2025,
       "eventType": "Slip/Trip/Fall",
-      "isAccident": false,
+      "isAccident": true,
       "isLostTime": false,
       "hasDamage": false,
       "hasPrivatePropertyDamage": false
