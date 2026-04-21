@@ -1,26 +1,18 @@
 "use client";
 
-import { Users, TrendingUp, CheckCircle, User } from "lucide-react";
-import {
-  PieChart,
-  Pie,
-  Cell,
-  ResponsiveContainer,
-  Tooltip,
-  Legend,
-} from "recharts";
+import { User, AlertCircle } from "lucide-react";
 import SectionHeader, { SectionSubheader } from "@/components/SectionHeader";
-import DataCard from "@/components/DataCard";
-import KPICard from "@/components/KPICard";
-import { staffingData, kpiMetrics } from "@/data/siteData";
-
-const COLORS = ["#21355a", "#65bc7b"];
+import StaffingZoneBar from "@/components/StaffingZoneBar";
+import ZoneLegend from "@/components/ZoneLegend";
+import { staffingData } from "@/data/siteData";
+import { assertAggregateMatchesSum } from "@/lib/staffingZones";
 
 export default function OurTeamPage() {
-  const headcountData = [
-    { name: "Classified", value: staffingData.headcount.classified },
-    { name: "Unclassified", value: staffingData.headcount.unclassified },
-  ];
+  const { coreFPU, opSupport } = staffingData;
+
+  if (typeof window !== "undefined") {
+    assertAggregateMatchesSum(coreFPU.aggregate, coreFPU.departments);
+  }
 
   return (
     <div className="py-12">
@@ -31,122 +23,84 @@ export default function OurTeamPage() {
           source={staffingData.source}
         />
 
-        {/* Headcount Overview */}
-        <section className="mb-12">
-          <div className="grid md:grid-cols-3 gap-6">
-            <KPICard
-              label="Total Staff"
-              value={kpiMetrics.staffCount.value}
-              subtitle={kpiMetrics.staffCount.breakdown}
-              icon={<Users className="h-6 w-6" />}
-              source={kpiMetrics.staffCount.source}
-            />
-            <div className="bg-white rounded-xl shadow-md border border-gray-100 p-6">
-              <div className="flex items-start justify-between mb-3">
-                <span className="text-sm font-medium text-gray-500 uppercase tracking-wide">
-                  Open Vacancies
-                </span>
-                <TrendingUp className="h-6 w-6 text-amber-500" />
-              </div>
-              <div className="flex items-baseline gap-2">
-                <span className="text-3xl font-bold text-amber-500">
-                  {staffingData.headcount.vacancies}
-                </span>
-                <span className="text-sm text-gray-500">agency-wide</span>
-              </div>
+        {/* Summary line */}
+        <section className="mb-8">
+          <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-4 flex flex-wrap items-baseline gap-x-6 gap-y-2">
+            <div>
+              <span className="text-2xl font-bold text-[#21355a]">
+                {staffingData.headcount.total}
+              </span>
+              <span className="ml-2 text-sm text-gray-600">total staff</span>
+              <span className="ml-1 text-xs text-gray-500">
+                ({staffingData.headcount.classified} classified,{" "}
+                {staffingData.headcount.unclassified} unclassified)
+              </span>
             </div>
-            <div className="bg-white rounded-xl shadow-md border border-gray-100 p-6">
-              <div className="flex items-start justify-between mb-3">
-                <span className="text-sm font-medium text-gray-500 uppercase tracking-wide">
-                  As Of
-                </span>
-              </div>
-              <div className="text-xl font-semibold text-[#21355a]">
-                {staffingData.asOfDate}
-              </div>
+            <div>
+              <span className="text-2xl font-bold text-amber-500">
+                {staffingData.headcount.vacancies}
+              </span>
+              <span className="ml-2 text-sm text-gray-600">vacancies agency-wide</span>
+            </div>
+            <div className="text-xs text-gray-500 ml-auto">
+              As of {staffingData.asOfDate}
             </div>
           </div>
         </section>
 
-        {/* Headcount Breakdown */}
-        <section className="mb-12">
-          <SectionSubheader title="Staffing Breakdown" />
-          <div className="grid lg:grid-cols-2 gap-6">
-            <DataCard title="Employee Classification" source={staffingData.source}>
-              <div className="h-64">
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie
-                      data={headcountData}
-                      cx="50%"
-                      cy="50%"
-                      innerRadius={60}
-                      outerRadius={90}
-                      paddingAngle={5}
-                      dataKey="value"
-                      label={({ name, value }) => `${name}: ${value}`}
-                    >
-                      {headcountData.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                      ))}
-                    </Pie>
-                    <Tooltip />
-                    <Legend />
-                  </PieChart>
-                </ResponsiveContainer>
+        {/* Core Flood Protection Unit — zone framework */}
+        <section className="mb-10">
+          <SectionSubheader title="Core Flood Protection Unit" />
+          <div className="bg-white rounded-xl shadow-md border border-gray-100 p-6">
+            <p className="text-sm text-gray-600 mb-5">
+              Operational capacity across Maintenance, Operations, and
+              Engineering. Thresholds set by {coreFPU.thresholdsSetBy} in{" "}
+              {coreFPU.thresholdsDate}.
+            </p>
+
+            {/* Color-coded definitions legend */}
+            <div className="mb-6">
+              <ZoneLegend />
+            </div>
+
+            {coreFPU.isMockPreview && (
+              <div className="mb-6 flex items-start gap-2 bg-blue-50 border border-blue-200 rounded-lg p-3 text-xs text-blue-900">
+                <AlertCircle className="h-4 w-4 flex-shrink-0 mt-0.5" aria-hidden="true" />
+                <span>
+                  <strong>Demo data.</strong> Per-department headcount is a
+                  placeholder preview; real numbers arrive from HR the week of
+                  April 27, 2026.
+                </span>
               </div>
-            </DataCard>
-            <DataCard title="Headcount Details" source={staffingData.source}>
-              <div className="space-y-6">
-                <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                  <div className="flex items-center gap-3">
-                    <div className="w-4 h-4 rounded" style={{ backgroundColor: COLORS[0] }}></div>
-                    <span className="text-gray-700">Classified Employees</span>
-                  </div>
-                  <span className="text-2xl font-bold text-[#21355a]">
-                    {staffingData.headcount.classified}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                  <div className="flex items-center gap-3">
-                    <div className="w-4 h-4 rounded" style={{ backgroundColor: COLORS[1] }}></div>
-                    <span className="text-gray-700">Unclassified Employees</span>
-                  </div>
-                  <span className="text-2xl font-bold text-[#21355a]">
-                    {staffingData.headcount.unclassified}
-                  </span>
-                </div>
-                <div className="border-t pt-4">
-                  <div className="flex items-center justify-between">
-                    <span className="font-semibold text-gray-900">Total</span>
-                    <span className="text-2xl font-bold text-[#21355a]">
-                      {staffingData.headcount.total}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </DataCard>
+            )}
+
+            <div className="mb-7 pb-7 border-b border-gray-100">
+              <StaffingZoneBar group={coreFPU.aggregate} variant="full" />
+            </div>
+
+            <div className="space-y-7">
+              {coreFPU.departments.map((dept) => (
+                <StaffingZoneBar key={dept.key} group={dept} variant="full" />
+              ))}
+            </div>
+
+            <p className="text-xs text-gray-400 mt-6">
+              Red zone thresholds are provisional pending validation against
+              2020 low-headcount data.
+            </p>
           </div>
         </section>
 
-        {/* Department Status */}
-        <section className="mb-12">
-          <SectionSubheader title="Department Staffing Status" />
-          <div className="grid md:grid-cols-3 gap-4">
-            {staffingData.departmentStatus.map((dept) => (
-              <div
-                key={dept.name}
-                className="bg-white rounded-lg shadow-sm border border-gray-100 p-4"
-              >
-                <div className="flex items-center justify-between">
-                  <h4 className="font-semibold text-[#21355a]">{dept.name}</h4>
-                  <span className="inline-flex items-center gap-1 text-xs px-2 py-1 bg-green-100 text-green-700 rounded-full">
-                    <CheckCircle className="h-3 w-3" />
-                    {dept.status}
-                  </span>
-                </div>
-              </div>
-            ))}
+        {/* Operational Support — placeholder */}
+        <section className="mb-10">
+          <SectionSubheader title={opSupport.label} />
+          <div className="bg-gray-50 rounded-xl border border-dashed border-gray-300 p-6">
+            <p className="text-sm text-gray-600">
+              Covering {opSupport.groups.join(", ")}.
+            </p>
+            <p className="text-sm text-gray-500 italic mt-2">
+              {opSupport.note}.
+            </p>
           </div>
         </section>
 

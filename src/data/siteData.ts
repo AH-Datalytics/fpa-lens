@@ -443,23 +443,60 @@ export const staffingData = {
     vacancies: 45,
   },
 
-  departmentStatus: [
-    {
-      name: "OLD Levee Maintenance",
-      status: "Fully Staffed",
-      source: "Dec 2025 SITREP",
+  // Core Flood Protection Unit (MTC + OPS + ENG) zone framework.
+  // Thresholds from Austin/Metoyer/Foster per Darren's Apr 1 2026 email;
+  // RED thresholds are provisional pending HR confirmation of COVID-era lows.
+  //
+  // `current` values are MOCK previews until HR provides the real MTC/OPS/ENG
+  // breakdown (expected week of 2026-04-27). Mocks chosen to show a realistic
+  // Amber-for-MTC, Green-for-smaller-depts scenario so the UI is meaningful.
+  // When real data arrives: replace each `current` and set isMockPreview=false.
+  coreFPU: {
+    asOfDate: "April 1, 2026",
+    thresholdsSetBy: "Austin (Ops), Metoyer (Maintenance), Foster (Engineering)",
+    thresholdsDate: "April 2026",
+    thresholdsSource: "Darren Austin email, Apr 1 2026 (Subject: RE: FPA Lens: Staffing)",
+    isMockPreview: true,
+    aggregate: {
+      key: "CORE_FPU",
+      label: "Core Flood Protection Unit",
+      full: 202,
+      current: 162 as number | null, // MOCK
+      thresholds: { amberMax: 175, redMax: 95 },
     },
-    {
-      name: "OLD Mechanic Shop",
-      status: "Fully Staffed",
-      source: "Dec 2025 SITREP",
-    },
-    {
-      name: "EJ Mechanic Shop",
-      status: "Fully Staffed",
-      source: "Dec 2025 SITREP",
-    },
-  ],
+    departments: [
+      {
+        key: "MTC",
+        label: "Maintenance",
+        full: 151,
+        current: 120 as number | null, // MOCK
+        thresholds: { amberMax: 136, redMax: 71 },
+      },
+      {
+        key: "OPS",
+        label: "Operations",
+        full: 34,
+        current: 28 as number | null, // MOCK
+        thresholds: { amberMax: 26, redMax: 16 },
+      },
+      {
+        key: "ENG",
+        label: "Engineering",
+        full: 17,
+        current: 14 as number | null, // MOCK
+        thresholds: { amberMax: 13, redMax: 8 },
+      },
+    ],
+  },
+
+  // Operational Support zones (Exec, HR, IT, Finance) — framework in development
+  // with Regional Director. Placeholder only; no thresholds yet.
+  opSupport: {
+    status: "placeholder" as const,
+    label: "Operational Support",
+    groups: ["Executive", "Human Resources", "Information Technology", "Finance"],
+    note: "Framework in development with Regional Director; thresholds to come",
+  },
 
   recentHires: [
     {

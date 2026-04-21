@@ -13,6 +13,7 @@ import {
 import StatusBadge from "@/components/StatusBadge";
 import SiteGuide from "@/components/SiteGuide";
 import EnvironmentalCard from "@/components/EnvironmentalCard";
+import StaffingZoneBar from "@/components/StaffingZoneBar";
 import {
   siteConfig,
   kpiMetrics,
@@ -246,19 +247,11 @@ export default function Home() {
                 </div>
                 <StatusBadge status={staffReadiness.status} size="sm" tooltip={statusTooltip(staffReadiness.status)} />
               </div>
-              <div className="grid grid-cols-2 gap-3 mb-4">
-                <div className="text-center">
-                  <div className="text-xl font-bold text-[#21355a]">
-                    {kpiMetrics.staffCount.value}
-                  </div>
-                  <div className="text-xs text-gray-500">Total Staff</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-xl font-bold text-amber-500">
-                    {staffingData.headcount.vacancies}
-                  </div>
-                  <div className="text-xs text-gray-500">Vacancies</div>
-                </div>
+              <div className="mb-4">
+                <StaffingZoneBar
+                  group={staffingData.coreFPU.aggregate}
+                  variant="compact"
+                />
               </div>
               <p className="text-sm text-gray-600 line-clamp-2">{staffReadiness.description}</p>
               <div className={`mt-4 flex items-center text-sm font-medium ${statusText(staffReadiness.status)}`}>
