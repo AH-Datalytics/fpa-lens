@@ -88,7 +88,7 @@ export default function Footer() {
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 text-sm text-blue-200">
             <p>&copy; {new Date().getFullYear()} {siteConfig.organizationShort}</p>
             <p className="text-center">
-              Powered by{" "}
+              Built by{" "}
               <a
                 href="https://ahdatalytics.com"
                 target="_blank"
