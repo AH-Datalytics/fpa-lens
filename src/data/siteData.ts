@@ -230,9 +230,9 @@ export const readinessMetrics = {
     mandate: "USACE O&M Manual",
     source: "Apr 2026 SITREP",
   },
-  // River gate annual inspections: 84 gates, tested Oct 1 through Dec 7,
-  // 28/month. Per Jeff's "FPA Lens Gate and Valve Testing" workbook, Apr 2026
-  // update (revised from earlier Jun-Dec window).
+  // River gate annual inspections: 84 gates, tested Oct 1 through Dec 31
+  // (3-month window), 28/month. Per Jeff's "FPA Lens Gate and Valve Testing"
+  // workbook, Apr 2026 update (revised from earlier Jun-Dec window).
   // Outside the inspection window, the card reflects whether the previous
   // year's cycle was completed — currently true for Oct-Dec 2025.
   riverGateInspections: {
@@ -240,7 +240,7 @@ export const readinessMetrics = {
     completed: 0,
     percentComplete: 0,
     periodStart: "2026-10-01",
-    periodEnd: "2026-12-07",
+    periodEnd: "2026-12-31",
     lastCycleCompleted: true,
     lastCycleLabel: "Oct-Dec 2025",
     monthlyRate: 28,

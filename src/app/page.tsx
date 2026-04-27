@@ -113,20 +113,6 @@ export default function Home() {
   const fyElapsedPct = Math.min(100, Math.max(0, Math.round(((new Date(omDataDate + "T00:00:00").getTime() - fyStart.getTime()) / (fyEnd.getTime() - fyStart.getTime())) * 100)));
 
   const rollups = computeReadinessRollups();
-  const inspectionsBehindCount =
-    rollups.inspections.total - rollups.inspections.greenCount;
-  const inspectionsLabel =
-    inspectionsBehindCount === 0
-      ? "Inspections on pace"
-      : `${inspectionsBehindCount} behind pace`;
-  const grassCuttingPaceLabel =
-    rollups.grassCutting.status === "GREEN"
-      ? "On pace"
-      : rollups.grassCutting.status === "AMBER"
-        ? "Slightly behind"
-        : rollups.grassCutting.status === "RED"
-          ? "Behind"
-          : "Pending";
 
   return (
     <div>
@@ -192,7 +178,7 @@ export default function Home() {
                     {rollups.inspections.greenCount}/{rollups.inspections.total}
                   </div>
                   <div className="text-xs text-gray-500 leading-snug mt-0.5">
-                    {inspectionsLabel}
+                    Inspections on pace
                   </div>
                 </div>
                 <div className="text-center">
@@ -200,7 +186,7 @@ export default function Home() {
                     {rollups.grassCutting.complete}/{rollups.grassCutting.total}
                   </div>
                   <div className="text-xs text-gray-500 leading-snug mt-0.5">
-                    Grass cutting {grassCuttingPaceLabel.toLowerCase()}
+                    Turf maintenance reaches on pace
                   </div>
                 </div>
               </div>

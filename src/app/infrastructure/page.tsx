@@ -243,11 +243,11 @@ export default function OurSystemPage() {
             </p>
           </div>
           <Link
-            href="/infrastructure/grass-cutting"
+            href="/infrastructure/turf-maintenance"
             className="group inline-flex items-center gap-2 px-5 py-3 bg-[#21355a] hover:bg-[#2c4470] text-white rounded-lg text-sm font-semibold shadow-md hover:shadow-lg transition-all whitespace-nowrap self-start"
           >
             <Scissors className="h-4 w-4" />
-            Grass Cutting
+            Turf Maintenance
             <ArrowRight className="h-4 w-4 text-[#65bc7b] group-hover:translate-x-0.5 transition-transform" />
           </Link>
         </div>
@@ -483,9 +483,9 @@ export default function OurSystemPage() {
               note={usace.reportSubmittedDate ? `Report submitted ${usace.reportSubmittedDate}` : "Submission pending"}
             />
             <Link
-              href="/infrastructure/grass-cutting"
+              href="/infrastructure/turf-maintenance"
               className="block h-full rounded-xl transition-shadow hover:shadow-lg"
-              aria-label="Open Grass Cutting page for zone-by-zone progress"
+              aria-label="Open Turf Maintenance page for zone-by-zone progress"
             >
               <ReadinessCard
                 title="Monthly Turf Maintenance"

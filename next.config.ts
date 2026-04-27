@@ -4,7 +4,9 @@ const nextConfig: NextConfig = {
   async redirects() {
     return [
       { source: "/our-system", destination: "/infrastructure", permanent: true },
+      { source: "/our-system/grass-cutting", destination: "/infrastructure/turf-maintenance", permanent: true },
       { source: "/our-system/:path*", destination: "/infrastructure/:path*", permanent: true },
+      { source: "/infrastructure/grass-cutting", destination: "/infrastructure/turf-maintenance", permanent: true },
       { source: "/financial", destination: "/finance", permanent: true },
       { source: "/financial/:path*", destination: "/finance/:path*", permanent: true },
       { source: "/operations", destination: "/engineering", permanent: true },

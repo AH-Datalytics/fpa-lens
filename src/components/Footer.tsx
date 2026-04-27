@@ -75,11 +75,11 @@ export default function Footer() {
                 Watch board meetings
               </a>
               <Link
-                href="/infrastructure/grass-cutting"
+                href="/infrastructure/turf-maintenance"
                 className="flex items-center gap-2 text-blue-200 hover:text-white transition-colors"
               >
                 <Scissors className="h-4 w-4" />
-                Grass Cutting
+                Turf Maintenance
               </Link>
             </div>
           </div>

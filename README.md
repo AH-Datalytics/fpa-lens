@@ -8,7 +8,7 @@ Public transparency dashboard for the Southeast Louisiana Flood Protection Autho
 |---|---|
 | `/` | Homepage with readiness gauge cards, KPIs, and quick links |
 | `/infrastructure` | Infrastructure page: interactive map, "System We Manage" table (per-district), 7 infrastructure readiness cards graded against straight-line monthly progress, real-time alerts |
-| `/infrastructure/grass-cutting` | Grass Cutting page: 6 color-coded zones with sub-areas, last-cycle stats, and current-cycle progress |
+| `/infrastructure/turf-maintenance` | Turf Maintenance page: 6 color-coded zones with sub-areas, last-cycle stats, and current-cycle progress |
 | `/engineering` | Engineering: permits, inspections, valve exercises, PCCP repairs, maintenance activities |
 | `/engineering/idiq` | IDIQ Contract Tracker: 2022 and 2025 cycles, service categories with micro-descriptions, firm-level utilization |
 | `/safety` | Accident/incident trends, events by category, lost time tracking. FY26 YTD accident count sourced from Safety Officer |
