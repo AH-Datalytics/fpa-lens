@@ -75,7 +75,7 @@ export default function Footer() {
                 Watch board meetings
               </a>
               <Link
-                href="/our-system/grass-cutting"
+                href="/infrastructure/grass-cutting"
                 className="flex items-center gap-2 text-blue-200 hover:text-white transition-colors"
               >
                 <Scissors className="h-4 w-4" />

@@ -38,7 +38,7 @@ export default function OperationsPage() {
             <p className="mt-2 text-sm text-gray-400">Data source: {latestPermit.source}</p>
           </div>
           <Link
-            href="/operations/idiq"
+            href="/engineering/idiq"
             className="group inline-flex items-center gap-2 px-5 py-3 bg-[#21355a] hover:bg-[#2c4470] text-white rounded-lg text-sm font-semibold shadow-md hover:shadow-lg transition-all whitespace-nowrap self-start"
           >
             <FileText className="h-4 w-4" />

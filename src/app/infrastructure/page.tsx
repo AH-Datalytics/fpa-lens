@@ -243,7 +243,7 @@ export default function OurSystemPage() {
             </p>
           </div>
           <Link
-            href="/our-system/grass-cutting"
+            href="/infrastructure/grass-cutting"
             className="group inline-flex items-center gap-2 px-5 py-3 bg-[#21355a] hover:bg-[#2c4470] text-white rounded-lg text-sm font-semibold shadow-md hover:shadow-lg transition-all whitespace-nowrap self-start"
           >
             <Scissors className="h-4 w-4" />
@@ -483,7 +483,7 @@ export default function OurSystemPage() {
               note={usace.reportSubmittedDate ? `Report submitted ${usace.reportSubmittedDate}` : "Submission pending"}
             />
             <Link
-              href="/our-system/grass-cutting"
+              href="/infrastructure/grass-cutting"
               className="block h-full rounded-xl transition-shadow hover:shadow-lg"
               aria-label="Open Grass Cutting page for zone-by-zone progress"
             >

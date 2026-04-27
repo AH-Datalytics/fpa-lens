@@ -7,13 +7,15 @@ Public transparency dashboard for the Southeast Louisiana Flood Protection Autho
 | Route | Description |
 |---|---|
 | `/` | Homepage with readiness gauge cards, KPIs, and quick links |
-| `/our-system` | Infrastructure page: interactive map, "System We Manage" table (per-district), 7 infrastructure readiness cards graded against straight-line monthly progress, real-time alerts |
-| `/operations` | Engineering (nav label): permits, inspections, valve exercises, PCCP repairs, maintenance activities |
-| `/operations/idiq` | IDIQ Contract Tracker: 2022 and 2025 cycles, service categories with micro-descriptions, firm-level utilization |
+| `/infrastructure` | Infrastructure page: interactive map, "System We Manage" table (per-district), 7 infrastructure readiness cards graded against straight-line monthly progress, real-time alerts |
+| `/infrastructure/grass-cutting` | Grass Cutting page: 6 color-coded zones with sub-areas, last-cycle stats, and current-cycle progress |
+| `/engineering` | Engineering: permits, inspections, valve exercises, PCCP repairs, maintenance activities |
+| `/engineering/idiq` | IDIQ Contract Tracker: 2022 and 2025 cycles, service categories with micro-descriptions, firm-level utilization |
 | `/safety` | Accident/incident trends, events by category, lost time tracking. FY26 YTD accident count sourced from Safety Officer |
-| `/financial` | FY26 budget by category/district, budget vs actuals (monthly YTD refresh), capital projects |
-| `/our-team` | Staffing: leadership, headcount, vacancies, department status |
-| `/environmental` | Real-time lakefront flood risk indicator with KNEW fallback wind source (see below) |
+| `/finance` | FY26 budget by category/district, budget vs actuals (monthly YTD refresh), capital projects |
+| `/staffing` | Staffing: leadership, headcount, vacancies, department status |
+| `/environment` | Real-time lakefront flood risk indicator with KNEW fallback wind source (see below) |
+| `/protection` | Infrastructure Protection Operations: 24/7 field protection of the flood system, activity stats, JP pump-theft anecdote |
 | `/about/what-we-do` | About Us: organization overview |
 
 ## Getting Started
@@ -65,21 +67,21 @@ The site pulls from four types of source data:
 
 | SITREP Section | Site Page | Updated In | Notes |
 |---|---|---|---|
-| Overall readiness status | `/our-system`, `/` | `systemReadiness.overallStatus`, `.categories` | Homepage gauge cards derive from this |
-| Alerts (e.g., GIWW gate issues) | `/our-system` | `systemReadiness.alerts` | Array; empty when no active alerts |
-| Mississippi River level + forecast | `/our-system` | `systemReadiness.riverConditions` | Level, unit, status text, forecast |
-| PCCP pump availability | `/our-system`, `/` | `kpiMetrics.pccpPumps` | value/total (e.g., 17/17) |
+| Overall readiness status | `/infrastructure`, `/` | `systemReadiness.overallStatus`, `.categories` | Homepage gauge cards derive from this |
+| Alerts (e.g., GIWW gate issues) | `/infrastructure` | `systemReadiness.alerts` | Array; empty when no active alerts |
+| Mississippi River level + forecast | `/infrastructure` | `systemReadiness.riverConditions` | Level, unit, status text, forecast |
+| PCCP pump availability | `/infrastructure`, `/` | `kpiMetrics.pccpPumps` | value/total (e.g., 17/17) |
 | YTD accidents | `/`, `/safety` | `kpiMetrics.ytdAccidents`, `safetyData` | FY26 YTD count |
-| Hurricane gate inspection % | `/our-system`, `/operations` | `kpiMetrics.floodgateInspections`, `operationsData.floodgateInspections` | |
-| Valve exercises % | `/our-system`, `/operations` | `operationsData.floodgateInspections.valveExercises` | |
-| Permits issued (monthly count) | `/operations` | `operationsData.permitsIssued` array | **Append** new month; page auto-derives latest |
-| Staff headcount and vacancies | `/`, `/our-team` | `kpiMetrics.staffCount`, `staffingData` | |
-| Recent hires | `/our-team` | `staffingData.recentHires` | |
-| Department staffing status | `/our-team` | `staffingData.departmentStatus` | |
-| Capital project updates | `/financial` | `financialData.capitalProjects` | |
-| PCCP repair status | `/operations` | `operationsData.pccpRepairStatus` | |
-| Maintenance activities | `/operations` | `operationsData.maintenanceActivities` | Array of summary strings |
-| USACE inspection status | `/operations` | `operationsData.floodgateInspections.usaceInspections` | |
+| Hurricane gate inspection % | `/infrastructure`, `/engineering` | `kpiMetrics.floodgateInspections`, `operationsData.floodgateInspections` | |
+| Valve exercises % | `/infrastructure`, `/engineering` | `operationsData.floodgateInspections.valveExercises` | |
+| Permits issued (monthly count) | `/engineering` | `operationsData.permitsIssued` array | **Append** new month; page auto-derives latest |
+| Staff headcount and vacancies | `/`, `/staffing` | `kpiMetrics.staffCount`, `staffingData` | |
+| Recent hires | `/staffing` | `staffingData.recentHires` | |
+| Department staffing status | `/staffing` | `staffingData.departmentStatus` | |
+| Capital project updates | `/finance` | `financialData.capitalProjects` | |
+| PCCP repair status | `/engineering` | `operationsData.pccpRepairStatus` | |
+| Maintenance activities | `/engineering` | `operationsData.maintenanceActivities` | Array of summary strings |
+| USACE inspection status | `/engineering` | `operationsData.floodgateInspections.usaceInspections` | |
 
 All fields referenced above are in `src/data/siteData.ts`. Each field has a `source` comment indicating which SITREP (or other document) it came from.
 
@@ -95,7 +97,7 @@ All fields referenced above are in `src/data/siteData.ts`. Each field has a `sou
 
 **Output:** `public/data/budget-fy26.json`
 
-**Displayed on:** `/financial`
+**Displayed on:** `/finance`
 
 **How to update:**
 1. Place the new budget Excel file in `data-sources/budget/`
@@ -114,7 +116,7 @@ All fields referenced above are in `src/data/siteData.ts`. Each field has a `sou
 
 **Output:** `public/data/actuals-fy26.json`
 
-**Displayed on:** `/financial` (Budget vs Actuals section: KPI cards, category charts, department tables)
+**Displayed on:** `/finance` (Budget vs Actuals section: KPI cards, category charts, department tables)
 
 **How to update:**
 1. Place the new Dashboard Reports file in `data-sources/budget/`
@@ -165,7 +167,7 @@ See `data-sources/budget/UPDATE-GUIDE.md` for detailed instructions to share wit
 
 **Output:** `public/data/` (floodgates.json, valves.json, pccps.json, complex-structures.json, levee-centerline.json)
 
-**Displayed on:** `/our-system`
+**Displayed on:** `/infrastructure`
 
 **How to update:** These change infrequently. If Engineering provides updated KMZ or shapefiles, place them in the appropriate `data-sources/` folder and run the conversion script.
 
@@ -195,7 +197,7 @@ See `data-sources/budget/UPDATE-GUIDE.md` for detailed instructions to share wit
 
 Either condition (wind OR surge) alone can trigger a level. Forecast escalation: if conditions are predicted to cross a higher tier within 6 hours, the current level bumps up one tier.
 
-**Displayed on:** `/environmental` (full dashboard with current conditions, 48-hr forecast chart, NWS alerts, threshold reference table) and `/` (homepage gauge card showing wind, surge anomaly, and risk level).
+**Displayed on:** `/environment` (full dashboard with current conditions, 48-hr forecast chart, NWS alerts, threshold reference table) and `/` (homepage gauge card showing wind, surge anomaly, and risk level).
 
 **Components:**
 - `src/components/RiskBadge.tsx` — 4-tier status badge (parallels `StatusBadge` but with GREEN/YELLOW/ORANGE/RED). Also exports `RiskIndicator` (large hero variant) and helper functions (`riskBorder`, `riskBg`, `riskText`).

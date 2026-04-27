@@ -13,12 +13,12 @@ interface NavItem {
 }
 
 const navigation: NavItem[] = [
-  { name: "Infrastructure", href: "/our-system" },
-  { name: "Finance", href: "/financial" },
-  { name: "Engineering", href: "/operations" },
+  { name: "Infrastructure", href: "/infrastructure" },
+  { name: "Finance", href: "/finance" },
+  { name: "Engineering", href: "/engineering" },
   { name: "Safety", href: "/safety" },
-  { name: "Staffing", href: "/our-team" },
-  { name: "Environment", href: "/environmental" },
+  { name: "Staffing", href: "/staffing" },
+  { name: "Environment", href: "/environment" },
   { name: "Protection", href: "/protection" },
   { name: "About Us", href: "/about/what-we-do" },
 ];

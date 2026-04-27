@@ -50,7 +50,7 @@ export default function EnvironmentalCard() {
 
   return (
     <Link
-      href="/environmental"
+      href="/environment"
       className={`group bg-white rounded-xl shadow-lg border-l-4 ${riskBorder(risk.level)} p-6 hover:shadow-2xl transition-shadow duration-200`}
     >
       <div className="mb-4">

@@ -50,7 +50,7 @@ export default function GrassCuttingPage() {
     <div className="py-12">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <Link
-          href="/our-system"
+          href="/infrastructure"
           className="inline-flex items-center gap-1.5 text-sm text-[#21355a] hover:underline mb-4"
         >
           <ArrowLeft className="h-4 w-4" />

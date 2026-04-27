@@ -5,19 +5,19 @@ Dashboard for the Southeast Louisiana Flood Protection Authority (FPA). Built fo
 
 ## Dashboard Pages
 
-### Staffing (/our-team)
+### Staffing (/staffing)
 - Removed individual recent hires (names/positions) -- too much detail for public dashboard
 - Keep vacancy count (45) for now since that's all the data we have
 - Revisit detail level when the Director provides more detailed staffing info
 
-### Financial (/financial)
+### Financial (/finance)
 - Budget vs actuals is live. Refreshed from the Dashboard Reports `.xlsm` workbook Finance sends on a monthly (or quarterly) cadence.
 - Current data: FY26 YTD through Feb 28, 2026.
 - Projects are shown separately from O&M per the Director's direction, since project timing would otherwise distort the operational spending story.
 
-### Engineering (/operations)
-- Menu item, page title, and homepage card are all "Engineering" (renamed from "Operations" / "Operations & Maintenance" per the Director, Apr 2026). URL kept at `/operations` to avoid breaking external links.
-- /operations/idiq is the IDIQ Contract Tracker. Landing intro, Key Takeaway callout, service micro-descriptions, process boxes, and teal accent bar (#2FA4A9) all follow the Director's mockup. KPI cards filter by the selected 2022/2025 contract cycle.
+### Engineering (/engineering)
+- Renamed from "Operations" / "Operations & Maintenance" per the Director, Apr 2026. URL was migrated from `/operations` to `/engineering` (Apr 2026); the old paths now 308-redirect via `next.config.ts` so external links keep working.
+- /engineering/idiq is the IDIQ Contract Tracker. Landing intro, Key Takeaway callout, service micro-descriptions, process boxes, and teal accent bar (#2FA4A9) all follow the Director's mockup. KPI cards filter by the selected 2022/2025 contract cycle.
 - LNO = Letter of No Objection (used in permit pipeline copy).
 
 ### Safety (/safety)
@@ -32,7 +32,7 @@ Dashboard for the Southeast Louisiana Flood Protection Authority (FPA). Built fo
 
 ## Lakefront Risk Feature
 
-Merged to `main` and deployed. Lives on `/environmental`.
+Merged to `main` and deployed. Lives on `/environment`.
 
 ### Director Feedback (March 2026)
 From Regional Director Jeff Williams. Chief Rondeno looped in and tasked with gathering historical closure log.

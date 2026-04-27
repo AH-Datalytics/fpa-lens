@@ -28,19 +28,19 @@ const quickLinks = [
   {
     title: "Infrastructure",
     description: "Details and readiness of infrastructure protecting Greater New Orleans",
-    href: "/our-system",
+    href: "/infrastructure",
     icon: Shield,
   },
   {
     title: "Finance",
     description: "How your tax dollars are being invested",
-    href: "/financial",
+    href: "/finance",
     icon: FileText,
   },
   {
     title: "Engineering",
     description: "Permits, inspections, and engineering contracts",
-    href: "/operations",
+    href: "/engineering",
     icon: Droplets,
   },
   {
@@ -52,13 +52,13 @@ const quickLinks = [
   {
     title: "Staffing",
     description: "Leadership, headcount, and department status",
-    href: "/our-team",
+    href: "/staffing",
     icon: Users,
   },
   {
     title: "Environment",
     description: "Real-time lakefront flood risk and weather conditions",
-    href: "/environmental",
+    href: "/environment",
     icon: Wind,
   },
   {
@@ -174,7 +174,7 @@ export default function Home() {
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             {/* Infrastructure Readiness */}
             <Link
-              href="/our-system#infrastructure-readiness"
+              href="/infrastructure#infrastructure-readiness"
               className={`group bg-white rounded-xl shadow-lg border-l-4 ${statusBorder(infra.status)} p-6 hover:shadow-2xl transition-shadow duration-200`}
             >
               <div className="flex items-center justify-between mb-4">
@@ -213,7 +213,7 @@ export default function Home() {
 
             {/* Financial Readiness */}
             <Link
-              href="/financial"
+              href="/finance"
               className={`group bg-white rounded-xl shadow-lg border-l-4 ${statusBorder(financial.status)} p-6 hover:shadow-2xl transition-shadow duration-200`}
             >
               <div className="flex items-center justify-between mb-4">
@@ -250,7 +250,7 @@ export default function Home() {
 
             {/* Staff Readiness */}
             <Link
-              href="/our-team"
+              href="/staffing"
               className={`group bg-white rounded-xl shadow-lg border-l-4 ${statusBorder(staffReadiness.status)} p-6 hover:shadow-2xl transition-shadow duration-200`}
             >
               <div className="flex items-center justify-between mb-4">

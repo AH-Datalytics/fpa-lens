@@ -1,10 +1,10 @@
 /**
  * Compute roll-up statuses for the Infrastructure Readiness card on the
  * home page. The same per-inspection statuses are used on the deeper
- * `/our-system` page (where they're computed inline). This module gives
+ * `/infrastructure` page (where they're computed inline). This module gives
  * the home page a consolidated summary.
  *
- * Status grading mirrors `/our-system`: actual progress is compared to
+ * Status grading mirrors `/infrastructure`: actual progress is compared to
  * straight-line expected progress for the report date, and the resulting
  * ratio is bucketed as GREEN >= 90, AMBER >= 80, RED < 80.
  */

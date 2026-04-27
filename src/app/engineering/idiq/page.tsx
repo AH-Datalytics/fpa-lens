@@ -320,7 +320,7 @@ export default function IdiqPage() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mb-4">
           <Link
-            href="/operations"
+            href="/engineering"
             className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-[#21355a] transition-colors"
           >
             <ArrowLeft className="h-4 w-4" />
