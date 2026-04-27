@@ -210,16 +210,6 @@ export default function OurTeamPage() {
           </div>
         </section>
 
-        {/* Board of Commissioners */}
-        <section className="mb-10">
-          <SectionSubheader title="Board of Commissioners" />
-          <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {staffingData.board.map((member) => (
-              <PersonCard key={member.name} person={member} />
-            ))}
-          </div>
-        </section>
-
         {/* Leadership */}
         <section>
           <SectionSubheader title="Leadership" />
