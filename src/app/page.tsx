@@ -113,15 +113,12 @@ export default function Home() {
   const fyElapsedPct = Math.min(100, Math.max(0, Math.round(((new Date(omDataDate + "T00:00:00").getTime() - fyStart.getTime()) / (fyEnd.getTime() - fyStart.getTime())) * 100)));
 
   const rollups = computeReadinessRollups();
-  const inspectionsOnPace = rollups.inspections.greenCount === rollups.inspections.total;
-  const inspectionsBadgeStatus: StatusLevel =
-    rollups.inspections.worstStatus === "NEUTRAL"
-      ? "GREEN"
-      : rollups.inspections.worstStatus;
-  const grassCuttingBadgeStatus: StatusLevel =
-    rollups.grassCutting.status === "NEUTRAL"
-      ? "GREEN"
-      : rollups.grassCutting.status;
+  const inspectionsBehindCount =
+    rollups.inspections.total - rollups.inspections.greenCount;
+  const inspectionsLabel =
+    inspectionsBehindCount === 0
+      ? "Inspections on pace"
+      : `${inspectionsBehindCount} behind pace`;
   const grassCuttingPaceLabel =
     rollups.grassCutting.status === "GREEN"
       ? "On pace"
@@ -191,27 +188,15 @@ export default function Home() {
               </div>
               <div className="grid grid-cols-2 gap-3 mb-4">
                 <div className="text-center">
-                  <div className={`text-xl font-bold ${
-                    inspectionsBadgeStatus === "RED"
-                      ? "text-red-600"
-                      : inspectionsBadgeStatus === "AMBER"
-                        ? "text-amber-600"
-                        : "text-[#21355a]"
-                  }`}>
+                  <div className="text-xl font-bold text-[#21355a]">
                     {rollups.inspections.greenCount}/{rollups.inspections.total}
                   </div>
                   <div className="text-xs text-gray-500 leading-snug mt-0.5">
-                    Inspections {inspectionsOnPace ? "on pace" : "needing attention"}
+                    {inspectionsLabel}
                   </div>
                 </div>
                 <div className="text-center">
-                  <div className={`text-xl font-bold ${
-                    grassCuttingBadgeStatus === "RED"
-                      ? "text-red-600"
-                      : grassCuttingBadgeStatus === "AMBER"
-                        ? "text-amber-600"
-                        : "text-[#21355a]"
-                  }`}>
+                  <div className="text-xl font-bold text-[#21355a]">
                     {rollups.grassCutting.complete}/{rollups.grassCutting.total}
                   </div>
                   <div className="text-xs text-gray-500 leading-snug mt-0.5">
