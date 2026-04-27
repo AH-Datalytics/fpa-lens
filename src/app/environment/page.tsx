@@ -14,6 +14,8 @@ import {
   ExternalLink,
   Download,
   Camera,
+  Clock,
+  Compass,
 } from "lucide-react";
 import {
   ComposedChart,
@@ -442,6 +444,95 @@ export default function EnvironmentalPage() {
                 ))}
               </ul>
             </div>
+          </div>
+        </section>
+
+        {/* Plain-English explainer: what makes the risk go up */}
+        <section className="mb-12">
+          <SectionSubheader
+            title="What drives this risk indicator"
+            subtitle="Three things have to line up before flooding becomes likely"
+          />
+          <div className="bg-white rounded-xl shadow-md border border-gray-100 p-6">
+            <p className="text-base text-gray-700 leading-relaxed mb-6">
+              Lakeshore Drive floods when wind pushes Lake Pontchartrain water against
+              the south shore. Most days the wind blows the lake away from the shore and
+              there is no risk. The indicator turns yellow, orange, or red only when the
+              right combination of wind direction, wind strength, duration, and rising
+              water lines up.
+            </p>
+            <div className="grid md:grid-cols-3 gap-4 mb-6">
+              <div className="rounded-lg border border-gray-100 bg-gray-50/60 p-5">
+                <div className="flex items-center gap-2 mb-2 text-[#21355a]">
+                  <Compass className="h-5 w-5" aria-hidden="true" />
+                  <h3 className="font-semibold text-sm uppercase tracking-wide">
+                    Wind direction
+                  </h3>
+                </div>
+                <p className="text-2xl font-bold text-[#21355a] mb-1">Onshore</p>
+                <p className="text-sm text-gray-700 leading-snug">
+                  Blowing from the north (NW, N, or NE) toward Lakeshore Drive. Winds from
+                  the south push water away and pose no risk.
+                </p>
+              </div>
+              <div className="rounded-lg border border-gray-100 bg-gray-50/60 p-5">
+                <div className="flex items-center gap-2 mb-2 text-[#21355a]">
+                  <Wind className="h-5 w-5" aria-hidden="true" />
+                  <h3 className="font-semibold text-sm uppercase tracking-wide">
+                    Wind strength &amp; duration
+                  </h3>
+                </div>
+                <p className="text-2xl font-bold text-[#21355a] mb-1">Sustained</p>
+                <p className="text-sm text-gray-700 leading-snug">
+                  Yellow and orange require winds above 15 / 25 knots for at least
+                  ~2 of the previous 3 hours. Red triggers immediately above 35 knots.
+                </p>
+              </div>
+              <div className="rounded-lg border border-gray-100 bg-gray-50/60 p-5">
+                <div className="flex items-center gap-2 mb-2 text-[#21355a]">
+                  <Waves className="h-5 w-5" aria-hidden="true" />
+                  <h3 className="font-semibold text-sm uppercase tracking-wide">
+                    Lake level vs. tide
+                  </h3>
+                </div>
+                <p className="text-2xl font-bold text-[#21355a] mb-1">Above predicted</p>
+                <p className="text-sm text-gray-700 leading-snug">
+                  Lake level above tide prediction (surge anomaly) signals water piling
+                  up on the south shore. Only counted as risk when wind is also onshore.
+                </p>
+              </div>
+            </div>
+            <div className="grid md:grid-cols-2 gap-4">
+              <div className="rounded-lg border border-green-200 bg-green-50/60 p-4">
+                <div className="flex items-center gap-2 mb-1.5">
+                  <span className="w-2 h-2 rounded-full bg-green-500" aria-hidden="true" />
+                  <span className="text-xs font-semibold uppercase tracking-wide text-green-800">
+                    Normal conditions (green)
+                  </span>
+                </div>
+                <p className="text-sm text-gray-700 leading-snug">
+                  Wind is calm, blowing offshore, or below 15 knots; lake level is near
+                  tide prediction. No action required.
+                </p>
+              </div>
+              <div className="rounded-lg border border-amber-200 bg-amber-50/60 p-4">
+                <div className="flex items-center gap-2 mb-1.5">
+                  <Clock className="h-3.5 w-3.5 text-amber-700" aria-hidden="true" />
+                  <span className="text-xs font-semibold uppercase tracking-wide text-amber-800">
+                    Elevated conditions (yellow / orange / red)
+                  </span>
+                </div>
+                <p className="text-sm text-gray-700 leading-snug">
+                  Sustained onshore wind plus rising lake level. The longer the wind
+                  blows that direction, the higher water gets pushed against the shore.
+                </p>
+              </div>
+            </div>
+            <p className="text-xs text-gray-500 mt-4">
+              See the <a href="#thresholds" className="underline hover:text-[#21355a]">risk
+              level thresholds</a> below for the exact wind and water-level cutoffs that
+              the model uses.
+            </p>
           </div>
         </section>
 
@@ -900,7 +991,7 @@ export default function EnvironmentalPage() {
         )}
 
         {/* Threshold Reference */}
-        <section className="mb-12">
+        <section id="thresholds" className="mb-12 scroll-mt-24">
           <SectionSubheader title="Risk Level Thresholds" />
           <DataCard title="What triggers each risk level" source="SLFPA-E Operational Thresholds">
             <div className="overflow-x-auto">
