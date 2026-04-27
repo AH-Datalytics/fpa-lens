@@ -52,9 +52,15 @@ const TRENDING_ICONS = {
 };
 
 const TRENDING_LABELS = {
-  improving: "Improving",
-  stable: "Stable",
-  worsening: "Worsening",
+  improving: "Improving forecast",
+  stable: "Stable forecast",
+  worsening: "Worsening forecast",
+};
+
+const TRENDING_TOOLTIPS = {
+  improving: "The risk indicator is expected to ease over the next ~6 hours based on NWS and NOAA forecasts.",
+  stable: "The risk indicator is expected to stay at this level over the next ~6 hours based on NWS and NOAA forecasts.",
+  worsening: "The risk indicator is expected to escalate over the next ~6 hours based on NWS and NOAA forecasts.",
 };
 
 const TRENDING_COLORS = {
@@ -395,12 +401,22 @@ export default function EnvironmentalPage() {
                 <RiskIndicator level={risk.level} action={risk.action} />
               </div>
               <div className="flex flex-col items-end gap-3">
-                <div className="flex items-center gap-2">
-                  <TrendIcon className={`h-4 w-4 ${TRENDING_COLORS[risk.trending]}`} />
-                  <span className={`text-sm font-medium ${TRENDING_COLORS[risk.trending]}`}>
+                <span
+                  className="relative group/trend cursor-help inline-flex items-center gap-2"
+                  tabIndex={0}
+                  aria-label={TRENDING_TOOLTIPS[risk.trending]}
+                >
+                  <TrendIcon className={`h-4 w-4 ${TRENDING_COLORS[risk.trending]}`} aria-hidden="true" />
+                  <span className={`text-sm font-medium border-b border-dashed border-gray-300 ${TRENDING_COLORS[risk.trending]}`}>
                     {TRENDING_LABELS[risk.trending]}
                   </span>
-                </div>
+                  <span
+                    role="tooltip"
+                    className="invisible group-hover/trend:visible group-focus-within/trend:visible absolute right-0 top-full mt-2 w-64 rounded-lg bg-gray-800 text-white text-xs font-normal p-2.5 leading-relaxed shadow-lg z-50 whitespace-normal text-left pointer-events-none"
+                  >
+                    {TRENDING_TOOLTIPS[risk.trending]}
+                  </span>
+                </span>
                 <div className="flex flex-col items-end gap-0.5">
                   <div className="flex items-center gap-2 text-xs text-gray-400">
                     <span>Updated {formatDateTime(data.lastUpdated)}</span>

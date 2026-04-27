@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { MapPin, Phone, ExternalLink, Scissors } from "lucide-react";
+import { MapPin, Phone, ExternalLink, Scissors, FileText } from "lucide-react";
 import { siteConfig } from "@/data/siteData";
 
 export default function Footer() {
@@ -65,15 +65,6 @@ export default function Footer() {
                 <ExternalLink className="h-4 w-4" />
                 Main SLFPA-E website
               </a>
-              <a
-                href={siteConfig.boardStreamUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 text-blue-200 hover:text-white transition-colors"
-              >
-                <ExternalLink className="h-4 w-4" />
-                Watch board meetings
-              </a>
               <Link
                 href="/infrastructure/turf-maintenance"
                 className="flex items-center gap-2 text-blue-200 hover:text-white transition-colors"
@@ -81,15 +72,33 @@ export default function Footer() {
                 <Scissors className="h-4 w-4" />
                 Turf Maintenance
               </Link>
+              <Link
+                href="/engineering/idiq"
+                className="flex items-center gap-2 text-blue-200 hover:text-white transition-colors"
+              >
+                <FileText className="h-4 w-4" />
+                Engineering Contracts (IDIQ)
+              </Link>
             </div>
           </div>
         </div>
 
         {/* Bottom bar */}
         <div className="mt-8 pt-8 border-t border-white/20">
-          <div className="flex flex-col sm:flex-row justify-between items-center gap-4 text-sm text-blue-200">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 text-sm text-blue-200">
             <p>&copy; {new Date().getFullYear()} {siteConfig.organizationShort}</p>
-            <p className="flex items-center gap-2">
+            <p className="text-center">
+              Powered by{" "}
+              <a
+                href="https://ahdatalytics.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-white underline decoration-blue-300/40 underline-offset-2 transition-colors"
+              >
+                AH Datalytics
+              </a>
+            </p>
+            <p className="flex items-center gap-2 sm:justify-end">
               <span className="inline-block w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
               Data last updated: {siteConfig.lastUpdated}
             </p>
