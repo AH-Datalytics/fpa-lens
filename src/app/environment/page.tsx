@@ -401,7 +401,7 @@ export default function EnvironmentalPage() {
             <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 mb-6">
               <div className="flex-1">
                 <h2 className="text-sm font-medium text-gray-500 uppercase tracking-wide mb-3">
-                  Lakefront Flood Risk
+                  Lakeshore Drive Flood Risk
                 </h2>
                 <RiskIndicator level={risk.level} action={risk.action} />
               </div>

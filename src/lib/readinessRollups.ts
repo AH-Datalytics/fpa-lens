@@ -79,7 +79,7 @@ export function computeReadinessRollups(asOfDate?: string): ReadinessRollups {
     active: hgInSeason,
   });
 
-  // River Gates: in-season Jun to Dec. Out of season: GREEN if prior cycle
+  // River Gates: in-season Oct to Dec. Out of season: GREEN if prior cycle
   // was completed (so the rollup still counts this as a healthy signal).
   const rg = readinessMetrics.riverGateInspections;
   const rgStart = new Date(rg.periodStart + "T00:00:00");

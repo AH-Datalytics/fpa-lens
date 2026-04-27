@@ -38,9 +38,6 @@ const categoryColor: Record<string, string> = {
 export default function ProtectionPage() {
   const data = protectionData;
   const perDay = Math.round(data.totalActivities / data.daysInYear);
-  const maxStaffing = Math.max(
-    ...data.workforce.flatMap((d) => d.snapshots.map((s) => s.total)),
-  );
 
   return (
     <div className="py-12">
@@ -48,7 +45,6 @@ export default function ProtectionPage() {
         <SectionHeader
           title="Infrastructure Protection Operations"
           subtitle="FPA Police as the 24/7 field protection of the flood-defense system"
-          source={data.source}
         />
 
         {/* MISSION */}
@@ -120,7 +116,7 @@ export default function ProtectionPage() {
                 <BadgeCheck className="h-4 w-4" />
                 CPRA Certified Levee Inspectors
               </div>
-              <div className="text-3xl font-bold text-[#65bc7b]">
+              <div className="text-3xl font-bold text-[#21355a]">
                 {data.certifiedLeveeInspectorsPercent}%
               </div>
               <div className="text-xs text-gray-500 mt-1">
@@ -254,7 +250,7 @@ export default function ProtectionPage() {
             title="Operational outcomes"
             subtitle="Infrastructure-focused results"
           />
-          <div className="grid md:grid-cols-3 gap-4">
+          <div className="grid md:grid-cols-2 gap-4">
             {data.outcomes.map((o) => (
               <div
                 key={o.key}
@@ -270,10 +266,7 @@ export default function ProtectionPage() {
 
         {/* WORKFORCE */}
         <section className="mb-12">
-          <SectionSubheader
-            title="Workforce context"
-            subtitle="Post-Katrina contraction and current rebuilding"
-          />
+          <SectionSubheader title="Workforce context" />
           <div className="grid md:grid-cols-2 gap-4">
             {data.workforce.map((d) => (
               <div
@@ -286,42 +279,27 @@ export default function ProtectionPage() {
                     {d.name} ({d.abbreviation})
                   </h3>
                 </div>
-                <div className="space-y-3">
+                <dl className="divide-y divide-gray-100">
                   {d.snapshots.map((s) => {
-                    const pct = (s.total / maxStaffing) * 100;
                     const isCurrent = s.period === "Current";
                     return (
-                      <div key={s.period}>
-                        <div className="flex items-baseline justify-between text-xs mb-1">
-                          <span className={isCurrent ? "font-semibold text-[#21355a]" : "text-gray-600"}>
+                      <div key={s.period} className="py-2.5 first:pt-0 last:pb-0">
+                        <div className="flex items-baseline justify-between gap-3">
+                          <dt className={isCurrent ? "text-sm font-semibold text-[#21355a]" : "text-sm text-gray-600"}>
                             {s.period}
-                          </span>
-                          <span className={isCurrent ? "font-bold text-[#21355a]" : "text-gray-700 font-medium"}>
+                          </dt>
+                          <dd className={isCurrent ? "text-base font-bold text-[#21355a]" : "text-sm font-medium text-gray-700"}>
                             {s.total} positions
-                          </span>
+                          </dd>
                         </div>
-                        <div className="h-2.5 bg-gray-100 rounded overflow-hidden">
-                          <div
-                            className="h-full rounded"
-                            style={{
-                              width: `${pct}%`,
-                              backgroundColor: isCurrent ? "#21355a" : "#9ca3af",
-                            }}
-                            aria-hidden="true"
-                          />
-                        </div>
-                        <p className="text-[11px] text-gray-500 mt-1">{s.breakdown}</p>
+                        <p className="text-[11px] text-gray-500 mt-0.5">{s.breakdown}</p>
                       </div>
                     );
                   })}
-                </div>
+                </dl>
               </div>
             ))}
           </div>
-          <p className="text-xs text-gray-500 mt-3 italic">
-            Both districts remain below pre-Katrina staffing while continuing to secure
-            the flood-defense system. Current rebuilding is meaningful but ongoing.
-          </p>
         </section>
 
         {/* WHY IT MATTERS - cautionary callout */}

@@ -219,11 +219,13 @@ export const readinessMetrics = {
   dataAsOf: "2026-04-01",
   // Hurricane gate annual inspections: 161 gates, tested Jan 1 to Jun 1
   // (5-month window), 32.2/month. Per Jeff's "FPA Lens Gate and Valve Testing"
-  // workbook, Apr 2026 update.
+  // workbook, Apr 2026 update. Director update Apr 2026: progress now reflects
+  // catch-up to on-pace (5/5 inspections). Replace `percentComplete` and
+  // `completed` with the next SITREP's actual figure when it arrives.
   hurricaneGateInspections: {
     total: 161,
-    completed: Math.round(161 * 0.45), // 45% per SITREP
-    percentComplete: 45,
+    completed: Math.round(161 * 0.6), // 60% — on pace
+    percentComplete: 60,
     periodStart: "2026-01-01",
     periodEnd: "2026-05-31",
     monthlyRate: 32.2,

@@ -166,9 +166,9 @@ export default function OurSystemPage() {
   const hgRatio = hgExpected > 0 ? (hg.completed / hgExpected) * 100 : 100;
   const hgStatus = statusFromRatio(hgRatio);
 
-  // River gates: in-season Jun 1 to Dec 31. Outside the window, the card
+  // River gates: in-season Oct 1 to Dec 31. Outside the window, the card
   // reflects the previous cycle's completion (so today, April, reads 100%
-  // GREEN since the Jun-Dec 2025 cycle was completed).
+  // GREEN since the Oct-Dec 2025 cycle was completed).
   const rg = readinessMetrics.riverGateInspections;
   const rgStart = new Date(rg.periodStart + "T00:00:00");
   const rgEnd = new Date(rg.periodEnd + "T00:00:00");
@@ -417,9 +417,9 @@ export default function OurSystemPage() {
             />
             <ReadinessCard
               title="River Floodgate Inspections"
-              description={`Annual federal inspection of all ${rg.total} river floodgates, conducted June 1 through December 31 each year. Outside the window, the card reflects whether the previous cycle was completed.`}
+              description={`Annual federal inspection of all ${rg.total} river floodgates, conducted October 1 through December 31 each year. Outside the window, the card reflects whether the previous cycle was completed.`}
               mandate={rg.mandate}
-              period="Annual &middot; Jun 1 to Dec 31"
+              period="Annual &middot; Oct 1 to Dec 31"
               icon={Shield}
               big={
                 rgInSeason
@@ -439,7 +439,7 @@ export default function OurSystemPage() {
                 rgInSeason
                   ? `${Math.round(rgExpected)} gates by report date`
                   : rgPriorCycleComplete
-                    ? "Next cycle begins Jun 1"
+                    ? "Next cycle begins Oct 1"
                     : undefined
               }
               status={rgStatus}

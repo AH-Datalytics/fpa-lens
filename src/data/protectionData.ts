@@ -126,13 +126,6 @@ export const protectionData = {
   // Outcomes (intentionally infrastructure-focused, not crime data)
   outcomes: [
     {
-      key: "AT_FAULT",
-      headline: "100%",
-      label: "Reduction in at-fault incidents",
-      detail:
-        "Investment in officer professionalization (training, supervision, equipment, accountability) has eliminated at-fault incidents creating financial risk and litigation exposure.",
-    },
-    {
       key: "INTEROP",
       headline: "Cross-trained",
       label: "Regional interoperability",

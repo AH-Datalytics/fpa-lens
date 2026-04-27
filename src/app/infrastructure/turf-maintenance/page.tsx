@@ -7,7 +7,6 @@ import {
   CheckCircle2,
   Clock,
   CalendarDays,
-  Users,
   Info,
 } from "lucide-react";
 import SectionHeader, { SectionSubheader } from "@/components/SectionHeader";
@@ -234,22 +233,16 @@ export default function GrassCuttingPage() {
                 >
                   {/* Zone header with color band */}
                   <div
-                    className="px-5 py-4 flex items-center justify-between"
+                    className="px-5 py-4"
                     style={{
                       backgroundColor: zone.color,
                       color: zone.darkBackground ? "white" : "#1f2937",
                     }}
                   >
-                    <div>
-                      <p className="text-[10px] uppercase tracking-wider opacity-80 font-semibold">
-                        Zone
-                      </p>
-                      <h3 className="text-lg font-bold mt-0.5">{zone.name}</h3>
-                    </div>
-                    <div className="flex items-center gap-1.5 text-sm font-medium">
-                      <Users className="h-4 w-4" />
-                      {zone.operators} {typeof zone.operators === "number" && zone.operators === 1 ? "operator" : "operators"}
-                    </div>
+                    <p className="text-[10px] uppercase tracking-wider opacity-80 font-semibold">
+                      Zone
+                    </p>
+                    <h3 className="text-lg font-bold mt-0.5">{zone.name}</h3>
                   </div>
 
                   {/* Current cycle */}
@@ -299,44 +292,12 @@ export default function GrassCuttingPage() {
                       )}
                     </div>
 
-                    {/* Sub-areas */}
-                    <div className="mt-5 pt-4 border-t border-gray-100">
-                      <p className="text-xs uppercase tracking-wide text-gray-500 font-semibold mb-2">
-                        Sub-areas
-                      </p>
-                      <ul className="space-y-1 text-sm text-gray-600">
-                        {zone.subAreas.map((sa) => (
-                          <li key={sa} className="flex items-start gap-2">
-                            <span
-                              className="w-1.5 h-1.5 rounded-full mt-1.5 flex-shrink-0"
-                              style={{ backgroundColor: zone.color }}
-                              aria-hidden="true"
-                            />
-                            <span>{sa}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-
                     {/* Last cycle reference */}
                     <div className="mt-5 pt-4 border-t border-gray-100">
                       <p className="text-xs uppercase tracking-wide text-gray-500 font-semibold mb-2">
-                        Last cycle (Cycle 1)
+                        Last cycle
                       </p>
-                      <div className="text-sm text-gray-600 space-y-1">
-                        <div>
-                          {zone.lastCycle.startDate} to {zone.lastCycle.completionDate}
-                        </div>
-                        <div className="text-gray-500">
-                          {zone.lastCycle.totalDays} day
-                          {zone.lastCycle.totalDays === 1 ? "" : "s"} to complete
-                        </div>
-                        {zone.lastCycle.comments && (
-                          <p className="text-xs text-gray-500 italic mt-2">
-                            {zone.lastCycle.comments}
-                          </p>
-                        )}
-                      </div>
+                      <div className="text-sm text-gray-600">April 2026</div>
                     </div>
                   </div>
                 </div>
