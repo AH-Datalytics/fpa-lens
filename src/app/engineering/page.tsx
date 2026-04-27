@@ -12,10 +12,10 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
-import SectionHeader, { SectionSubheader } from "@/components/SectionHeader";
+import { SectionSubheader } from "@/components/SectionHeader";
 import DataCard from "@/components/DataCard";
 import KPICard from "@/components/KPICard";
-import { operationsData, kpiMetrics } from "@/data/siteData";
+import { operationsData } from "@/data/siteData";
 
 export default function OperationsPage() {
   const [showFullPipeline, setShowFullPipeline] = useState(false);

@@ -88,19 +88,6 @@ function parseCentralTimestamp(ts: string): Date {
   return new Date(ts.replace(" ", "T") + ":00" + offset);
 }
 
-function formatTime(ts: string): string {
-  try {
-    return parseCentralTimestamp(ts).toLocaleTimeString("en-US", {
-      hour: "numeric",
-      minute: "2-digit",
-      hour12: true,
-      timeZone: CENTRAL_TZ,
-    });
-  } catch {
-    return ts;
-  }
-}
-
 function formatDateTime(ts: string): string {
   try {
     return parseCentralTimestamp(ts).toLocaleString("en-US", {

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   Info,
   ChevronUp,
@@ -23,13 +23,11 @@ import SectionHeader, { SectionSubheader } from "@/components/SectionHeader";
 import DataCard from "@/components/DataCard";
 import VarianceBadge from "@/components/VarianceBadge";
 import { financialData, formatCurrency } from "@/data/siteData";
-
-const DISTRICT_COLORS: Record<string, string> = {
-  OLD: "#21355a",
-  EJLD: "#65bc7b",
-  LBBLD: "#60a5fa",
-  FPAE: "#fb923c",
-};
+import {
+  getActuals,
+  type ActualsData,
+  type ActualsLineItem,
+} from "@/lib/financeData";
 
 const ACRONYMS: Record<string, string> = {
   OLD: "Orleans Levee District",
@@ -78,42 +76,14 @@ function WithAcronyms({ text }: { text: string }) {
   );
 }
 
-interface ActualsLineItem {
-  name: string;
-  ytdActual: number;
-  ytdBudget: number;
-  variancePct: number | "unbudgeted";
-  totalBudget: number;
-}
-
-interface ActualsEntity {
-  label: string;
-  revenue: { categories: ActualsLineItem[]; total: ActualsLineItem };
-  expenses: {
-    operations: { categories: ActualsLineItem[]; total: ActualsLineItem };
-    projects: { categories: ActualsLineItem[]; total: ActualsLineItem };
-    grandTotal: ActualsLineItem;
-  };
-  sourcesUses: ActualsLineItem;
-  netChange: ActualsLineItem;
-  departments: ActualsLineItem[];
-}
-
-interface ActualsData {
-  period: string;
-  periodLabel: string;
-  lastUpdated: string;
-  fiscalYear: number;
-  entities: Record<string, ActualsEntity>;
-}
-
 const ACTUALS_BAR_COLOR = "#3b82f6";
 const BUDGET_BAR_COLOR = "#cbd5e1";
 
 type ActualsSortKey = "name" | "ytdBudget" | "ytdActual" | "variancePct" | "totalBudget";
 
+const actuals: ActualsData = getActuals();
+
 export default function FinancialPage() {
-  const [actuals, setActuals] = useState<ActualsData | null>(null);
   const [selectedEntity, setSelectedEntity] = useState("wholeEntity");
   const [catSortKey, setCatSortKey] = useState<ActualsSortKey>("ytdActual");
   const [catSortDir, setCatSortDir] = useState<"asc" | "desc">("desc");
@@ -121,12 +91,6 @@ export default function FinancialPage() {
   const [deptSortDir, setDeptSortDir] = useState<"asc" | "desc">("desc");
   const [chartView, setChartView] = useState<"category" | "district" | "department">("category");
   const [tableView, setTableView] = useState<"category" | "department">("category");
-
-  useEffect(() => {
-    fetch("/data/actuals-fy26.json")
-      .then((res) => res.json())
-      .then((json) => setActuals(json));
-  }, []);
 
   const handleSort = (
     key: ActualsSortKey,
@@ -157,18 +121,6 @@ export default function FinancialPage() {
     });
   };
 
-  if (!actuals) {
-    return (
-      <div className="py-12">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="h-96 flex items-center justify-center text-gray-500">
-            Loading financial data...
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="py-12">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -181,7 +133,7 @@ export default function FinancialPage() {
         {/* ================================================================
             BUDGET VS ACTUALS — Lead section
             ================================================================ */}
-        {actuals && (() => {
+        {(() => {
           const we = actuals.entities.wholeEntity;
           const entity = actuals.entities[selectedEntity];
 
@@ -232,15 +184,20 @@ export default function FinancialPage() {
             budget: cat.ytdBudget,
           }));
 
-          const CatSortIcon = ({ col }: { col: ActualsSortKey }) =>
-            catSortKey === col
-              ? catSortDir === "asc" ? <ChevronUp className="h-3 w-3 inline" /> : <ChevronDown className="h-3 w-3 inline" />
+          const renderSortIcon = (
+            col: ActualsSortKey,
+            currentKey: ActualsSortKey,
+            currentDir: "asc" | "desc",
+          ) =>
+            currentKey === col
+              ? currentDir === "asc"
+                ? <ChevronUp className="h-3 w-3 inline" />
+                : <ChevronDown className="h-3 w-3 inline" />
               : null;
-
-          const DeptSortIcon = ({ col }: { col: ActualsSortKey }) =>
-            deptSortKey === col
-              ? deptSortDir === "asc" ? <ChevronUp className="h-3 w-3 inline" /> : <ChevronDown className="h-3 w-3 inline" />
-              : null;
+          const catSortIcon = (col: ActualsSortKey) =>
+            renderSortIcon(col, catSortKey, catSortDir);
+          const deptSortIcon = (col: ActualsSortKey) =>
+            renderSortIcon(col, deptSortKey, deptSortDir);
 
           return (
             <section className="mb-12">
@@ -446,31 +403,31 @@ export default function FinancialPage() {
                               className="text-left py-2 text-xs font-semibold text-gray-700 cursor-pointer select-none hover:text-[#21355a]"
                               onClick={() => handleSort("name", catSortKey, catSortDir, setCatSortKey, setCatSortDir)}
                             >
-                              Category <CatSortIcon col="name" />
+                              Category {catSortIcon("name")}
                             </th>
                             <th
                               className="text-right py-2 text-xs font-semibold text-gray-700 cursor-pointer select-none hover:text-[#21355a]"
                               onClick={() => handleSort("ytdBudget", catSortKey, catSortDir, setCatSortKey, setCatSortDir)}
                             >
-                              YTD Budget <CatSortIcon col="ytdBudget" />
+                              YTD Budget {catSortIcon("ytdBudget")}
                             </th>
                             <th
                               className="text-right py-2 text-xs font-semibold text-gray-700 cursor-pointer select-none hover:text-[#21355a]"
                               onClick={() => handleSort("ytdActual", catSortKey, catSortDir, setCatSortKey, setCatSortDir)}
                             >
-                              YTD Actual <CatSortIcon col="ytdActual" />
+                              YTD Actual {catSortIcon("ytdActual")}
                             </th>
                             <th
                               className="text-right py-2 text-xs font-semibold text-gray-700 cursor-pointer select-none hover:text-[#21355a]"
                               onClick={() => handleSort("variancePct", catSortKey, catSortDir, setCatSortKey, setCatSortDir)}
                             >
-                              Variance <CatSortIcon col="variancePct" />
+                              Variance {catSortIcon("variancePct")}
                             </th>
                             <th
                               className="text-right py-2 text-xs font-semibold text-gray-700 cursor-pointer select-none hover:text-[#21355a]"
                               onClick={() => handleSort("totalBudget", catSortKey, catSortDir, setCatSortKey, setCatSortDir)}
                             >
-                              Total Budget <CatSortIcon col="totalBudget" />
+                              Total Budget {catSortIcon("totalBudget")}
                             </th>
                           </tr>
                         </thead>
@@ -525,31 +482,31 @@ export default function FinancialPage() {
                               className="text-left py-2 text-xs font-semibold text-gray-700 cursor-pointer select-none hover:text-[#21355a]"
                               onClick={() => handleSort("name", deptSortKey, deptSortDir, setDeptSortKey, setDeptSortDir)}
                             >
-                              Department <DeptSortIcon col="name" />
+                              Department {deptSortIcon("name")}
                             </th>
                             <th
                               className="text-right py-2 text-xs font-semibold text-gray-700 cursor-pointer select-none hover:text-[#21355a]"
                               onClick={() => handleSort("ytdBudget", deptSortKey, deptSortDir, setDeptSortKey, setDeptSortDir)}
                             >
-                              YTD Budget <DeptSortIcon col="ytdBudget" />
+                              YTD Budget {deptSortIcon("ytdBudget")}
                             </th>
                             <th
                               className="text-right py-2 text-xs font-semibold text-gray-700 cursor-pointer select-none hover:text-[#21355a]"
                               onClick={() => handleSort("ytdActual", deptSortKey, deptSortDir, setDeptSortKey, setDeptSortDir)}
                             >
-                              YTD Actual <DeptSortIcon col="ytdActual" />
+                              YTD Actual {deptSortIcon("ytdActual")}
                             </th>
                             <th
                               className="text-right py-2 text-xs font-semibold text-gray-700 cursor-pointer select-none hover:text-[#21355a]"
                               onClick={() => handleSort("variancePct", deptSortKey, deptSortDir, setDeptSortKey, setDeptSortDir)}
                             >
-                              Variance <DeptSortIcon col="variancePct" />
+                              Variance {deptSortIcon("variancePct")}
                             </th>
                             <th
                               className="text-right py-2 text-xs font-semibold text-gray-700 cursor-pointer select-none hover:text-[#21355a]"
                               onClick={() => handleSort("totalBudget", deptSortKey, deptSortDir, setDeptSortKey, setDeptSortDir)}
                             >
-                              Total Budget <DeptSortIcon col="totalBudget" />
+                              Total Budget {deptSortIcon("totalBudget")}
                             </th>
                           </tr>
                         </thead>

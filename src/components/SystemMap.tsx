@@ -4,6 +4,23 @@ import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 import { Loader2 } from "lucide-react";
 
+/**
+ * Escape user-controlled strings before they're concatenated into a
+ * Leaflet popup. The popup content is bound as raw HTML, so any field
+ * coming from a GeoJSON `properties` blob has to be escaped at the
+ * boundary even though our current sources are trusted internal files.
+ */
+const HTML_ESCAPES: Record<string, string> = {
+  "&": "&amp;",
+  "<": "&lt;",
+  ">": "&gt;",
+  '"': "&quot;",
+  "'": "&#39;",
+};
+function escapeHtml(value: unknown): string {
+  return String(value ?? "").replace(/[&<>"']/g, (c) => HTML_ESCAPES[c]);
+}
+
 // Types for GeoJSON
 interface GeoJSONFeature {
   type: "Feature";
@@ -57,6 +74,9 @@ const Popup = dynamic(
 // Custom marker icons
 const createCircleIcon = (color: string, size: number = 24) => {
   if (typeof window === "undefined") return undefined;
+  // Leaflet's main entry touches `window` on import, so we lazy-require
+  // it here instead of at the top of the module to keep SSR working.
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
   const L = require("leaflet");
   return L.divIcon({
     className: "custom-marker",
@@ -76,6 +96,9 @@ const createCircleIcon = (color: string, size: number = 24) => {
 
 const createTriangleIcon = (color: string, size: number = 28) => {
   if (typeof window === "undefined") return undefined;
+  // Leaflet's main entry touches `window` on import, so we lazy-require
+  // it here instead of at the top of the module to keep SSR working.
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
   const L = require("leaflet");
   const svgSize = size + 6;
   return L.divIcon({
@@ -96,6 +119,9 @@ const createTriangleIcon = (color: string, size: number = 28) => {
 
 const createSquareIcon = (color: string, size: number = 10) => {
   if (typeof window === "undefined") return undefined;
+  // Leaflet's main entry touches `window` on import, so we lazy-require
+  // it here instead of at the top of the module to keep SSR working.
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
   const L = require("leaflet");
   return L.divIcon({
     className: "custom-marker",
@@ -114,6 +140,9 @@ const createSquareIcon = (color: string, size: number = 10) => {
 
 const createDiamondIcon = (color: string, size: number = 10) => {
   if (typeof window === "undefined") return undefined;
+  // Leaflet's main entry touches `window` on import, so we lazy-require
+  // it here instead of at the top of the module to keep SSR working.
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
   const L = require("leaflet");
   const svgSize = size + 4;
   return L.divIcon({
@@ -355,12 +384,13 @@ export default function SystemMap() {
             onEachFeature={(feature, layer) => {
               const props = feature.properties;
               const type = props.FloodwallF === "Y" ? "Floodwall" : "Levee";
-              const jurisdiction = props.Jurisdict || "Unknown";
+              const conSubType = props.ConSubType ? String(props.ConSubType) : "N/A";
+              const jurisdiction = props.Jurisdict ? String(props.Jurisdict) : "Unknown";
               layer.bindPopup(`
                 <div class="text-sm">
-                  <strong>${type}</strong><br/>
-                  <span class="text-gray-600">Type: ${props.ConSubType || "N/A"}</span><br/>
-                  <span class="text-gray-600">Jurisdiction: ${jurisdiction}</span>
+                  <strong>${escapeHtml(type)}</strong><br/>
+                  <span class="text-gray-600">Type: ${escapeHtml(conSubType)}</span><br/>
+                  <span class="text-gray-600">Jurisdiction: ${escapeHtml(jurisdiction)}</span>
                 </div>
               `);
             }}

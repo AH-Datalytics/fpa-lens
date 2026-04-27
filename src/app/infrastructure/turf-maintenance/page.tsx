@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import {
   ArrowLeft,
   AlertCircle,
@@ -155,9 +156,12 @@ export default function GrassCuttingPage() {
             subtitle="Maintenance team's original cutting plan map (placeholder)"
           />
           <div className="bg-white rounded-xl shadow-md border border-gray-100 p-4">
-            <img
+            <Image
               src="/data/cutting-plan-map.png"
               alt="FPA maintenance team cutting plan map showing six color-coded zones across the Orleans Levee System"
+              width={2100}
+              height={1275}
+              sizes="(max-width: 1024px) 100vw, 1024px"
               className="w-full h-auto rounded-lg"
             />
             <p className="text-xs text-gray-500 italic mt-3 leading-relaxed">

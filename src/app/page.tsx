@@ -16,13 +16,12 @@ import EnvironmentalCard from "@/components/EnvironmentalCard";
 import StaffingZoneBar from "@/components/StaffingZoneBar";
 import {
   siteConfig,
-  kpiMetrics,
   systemReadiness,
-  operationsData,
   staffingData,
   StatusLevel,
 } from "@/data/siteData";
 import { computeReadinessRollups } from "@/lib/readinessRollups";
+import { getOmSummary } from "@/lib/financeData";
 
 const quickLinks = [
   {
@@ -103,10 +102,10 @@ export default function Home() {
   const staffReadiness = getCategory("Staffing Readiness")!;
   const financial = getCategory("Financial Readiness")!;
 
-  // O&M actuals — update these when new Dashboard Reports data arrives
-  const omActual = 38_227_061;        // YTD actual through Feb 28, 2026
-  const omAnnualBudget = 72_354_250;  // FY26 annual O&M budget
-  const omDataDate = "2026-02-28";    // Data through date
+  // O&M actuals come from the shared finance loader so this card never
+  // drifts from /finance. Refresh `public/data/actuals-fy26.json` when
+  // new Dashboard Reports data arrives and both surfaces pick it up.
+  const { omActual, omAnnualBudget, omDataDate } = getOmSummary();
   const omPct = Math.round((omActual / omAnnualBudget) * 100);
   const fyStart = new Date(2025, 6, 1);
   const fyEnd = new Date(2026, 5, 30);

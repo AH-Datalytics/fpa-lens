@@ -356,6 +356,8 @@ async function main() {
       trueNegatives,
       falseAlarmRate,
     },
+    // Strip the per-event timeline; only the summary fields go into the JSON.
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     events: results.map(({ timeline, ...rest }) => rest),
   };
 
