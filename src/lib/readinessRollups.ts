@@ -162,9 +162,9 @@ export function computeReadinessRollups(asOfDate?: string): ReadinessRollups {
   ).length;
   const gcTotal = gcZones.length;
   const gcExpectedPct =
-    grassCuttingData.currentCycle.workingDaysExpected > 0
-      ? (grassCuttingData.currentCycle.workingDayElapsed /
-          grassCuttingData.currentCycle.workingDaysExpected) *
+    grassCuttingData.currentCycle.daysExpected > 0
+      ? (grassCuttingData.currentCycle.daysElapsed /
+          grassCuttingData.currentCycle.daysExpected) *
         100
       : 0;
   const gcActualPct = gcTotal > 0 ? (gcComplete / gcTotal) * 100 : 0;

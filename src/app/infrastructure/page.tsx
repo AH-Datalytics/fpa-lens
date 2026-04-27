@@ -194,9 +194,9 @@ export default function OurSystemPage() {
   ).length;
   const gcTotal = grassCuttingData.zones.length;
   const gcExpectedPct =
-    grassCuttingData.currentCycle.workingDaysExpected > 0
-      ? (grassCuttingData.currentCycle.workingDayElapsed /
-          grassCuttingData.currentCycle.workingDaysExpected) *
+    grassCuttingData.currentCycle.daysExpected > 0
+      ? (grassCuttingData.currentCycle.daysElapsed /
+          grassCuttingData.currentCycle.daysExpected) *
         100
       : 0;
   const gcActualPct = gcTotal > 0 ? (gcCompleted / gcTotal) * 100 : 0;
@@ -491,7 +491,7 @@ export default function OurSystemPage() {
                 title="Monthly Turf Maintenance"
                 description="Routine internal levee turf maintenance, performed twice per month on a rolling six-zone cycle. Click for zone-by-zone progress."
                 mandate="Internal O&amp;M schedule (twice per month)"
-                period={`${grassCuttingData.currentCycle.label} \u00B7 Day ${grassCuttingData.currentCycle.workingDayElapsed} of ${grassCuttingData.currentCycle.workingDaysExpected}`}
+                period={`${grassCuttingData.currentCycle.label} \u00B7 Day ${grassCuttingData.currentCycle.daysElapsed} of ${grassCuttingData.currentCycle.daysExpected}`}
                 icon={Sprout}
                 big={`${gcCompleted} / ${gcTotal}`}
                 unit="zones complete"

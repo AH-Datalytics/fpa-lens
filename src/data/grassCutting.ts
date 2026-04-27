@@ -2,11 +2,16 @@
  * Grass cutting page data.
  *
  * Cycle 1 (Mar 17 - Apr 15, 2026) data is from the maintenance team's
- * "New Cutting Plan" spreadsheet (real).
+ * "New Cutting Plan" spreadsheet (real). The public-facing page reports
+ * calendar days (per the Director, Apr 2026); the source spreadsheet
+ * tracks a 4-day work week, so calendar-day values here are derived from
+ * the recorded start and completion dates.
  *
  * Current cycle progress is DEMO data for layout review and will be replaced
- * once the cadence/format for ongoing updates is confirmed with the FPA
- * maintenance team.
+ * once the FPA's monthly acreage-benchmark format is wired up (per Director
+ * direction, Apr 2026: target 2x/month for most reaches, ~1.5x/month for
+ * NO East and Citrus Lakefront & Eastern Interior, with progress measured
+ * against acreage targets).
  *
  * Zone color names match the FPA's hand-drawn cutting plan map.
  */
@@ -58,7 +63,7 @@ export const grassCuttingData = {
   cadence: {
     headline: "Twice per month",
     detail:
-      "Mon to Thu work schedule. Holidays and rain days are excluded from completion totals.",
+      "Target frequency is twice per month for most reaches, with New Orleans East and Citrus Lakefront & Eastern Interior targeted at roughly 1.5 cycles per month (about every three weeks).",
     previousPlan: "Once per month (prior plan)",
   },
 
@@ -66,18 +71,18 @@ export const grassCuttingData = {
     label: "Cycle 1: New plan rollout",
     startDate: "March 17, 2026",
     completionDate: "April 15, 2026",
-    workingDays: 16,
+    calendarDays: 30,
   },
 
   // DEMO. Current cycle dates are placeholders chosen so the page renders
-  // a realistic mid-cycle view. Replace with real data once the maintenance
-  // team confirms cadence and provides a feed.
+  // a realistic mid-cycle view. Replace with real data once the monthly
+  // acreage-benchmark feed is wired up.
   currentCycle: {
     label: "Cycle 2: April 2026",
     startDate: "April 20, 2026",
     expectedCompletionDate: "May 11, 2026",
-    workingDayElapsed: 4,
-    workingDaysExpected: 16,
+    daysElapsed: 8,
+    daysExpected: 22,
   },
 
   zones: [
@@ -144,14 +149,16 @@ export const grassCuttingData = {
       lastCycle: {
         startDate: "March 17, 2026",
         completionDate: "March 30, 2026",
-        totalDays: 8,
+        totalDays: 14,
+        comments:
+          "Citrus Back Levee has no dedicated operator yet. Once Southside MRGO crews finish their assigned areas, they roll over and complete Citrus Back. The two will be split into separate zones once an additional operator is in place.",
       },
       currentCycle: {
         status: "IN_PROGRESS",
         startDate: "April 20, 2026",
         expectedCompletionDate: "April 30, 2026",
-        daysElapsed: 4,
-        daysExpected: 8,
+        daysElapsed: 8,
+        daysExpected: 11,
       },
     },
     {
@@ -170,15 +177,15 @@ export const grassCuttingData = {
       lastCycle: {
         startDate: "March 17, 2026",
         completionDate: "March 30, 2026",
-        totalDays: 7,
-        comments: "Longest pass in this group: Lakefront at 7 working days.",
+        totalDays: 14,
+        comments: "Longest pass in this group was Lakefront.",
       },
       currentCycle: {
         status: "IN_PROGRESS",
         startDate: "April 20, 2026",
         expectedCompletionDate: "April 28, 2026",
-        daysElapsed: 4,
-        daysExpected: 7,
+        daysElapsed: 8,
+        daysExpected: 9,
       },
     },
     {
@@ -199,7 +206,7 @@ export const grassCuttingData = {
       lastCycle: {
         startDate: "March 17, 2026",
         completionDate: "April 8, 2026",
-        totalDays: 12,
+        totalDays: 23,
         comments:
           "One operator on intermittent FMLA, another out on FMLA during this cycle.",
       },
@@ -207,8 +214,8 @@ export const grassCuttingData = {
         status: "IN_PROGRESS",
         startDate: "April 20, 2026",
         expectedCompletionDate: "May 6, 2026",
-        daysElapsed: 4,
-        daysExpected: 12,
+        daysElapsed: 8,
+        daysExpected: 17,
       },
     },
     {
@@ -227,24 +234,29 @@ export const grassCuttingData = {
       lastCycle: {
         startDate: "March 17, 2026",
         completionDate: "April 15, 2026",
-        totalDays: 16,
+        totalDays: 30,
         comments: "Multiple tractor issues during this cycle.",
       },
       currentCycle: {
         status: "IN_PROGRESS",
         startDate: "April 20, 2026",
         expectedCompletionDate: "May 11, 2026",
-        daysElapsed: 4,
-        daysExpected: 16,
+        daysElapsed: 8,
+        daysExpected: 22,
       },
     },
   ] as GrassCuttingZone[],
 
+  // Confirmed Apr 2026:
+  //   - "1/2/3" labels on the printed map = number of operators assigned
+  //     (Lavell Webb, FPA maintenance team).
+  //   - Sub-rows without start/completion dates (Paris Rd, Maxent, Michoud,
+  //     NASA, Entergy, IHNC East, MRL) roll up under their parent row's dates.
+  //   - Citrus Back Levee currently shares Southside MRGO's zone and cycle
+  //     because it has no dedicated operator; will split into its own zone
+  //     once a new operator is hired.
   openQuestions: [
-    'What do the "1", "2", and "3" labels on the printed map mean? Cycle order, priority tier, operator count, route number?',
-    "Three zones (black, navy blue, orange) are not shaded in the spreadsheet. Are our zone assignments correct?",
-    "Several rows have no start or completion dates (Paris Rd, Maxent, Michoud, NASA, Entergy, the IHNC East and MRL sub-rows). Are these sub-areas rolled up under their parent, or sections that have not been cut yet?",
-    "Citrus Back Levee is shaded the same light blue as Southside MRGO but with a separate crew and start date. Same zone with a sequenced second crew, or actually a different zone?",
-    "What is the cadence and format for cycle updates moving forward, and who should we expect them from?",
+    "Per-reach acreage to drive monthly acreage-benchmark targets (per Director direction, Apr 2026).",
+    "Format for monthly cuts data going forward (SITREP line per reach vs. separate one-pager from the maintenance team).",
   ],
 };

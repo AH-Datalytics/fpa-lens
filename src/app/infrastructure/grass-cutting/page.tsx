@@ -91,7 +91,7 @@ export default function GrassCuttingPage() {
                 </h2>
                 <p className="text-sm text-gray-600 mt-1">
                   {currentCycle.startDate} to {currentCycle.expectedCompletionDate} (expected). Day{" "}
-                  {currentCycle.workingDayElapsed} of {currentCycle.workingDaysExpected} working days.
+                  {currentCycle.daysElapsed} of {currentCycle.daysExpected}.
                 </p>
               </div>
               <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-100 text-amber-800 border border-amber-300 px-2.5 py-1 text-xs font-semibold uppercase tracking-wide">
@@ -194,9 +194,9 @@ export default function GrassCuttingPage() {
               </div>
               <div>
                 <div className="text-3xl font-bold text-[#21355a]">
-                  {lastCycle.workingDays}
+                  {lastCycle.calendarDays}
                 </div>
-                <div className="text-sm text-gray-600 mt-1">working days for a full pass</div>
+                <div className="text-sm text-gray-600 mt-1">days for a full pass</div>
               </div>
             </div>
             <p className="text-xs text-gray-500 mt-5 leading-relaxed">
@@ -328,7 +328,7 @@ export default function GrassCuttingPage() {
                           {zone.lastCycle.startDate} to {zone.lastCycle.completionDate}
                         </div>
                         <div className="text-gray-500">
-                          {zone.lastCycle.totalDays} working day
+                          {zone.lastCycle.totalDays} day
                           {zone.lastCycle.totalDays === 1 ? "" : "s"} to complete
                         </div>
                         {zone.lastCycle.comments && (
