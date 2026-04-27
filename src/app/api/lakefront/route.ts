@@ -688,7 +688,9 @@ export async function GET(request: Request) {
     if (!wind.timestamp) dataGaps.push("wind");
     if (waterResult.status === "rejected") dataGaps.push("water level");
     if (predResult.status === "rejected") dataGaps.push("predictions");
-    if (pressureResult.status === "rejected") dataGaps.push("pressure");
+    // Pressure is fetched for completeness but not used by the risk model
+    // and not displayed. Don't surface it as a missing source - operators
+    // were getting alerted on a sensor that doesn't change anything.
     if (ofsResult.status === "rejected") dataGaps.push("OFS forecast");
     if (nwsForecastResult.status === "rejected") dataGaps.push("NWS forecast");
     if (!windHistory || windHistory.length === 0) dataGaps.push("wind history");

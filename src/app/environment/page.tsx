@@ -401,16 +401,21 @@ export default function EnvironmentalPage() {
                     {TRENDING_LABELS[risk.trending]}
                   </span>
                 </div>
-                <div className="flex items-center gap-2 text-xs text-gray-400">
-                  <span>Updated {formatDateTime(data.lastUpdated)}</span>
-                  <button
-                    onClick={() => fetchData(true)}
-                    disabled={refreshing}
-                    className="p-1 hover:bg-gray-100 rounded transition-colors"
-                    title="Refresh data"
-                  >
-                    <RefreshCw className={`h-3 w-3 ${refreshing ? "animate-spin" : ""}`} />
-                  </button>
+                <div className="flex flex-col items-end gap-0.5">
+                  <div className="flex items-center gap-2 text-xs text-gray-400">
+                    <span>Updated {formatDateTime(data.lastUpdated)}</span>
+                    <button
+                      onClick={() => fetchData(true)}
+                      disabled={refreshing}
+                      className="p-1 hover:bg-gray-100 rounded transition-colors"
+                      title="Refresh now"
+                    >
+                      <RefreshCw className={`h-3 w-3 ${refreshing ? "animate-spin" : ""}`} />
+                    </button>
+                  </div>
+                  <p className="text-[10px] text-gray-400 italic">
+                    Auto-refreshes every 5 minutes while open
+                  </p>
                 </div>
               </div>
             </div>
