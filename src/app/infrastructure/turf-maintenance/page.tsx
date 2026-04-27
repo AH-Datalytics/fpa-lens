@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
+import dynamic from "next/dynamic";
 import {
   ArrowLeft,
   AlertCircle,
@@ -12,6 +12,16 @@ import {
 } from "lucide-react";
 import SectionHeader, { SectionSubheader } from "@/components/SectionHeader";
 import { grassCuttingData, CycleStatus } from "@/data/grassCutting";
+
+// Map uses Leaflet (touches `window`), so load it client-side only.
+const GrassCuttingMap = dynamic(() => import("@/components/GrassCuttingMap"), {
+  ssr: false,
+  loading: () => (
+    <div className="h-[500px] bg-gray-100 rounded-xl flex items-center justify-center text-gray-500 text-sm">
+      Loading map...
+    </div>
+  ),
+});
 
 function statusBadge(status: CycleStatus) {
   if (status === "COMPLETE") {
@@ -149,29 +159,28 @@ export default function GrassCuttingPage() {
           </div>
         </section>
 
-        {/* MAP - placeholder using the maintenance team's original PDF */}
+        {/* MAP - interactive levee centerline colored by mowing zone */}
         <section className="mb-12">
           <SectionSubheader
             title="Zones across the system"
-            subtitle="Maintenance team's original cutting plan map (placeholder)"
+            subtitle="Levee centerline colored by mowing zone. Click any segment for the reach name and LPV."
           />
-          <div className="bg-white rounded-xl shadow-md border border-gray-100 p-4">
-            <Image
-              src="/data/cutting-plan-map.png"
-              alt="FPA maintenance team cutting plan map showing six color-coded zones across the Orleans Levee System"
-              width={2100}
-              height={1275}
-              sizes="(max-width: 1024px) 100vw, 1024px"
-              className="w-full h-auto rounded-lg"
-            />
-            <p className="text-xs text-gray-500 italic mt-3 leading-relaxed">
-              Source: maintenance team&apos;s printed cutting plan (Orleans Levee
-              District, March 2026). We attempted to recreate this as an
-              interactive map but the result was not accurate enough to ship,
-              so we&apos;re using the original as a placeholder while we confirm
-              the right path forward with the maintenance team.
-            </p>
-          </div>
+          <GrassCuttingMap />
+          <p className="text-xs text-gray-500 italic mt-3 leading-relaxed">
+            Coverage is currently the Orleans Levee District (39 reaches).
+            East Jefferson and Lake Borgne Basin centerlines will be added once
+            the maintenance team provides matching shapefiles. The original
+            hand-drawn cutting plan is still available{" "}
+            <a
+              href="/data/cutting-plan-map.png"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline hover:text-[#21355a]"
+            >
+              here
+            </a>
+            .
+          </p>
         </section>
 
         {/* SYSTEM AT A GLANCE */}

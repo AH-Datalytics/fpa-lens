@@ -7,7 +7,11 @@ import { grassCuttingData } from "@/data/grassCutting";
 
 interface GeoJSONFeature {
   type: "Feature";
-  properties: Record<string, unknown>;
+  properties: {
+    reachName: string;
+    zone: string;
+    lpv: string | null;
+  };
   geometry: {
     type: string;
     coordinates: number[] | number[][] | number[][][];
@@ -32,48 +36,37 @@ const GeoJSON = dynamic(
   { ssr: false },
 );
 
-type ZoneKey =
-  | "BLACK"
-  | "GREEN"
-  | "LIGHT_BLUE"
-  | "NAVY_BLUE"
-  | "YELLOW"
-  | "ORANGE";
-
-function getZoneColor(zone: ZoneKey | null): string | null {
-  if (!zone) return null;
-  const z = grassCuttingData.zones.find((z) => z.key === zone);
-  return z?.color ?? null;
+const HTML_ESCAPES: Record<string, string> = {
+  "&": "&amp;",
+  "<": "&lt;",
+  ">": "&gt;",
+  '"': "&quot;",
+  "'": "&#39;",
+};
+function escapeHtml(value: unknown): string {
+  return String(value ?? "").replace(/[&<>"']/g, (c) => HTML_ESCAPES[c]);
 }
 
-function getZoneName(zone: ZoneKey | null): string | null {
-  if (!zone) return null;
-  const z = grassCuttingData.zones.find((z) => z.key === zone);
-  return z?.name ?? null;
+const UNASSIGNED_COLOR = "#9ca3af";
+
+function zoneColor(zone: string): string {
+  const z = grassCuttingData.zones.find((zz) => zz.name === zone);
+  return z?.color ?? UNASSIGNED_COLOR;
 }
 
 export default function GrassCuttingMap() {
-  const [levees, setLevees] = useState<GeoJSONCollection | null>(null);
-  const [zoneMap, setZoneMap] = useState<Record<string, ZoneKey> | null>(null);
+  const [data, setData] = useState<GeoJSONCollection | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    Promise.all([
-      fetch("/data/levee-centerline.json").then((r) => {
-        if (!r.ok) throw new Error("Failed to load levee data");
+    fetch("/data/old-centerline.json")
+      .then((r) => {
+        if (!r.ok) throw new Error("Failed to load centerline data");
         return r.json();
-      }),
-      fetch("/data/grass-cutting-zones.json").then((r) => {
-        if (!r.ok) throw new Error("Failed to load zone mapping");
-        return r.json();
-      }),
-    ])
-      .then(([leveeData, mapping]) => {
-        setLevees(leveeData);
-        setZoneMap(mapping);
       })
-      .catch((err) => setError(err.message))
+      .then((json: GeoJSONCollection) => setData(json))
+      .catch((err: Error) => setError(err.message))
       .finally(() => setLoading(false));
   }, []);
 
@@ -88,10 +81,10 @@ export default function GrassCuttingMap() {
     );
   }
 
-  if (error) {
+  if (error || !data) {
     return (
       <div className="h-[500px] bg-red-50 rounded-xl flex items-center justify-center">
-        <p className="text-red-600">Error loading map: {error}</p>
+        <p className="text-red-600">Error loading map: {error ?? "unknown"}</p>
       </div>
     );
   }
@@ -104,7 +97,7 @@ export default function GrassCuttingMap() {
         crossOrigin=""
       />
       <MapContainer
-        center={[29.99, -90.0]}
+        center={[30.02, -90.02]}
         zoom={11}
         scrollWheelZoom={false}
         className="h-full w-full"
@@ -113,45 +106,37 @@ export default function GrassCuttingMap() {
           attribution='&copy; <a href="https://carto.com/">CARTO</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
           url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
         />
-
-        {levees && zoneMap && (
-          <GeoJSON
-            data={levees}
-            style={(feature) => {
-              const hidden = { color: "#000", weight: 0, opacity: 0, fillOpacity: 0 };
-              if (!feature) return hidden;
-              const props = feature.properties as Record<string, unknown>;
-              const oid = props.OBJECTID_1 as number | undefined;
-              if (oid === undefined) return hidden;
-              const zone = zoneMap[String(oid)] as ZoneKey | undefined;
-              const color = getZoneColor(zone ?? null);
-              if (!color) return hidden;
-              return { color, weight: 5, opacity: 0.85 };
-            }}
-            onEachFeature={(feature, layer) => {
-              const props = feature.properties;
-              const oid = props.OBJECTID_1 as number | undefined;
-              if (oid === undefined) return;
-              const zone = zoneMap[String(oid)] as ZoneKey | undefined;
-              if (zone) {
-                const name = getZoneName(zone);
-                const type = props.FloodwallF === "Y" ? "Floodwall" : "Levee";
-                layer.bindPopup(`
-                  <div class="text-sm">
-                    <strong>${name} zone</strong><br/>
-                    <span class="text-gray-600">${type} segment</span>
-                  </div>
-                `);
-              }
-            }}
-          />
-        )}
+        <GeoJSON
+          data={data}
+          style={(feature) => {
+            const props = feature?.properties as GeoJSONFeature["properties"] | undefined;
+            const zone = props?.zone || "";
+            return {
+              color: zone ? zoneColor(zone) : UNASSIGNED_COLOR,
+              weight: 4,
+              opacity: zone ? 0.85 : 0.45,
+            };
+          }}
+          onEachFeature={(feature, layer) => {
+            const props = feature.properties as GeoJSONFeature["properties"];
+            const reach = props.reachName || "(Unnamed reach)";
+            const zone = props.zone || "Unassigned";
+            const lpv = props.lpv;
+            layer.bindPopup(`
+              <div class="text-sm leading-snug">
+                <strong>${escapeHtml(reach)}</strong><br/>
+                <span class="text-gray-600">Zone: ${escapeHtml(zone)}</span>
+                ${lpv ? `<br/><span class="text-gray-600">LPV: ${escapeHtml(lpv)}</span>` : ""}
+              </div>
+            `);
+          }}
+        />
       </MapContainer>
 
       {/* Legend */}
-      <div className="absolute bottom-4 left-4 bg-white rounded-lg shadow-lg p-3 z-[1000] max-w-[280px]">
+      <div className="absolute bottom-4 left-4 bg-white/95 backdrop-blur-sm rounded-lg shadow-lg p-3 z-[1000] max-w-[280px]">
         <p className="text-xs uppercase tracking-wide text-gray-500 font-semibold mb-2">
-          Zones
+          Mowing zones
         </p>
         <ul className="space-y-1 text-xs">
           {grassCuttingData.zones.map((z) => (
@@ -164,10 +149,17 @@ export default function GrassCuttingMap() {
               <span className="text-gray-700">{z.name}</span>
             </li>
           ))}
+          <li className="flex items-start gap-2 pt-1 border-t border-gray-100 mt-1">
+            <span
+              className="w-3 h-3 rounded-sm mt-0.5 flex-shrink-0"
+              style={{ backgroundColor: UNASSIGNED_COLOR }}
+              aria-hidden="true"
+            />
+            <span className="text-gray-500 italic">Unassigned</span>
+          </li>
         </ul>
         <p className="text-[10px] text-gray-400 italic mt-2 leading-snug">
-          Zone boundaries are best-guess approximations to be confirmed by the
-          maintenance team.
+          Source: Orleans Levee District GIS, Apr 2026 (Kory).
         </p>
       </div>
     </div>

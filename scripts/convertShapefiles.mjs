@@ -71,6 +71,32 @@ function transformGeometry(geometry, sourceProj) {
   };
 }
 
+/**
+ * Post-conversion fixups for the OLD Centerline reach-level shapefile.
+ *
+ * Kory's source has the mowing zone in a `Zone` field, with one row
+ * accidentally typed "Lakefront and Outfall Canals" while the rest say
+ * "Lakefront & Outfall Canals". Both mean the same thing, but our app
+ * keys off the literal string for color lookups, so we normalize here
+ * and rename the property keys to camelCase to match the rest of the
+ * GeoJSON files in /public/data.
+ */
+function normalizeOldCenterline(geojson) {
+  for (const f of geojson.features) {
+    const p = f.properties || {};
+    let zone = (p.Zone ?? '').trim();
+    if (zone === 'Lakefront and Outfall Canals') {
+      zone = 'Lakefront & Outfall Canals';
+    }
+    f.properties = {
+      reachName: (p.reach_name ?? '').trim(),
+      zone,
+      lpv: (p.LPV ?? '').trim() || null,
+    };
+  }
+  return geojson;
+}
+
 async function main() {
   const shapefileDir = join(__dirname, '..', 'data', 'sources', 'shapefiles');
   const outputDir = join(__dirname, '..', 'public', 'data');
@@ -99,6 +125,20 @@ async function main() {
     NAD83_CSRS,  // This one is already in geographic coordinates
     'PCCP Stations'
   );
+
+  // Reach-level OLD centerline with mowing zone + LPV (Kory, Apr 2026).
+  const oldCenterline = await convertShapefile(
+    join(shapefileDir, 'OLD_Centerline.shp'),
+    join(outputDir, 'old-centerline.json'),
+    LA_STATE_PLANE,
+    'OLD Centerline (with mowing zones)'
+  );
+  normalizeOldCenterline(oldCenterline);
+  writeFileSync(
+    join(outputDir, 'old-centerline.json'),
+    JSON.stringify(oldCenterline, null, 2),
+  );
+  console.log('  -> Normalized zone strings and renamed props to {reachName, zone, lpv}');
 
   console.log('\nConversion complete!');
 }
