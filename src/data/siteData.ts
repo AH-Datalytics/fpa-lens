@@ -623,14 +623,27 @@ export const staffingData = {
   ],
 
   // Source: Stakeholder interviews
+  // Source: floodauthority.org/about-us/our-team/ (Apr 2026)
+  // Headshots stored locally in /public/headshots/
+  board: [
+    { name: "Peter Vicari", title: "President", image: "/headshots/peter-vicari.png" },
+    { name: "Roy M. Carubba, P.E.", title: "Vice President", image: "/headshots/roy-carubba.png" },
+    { name: "Gregory Marsiglia", title: "Secretary", image: "/headshots/gregory-marsiglia.png" },
+    { name: "David A. Martin, P.E.", title: "Treasurer", image: "/headshots/david-martin.png" },
+    { name: "Kerwyn C. King, P.E.", title: "Board Member", image: "/headshots/kerwyn-king.png" },
+    { name: "Ronald Schumann, Jr., P.E.", title: "Board Member", image: "/headshots/ronald-schumann.png" },
+    { name: "Elton Jude Meyers", title: "Board Member", image: "/headshots/elton-meyers.png" },
+  ],
   leadership: [
-    { name: "L. Jeff Williams", title: "Regional Director" },
-    { name: "Ryan Foster", title: "Director of Engineering" },
-    { name: "Darren Austin", title: "Director of Operations" },
-    { name: "Carlos Metoyer", title: "Director of Maintenance" },
-    { name: "Denise Williams", title: "Director of Finance" },
-    { name: "Joshua Rondeno", title: "Chief of Police" },
-    { name: "Jamal Dortch", title: "Safety & Risk Manager" },
+    { name: "Jeff Williams", title: "Regional Director", image: "/headshots/jeff-williams.png" },
+    { name: "Ryan Foster, P.E.", title: "Director of Engineering", image: "/headshots/ryan-foster.png" },
+    { name: "Darren J. Austin, P.E.", title: "Director of Operations", image: "/headshots/darren-austin.png" },
+    { name: "Kirk Ordoyne", title: "Executive Counsel", image: "/headshots/kirk-ordoyne.png" },
+    { name: "Stephanie Gerarve", title: "Director of Governmental Affairs", image: "/headshots/stephanie-gerarve.png" },
+    { name: "Shannon Fazande", title: "Director of Human Resources", image: "/headshots/shannon-fazande.png" },
+    { name: "Roman Dody, MSCIS", title: "Regional Director of Information Technology", image: "/headshots/roman-dody.png" },
+    { name: "Joshua T. Rondeno", title: "Superintendent of Police", image: "/headshots/josh-rondeno.png" },
+    { name: "Jamal Dortch", title: "Safety Risk Agency Manager", image: "/headshots/jamal-dortch.png" },
   ],
 };
 

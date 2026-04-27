@@ -1,12 +1,43 @@
 "use client";
 
 import { useState } from "react";
-import { User, AlertCircle, ChevronDown, ChevronRight } from "lucide-react";
+import Image from "next/image";
+import { AlertCircle, ChevronDown, ChevronRight } from "lucide-react";
 import SectionHeader, { SectionSubheader } from "@/components/SectionHeader";
 import StaffingZoneBar from "@/components/StaffingZoneBar";
 import ZoneLegend from "@/components/ZoneLegend";
 import { staffingData } from "@/data/siteData";
 import { assertAggregateMatchesSum } from "@/lib/staffingZones";
+
+interface Person {
+  name: string;
+  title: string;
+  image?: string;
+}
+
+function PersonCard({ person }: { person: Person }) {
+  return (
+    <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-4 flex flex-col items-center text-center">
+      <div className="relative w-24 h-24 mb-3 rounded-full overflow-hidden bg-gray-100 flex-shrink-0">
+        {person.image ? (
+          <Image
+            src={person.image}
+            alt={`Headshot of ${person.name}`}
+            fill
+            sizes="96px"
+            className="object-cover"
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center text-gray-400 text-2xl font-semibold">
+            {person.name.charAt(0)}
+          </div>
+        )}
+      </div>
+      <p className="font-semibold text-[#21355a] leading-tight">{person.name}</p>
+      <p className="text-sm text-gray-600 mt-1 leading-snug">{person.title}</p>
+    </div>
+  );
+}
 
 type ZoneViewMode = "percent" | "raw";
 
@@ -179,23 +210,22 @@ export default function OurTeamPage() {
           </div>
         </section>
 
+        {/* Board of Commissioners */}
+        <section className="mb-10">
+          <SectionSubheader title="Board of Commissioners" />
+          <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {staffingData.board.map((member) => (
+              <PersonCard key={member.name} person={member} />
+            ))}
+          </div>
+        </section>
+
         {/* Leadership */}
         <section>
           <SectionSubheader title="Leadership" />
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {staffingData.leadership.map((leader) => (
-              <div
-                key={leader.name}
-                className="bg-white rounded-lg shadow-sm border border-gray-100 p-4 flex items-center gap-4"
-              >
-                <div className="w-10 h-10 bg-[#21355a]/10 rounded-full flex items-center justify-center flex-shrink-0">
-                  <User className="h-5 w-5 text-[#21355a]" />
-                </div>
-                <div>
-                  <p className="font-semibold text-[#21355a]">{leader.name}</p>
-                  <p className="text-sm text-gray-600">{leader.title}</p>
-                </div>
-              </div>
+              <PersonCard key={leader.name} person={leader} />
             ))}
           </div>
         </section>
