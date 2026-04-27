@@ -626,15 +626,15 @@ export const staffingData = {
   // Source: floodauthority.org/about-us/our-team/ (Apr 2026)
   // Headshots stored locally in /public/headshots/
   leadership: [
-    { name: "Jeff Williams", title: "Regional Director", image: "/headshots/jeff-williams.png" },
-    { name: "Ryan Foster, P.E.", title: "Director of Engineering", image: "/headshots/ryan-foster.png" },
-    { name: "Darren J. Austin, P.E.", title: "Director of Operations", image: "/headshots/darren-austin.png" },
-    { name: "Kirk Ordoyne", title: "Executive Counsel", image: "/headshots/kirk-ordoyne.png" },
-    { name: "Stephanie Gerarve", title: "Director of Governmental Affairs", image: "/headshots/stephanie-gerarve.png" },
-    { name: "Shannon Fazande", title: "Director of Human Resources", image: "/headshots/shannon-fazande.png" },
-    { name: "Roman Dody, MSCIS", title: "Regional Director of Information Technology", image: "/headshots/roman-dody.png" },
-    { name: "Joshua T. Rondeno", title: "Superintendent of Police", image: "/headshots/josh-rondeno.png" },
-    { name: "Jamal Dortch", title: "Safety Risk Agency Manager", image: "/headshots/jamal-dortch.png" },
+    { name: "Jeff Williams", title: "Regional Director", image: "/headshots/jeff-williams.png", bio: "Bio pending." },
+    { name: "Ryan Foster, P.E.", title: "Director of Engineering", image: "/headshots/ryan-foster.png", bio: "Bio pending." },
+    { name: "Darren J. Austin, P.E.", title: "Director of Operations", image: "/headshots/darren-austin.png", bio: "Bio pending." },
+    { name: "Kirk Ordoyne", title: "Executive Counsel", image: "/headshots/kirk-ordoyne.png", bio: "Bio pending." },
+    { name: "Stephanie Gerarve", title: "Director of Governmental Affairs", image: "/headshots/stephanie-gerarve.png", bio: "Bio pending." },
+    { name: "Shannon Fazande", title: "Director of Human Resources", image: "/headshots/shannon-fazande.png", bio: "Bio pending." },
+    { name: "Roman Dody, MSCIS", title: "Regional Director of Information Technology", image: "/headshots/roman-dody.png", bio: "Bio pending." },
+    { name: "Joshua T. Rondeno", title: "Superintendent of Police", image: "/headshots/josh-rondeno.png", bio: "Bio pending." },
+    { name: "Jamal Dortch", title: "Safety Risk Agency Manager", image: "/headshots/jamal-dortch.png", bio: "Bio pending." },
   ],
 };
 
