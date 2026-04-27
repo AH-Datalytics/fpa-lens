@@ -55,7 +55,7 @@ From Regional Director Jeff Williams. Chief Rondeno looped in and tasked with ga
    - Depth gauge page: `info.floodauthority.org/gages.htm`
    - Alert stages: `info.floodauthority.org/alertstages.htm`
    - CIMS Floodgate Viewer (CPRA): `cims.coastal.louisiana.gov/Viewer/Map.aspx`
-   - GIS Maps (ArcGIS): `orleanslevee.maps.arcgis.com` (login: gis_user17 / Franklin1)
+   - GIS Maps (ArcGIS): `orleanslevee.maps.arcgis.com` (shared FPA login; see Director or Engineering for credentials)
    - Windy displays, hurricane tracking, radar on info.floodauthority.org
    - SCADA (pump station controls): internal only, NOT public
 

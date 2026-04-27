@@ -1,6 +1,33 @@
 import type { NextConfig } from "next";
 
+// Baseline security headers applied to every response. CSP is intentionally
+// omitted for now: Next.js injects inline scripts for hydration, so a strict
+// CSP requires a nonce-based middleware that we can add later if needed.
+const securityHeaders = [
+  // Browsers must use HTTPS for the next 2 years (incl. subdomains).
+  { key: "Strict-Transport-Security", value: "max-age=63072000; includeSubDomains; preload" },
+  // Block MIME-type sniffing (defense in depth against content-type confusion).
+  { key: "X-Content-Type-Options", value: "nosniff" },
+  // Disallow framing entirely; nothing on this site needs to be embedded.
+  { key: "X-Frame-Options", value: "DENY" },
+  // Send the origin only on cross-origin requests; full URL same-origin.
+  { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+  // Drop access to sensors and hardware features the dashboard never uses.
+  {
+    key: "Permissions-Policy",
+    value: "camera=(), microphone=(), geolocation=(), payment=(), usb=(), interest-cohort=()",
+  },
+];
+
 const nextConfig: NextConfig = {
+  async headers() {
+    return [
+      {
+        source: "/:path*",
+        headers: securityHeaders,
+      },
+    ];
+  },
   async redirects() {
     return [
       { source: "/our-system", destination: "/infrastructure", permanent: true },
