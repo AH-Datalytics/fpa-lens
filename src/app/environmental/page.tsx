@@ -959,7 +959,14 @@ export default function EnvironmentalPage() {
             <p className="text-xs text-gray-500 mt-2">
               <strong>Duration gating:</strong> Yellow and Orange wind levels require sustained onshore winds
               (at least 70% of readings over the previous {RISK_THRESHOLDS.WIND_HISTORY_HOURS} hours).
-              Red triggers immediately regardless of duration. Surge anomaly thresholds are not duration-gated.
+              Red triggers immediately regardless of duration.
+            </p>
+            <p className="text-xs text-gray-500 mt-2">
+              <strong>Surge gating:</strong> Surge above predicted only signals flood risk when wind is currently
+              onshore or has been onshore in the last {RISK_THRESHOLDS.WIND_HISTORY_HOURS} hours
+              (at least {Math.round(RISK_THRESHOLDS.SURGE_RECENT_ONSHORE_FRACTION * 100)}% of readings).
+              On calm days with offshore wind, elevated surge is usually rain runoff, river inflow, or pressure
+              noise rather than wind-driven flood risk, so it is suppressed.
             </p>
             <p className="text-xs text-amber-600 mt-2">
               These thresholds are preliminary and subject to calibration based on operational experience.

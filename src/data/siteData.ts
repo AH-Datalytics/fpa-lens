@@ -73,7 +73,7 @@ export const systemReadiness = {
     {
       name: "Infrastructure Readiness",
       status: "GREEN" as StatusLevel,
-      description: "Q1 field inspections complete and under engineering review; all 17 PCCP pumps operational; all LPV levee and floodwall USACE inspections complete with no significant findings",
+      description: "Q1 field inspections complete and under engineering review; LPV levee and floodwall USACE inspections complete with no significant findings",
       source: "Apr 2026 SITREP",
     },
     {
@@ -204,8 +204,8 @@ export const infrastructureAssets = {
     source: "Regional Director, Apr 2026",
   },
   totalValves: {
-    value: 103,
-    source: "SLFPA-E valve GIS data",
+    value: 104,
+    source: "SLFPA-E valve GIS data (per Apr 2026 Gate and Valve Testing workbook)",
   },
 };
 
@@ -217,32 +217,42 @@ export const infrastructureAssets = {
 export const readinessMetrics = {
   // Source: Apr 2026 SITREP (data reported as of report generation)
   dataAsOf: "2026-04-01",
-  // Hurricane gate annual inspections: 161 gates, Jan 1 - May 31, 26.83/month
+  // Hurricane gate annual inspections: 161 gates, tested Jan 1 to Jun 1
+  // (5-month window), 32.2/month. Per Jeff's "FPA Lens Gate and Valve Testing"
+  // workbook, Apr 2026 update.
   hurricaneGateInspections: {
     total: 161,
     completed: Math.round(161 * 0.45), // 45% per SITREP
     percentComplete: 45,
     periodStart: "2026-01-01",
     periodEnd: "2026-05-31",
-    monthlyRate: 26.83,
+    monthlyRate: 32.2,
     mandate: "USACE O&M Manual",
     source: "Apr 2026 SITREP",
   },
-  // River gate annual inspections: 84 gates, Jun 1 - Dec 31, 14/month
+  // River gate annual inspections: 84 gates, tested Oct 1 through Dec 7,
+  // 28/month. Per Jeff's "FPA Lens Gate and Valve Testing" workbook, Apr 2026
+  // update (revised from earlier Jun-Dec window).
+  // Outside the inspection window, the card reflects whether the previous
+  // year's cycle was completed — currently true for Oct-Dec 2025.
   riverGateInspections: {
     total: 84,
     completed: 0,
     percentComplete: 0,
-    periodStart: "2026-06-01",
-    periodEnd: "2026-12-31",
-    monthlyRate: 14,
+    periodStart: "2026-10-01",
+    periodEnd: "2026-12-07",
+    lastCycleCompleted: true,
+    lastCycleLabel: "Oct-Dec 2025",
+    monthlyRate: 28,
     mandate: "USACE O&M Manual",
-    source: "FY26 schedule (season begins Jun 1, 2026)",
+    source: "FY26 schedule; last cycle (Oct-Dec 2025) completed",
   },
-  // Quarterly valve exercises: 34.33/month expected rate
+  // Quarterly valve exercises: 104 valves total, 34.67/month (104/3) expected.
+  // Per Jeff's "FPA Lens Gate and Valve Testing" workbook, Apr 2026 update
+  // (corrected from earlier 103 valves / 34.33/month).
   valveExercises: {
     percentComplete: 92,
-    monthlyRate: 34.33,
+    monthlyRate: 34.67,
     mandate: "USACE O&M Manual",
     currentQuarterStatus: "Q1 2026 inspections and exercises complete",
     source: "Apr 2026 SITREP",
@@ -254,18 +264,27 @@ export const readinessMetrics = {
     mandate: "Internal O&M schedule",
     source: "Pending from Maintenance Dept",
   },
-  // CPRA quarterly system inspection: 33.33%/month
+  // CPRA quarterly system inspection: 33.33%/month over the current quarter.
+  // Status is graded against straight-line expected progress for the report
+  // date, so X% partway through a quarter reads against expected for that
+  // point in time (not against 100% complete).
   cpraQuarterlyInspection: {
     currentQuarter: "Q1 2026",
     currentQuarterPercent: 100,
+    periodStart: "2026-01-01",
+    periodEnd: "2026-03-31",
     monthlyRate: 33.33,
     mandate: "CPRA",
     reportSubmittedDate: null, // pending confirmation in next SITREP
     source: "Apr 2026 SITREP (Q1 field inspections complete and under engineering review)",
   },
-  // USACE semi-annual inspection: 16.67%/month
+  // USACE semi-annual inspection: 16.67%/month over the current half (Jan-Jun
+  // or Jul-Dec). Status is graded against straight-line expected progress for
+  // the report date, not raw percent complete (so 50% mid-half reads as on-pace).
   usaceSemiAnnualInspection: {
     currentHalfPercent: 50, // LPV complete, PCCP/Complex in progress Apr 14-28
+    periodStart: "2026-01-01",
+    periodEnd: "2026-06-30",
     monthlyRate: 16.67,
     mandate: "USACE",
     reportSubmittedDate: null,
@@ -603,8 +622,8 @@ export const staffingData = {
   // Source: Stakeholder interviews
   leadership: [
     { name: "L. Jeff Williams", title: "Regional Director" },
-    { name: "Darren Austin", title: "Director of Operations" },
     { name: "Ryan Foster", title: "Director of Engineering" },
+    { name: "Darren Austin", title: "Director of Operations" },
     { name: "Carlos Metoyer", title: "Director of Maintenance" },
     { name: "Denise Williams", title: "Director of Finance" },
     { name: "Joshua Rondeno", title: "Chief of Police" },

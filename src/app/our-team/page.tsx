@@ -1,18 +1,27 @@
 "use client";
 
-import { User, AlertCircle } from "lucide-react";
+import { useState } from "react";
+import { User, AlertCircle, ChevronDown, ChevronRight } from "lucide-react";
 import SectionHeader, { SectionSubheader } from "@/components/SectionHeader";
 import StaffingZoneBar from "@/components/StaffingZoneBar";
 import ZoneLegend from "@/components/ZoneLegend";
 import { staffingData } from "@/data/siteData";
 import { assertAggregateMatchesSum } from "@/lib/staffingZones";
 
+type ZoneViewMode = "percent" | "raw";
+
 export default function OurTeamPage() {
   const { coreFPU, opSupport } = staffingData;
+  const [viewMode, setViewMode] = useState<ZoneViewMode>("percent");
+  const [showDepts, setShowDepts] = useState(false);
 
   if (typeof window !== "undefined") {
     assertAggregateMatchesSum(coreFPU.aggregate, coreFPU.departments);
   }
+
+  const aggregateFull = coreFPU.aggregate.full;
+  const scaleFor = (full: number) =>
+    viewMode === "raw" && aggregateFull > 0 ? full / aggregateFull : 1;
 
   return (
     <div className="py-12">
@@ -52,11 +61,43 @@ export default function OurTeamPage() {
         <section className="mb-10">
           <SectionSubheader title="Core Flood Protection Unit" />
           <div className="bg-white rounded-xl shadow-md border border-gray-100 p-6">
-            <p className="text-sm text-gray-600 mb-5">
-              Operational capacity across Maintenance, Operations, and
-              Engineering. Thresholds set by {coreFPU.thresholdsSetBy} in{" "}
-              {coreFPU.thresholdsDate}.
-            </p>
+            <div className="flex flex-wrap items-start justify-between gap-3 mb-5">
+              <p className="text-sm text-gray-600 max-w-2xl">
+                Operational capacity across Maintenance, Operations, and
+                Engineering. Thresholds set by {coreFPU.thresholdsSetBy} in{" "}
+                {coreFPU.thresholdsDate}.
+              </p>
+              <div
+                role="group"
+                aria-label="Bar width view"
+                className="inline-flex rounded-md border border-gray-200 bg-gray-50 p-0.5 text-xs"
+              >
+                <button
+                  type="button"
+                  onClick={() => setViewMode("percent")}
+                  aria-pressed={viewMode === "percent"}
+                  className={`px-3 py-1 rounded transition-colors ${
+                    viewMode === "percent"
+                      ? "bg-[#21355a] text-white"
+                      : "text-gray-600 hover:text-gray-900"
+                  }`}
+                >
+                  Percentage
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setViewMode("raw")}
+                  aria-pressed={viewMode === "raw"}
+                  className={`px-3 py-1 rounded transition-colors ${
+                    viewMode === "raw"
+                      ? "bg-[#21355a] text-white"
+                      : "text-gray-600 hover:text-gray-900"
+                  }`}
+                >
+                  Raw count
+                </button>
+              </div>
+            </div>
 
             {/* Color-coded definitions legend */}
             <div className="mb-6">
@@ -74,15 +115,49 @@ export default function OurTeamPage() {
               </div>
             )}
 
-            <div className="mb-7 pb-7 border-b border-gray-100">
-              <StaffingZoneBar group={coreFPU.aggregate} variant="full" />
+            <div className="mb-5">
+              <StaffingZoneBar
+                group={coreFPU.aggregate}
+                variant="full"
+                widthScale={1}
+                axisMode={viewMode}
+              />
             </div>
 
-            <div className="space-y-7">
-              {coreFPU.departments.map((dept) => (
-                <StaffingZoneBar key={dept.key} group={dept} variant="full" />
-              ))}
-            </div>
+            <button
+              type="button"
+              onClick={() => setShowDepts((s) => !s)}
+              aria-expanded={showDepts}
+              className="flex items-center gap-1.5 text-sm font-medium text-[#21355a] hover:underline"
+            >
+              {showDepts ? (
+                <ChevronDown className="h-4 w-4" aria-hidden="true" />
+              ) : (
+                <ChevronRight className="h-4 w-4" aria-hidden="true" />
+              )}
+              {showDepts
+                ? "Hide department breakdown"
+                : "Show department breakdown"}
+            </button>
+
+            {showDepts && (
+              <div className="mt-5 ml-2 pl-5 border-l-2 border-gray-200">
+                <p className="text-xs uppercase tracking-wide text-gray-500 font-semibold mb-4">
+                  By department
+                </p>
+                <div className="space-y-7">
+                  {coreFPU.departments.map((dept) => (
+                    <StaffingZoneBar
+                      key={dept.key}
+                      group={dept}
+                      variant="full"
+                      widthScale={scaleFor(dept.full)}
+                      axisMode={viewMode}
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
 
             <p className="text-xs text-gray-400 mt-6">
               Red zone thresholds are provisional pending validation against

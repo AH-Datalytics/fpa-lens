@@ -336,7 +336,7 @@ export default function SystemMap() {
         center={center}
         zoom={zoom}
         className="h-full w-full"
-        scrollWheelZoom={true}
+        scrollWheelZoom={false}
       >
         <TileLayer
           attribution='&copy; <a href="https://carto.com/">CARTO</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'

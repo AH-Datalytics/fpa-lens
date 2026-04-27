@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import {
   Shield,
   Droplets,
@@ -16,8 +17,10 @@ import {
   Ship,
   CalendarDays,
   Wrench,
+  Scissors,
+  ArrowRight,
 } from "lucide-react";
-import SectionHeader, { SectionSubheader } from "@/components/SectionHeader";
+import { SectionSubheader } from "@/components/SectionHeader";
 import StatusBadge from "@/components/StatusBadge";
 import SystemMap from "@/components/SystemMap";
 import {
@@ -25,6 +28,7 @@ import {
   systemReadiness,
   readinessMetrics,
 } from "@/data/siteData";
+import { grassCuttingData } from "@/data/grassCutting";
 
 const smsKeywords = [
   {
@@ -85,6 +89,7 @@ function expectedFromRate(
 
 function ReadinessCard({
   title,
+  description,
   mandate,
   period,
   icon: Icon,
@@ -95,8 +100,10 @@ function ReadinessCard({
   source,
   note,
   big,
+  hideStatusBorder,
 }: {
   title: string;
+  description?: string;
   mandate: string;
   period?: string;
   icon: React.ComponentType<{ className?: string }>;
@@ -107,10 +114,12 @@ function ReadinessCard({
   source: string;
   note?: string;
   big: string;
+  hideStatusBorder?: boolean;
 }) {
   const s = statusStyles(status);
+  const outerBorder = hideStatusBorder ? "border-transparent" : s.border;
   return (
-    <div className={`bg-white rounded-xl shadow-md border ${s.border} overflow-hidden`}>
+    <div className={`bg-white rounded-xl shadow-md border ${outerBorder} overflow-hidden h-full flex flex-col`}>
       <div className={`${s.bg} px-5 py-3 border-b ${s.border} flex items-center justify-between`}>
         <div className="flex items-center gap-2">
           <Icon className={`h-5 w-5 ${s.text}`} />
@@ -121,7 +130,10 @@ function ReadinessCard({
           {status === "NEUTRAL" ? "Not Active" : status}
         </span>
       </div>
-      <div className="p-5">
+      <div className="p-5 flex-1 flex flex-col">
+        {description && (
+          <p className="text-xs text-gray-600 leading-snug mb-3">{description}</p>
+        )}
         <div className="flex items-baseline gap-2 mb-1">
           <span className="text-3xl font-bold text-[#21355a]">{big}</span>
           {unit && <span className="text-sm text-gray-500">{unit}</span>}
@@ -154,44 +166,91 @@ export default function OurSystemPage() {
   const hgRatio = hgExpected > 0 ? (hg.completed / hgExpected) * 100 : 100;
   const hgStatus = statusFromRatio(hgRatio);
 
-  // River gates (season inactive until Jun 1)
+  // River gates: in-season Jun 1 to Dec 31. Outside the window, the card
+  // reflects the previous cycle's completion (so today, April, reads 100%
+  // GREEN since the Jun-Dec 2025 cycle was completed).
   const rg = readinessMetrics.riverGateInspections;
   const rgStart = new Date(rg.periodStart + "T00:00:00");
-  const rgInSeason = today >= rgStart;
+  const rgEnd = new Date(rg.periodEnd + "T00:00:00");
+  const rgInSeason = today >= rgStart && today <= rgEnd;
+  const rgPriorCycleComplete = !rgInSeason && rg.lastCycleCompleted === true;
   const rgExpected = rgInSeason
     ? expectedFromRate(rg.monthlyRate, rgStart, asOf, rg.total)
     : 0;
   const rgRatio = rgExpected > 0 ? (rg.completed / rgExpected) * 100 : 100;
-  const rgStatus: StatusColor = rgInSeason ? statusFromRatio(rgRatio) : "NEUTRAL";
+  const rgStatus: StatusColor = rgInSeason
+    ? statusFromRatio(rgRatio)
+    : rgPriorCycleComplete
+      ? "GREEN"
+      : "NEUTRAL";
 
   // Valve exercises (quarterly — use SITREP percent complete directly)
   const ve = readinessMetrics.valveExercises;
   const veStatus = statusFromRatio(ve.percentComplete);
 
-  // Turf maintenance (current month — data pending)
-  const tm = readinessMetrics.turfMaintenance;
-  const tmStatus: StatusColor = tm.currentMonthAcres === null ? "NEUTRAL" : statusFromRatio((tm.currentMonthAcres! / tm.monthlyTargetAcres) * 100);
+  // Grass cutting cycle progress (mirrors the Grass Cutting page)
+  const gcCompleted = grassCuttingData.zones.filter(
+    (z) => z.currentCycle.status === "COMPLETE",
+  ).length;
+  const gcTotal = grassCuttingData.zones.length;
+  const gcExpectedPct =
+    grassCuttingData.currentCycle.workingDaysExpected > 0
+      ? (grassCuttingData.currentCycle.workingDayElapsed /
+          grassCuttingData.currentCycle.workingDaysExpected) *
+        100
+      : 0;
+  const gcActualPct = gcTotal > 0 ? (gcCompleted / gcTotal) * 100 : 0;
+  const gcStatus: StatusColor =
+    gcExpectedPct > 0
+      ? statusFromRatio((gcActualPct / gcExpectedPct) * 100)
+      : "NEUTRAL";
 
-  // CPRA Quarterly Inspection — Q1 complete
+  // CPRA Quarterly Inspection — graded against straight-line expected
+  // progress for the report date (same pattern as USACE), so X% partway
+  // through a quarter reads as on-pace if expected for that point in time.
   const cpra = readinessMetrics.cpraQuarterlyInspection;
-  const cpraStatus = statusFromRatio(cpra.currentQuarterPercent);
+  const cpraExpected = expectedFromRate(
+    cpra.monthlyRate,
+    new Date(cpra.periodStart + "T00:00:00"),
+    asOf,
+    100,
+  );
+  const cpraRatio =
+    cpraExpected > 0 ? (cpra.currentQuarterPercent / cpraExpected) * 100 : 100;
+  const cpraStatus = statusFromRatio(cpraRatio);
 
-  // USACE Semi-Annual Inspection
+  // USACE Semi-Annual Inspection — graded against straight-line expected
+  // progress for the report date, so 50% complete at month 3 of 6 reads green.
   const usace = readinessMetrics.usaceSemiAnnualInspection;
-  const usaceStatus = statusFromRatio(usace.currentHalfPercent);
-
-  // Navigable Floodgates Operable
-  const nf = readinessMetrics.navigableFloodgatesOperable;
-  const nfRatio = (nf.operable / nf.total) * 100;
-  const nfStatus = statusFromRatio(nfRatio);
+  const usaceExpected = expectedFromRate(
+    usace.monthlyRate,
+    new Date(usace.periodStart + "T00:00:00"),
+    asOf,
+    100,
+  );
+  const usaceRatio =
+    usaceExpected > 0 ? (usace.currentHalfPercent / usaceExpected) * 100 : 100;
+  const usaceStatus = statusFromRatio(usaceRatio);
 
   return (
     <div className="py-12">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <SectionHeader
-          title="Infrastructure"
-          subtitle="Learn about the flood protection infrastructure that keeps Greater New Orleans safe"
-        />
+        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-8">
+          <div>
+            <h1 className="text-3xl md:text-4xl font-bold text-[#21355a]">Infrastructure</h1>
+            <p className="mt-2 text-lg text-gray-600">
+              Learn about the flood protection infrastructure that keeps Greater New Orleans safe
+            </p>
+          </div>
+          <Link
+            href="/our-system/grass-cutting"
+            className="group inline-flex items-center gap-2 px-5 py-3 bg-[#21355a] hover:bg-[#2c4470] text-white rounded-lg text-sm font-semibold shadow-md hover:shadow-lg transition-all whitespace-nowrap self-start"
+          >
+            <Scissors className="h-4 w-4" />
+            Grass Cutting
+            <ArrowRight className="h-4 w-4 text-[#65bc7b] group-hover:translate-x-0.5 transition-transform" />
+          </Link>
+        </div>
 
         {/* Overview */}
         <section className="mb-12">
@@ -355,19 +414,36 @@ export default function OurSystemPage() {
               expected={`${Math.round(hgExpected)} gates (${Math.round((hgExpected / hg.total) * 100)}%) by report date`}
               status={hgStatus}
               source={hg.source}
-              note={`Straight-line target: ${hg.monthlyRate} gates/month`}
             />
             <ReadinessCard
               title="River Floodgate Inspections"
+              description={`Annual federal inspection of all ${rg.total} river floodgates, conducted June 1 through December 31 each year. Outside the window, the card reflects whether the previous cycle was completed.`}
               mandate={rg.mandate}
               period="Annual &middot; Jun 1 to Dec 31"
               icon={Shield}
-              big={rgInSeason ? `${rg.percentComplete}%` : "Upcoming"}
-              actual={`${rg.completed} of ${rg.total} gates`}
-              expected={rgInSeason ? `${Math.round(rgExpected)} gates by report date` : undefined}
+              big={
+                rgInSeason
+                  ? `${rg.percentComplete}%`
+                  : rgPriorCycleComplete
+                    ? "100%"
+                    : "Upcoming"
+              }
+              actual={
+                rgInSeason
+                  ? `${rg.completed} of ${rg.total} gates`
+                  : rgPriorCycleComplete
+                    ? `All ${rg.total} gates inspected last cycle (${rg.lastCycleLabel})`
+                    : `${rg.completed} of ${rg.total} gates`
+              }
+              expected={
+                rgInSeason
+                  ? `${Math.round(rgExpected)} gates by report date`
+                  : rgPriorCycleComplete
+                    ? "Next cycle begins Jun 1"
+                    : undefined
+              }
               status={rgStatus}
               source={rg.source}
-              note={`Straight-line target: ${rg.monthlyRate} gates/month`}
             />
             <ReadinessCard
               title="Quarterly Valve Exercises"
@@ -378,58 +454,56 @@ export default function OurSystemPage() {
               actual={ve.currentQuarterStatus}
               status={veStatus}
               source={ve.source}
-              note={`Straight-line target: ${ve.monthlyRate} valves/month`}
             />
             <ReadinessCard
-              title="Monthly Turf Maintenance"
-              mandate={tm.mandate}
-              period="Monthly &middot; System cut twice per month"
-              icon={Sprout}
-              big={tm.currentMonthAcres === null ? "TBD" : `${Math.round((tm.currentMonthAcres! / tm.monthlyTargetAcres) * 100)}%`}
-              actual={tm.currentMonthAcres === null ? "Pending from Maintenance Dept" : `${tm.currentMonthAcres!.toLocaleString()} acres this month`}
-              expected={`${tm.monthlyTargetAcres.toLocaleString()} acres/month target`}
-              status={tmStatus}
-              source={tm.source}
-            />
-            <ReadinessCard
-              title="System Quarterly Inspection"
+              title="CPRA Quarterly Inspection"
+              description="State-mandated quarterly visual inspection of the levee system, with findings reported to the Coastal Protection and Restoration Authority."
               mandate={cpra.mandate}
               period={cpra.currentQuarter}
               icon={ClipboardCheck}
               big={`${cpra.currentQuarterPercent}%`}
               actual={`${cpra.currentQuarter} field inspections complete`}
-              expected="100% by end of quarter"
+              expected={`${Math.round(cpraExpected)}% by report date (100% by end of quarter)`}
               status={cpraStatus}
               source={cpra.source}
               note={cpra.reportSubmittedDate ? `Report submitted to CPRA ${cpra.reportSubmittedDate}` : "CPRA submission date pending"}
             />
             <ReadinessCard
-              title="System Semi-Annual Inspection"
+              title="USACE Semi-Annual Inspection"
+              description="Federal inspection of HSDRRS levees, floodwalls, PCCPs, and complex structures. 100% = on pace for this point in the half-year cycle."
               mandate={usace.mandate}
               period="Semi-Annual &middot; Ongoing"
               icon={ClipboardCheck}
-              big={`${usace.currentHalfPercent}%`}
-              actual={usace.status}
-              expected="100% by end of each half"
+              big={`${Math.min(100, Math.round(usaceRatio))}%`}
+              unit="on pace"
+              actual={`${usace.currentHalfPercent}% complete · LPV done; PCCP/Complex in progress Apr 14-28`}
+              expected={`Target: ${Math.round(usaceExpected)}% by today, 100% by end of half`}
               status={usaceStatus}
               source={usace.source}
-              note={usace.reportSubmittedDate ? `Report submitted to USACE ${usace.reportSubmittedDate}` : "USACE submission date pending"}
+              note={usace.reportSubmittedDate ? `Report submitted ${usace.reportSubmittedDate}` : "Submission pending"}
             />
-            <ReadinessCard
-              title="Navigable Floodgates Operable"
-              mandate="Operational readiness"
-              icon={Ship}
-              big={`${nf.operable}/${nf.total}`}
-              actual={`${nf.operable} of ${nf.total} gates operable`}
-              status={nfStatus}
-              source={nf.source}
-            />
+            <Link
+              href="/our-system/grass-cutting"
+              className="block h-full rounded-xl transition-shadow hover:shadow-lg"
+              aria-label="Open Grass Cutting page for zone-by-zone progress"
+            >
+              <ReadinessCard
+                title="Monthly Turf Maintenance"
+                description="Routine internal levee turf maintenance, performed twice per month on a rolling six-zone cycle. Click for zone-by-zone progress."
+                mandate="Internal O&amp;M schedule (twice per month)"
+                period={`${grassCuttingData.currentCycle.label} \u00B7 Day ${grassCuttingData.currentCycle.workingDayElapsed} of ${grassCuttingData.currentCycle.workingDaysExpected}`}
+                icon={Sprout}
+                big={`${gcCompleted} / ${gcTotal}`}
+                unit="zones complete"
+                actual={`${gcCompleted} of ${gcTotal} zones complete this cycle`}
+                expected={`On pace target: ${Math.round(gcExpectedPct)}% by today`}
+                status={gcStatus}
+                source={grassCuttingData.source}
+                note="Demo data · click for zone-by-zone progress"
+              />
+            </Link>
           </div>
 
-          <p className="text-xs text-gray-400 mt-4">
-            Last updated: {systemReadiness.lastUpdated}. Card status reflects actual progress against
-            straight-line expected progress for the reporting date.
-          </p>
         </section>
 
         {/* Stay Informed */}

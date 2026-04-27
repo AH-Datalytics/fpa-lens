@@ -1,4 +1,4 @@
-import { Shield, Waves, Building2, Fence, Droplets, Users } from "lucide-react";
+import { Shield, Waves, Building2, Fence, Droplets, Users, CircleDot } from "lucide-react";
 import SectionHeader, { SectionSubheader } from "@/components/SectionHeader";
 import DataCard from "@/components/DataCard";
 import { formatCurrency } from "@/data/siteData";
@@ -9,7 +9,7 @@ export default function WhatWeDoPage() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <SectionHeader
           title="About Us"
-          subtitle="Protecting Greater New Orleans from hurricane and storm surge flooding"
+          subtitle="Protecting Greater New Orleans from hurricane surge and Mississippi River flooding"
         />
 
         {/* Mission Overview */}
@@ -67,6 +67,50 @@ export default function WhatWeDoPage() {
                   <Droplets className="h-8 w-8 mx-auto mb-2" />
                   <div className="text-2xl font-bold">PCCP Stations</div>
                   <div className="text-sm text-blue-200">Canal closure pumps</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* MR&T System */}
+        <section className="mb-12">
+          <div className="bg-gradient-to-r from-[#1f4d52] to-[#2c6770] rounded-xl p-8 text-white">
+            <div className="grid md:grid-cols-2 gap-8 items-center">
+              <div>
+                <h2 className="text-2xl font-bold mb-4">The Mississippi River &amp; Tributaries Project</h2>
+                <p className="text-teal-100 leading-relaxed mb-4">
+                  Authorized by the Flood Control Act of 1928 after the Great Flood of 1927, the
+                  Mississippi River &amp; Tributaries Project (MR&amp;T) is one of the largest civil
+                  works projects in U.S. history.
+                </p>
+                <p className="text-teal-100 leading-relaxed">
+                  The east-bank river levees and floodwalls in Orleans and Jefferson Parishes are part
+                  of this national system. The U.S. Army Corps of Engineers designs and funds the
+                  system; <span className="text-white font-semibold">SLFPA-E operates and maintains
+                  it locally</span>.
+                </p>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="bg-white/10 rounded-lg p-4 text-center">
+                  <Waves className="h-8 w-8 mx-auto mb-2" />
+                  <div className="text-2xl font-bold">River Levees</div>
+                  <div className="text-sm text-teal-200">Earthen embankments</div>
+                </div>
+                <div className="bg-white/10 rounded-lg p-4 text-center">
+                  <Building2 className="h-8 w-8 mx-auto mb-2" />
+                  <div className="text-2xl font-bold">Floodwalls</div>
+                  <div className="text-sm text-teal-200">Concrete barriers</div>
+                </div>
+                <div className="bg-white/10 rounded-lg p-4 text-center">
+                  <Fence className="h-8 w-8 mx-auto mb-2" />
+                  <div className="text-2xl font-bold">Floodgates</div>
+                  <div className="text-sm text-teal-200">Railroad &amp; street closures</div>
+                </div>
+                <div className="bg-white/10 rounded-lg p-4 text-center">
+                  <CircleDot className="h-8 w-8 mx-auto mb-2" />
+                  <div className="text-2xl font-bold">Relief Wells</div>
+                  <div className="text-sm text-teal-200">Manage under-seepage</div>
                 </div>
               </div>
             </div>

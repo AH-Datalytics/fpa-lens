@@ -185,6 +185,13 @@ export const RISK_THRESHOLDS = {
   // RED is exempt (immediate response for dangerous conditions).
   WIND_HISTORY_HOURS: 3,           // hours of recent wind data to analyze
   WIND_SUSTAINED_FRACTION: 0.7,    // 70% of readings must be onshore + above threshold
+
+  // Surge gating: surge above predicted only matters operationally when wind
+  // is pushing water onto shore. Without recent onshore wind, elevated surge
+  // is usually rain runoff, river inflow, or pressure noise — not flood risk.
+  // (Calibration: April 24 false alarm — calm SE winds, +0.85 ft surge from
+  // rain/river noise, model fired YELLOW for hours despite no flood risk.)
+  SURGE_RECENT_ONSHORE_FRACTION: 0.3,  // require 30% of recent readings to be onshore
 } as const;
 
 // ============================================================================
@@ -541,11 +548,34 @@ export function computeRiskLevel(
     }
   }
 
-  // Step 4: Surge anomaly (not duration-gated)
-  const surgeLevel = surgeRiskLevel(current.waterLevel.anomaly);
+  // Step 4: Surge anomaly, gated on recent onshore wind.
+  // Surge above predicted only signals flood risk when wind is (or recently was)
+  // pushing water toward shore. Without that, elevated surge is rain runoff,
+  // river inflow, or pressure noise. Suppress the surge component when wind is
+  // currently offshore AND recent onshore presence is below threshold.
+  const surgeLevelRaw = surgeRiskLevel(current.waterLevel.anomaly);
+  let surgeLevel: RiskLevel = surgeLevelRaw;
+  let surgeSuppressed = false;
+  let recentOnshoreFraction = 0;
+  if (windHistory && windHistory.length > 0) {
+    const onshoreCount = windHistory.filter((r) => isOnshoreWind(r.direction)).length;
+    recentOnshoreFraction = onshoreCount / windHistory.length;
+  }
+  if (
+    surgeLevelRaw !== "GREEN" &&
+    !onshore &&
+    recentOnshoreFraction < RISK_THRESHOLDS.SURGE_RECENT_ONSHORE_FRACTION
+  ) {
+    surgeLevel = "GREEN";
+    surgeSuppressed = true;
+  }
   if (surgeLevel !== "GREEN") {
     factors.push(
       `Surge anomaly ${current.waterLevel.anomaly > 0 ? "+" : ""}${current.waterLevel.anomaly.toFixed(2)} ft above predicted`
+    );
+  } else if (surgeSuppressed) {
+    factors.push(
+      `Surge ${current.waterLevel.anomaly > 0 ? "+" : ""}${current.waterLevel.anomaly.toFixed(2)} ft above predicted, but no recent onshore wind to drive flood risk`
     );
   }
 

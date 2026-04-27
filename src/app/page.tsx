@@ -22,6 +22,7 @@ import {
   staffingData,
   StatusLevel,
 } from "@/data/siteData";
+import { computeReadinessRollups } from "@/lib/readinessRollups";
 
 const quickLinks = [
   {
@@ -111,6 +112,25 @@ export default function Home() {
   const fyEnd = new Date(2026, 5, 30);
   const fyElapsedPct = Math.min(100, Math.max(0, Math.round(((new Date(omDataDate + "T00:00:00").getTime() - fyStart.getTime()) / (fyEnd.getTime() - fyStart.getTime())) * 100)));
 
+  const rollups = computeReadinessRollups();
+  const inspectionsOnPace = rollups.inspections.greenCount === rollups.inspections.total;
+  const inspectionsBadgeStatus: StatusLevel =
+    rollups.inspections.worstStatus === "NEUTRAL"
+      ? "GREEN"
+      : rollups.inspections.worstStatus;
+  const grassCuttingBadgeStatus: StatusLevel =
+    rollups.grassCutting.status === "NEUTRAL"
+      ? "GREEN"
+      : rollups.grassCutting.status;
+  const grassCuttingPaceLabel =
+    rollups.grassCutting.status === "GREEN"
+      ? "On pace"
+      : rollups.grassCutting.status === "AMBER"
+        ? "Slightly behind"
+        : rollups.grassCutting.status === "RED"
+          ? "Behind"
+          : "Pending";
+
   return (
     <div>
       {/* Hero Section */}
@@ -169,24 +189,34 @@ export default function Home() {
                 </div>
                 <StatusBadge status={infra.status} size="sm" tooltip={statusTooltip(infra.status)} />
               </div>
-              <div className="grid grid-cols-3 gap-3 mb-4">
+              <div className="grid grid-cols-2 gap-3 mb-4">
                 <div className="text-center">
-                  <div className="text-xl font-bold text-[#21355a]">
-                    {kpiMetrics.pccpPumps.value}/{kpiMetrics.pccpPumps.total}
+                  <div className={`text-xl font-bold ${
+                    inspectionsBadgeStatus === "RED"
+                      ? "text-red-600"
+                      : inspectionsBadgeStatus === "AMBER"
+                        ? "text-amber-600"
+                        : "text-[#21355a]"
+                  }`}>
+                    {rollups.inspections.greenCount}/{rollups.inspections.total}
                   </div>
-                  <div className="text-xs text-gray-500">PCCP Pumps</div>
+                  <div className="text-xs text-gray-500 leading-snug mt-0.5">
+                    Inspections {inspectionsOnPace ? "on pace" : "needing attention"}
+                  </div>
                 </div>
                 <div className="text-center">
-                  <div className="text-xl font-bold text-[#21355a]">
-                    {operationsData.floodgateInspections.hurricaneGates.percentComplete}%
+                  <div className={`text-xl font-bold ${
+                    grassCuttingBadgeStatus === "RED"
+                      ? "text-red-600"
+                      : grassCuttingBadgeStatus === "AMBER"
+                        ? "text-amber-600"
+                        : "text-[#21355a]"
+                  }`}>
+                    {rollups.grassCutting.complete}/{rollups.grassCutting.total}
                   </div>
-                  <div className="text-xs text-gray-500">Gate Inspections</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-xl font-bold text-[#21355a]">
-                    {operationsData.floodgateInspections.valveExercises.percentComplete}%
+                  <div className="text-xs text-gray-500 leading-snug mt-0.5">
+                    Grass cutting {grassCuttingPaceLabel.toLowerCase()}
                   </div>
-                  <div className="text-xs text-gray-500">Valve Exercises</div>
                 </div>
               </div>
               <p className="text-sm text-gray-600 line-clamp-2">{infra.description}</p>

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { MapPin, Phone, ExternalLink } from "lucide-react";
+import { MapPin, Phone, ExternalLink, Scissors } from "lucide-react";
 import { siteConfig } from "@/data/siteData";
 
 export default function Footer() {
@@ -74,6 +74,13 @@ export default function Footer() {
                 <ExternalLink className="h-4 w-4" />
                 Watch board meetings
               </a>
+              <Link
+                href="/our-system/grass-cutting"
+                className="flex items-center gap-2 text-blue-200 hover:text-white transition-colors"
+              >
+                <Scissors className="h-4 w-4" />
+                Grass Cutting
+              </Link>
             </div>
           </div>
         </div>

@@ -45,3 +45,16 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# session artifacts (Playwright screenshots etc.)
+.playwright-mcp/
+.Rhistory
+/*.png
+/*.jpeg
+/*.jpg
+
+# source documents kept locally for reference but not in git
+/*.pdf
+/*.docx
+/*.xlsx
+/*.eml
