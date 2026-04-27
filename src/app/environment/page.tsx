@@ -371,7 +371,7 @@ export default function EnvironmentalPage() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <SectionHeader
           title="Environmental Conditions"
-          subtitle="Real-time lakefront flood risk assessment for Lakeshore Drive"
+          subtitle="Real-time Lakeshore Drive flood risk assessment"
           source={`NOAA Station ${data.stationId} (${data.stationName}) & NWS`}
         />
 
@@ -1064,7 +1064,7 @@ export default function EnvironmentalPage() {
                 <p>
                   Structure gauge levels from USGS Water Services (Seabrook, Surge Barrier, Bayou Dupre).
                   These are the same gauges monitored by FPA operations and serve as secondary
-                  corroboration of lakefront conditions.
+                  corroboration of Lake Pontchartrain conditions.
                 </p>
                 <p>
                   The risk indicator is a rule-based decision-support tool. It does not replace

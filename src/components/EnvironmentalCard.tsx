@@ -54,13 +54,16 @@ export default function EnvironmentalCard() {
       className={`group bg-white rounded-xl shadow-lg border-l-4 ${riskBorder(risk.level)} p-6 hover:shadow-2xl transition-shadow duration-200`}
     >
       <div className="mb-4">
-        <div className="flex items-center gap-3 mb-2">
+        <div className="flex items-start gap-3 mb-2">
           <div
             className={`w-10 h-10 flex-shrink-0 ${riskBg(risk.level)} rounded-lg flex items-center justify-center`}
           >
             <Wind className="h-5 w-5 text-[#21355a]" />
           </div>
-          <h3 className="font-semibold text-[#21355a] leading-tight">Environmental Conditions</h3>
+          <div className="leading-tight">
+            <h3 className="font-semibold text-[#21355a]">Environmental Conditions</h3>
+            <p className="text-xs text-gray-500 mt-0.5">Lakeshore Drive flood risk</p>
+          </div>
         </div>
         <RiskBadge
           level={risk.level}

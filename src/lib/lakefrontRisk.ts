@@ -206,10 +206,10 @@ const RISK_ACTIONS: Record<RiskLevel, string> = {
 };
 
 const RISK_DESCRIPTIONS: Record<RiskLevel, string> = {
-  GREEN: "Environmental conditions are within normal parameters. No lakefront flooding risk anticipated.",
+  GREEN: "Environmental conditions are within normal parameters. No Lakeshore Drive flooding risk anticipated.",
   YELLOW: "Conditions are developing that may lead to elevated water levels along Lakeshore Drive. Continue monitoring wind and lake level trends.",
-  ORANGE: "Conditions indicate a meaningful risk of lakefront flooding. Consider staging barricades and preparing for potential roadway closures.",
-  RED: "Conditions strongly indicate active or imminent lakefront flooding. Roadway closures should be implemented.",
+  ORANGE: "Conditions indicate a meaningful risk of Lakeshore Drive flooding. Consider staging barricades and preparing for potential roadway closures.",
+  RED: "Conditions strongly indicate active or imminent Lakeshore Drive flooding. Roadway closures should be implemented.",
 };
 
 // ============================================================================

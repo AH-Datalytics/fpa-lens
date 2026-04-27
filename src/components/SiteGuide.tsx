@@ -42,7 +42,7 @@ const pages = [
   {
     icon: Wind,
     name: "Environmental",
-    desc: "Lake and river levels, wind conditions, weather alerts, and lakefront flood risk.",
+    desc: "Lake and river levels, wind conditions, weather alerts, and Lakeshore Drive flood risk.",
   },
 ];
 

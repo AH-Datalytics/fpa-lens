@@ -57,7 +57,7 @@ const quickLinks = [
   },
   {
     title: "Environment",
-    description: "Real-time lakefront flood risk and weather conditions",
+    description: "Real-time Lakeshore Drive flood risk and weather conditions",
     href: "/environment",
     icon: Wind,
   },
