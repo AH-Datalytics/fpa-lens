@@ -12,13 +12,14 @@ import {
   TrendingUp,
   Users,
   AlertCircle,
+  type LucideIcon,
 } from "lucide-react";
 import SectionHeader, { SectionSubheader } from "@/components/SectionHeader";
 import { protectionData } from "@/data/protectionData";
 
 const formatNumber = (n: number) => n.toLocaleString();
 
-const categoryIcon: Record<string, React.ComponentType<{ className?: string }>> = {
+const categoryIcon: Record<string, LucideIcon> = {
   FLOOD_STRUCTURES: Fence,
   LEVEE_SYSTEM: Layers,
   FPA_FACILITIES: Building2,
