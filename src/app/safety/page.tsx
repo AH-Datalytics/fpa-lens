@@ -129,7 +129,7 @@ export default function SafetyPage() {
         <section className="mb-12">
           <div className="grid md:grid-cols-3 gap-6">
             <KPICard
-              label="2026 YTD Accidents"
+              label="2026 YTD At-Fault Accidents"
               value={ytdAccidents}
               goal={kpiMetrics.ytdAccidents.goal}
               goalLabel={kpiMetrics.ytdAccidents.goalLabel}
@@ -153,7 +153,7 @@ export default function SafetyPage() {
                 </span>
               </div>
               <p className={`text-sm ${onTrack ? "text-green-700" : "text-amber-700"}`}>
-                {ytdAccidents} accident{ytdAccidents !== 1 ? "s" : ""} YTD vs goal of {"\u2264"}{safetyData.goalMax}
+                {ytdAccidents} at-fault accident{ytdAccidents !== 1 ? "s" : ""} YTD vs goal of {"\u2264"}{safetyData.goalMax}
               </p>
               <p className={`text-xs mt-1 ${onTrack ? "text-green-600" : "text-amber-600"}`}>
                 {currentYearData?.lostTime ?? 0} lost-time event{(currentYearData?.lostTime ?? 0) === 1 ? "" : "s"}
@@ -165,7 +165,7 @@ export default function SafetyPage() {
         {/* Definitions */}
         <section className="mb-12">
           <SectionSubheader title="Definitions" />
-          <div className="grid md:grid-cols-3 gap-6">
+          <div className="grid md:grid-cols-2 gap-6 mb-4">
             <div className="bg-red-50 rounded-xl border border-red-200 p-6">
               <div className="flex items-start gap-3">
                 <ShieldAlert className="h-6 w-6 text-red-800 flex-shrink-0 mt-0.5" />
@@ -173,9 +173,8 @@ export default function SafetyPage() {
                   <h4 className="font-semibold text-red-900 mb-2">Accident</h4>
                   <p className="text-sm text-red-800 leading-relaxed">
                     A work-related event that resulted in an OSHA-recordable injury or
-                    illness (medical treatment beyond first aid, lost time, or restricted
-                    duty) where the FPA employee was at fault. This is the headline
-                    performance metric.
+                    illness (medical treatment beyond first aid, lost time, restricted
+                    duty, or worse).
                   </p>
                 </div>
               </div>
@@ -186,27 +185,25 @@ export default function SafetyPage() {
                 <div>
                   <h4 className="font-semibold text-orange-800 mb-2">Incident</h4>
                   <p className="text-sm text-orange-700 leading-relaxed">
-                    A work-related event that did not meet OSHA-recordable criteria
-                    (typically minor property damage, near-miss, or first-aid-only) where
-                    the FPA employee was at fault. Tracked for risk visibility but not
-                    counted in the year-over-year accident summary.
+                    A tracked work-related event that did not meet OSHA-recordable
+                    criteria (typically property damage, near-miss, or first-aid-only).
                   </p>
                 </div>
               </div>
             </div>
-            <div className="bg-gray-50 rounded-xl border border-gray-200 p-6">
-              <div className="flex items-start gap-3">
-                <Info className="h-6 w-6 text-gray-400 flex-shrink-0 mt-0.5" />
-                <div>
-                  <h4 className="font-semibold text-gray-700 mb-2">No-Fault Event</h4>
-                  <p className="text-sm text-gray-600 leading-relaxed">
-                    Any accident or incident where the FPA employee was not at fault
-                    (for example, struck by another driver). Counted in total event
-                    tracking for visibility but excluded from performance metrics,
-                    consistent with industry practice.
-                  </p>
-                </div>
-              </div>
+          </div>
+          <div className="bg-gray-50 rounded-xl border border-gray-200 p-5">
+            <div className="flex items-start gap-3">
+              <Info className="h-5 w-5 text-gray-400 flex-shrink-0 mt-0.5" />
+              <p className="text-sm text-gray-600 leading-relaxed">
+                <span className="font-semibold text-gray-700">At-fault vs. no-fault</span>{" "}
+                is a separate qualifier that applies to either category. An accident or
+                incident is no-fault when the FPA employee was not the cause (for example,
+                struck by another driver). All events are tracked for visibility, but the
+                headline performance metric and the year-over-year accident chart count
+                only at-fault accidents, consistent with industry practice for evaluating
+                preventable safety performance.
+              </p>
             </div>
           </div>
         </section>
@@ -215,7 +212,7 @@ export default function SafetyPage() {
         <section className="mb-12">
           <SectionSubheader title="Multi-Year Safety Trends" />
           <div className="grid lg:grid-cols-2 gap-6">
-            <DataCard title="Accidents by Year" source="FPA Event Logs (calendar year)">
+            <DataCard title="At-Fault Accidents by Year" source="FPA Event Logs (calendar year)">
               <div className="h-72">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={yearlyTrendData}>
@@ -226,7 +223,7 @@ export default function SafetyPage() {
                     <Bar
                       dataKey="accidents"
                       fill="#991b1b"
-                      name="Accidents"
+                      name="At-Fault Accidents"
                       radius={[4, 4, 0, 0]}
                     />
                   </BarChart>
@@ -297,8 +294,8 @@ export default function SafetyPage() {
                     <tr className="border-b border-gray-200">
                       <th className="text-left py-3 font-semibold text-gray-700">Year</th>
                       <th className="text-center py-3 font-semibold text-gray-700">Total Events</th>
-                      <th className="text-center py-3 font-semibold text-gray-700">Accidents</th>
-                      <th className="text-center py-3 font-semibold text-gray-700">Incidents</th>
+                      <th className="text-center py-3 font-semibold text-gray-700">At-Fault Accidents</th>
+                      <th className="text-center py-3 font-semibold text-gray-700">At-Fault Incidents</th>
                       <th className="text-center py-3 font-semibold text-gray-700">No-Fault</th>
                       <th className="text-center py-3 font-semibold text-gray-700">
                         <span className="relative cursor-default border-b border-dashed border-gray-400 group">
@@ -375,18 +372,18 @@ export default function SafetyPage() {
                     dataKey="accidents"
                     stackId="stack"
                     fill="#991b1b"
-                    name="Accidents"
+                    name="At-Fault Accidents"
                   />
                   <Bar
                     dataKey="incidents"
                     stackId="stack"
                     fill="#fb923c"
-                    name="Incidents"
+                    name="At-Fault Incidents"
                   />
                   <Bar
                     dataKey="noFault"
                     stackId="stack"
-                    fill="#94a3b8"
+                    fill="#d1d5db"
                     name="No-Fault"
                     radius={[4, 4, 0, 0]}
                   />
@@ -413,8 +410,8 @@ export default function SafetyPage() {
                     <YAxis type="category" dataKey="type" width={120} tick={{ fontSize: 11 }} />
                     <Tooltip />
                     <Legend />
-                    <Bar dataKey="accidents" stackId="stack" fill="#991b1b" name="Accidents" />
-                    <Bar dataKey="incidents" stackId="stack" fill="#fb923c" name="Incidents" />
+                    <Bar dataKey="accidents" stackId="stack" fill="#991b1b" name="At-Fault Accidents" />
+                    <Bar dataKey="incidents" stackId="stack" fill="#fb923c" name="At-Fault Incidents" />
                     <Bar dataKey="noFault" stackId="stack" fill="#d1d5db" name="No-Fault" radius={[0, 4, 4, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
