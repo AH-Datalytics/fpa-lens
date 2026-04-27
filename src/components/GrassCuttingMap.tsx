@@ -113,8 +113,8 @@ export default function GrassCuttingMap() {
             const zone = props?.zone || "";
             return {
               color: zone ? zoneColor(zone) : UNASSIGNED_COLOR,
-              weight: 4,
-              opacity: zone ? 0.85 : 0.45,
+              weight: 6,
+              opacity: zone ? 0.9 : 0.45,
             };
           }}
           onEachFeature={(feature, layer) => {
