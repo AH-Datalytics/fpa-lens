@@ -135,11 +135,11 @@ export const kpiMetrics = {
     source: "Apr 2026 SITREP",
   },
   ytdAccidents: {
-    label: "YTD Accidents",
-    value: 5,
+    label: "YTD At-Fault Accidents",
+    value: 3,
     goal: 6,
-    goalLabel: "FY26 Goal: ≤6",
-    source: "Apr 2026 SITREP",
+    goalLabel: "2026 Goal: ≤6",
+    source: "FPA Safety Officer reclassified event log, Apr 2026",
   },
   floodgateInspections: {
     label: "Hurricane Gate Inspections",
@@ -520,11 +520,14 @@ export const operationsData = {
 // ============================================================================
 
 export const safetyData = {
-  // Source: Apr 2026 SITREP (KPI metadata only; detailed event data in public/data/safety-events.json)
-  fy26Goal: "≤6 reportable accidents and maintain zero lost-time, fatal, or catastrophic events",
-  ytdAccidents: 5,
+  // KPI metadata only; detailed event data in public/data/safety-events.json
+  // Per Director and Safety Officer direction, the page is reported by
+  // calendar year (Jan 1 - Dec 31). YTD figures cover Jan 1 of the current
+  // year through the latest event log entry.
+  cy26Goal: "≤6 at-fault accidents and maintain zero lost-time, fatal, or catastrophic events",
+  ytdAtFaultAccidents: 3,
   goalMax: 6,
-  source: "Apr 2026 SITREP",
+  source: "FPA Safety Officer reclassified event log, Apr 2026",
 };
 
 // ============================================================================

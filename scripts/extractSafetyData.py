@@ -1,13 +1,24 @@
 #!/usr/bin/env python3
 """
-Extract safety event data from Excel files and output anonymized JSON for a dashboard.
+Extract safety event data from Excel files and output anonymized JSON.
 
 Reads from: ~/Development/fpa/data/sources/safety-event-logs/*.xlsx
 Outputs to:  ~/Development/fpa/public/data/safety-events.json
 
+Per Safety Officer (Jamal) Apr 2026 update, each row is classified by the
+fill color of the Recordable cell:
+
+  RED (FFFF0000)        -> N/A         -> excluded from ALL metrics
+  LIGHT BLUE (FF00B0F0) -> No-Fault    -> excluded from performance and
+                                          year-over-year metrics, but kept
+                                          in total event tracking
+  No fill (00000000)    -> At-Fault    -> further classified as:
+       Recordable=Yes -> OSHA Recordable accident
+       Damage=Yes     -> Property damage event (FPA and/or private)
+
 Anonymization: strips employee names, group codes, locations, unit numbers,
-make/model, descriptions. Only retains date, event type category, and boolean
-flags (recordable/accident, lost time, damage, private property damage).
+make/model, descriptions. Only retains date, event type, classification,
+and boolean flags (lost time, injury, damage, private-property damage).
 """
 
 import json
@@ -20,37 +31,56 @@ import openpyxl
 BASE_DIR = os.path.expanduser("~/Development/fpa/data/sources/safety-event-logs")
 OUTPUT_PATH = os.path.expanduser("~/Development/fpa/public/data/safety-events.json")
 
-# File configurations: (filename, sheet_name, has_event_type_column)
-# 2022-2024: no Event Type column (cols 1-16)
-# 2025-2026: Event Type at column 5, shifting subsequent columns (cols 1-17+)
+# File configurations: (filename, sheet_name)
+# As of the Apr 2026 reclassified workbooks, all years share the same layout:
+#   1:Date | 2:Time | 3:Employee | 4:Group | 5:Event Type
+#   6:Event Description | 7:Root Cause | 8:Corrective Action | 9:Location
+#   10:Injury/Body Part | 11:Recordable | 12:Lost Time | 13:Damage
+#   14:FPA Unit No. | 15:Make Model/Description | 16:Damage to Private Property
+#   17:Photo | 18:Notes
 FILES = [
-    ("Event Log 2022.xlsx", "Events", False),
-    ("2023 Event Log.xlsx", "Sheet2", False),
-    ("2024 Event Log.xlsx", "Sheet1", False),
-    ("2025 Event Log.xlsx", "Sheet1", True),
-    ("2026 Event Log.xlsx", "Sheet1", True),
+    ("Event Log 2022.xlsx", "Events"),
+    ("2023 Event Log.xlsx", "Sheet2"),
+    ("2024 Event Log.xlsx", "Sheet1"),
+    ("2025 Event Log.xlsx", "Sheet1"),
+    ("2026 Event Log.xlsx", "Sheet1"),
 ]
 
+COL_DATE = 1
+COL_EVENT_TYPE = 5
+COL_INJURY = 10
+COL_RECORDABLE = 11
+COL_LOST_TIME = 12
+COL_DAMAGE = 13
+COL_PRIVATE_PROP = 16
 
-def parse_bool(value):
-    """
-    Parse a cell value as a boolean.
+# Cell fill colors used by the Safety Officer to classify rows.
+COLOR_NA = "FFFF0000"          # red    -> exclude entirely
+COLOR_NO_FAULT = "FF00B0F0"    # cyan   -> total tracking only
+COLOR_AT_FAULT = ("00000000", "", None)  # white / no fill -> counted everywhere
 
-    Truthy: "yes", "yes, minor", "Yes(minor)", "Tractor door", "minimal",
-            any non-empty string that isn't explicitly falsy.
-    Falsy:  None, empty string, "no", "none", "n/a", "na", "unknown".
-    """
+
+def parse_yes(value):
+    """Treat any non-empty string that isn't an explicit "no" as Yes."""
     if value is None:
         return False
     s = str(value).strip().lower()
     if s in ("", "no", "none", "n/a", "na", "unknown", "unk", "tbd", "pending"):
         return False
-    # Anything else (including "yes", "yes, minor", "Tractor door", etc.) is truthy
+    return True
+
+
+def parse_injury(value):
+    """Injury column is free text. Empty / 'No' / 'N/A' means no injury."""
+    if value is None:
+        return False
+    s = str(value).strip().lower()
+    if s in ("", "no", "none", "n/a", "na", "unknown", "unk"):
+        return False
     return True
 
 
 def parse_date(value):
-    """Parse a date cell value into a datetime object, or return None."""
     if isinstance(value, datetime):
         return value
     if isinstance(value, str):
@@ -62,104 +92,150 @@ def parse_date(value):
     return None
 
 
-def extract_events():
-    """Extract all safety events from Excel files, returning anonymized records."""
-    all_events = []
+def cell_fill_color(cell):
+    """Return the foreground fill color of a cell, normalized to upper-case hex."""
+    fill = cell.fill
+    if fill is None or fill.fgColor is None:
+        return None
+    val = fill.fgColor.value
+    if val is None:
+        return None
+    return str(val).upper()
 
-    for filename, sheet_name, has_event_type in FILES:
+
+def classify_row(recordable_fill):
+    """
+    Classify a row based on the fill color of its Recordable cell.
+
+    Returns one of:
+      "excluded"   -- N/A row, drop entirely
+      "no-fault"   -- counted in totals only
+      "at-fault"   -- counted everywhere; further sub-classified by columns
+    """
+    if recordable_fill == COLOR_NA:
+        return "excluded"
+    if recordable_fill == COLOR_NO_FAULT:
+        return "no-fault"
+    return "at-fault"
+
+
+def extract_events():
+    all_events = []
+    classification_counts = defaultdict(int)
+
+    for filename, sheet_name in FILES:
         filepath = os.path.join(BASE_DIR, filename)
         if not os.path.exists(filepath):
             print(f"WARNING: File not found: {filepath}")
             continue
 
-        wb = openpyxl.load_workbook(filepath, read_only=True, data_only=True)
+        # Need formatting info, so don't use read_only mode.
+        wb = openpyxl.load_workbook(filepath, data_only=True)
         ws = wb[sheet_name]
 
-        # Column mapping differs based on whether Event Type column exists
-        if has_event_type:
-            # 2025-2026 layout
-            col_date = 0          # A
-            col_event_type = 4    # E
-            col_recordable = 10   # K
-            col_lost_time = 11    # L
-            col_damage = 12       # M
-            col_private_prop = 15 # P
-        else:
-            # 2022-2024 layout
-            col_date = 0          # A
-            col_event_type = None
-            col_recordable = 9    # J
-            col_lost_time = 10    # K
-            col_damage = 11       # L
-            col_private_prop = 14 # O
-
         row_count = 0
-        for row in ws.iter_rows(min_row=2, values_only=True):
-            # Skip completely empty rows
-            if all(v is None for v in row):
-                continue
-
-            date_val = parse_date(row[col_date] if col_date < len(row) else None)
+        for r in range(2, ws.max_row + 1):
+            date_cell = ws.cell(row=r, column=COL_DATE)
+            date_val = parse_date(date_cell.value)
             if date_val is None:
-                # No valid date means this isn't a real data row
                 continue
 
-            # Event type
-            if col_event_type is not None and col_event_type < len(row) and row[col_event_type]:
-                event_type = str(row[col_event_type]).strip()
+            recordable_cell = ws.cell(row=r, column=COL_RECORDABLE)
+            classification = classify_row(cell_fill_color(recordable_cell))
+
+            if classification == "excluded":
+                classification_counts["excluded"] += 1
+                continue
+
+            event_type = "Not categorized"
+            v = ws.cell(row=r, column=COL_EVENT_TYPE).value
+            if v is not None and str(v).strip():
+                event_type = str(v).strip()
+
+            injury_val = ws.cell(row=r, column=COL_INJURY).value
+            recordable_val = recordable_cell.value
+            lost_time_val = ws.cell(row=r, column=COL_LOST_TIME).value
+            damage_val = ws.cell(row=r, column=COL_DAMAGE).value
+            private_prop_val = ws.cell(row=r, column=COL_PRIVATE_PROP).value
+
+            is_recordable = parse_yes(recordable_val)
+            is_lost_time = parse_yes(lost_time_val)
+            has_damage = parse_yes(damage_val)
+            has_private_property_damage = parse_yes(private_prop_val)
+            has_injury = parse_injury(injury_val)
+
+            # Sub-classification for at-fault rows: an at-fault row is either
+            # an OSHA-recordable accident (Recordable=Yes) or a Damage-only
+            # event (Recordable=No but Damage=Yes). No-fault rows always carry
+            # property damage, by Safety Officer convention.
+            if classification == "at-fault":
+                if is_recordable:
+                    sub = "osha-recordable"
+                elif has_damage or has_private_property_damage:
+                    sub = "damage"
+                else:
+                    sub = "other"
             else:
-                event_type = "Not categorized"
+                sub = "no-fault"
 
-            # Boolean fields - safely access with bounds checking
-            recordable_val = row[col_recordable] if col_recordable < len(row) else None
-            lost_time_val = row[col_lost_time] if col_lost_time < len(row) else None
-            damage_val = row[col_damage] if col_damage < len(row) else None
-            private_prop_val = row[col_private_prop] if col_private_prop < len(row) else None
+            classification_counts[sub] += 1
 
-            is_accident = parse_bool(recordable_val)  # Recordable = yes means OSHA-recordable accident
-            is_lost_time = parse_bool(lost_time_val)
-            has_damage = parse_bool(damage_val)
-            has_private_property_damage = parse_bool(private_prop_val)
-
-            event = {
+            all_events.append({
                 "date": date_val.strftime("%Y-%m-%d"),
                 "month": date_val.month,
                 "year": date_val.year,
                 "monthName": date_val.strftime("%B"),
                 "eventType": event_type,
-                "isAccident": is_accident,
+                "classification": sub,         # osha-recordable | damage | other | no-fault
+                "isAtFault": classification == "at-fault",
+                "isRecordable": is_recordable,
                 "isLostTime": is_lost_time,
+                "hasInjury": has_injury,
                 "hasDamage": has_damage,
                 "hasPrivatePropertyDamage": has_private_property_damage,
-            }
-            all_events.append(event)
+            })
             row_count += 1
 
         wb.close()
         print(f"Extracted {row_count} events from {filename}")
 
+    print(f"\nClassification counts: {dict(classification_counts)}")
     return all_events
 
 
 def build_output(events):
-    """Build the full JSON output structure from extracted events."""
-
-    # --- yearlyTotals ---
+    # ---- yearlyTotals (excluding N/A by construction; further breakdowns) ----
+    # Reporting framing: each event is an Accident, Incident, or No-Fault Event.
+    #   Accident   = at-fault, OSHA-recordable injury
+    #   Incident   = at-fault, no recordable injury (property damage or near-miss)
+    #   No-Fault   = employee not at fault (Safety Officer's cyan classification)
     yearly = defaultdict(lambda: {
-        "totalEvents": 0, "accidents": 0, "incidents": 0,
-        "lostTime": 0, "propertyDamage": 0,
+        "totalEvents": 0,
+        "accidents": 0,              # at-fault OSHA recordable
+        "incidents": 0,              # at-fault, not recordable (damage + minor)
+        "noFault": 0,
+        "lostTime": 0,
+        "injuries": 0,
+        "propertyDamageFpa": 0,
+        "propertyDamagePrivate": 0,
     })
     for e in events:
         y = yearly[e["year"]]
         y["totalEvents"] += 1
-        if e["isAccident"]:
+        if e["classification"] == "osha-recordable":
             y["accidents"] += 1
-        else:
+        elif e["classification"] in ("damage", "other"):
             y["incidents"] += 1
+        elif e["classification"] == "no-fault":
+            y["noFault"] += 1
         if e["isLostTime"]:
             y["lostTime"] += 1
-        if e["hasDamage"] or e["hasPrivatePropertyDamage"]:
-            y["propertyDamage"] += 1
+        if e["hasInjury"]:
+            y["injuries"] += 1
+        if e["hasDamage"]:
+            y["propertyDamageFpa"] += 1
+        if e["hasPrivatePropertyDamage"]:
+            y["propertyDamagePrivate"] += 1
 
     yearly_totals = []
     for year in sorted(yearly.keys()):
@@ -167,33 +243,50 @@ def build_output(events):
         entry.update(yearly[year])
         yearly_totals.append(entry)
 
-    # --- monthlyData ---
-    monthly = defaultdict(lambda: {"accidents": 0, "incidents": 0})
+    # ---- monthlyData ----
+    monthly = defaultdict(lambda: {
+        "accidents": 0,
+        "incidents": 0,
+        "noFault": 0,
+    })
     for e in events:
         key = (e["year"], e["month"])
-        if e["isAccident"]:
+        if e["classification"] == "osha-recordable":
             monthly[key]["accidents"] += 1
-        else:
+        elif e["classification"] in ("damage", "other"):
             monthly[key]["incidents"] += 1
+        elif e["classification"] == "no-fault":
+            monthly[key]["noFault"] += 1
 
     monthly_data = []
     for (year, month) in sorted(monthly.keys()):
+        m = monthly[(year, month)]
         monthly_data.append({
             "year": year,
             "month": month,
-            "accidents": monthly[(year, month)]["accidents"],
-            "incidents": monthly[(year, month)]["incidents"],
+            "accidents": m["accidents"],
+            "incidents": m["incidents"],
+            "noFault": m["noFault"],
         })
 
-    # --- eventTypes ---
-    type_counts = defaultdict(lambda: {"count": 0, "accidents": 0, "incidents": 0})
+    # ---- eventTypes ----
+    type_counts = defaultdict(lambda: {
+        "count": 0,
+        "accidents": 0,
+        "incidents": 0,
+        "noFault": 0,
+    })
     for e in events:
+        if e["eventType"] == "Not categorized":
+            continue
         t = type_counts[e["eventType"]]
         t["count"] += 1
-        if e["isAccident"]:
+        if e["classification"] == "osha-recordable":
             t["accidents"] += 1
-        else:
+        elif e["classification"] in ("damage", "other"):
             t["incidents"] += 1
+        elif e["classification"] == "no-fault":
+            t["noFault"] += 1
 
     event_types = []
     for etype in sorted(type_counts.keys()):
@@ -201,17 +294,18 @@ def build_output(events):
         entry.update(type_counts[etype])
         event_types.append(entry)
 
-    # --- recentEvents (sorted by date descending) ---
+    # ---- recentEvents (anonymized) ----
     recent_events = sorted(events, key=lambda e: e["date"], reverse=True)
-    # Only include the anonymized fields
     recent_events = [
         {
             "date": e["date"],
             "month": e["monthName"],
             "year": e["year"],
             "eventType": e["eventType"],
-            "isAccident": e["isAccident"],
+            "classification": e["classification"],
+            "isAtFault": e["isAtFault"],
             "isLostTime": e["isLostTime"],
+            "hasInjury": e["hasInjury"],
             "hasDamage": e["hasDamage"],
             "hasPrivatePropertyDamage": e["hasPrivatePropertyDamage"],
         }
@@ -229,22 +323,20 @@ def build_output(events):
 def main():
     print("Extracting safety event data...")
     events = extract_events()
-    print(f"\nTotal events extracted: {len(events)}")
+    print(f"\nTotal events extracted (excluding N/A): {len(events)}")
 
     output = build_output(events)
 
-    # Summary
     print("\nYearly totals:")
     for yt in output["yearlyTotals"]:
-        print(f"  {yt['year']}: {yt['totalEvents']} events "
-              f"({yt['accidents']} accidents, {yt['incidents']} incidents, "
-              f"{yt['lostTime']} lost time, {yt['propertyDamage']} property damage)")
+        print(f"  {yt['year']}: total={yt['totalEvents']} "
+              f"accidents={yt['accidents']} "
+              f"incidents={yt['incidents']} "
+              f"no-fault={yt['noFault']} "
+              f"lost-time={yt['lostTime']} injuries={yt['injuries']} "
+              f"FPA damage={yt['propertyDamageFpa']} "
+              f"private damage={yt['propertyDamagePrivate']}")
 
-    print(f"\nEvent types: {len(output['eventTypes'])}")
-    for et in output["eventTypes"]:
-        print(f"  {et['type']}: {et['count']} ({et['accidents']} accidents, {et['incidents']} incidents)")
-
-    # Write output
     os.makedirs(os.path.dirname(OUTPUT_PATH), exist_ok=True)
     with open(OUTPUT_PATH, "w") as f:
         json.dump(output, f, indent=2)

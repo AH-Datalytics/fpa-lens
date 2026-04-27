@@ -21,9 +21,13 @@ Dashboard for the Southeast Louisiana Flood Protection Authority (FPA). Built fo
 - LNO = Letter of No Objection (used in permit pipeline copy).
 
 ### Safety (/safety)
-- FY26 YTD accident count on the headline card is sourced directly from the FPA Safety Officer (Jamal) rather than inferred from the calendar-year event logs, so the number stays aligned with the authoritative count.
-- Multi-year/monthly charts are still calendar-year. Safety Officer is reviewing and reclassifying the 2022-2026 event logs, and may decide to switch the whole view to fiscal year going forward.
-- "UNK" / "TBD" / "pending" values in the Recordable column are treated as not-an-accident by the extraction script.
+- Reporting period is calendar year (Jan 1 - Dec 31) per Director and Safety Officer direction, Apr 2026.
+- Per Safety Officer (Jamal) Apr 2026 reclassification, each event's classification is encoded in the fill color of the Recordable cell:
+  - Red (`FFFF0000`) = N/A → excluded from all metrics
+  - Light blue (`FF00B0F0`) = No-Fault → counted in totals only; excluded from performance metrics and the YoY accident chart
+  - No fill = At-Fault → if Recordable=Yes it's an OSHA-recordable accident (the headline performance metric), otherwise it's an at-fault property-damage event
+- Property-damage-only events are excluded from the YoY accident chart per Jamal's recommendation, but are surfaced in their own cards (FPA damage, private damage) and the YoY table.
+- Updated event logs arrive monthly from the Safety Officer; re-run `python3 scripts/extractSafetyData.py` to refresh `public/data/safety-events.json`.
 
 ### Grass Cutting (potential future feature)
 - Ryan Foster (Dir. of Engineering) originally pitched a grass cutting progress map
