@@ -5,22 +5,24 @@ import dynamic from "next/dynamic";
 import { Loader2 } from "lucide-react";
 import { grassCuttingData } from "@/data/grassCutting";
 
-interface GeoJSONFeature {
+interface MowingPolygonProps {
+  name: string;
+  zone: string;
+  acres: number;
+}
+
+interface GeoJSONPolygonFeature {
   type: "Feature";
-  properties: {
-    reachName: string;
-    zone: string;
-    lpv: string | null;
-  };
+  properties: MowingPolygonProps;
   geometry: {
-    type: string;
-    coordinates: number[] | number[][] | number[][][];
+    type: "Polygon" | "MultiPolygon";
+    coordinates: number[][][] | number[][][][];
   };
 }
 
 interface GeoJSONCollection {
   type: "FeatureCollection";
-  features: GeoJSONFeature[];
+  features: GeoJSONPolygonFeature[];
 }
 
 const MapContainer = dynamic(
@@ -47,7 +49,10 @@ function escapeHtml(value: unknown): string {
   return String(value ?? "").replace(/[&<>"']/g, (c) => HTML_ESCAPES[c]);
 }
 
-const UNASSIGNED_COLOR = "#9ca3af";
+// Light purple stands out clearly against the gray basemap and the 6
+// confirmed zone colors; dashed outline reinforces "this is a question,
+// not a confirmed mowing zone."
+const UNASSIGNED_COLOR = "#a78bfa"; // violet-400
 
 function zoneColor(zone: string): string {
   const z = grassCuttingData.zones.find((zz) => zz.name === zone);
@@ -60,9 +65,9 @@ export default function GrassCuttingMap() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetch("/data/old-centerline.json")
+    fetch("/data/old-mowing-areas.json")
       .then((r) => {
-        if (!r.ok) throw new Error("Failed to load centerline data");
+        if (!r.ok) throw new Error("Failed to load mowing-area polygons");
         return r.json();
       })
       .then((json: GeoJSONCollection) => setData(json))
@@ -109,24 +114,32 @@ export default function GrassCuttingMap() {
         <GeoJSON
           data={data}
           style={(feature) => {
-            const props = feature?.properties as GeoJSONFeature["properties"] | undefined;
-            const zone = props?.zone || "";
+            const props = feature?.properties as MowingPolygonProps | undefined;
+            const isUnassigned = !props?.zone;
+            const color = props ? zoneColor(props.zone) : UNASSIGNED_COLOR;
             return {
-              color: zone ? zoneColor(zone) : UNASSIGNED_COLOR,
-              weight: 6,
-              opacity: zone ? 0.9 : 0.45,
+              color,
+              weight: 3,
+              opacity: 0.95,
+              fillColor: color,
+              fillOpacity: isUnassigned ? 0.25 : 0.5,
+              // Dashed border signals the unassigned polygon is a question,
+              // not a confirmed mowing zone.
+              dashArray: isUnassigned ? "6 4" : undefined,
             };
           }}
           onEachFeature={(feature, layer) => {
-            const props = feature.properties as GeoJSONFeature["properties"];
-            const reach = props.reachName || "(Unnamed reach)";
-            const zone = props.zone || "Unassigned";
-            const lpv = props.lpv;
+            const props = feature.properties as MowingPolygonProps;
+            const acres = props.acres > 0
+              ? props.acres < 1
+                ? `${props.acres.toFixed(2)} ac`
+                : `${props.acres.toFixed(1)} ac`
+              : "—";
             layer.bindPopup(`
               <div class="text-sm leading-snug">
-                <strong>${escapeHtml(reach)}</strong><br/>
-                <span class="text-gray-600">Zone: ${escapeHtml(zone)}</span>
-                ${lpv ? `<br/><span class="text-gray-600">LPV: ${escapeHtml(lpv)}</span>` : ""}
+                <strong>${escapeHtml(props.name || "(unnamed)")}</strong><br/>
+                <span class="text-gray-600">Zone: ${escapeHtml(props.zone)}</span><br/>
+                <span class="text-gray-600">Area: ${escapeHtml(acres)}</span>
               </div>
             `);
           }}
@@ -146,16 +159,28 @@ export default function GrassCuttingMap() {
                 style={{ backgroundColor: z.color }}
                 aria-hidden="true"
               />
-              <span className="text-gray-700">{z.name}</span>
+              <span className="text-gray-700">
+                {z.name}{" "}
+                <span className="text-gray-400">· {z.acres} ac</span>
+              </span>
             </li>
           ))}
           <li className="flex items-start gap-2 pt-1 border-t border-gray-100 mt-1">
             <span
-              className="w-3 h-3 rounded-sm mt-0.5 flex-shrink-0"
-              style={{ backgroundColor: UNASSIGNED_COLOR }}
+              className="w-3 h-3 rounded-sm mt-0.5 flex-shrink-0 border border-dashed"
+              style={{
+                backgroundColor: UNASSIGNED_COLOR,
+                opacity: 0.5,
+                borderColor: UNASSIGNED_COLOR,
+              }}
               aria-hidden="true"
             />
-            <span className="text-gray-500 italic">Unassigned</span>
+            <span className="text-gray-500 italic">
+              Pending classification{" "}
+              <span className="text-gray-400 not-italic">
+                · {grassCuttingData.pendingClassification.acres} ac
+              </span>
+            </span>
           </li>
         </ul>
         <p className="text-[10px] text-gray-400 italic mt-2 leading-snug">

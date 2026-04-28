@@ -44,6 +44,10 @@ export interface GrassCuttingZone {
   /** Use light text on dark backgrounds. */
   darkBackground: boolean;
   operators: number | string;
+  /** Total mowing acreage from Kory's Apr 28 polygon shapefile. */
+  acres: number;
+  /** Target cycles per month (most are 2; NO East and Citrus Lakefront are ~1.5). */
+  monthlyFrequency: number;
   subAreas: string[];
   lastCycle: ZoneCycleResult;
   currentCycle: ZoneCurrentProgress;
@@ -93,6 +97,8 @@ export const grassCuttingData = {
       tint: "#374151",
       darkBackground: true,
       operators: 2,
+      acres: 62,
+      monthlyFrequency: 2,
       subAreas: [
         "Mississippi River East Bank",
         "MRL (Jefferson Parish line to EB-00)",
@@ -118,6 +124,8 @@ export const grassCuttingData = {
       tint: "#22c55e",
       darkBackground: true,
       operators: 1,
+      acres: 240,
+      monthlyFrequency: 2,
       subAreas: [
         "Florida Ave",
         "IHNC East (E-01 to MRL)",
@@ -142,6 +150,8 @@ export const grassCuttingData = {
       tint: "#7dd3fc",
       darkBackground: false,
       operators: "1 to 3",
+      acres: 185,
+      monthlyFrequency: 2,
       subAreas: [
         "Southside MRGO",
         "Citrus Back Levee",
@@ -168,6 +178,8 @@ export const grassCuttingData = {
       tint: "#3b82f6",
       darkBackground: true,
       operators: 3,
+      acres: 300,
+      monthlyFrequency: 2,
       subAreas: [
         "Lakefront",
         "Outfall Canals (17th Street, Orleans, Bayou St. John, London)",
@@ -195,6 +207,8 @@ export const grassCuttingData = {
       tint: "#fde047",
       darkBackground: false,
       operators: 3,
+      acres: 253,
+      monthlyFrequency: 1.5,
       subAreas: [
         "Citrus Lakefront",
         "Paris Rd",
@@ -225,6 +239,8 @@ export const grassCuttingData = {
       tint: "#fb923c",
       darkBackground: true,
       operators: 3,
+      acres: 650,
+      monthlyFrequency: 1.5,
       subAreas: [
         "LPV-108",
         "LPV-109",
@@ -246,6 +262,19 @@ export const grassCuttingData = {
       },
     },
   ] as GrassCuttingZone[],
+
+  // LPV-115 ("Paris Rd. to Jourdan", roughly the GIWW North area) is in
+  // Kory's polygon shapefile with ~122 acres but was NOT on the original
+  // hand-drawn cutting plan, and no one (Jeff, Carlos, or the maintenance
+  // team) has confirmed it's actually mowed. Until that's confirmed, it
+  // renders as the gray "Unassigned / pending classification" footprint
+  // on the map and is left out of the 6 zones, the system-overview
+  // totals, and the monthly-target math.
+  pendingClassification: {
+    name: "LPV-115 (Paris Rd. to Jourdan)",
+    acres: 122,
+    note: "Not on the original cutting plan. Pending confirmation from the Director / maintenance team about whether this is mowed and at what frequency.",
+  },
 
   // Confirmed Apr 2026:
   //   - "1/2/3" labels on the printed map = number of operators assigned

@@ -6,7 +6,9 @@
       "properties": {
         "reachName": "Maxent",
         "zone": "Citrus Lakefront & Eastern Interior",
-        "lpv": null
+        "lpv": null,
+        "isStructure": false,
+        "structureName": null
       },
       "geometry": {
         "type": "LineString",
@@ -4075,7 +4077,9 @@
       "properties": {
         "reachName": "Forty Arpent Canal",
         "zone": "Florida Ave",
-        "lpv": null
+        "lpv": null,
+        "isStructure": false,
+        "structureName": null
       },
       "geometry": {
         "type": "LineString",
@@ -4664,7 +4668,9 @@
       "properties": {
         "reachName": "IHNC E",
         "zone": "Florida Ave",
-        "lpv": "LPV-121"
+        "lpv": "LPV-121",
+        "isStructure": false,
+        "structureName": null
       },
       "geometry": {
         "type": "LineString",
@@ -5597,7 +5603,9 @@
       "properties": {
         "reachName": "Chalmette Loop/Citrus Back",
         "zone": "Southside MRGO & Citrus Back",
-        "lpv": "LPV-142"
+        "lpv": "LPV-142",
+        "isStructure": false,
+        "structureName": null
       },
       "geometry": {
         "type": "LineString",
@@ -9778,7 +9786,9 @@
       "properties": {
         "reachName": "Orleans Levee District",
         "zone": "Florida Ave",
-        "lpv": null
+        "lpv": null,
+        "isStructure": false,
+        "structureName": null
       },
       "geometry": {
         "type": "LineString",
@@ -11143,7 +11153,9 @@
       "properties": {
         "reachName": "New Orleans East",
         "zone": "",
-        "lpv": "LPV-115"
+        "lpv": "LPV-115",
+        "isStructure": false,
+        "structureName": null
       },
       "geometry": {
         "type": "LineString",
@@ -15108,7 +15120,9 @@
       "properties": {
         "reachName": "New Orleans East/Citrus Back",
         "zone": "",
-        "lpv": "IHNC-02"
+        "lpv": "IHNC-02",
+        "isStructure": true,
+        "structureName": "Surge Barrier"
       },
       "geometry": {
         "type": "LineString",
@@ -15413,7 +15427,9 @@
       "properties": {
         "reachName": "IHNC North Reach E",
         "zone": "Lakefront & Outfall Canals",
-        "lpv": "LPV-117"
+        "lpv": "LPV-117",
+        "isStructure": false,
+        "structureName": null
       },
       "geometry": {
         "type": "LineString",
@@ -16830,7 +16846,9 @@
       "properties": {
         "reachName": "Lake Borgne Surge Barrier",
         "zone": "New Orleans East",
-        "lpv": "LPV-109"
+        "lpv": "LPV-109",
+        "isStructure": false,
+        "structureName": null
       },
       "geometry": {
         "type": "LineString",
@@ -20387,7 +20405,9 @@
       "properties": {
         "reachName": "17th Street Canal E",
         "zone": "Lakefront & Outfall Canals",
-        "lpv": null
+        "lpv": null,
+        "isStructure": false,
+        "structureName": null
       },
       "geometry": {
         "type": "LineString",
@@ -22080,7 +22100,9 @@
       "properties": {
         "reachName": "Orleans Avenue Canal",
         "zone": "Lakefront & Outfall Canals",
-        "lpv": null
+        "lpv": null,
+        "isStructure": false,
+        "structureName": null
       },
       "geometry": {
         "type": "MultiLineString",
@@ -25473,7 +25495,9 @@
       "properties": {
         "reachName": "London Avenue Canal",
         "zone": "Lakefront & Outfall Canals",
-        "lpv": null
+        "lpv": null,
+        "isStructure": false,
+        "structureName": null
       },
       "geometry": {
         "type": "MultiLineString",
@@ -29454,7 +29478,9 @@
       "properties": {
         "reachName": "Orleans Perimeter",
         "zone": "Lakefront & Outfall Canals",
-        "lpv": "LPV-104"
+        "lpv": "LPV-104",
+        "isStructure": false,
+        "structureName": null
       },
       "geometry": {
         "type": "LineString",
@@ -31931,7 +31957,9 @@
       "properties": {
         "reachName": "IHNC W",
         "zone": "Lakefront & Outfall Canals",
-        "lpv": "LPV-119"
+        "lpv": "LPV-119",
+        "isStructure": false,
+        "structureName": null
       },
       "geometry": {
         "type": "LineString",
@@ -34492,7 +34520,9 @@
       "properties": {
         "reachName": "Orleans Levee District",
         "zone": "Upper Protection",
-        "lpv": null
+        "lpv": null,
+        "isStructure": false,
+        "structureName": null
       },
       "geometry": {
         "type": "LineString",
@@ -45849,7 +45879,9 @@
       "properties": {
         "reachName": "Orleans Perimeter",
         "zone": "Lakefront & Outfall Canals",
-        "lpv": "LPV-101"
+        "lpv": "LPV-101",
+        "isStructure": false,
+        "structureName": null
       },
       "geometry": {
         "type": "LineString",
@@ -46250,7 +46282,9 @@
       "properties": {
         "reachName": "Orleans Perimeter",
         "zone": "",
-        "lpv": null
+        "lpv": null,
+        "isStructure": true,
+        "structureName": "Orleans Ave PCCP"
       },
       "geometry": {
         "type": "LineString",
@@ -46291,7 +46325,9 @@
       "properties": {
         "reachName": "Orleans Perimeter",
         "zone": "Lakefront & Outfall Canals",
-        "lpv": "LPV-102"
+        "lpv": "LPV-102",
+        "isStructure": false,
+        "structureName": null
       },
       "geometry": {
         "type": "LineString",
@@ -47232,7 +47268,9 @@
       "properties": {
         "reachName": "Orleans Perimeter",
         "zone": "Lakefront & Outfall Canals",
-        "lpv": null
+        "lpv": null,
+        "isStructure": false,
+        "structureName": null
       },
       "geometry": {
         "type": "LineString",
@@ -47257,7 +47295,9 @@
       "properties": {
         "reachName": "Orleans Perimeter",
         "zone": "Lakefront & Outfall Canals",
-        "lpv": "LPV-103"
+        "lpv": "LPV-103",
+        "isStructure": false,
+        "structureName": null
       },
       "geometry": {
         "type": "LineString",
@@ -48970,7 +49010,9 @@
       "properties": {
         "reachName": "",
         "zone": "",
-        "lpv": null
+        "lpv": null,
+        "isStructure": true,
+        "structureName": "London Ave PCCP Wall"
       },
       "geometry": {
         "type": "LineString",
@@ -48991,7 +49033,9 @@
       "properties": {
         "reachName": "Orleans Perimeter",
         "zone": "",
-        "lpv": "IHNC-01"
+        "lpv": "IHNC-01",
+        "isStructure": true,
+        "structureName": "Seabrook Complex"
       },
       "geometry": {
         "type": "LineString",
@@ -49368,7 +49412,9 @@
       "properties": {
         "reachName": "Orleans Perimeter",
         "zone": "Citrus Lakefront & Eastern Interior",
-        "lpv": "LPV-105"
+        "lpv": "LPV-105",
+        "isStructure": false,
+        "structureName": null
       },
       "geometry": {
         "type": "MultiLineString",
@@ -50367,7 +50413,9 @@
       "properties": {
         "reachName": "Lake Borgne Surge Barrier",
         "zone": "Citrus Lakefront & Eastern Interior",
-        "lpv": "LPV-106"
+        "lpv": "LPV-106",
+        "isStructure": false,
+        "structureName": null
       },
       "geometry": {
         "type": "LineString",
@@ -50660,7 +50708,9 @@
       "properties": {
         "reachName": "Lake Borgne Surge Barrier",
         "zone": "Citrus Lakefront & Eastern Interior",
-        "lpv": "LPV-107"
+        "lpv": "LPV-107",
+        "isStructure": false,
+        "structureName": null
       },
       "geometry": {
         "type": "LineString",
@@ -50801,7 +50851,9 @@
       "properties": {
         "reachName": "Lake Borgne Surge Barrier",
         "zone": "Citrus Lakefront & Eastern Interior",
-        "lpv": "LPV-106"
+        "lpv": "LPV-106",
+        "isStructure": false,
+        "structureName": null
       },
       "geometry": {
         "type": "LineString",
@@ -50890,7 +50942,9 @@
       "properties": {
         "reachName": "Lake Borgne Surge Barrier",
         "zone": "New Orleans East",
-        "lpv": "LPV-108"
+        "lpv": "LPV-108",
+        "isStructure": false,
+        "structureName": null
       },
       "geometry": {
         "type": "LineString",
@@ -53727,7 +53781,9 @@
       "properties": {
         "reachName": "Lake Borgne Surge Barrier",
         "zone": "New Orleans East",
-        "lpv": "LPV-111"
+        "lpv": "LPV-111",
+        "isStructure": false,
+        "structureName": null
       },
       "geometry": {
         "type": "LineString",
@@ -56192,7 +56248,9 @@
       "properties": {
         "reachName": "Lake Borgne Surge Barrier",
         "zone": "New Orleans East",
-        "lpv": "LPV-110"
+        "lpv": "LPV-110",
+        "isStructure": false,
+        "structureName": null
       },
       "geometry": {
         "type": "LineString",
@@ -56397,7 +56455,9 @@
       "properties": {
         "reachName": "New Orleans East",
         "zone": "Citrus Lakefront & Eastern Interior",
-        "lpv": "LPV-112"
+        "lpv": "LPV-112",
+        "isStructure": false,
+        "structureName": null
       },
       "geometry": {
         "type": "LineString",
@@ -58858,7 +58918,9 @@
       "properties": {
         "reachName": "New Orleans East",
         "zone": "Citrus Lakefront & Eastern Interior",
-        "lpv": "LPV-113"
+        "lpv": "LPV-113",
+        "isStructure": false,
+        "structureName": null
       },
       "geometry": {
         "type": "LineString",
@@ -59547,7 +59609,9 @@
       "properties": {
         "reachName": "New Orleans East",
         "zone": "Citrus Lakefront & Eastern Interior",
-        "lpv": "LPV-114"
+        "lpv": "LPV-114",
+        "isStructure": false,
+        "structureName": null
       },
       "geometry": {
         "type": "LineString",
@@ -60116,7 +60180,9 @@
       "properties": {
         "reachName": "IHNC North Reach E",
         "zone": "Lakefront & Outfall Canals",
-        "lpv": "LPV-116"
+        "lpv": "LPV-116",
+        "isStructure": false,
+        "structureName": null
       },
       "geometry": {
         "type": "LineString",
@@ -60769,7 +60835,9 @@
       "properties": {
         "reachName": "IHNC W",
         "zone": "Lakefront & Outfall Canals",
-        "lpv": "LPV-120"
+        "lpv": "LPV-120",
+        "isStructure": false,
+        "structureName": null
       },
       "geometry": {
         "type": "LineString",
@@ -61794,7 +61862,9 @@
       "properties": {
         "reachName": "IHNC W",
         "zone": "Lakefront & Outfall Canals",
-        "lpv": "LPV-201"
+        "lpv": "LPV-201",
+        "isStructure": false,
+        "structureName": null
       },
       "geometry": {
         "type": "LineString",
@@ -62055,7 +62125,9 @@
       "properties": {
         "reachName": "IHNC W",
         "zone": "Lakefront & Outfall Canals",
-        "lpv": "LPV-118"
+        "lpv": "LPV-118",
+        "isStructure": false,
+        "structureName": null
       },
       "geometry": {
         "type": "MultiLineString",
@@ -63076,7 +63148,9 @@
       "properties": {
         "reachName": "Chalmette Loop/Citrus Back",
         "zone": "Southside MRGO & Citrus Back",
-        "lpv": "LPV-143"
+        "lpv": "LPV-143",
+        "isStructure": false,
+        "structureName": null
       },
       "geometry": {
         "type": "LineString",
@@ -64457,7 +64531,9 @@
       "properties": {
         "reachName": "Orleans Levee District",
         "zone": "",
-        "lpv": null
+        "lpv": null,
+        "isStructure": true,
+        "structureName": "Industrial Canal Locks"
       },
       "geometry": {
         "type": "LineString",
@@ -64494,7 +64570,9 @@
       "properties": {
         "reachName": "Chalmette Loop/Citrus Back",
         "zone": "Florida Ave",
-        "lpv": "LPV-141"
+        "lpv": "LPV-141",
+        "isStructure": false,
+        "structureName": null
       },
       "geometry": {
         "type": "MultiLineString",

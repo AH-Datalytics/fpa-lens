@@ -55,6 +55,11 @@ export default function GrassCuttingPage() {
   const completedZones = zones.filter((z) => z.currentCycle.status === "COMPLETE").length;
   const inProgressZones = zones.filter((z) => z.currentCycle.status === "IN_PROGRESS").length;
   const overallProgress = Math.round((completedZones / zones.length) * 100);
+  const totalAcres = zones.reduce((sum, z) => sum + z.acres, 0);
+  const monthlyTargetAcres = zones.reduce(
+    (sum, z) => sum + z.acres * z.monthlyFrequency,
+    0,
+  );
 
   return (
     <div className="py-12">
@@ -163,13 +168,17 @@ export default function GrassCuttingPage() {
         <section className="mb-12">
           <SectionSubheader
             title="Zones across the system"
-            subtitle="Levee centerline colored by mowing zone. Click any segment for the reach name and LPV."
+            subtitle="Mowing-area polygons colored by zone. Click any polygon for its name, zone, and acreage."
           />
           <GrassCuttingMap />
           <p className="text-xs text-gray-500 italic mt-3 leading-relaxed">
-            Coverage is currently the Orleans Levee District (39 reaches).
-            East Jefferson and Lake Borgne Basin centerlines will be added once
-            the maintenance team provides matching shapefiles. The original
+            Coverage is currently the Orleans Levee District (144 mowing-area
+            polygons across 6 zones, ~{totalAcres.toLocaleString()} acres
+            total). One additional ~122-acre polygon (LPV-115 / Paris Rd. to
+            Jourdan) is shown in gray as &quot;Pending classification&quot;
+            until the maintenance team confirms whether it&apos;s mowed.
+            East Jefferson and Lake Borgne Basin areas will be added once the
+            maintenance team provides matching shapefiles. The original
             hand-drawn cutting plan is still available{" "}
             <a
               href="/data/cutting-plan-map.png"
@@ -190,9 +199,9 @@ export default function GrassCuttingPage() {
             <div className="grid md:grid-cols-4 gap-6">
               <div>
                 <div className="text-3xl font-bold text-[#21355a]">
-                  {systemTotal.miles}
+                  {totalAcres.toLocaleString()}
                 </div>
-                <div className="text-sm text-gray-600 mt-1">total miles maintained</div>
+                <div className="text-sm text-gray-600 mt-1">total acres maintained</div>
               </div>
               <div>
                 <div className="text-3xl font-bold text-[#21355a]">{zones.length}</div>
@@ -200,20 +209,20 @@ export default function GrassCuttingPage() {
               </div>
               <div>
                 <div className="text-3xl font-bold text-[#21355a]">
-                  {cadence.headline}
+                  ~{Math.round(monthlyTargetAcres).toLocaleString()}
                 </div>
-                <div className="text-sm text-gray-600 mt-1">cycles per month</div>
+                <div className="text-sm text-gray-600 mt-1">acres / month target</div>
               </div>
               <div>
                 <div className="text-3xl font-bold text-[#21355a]">
-                  {lastCycle.calendarDays}
+                  {systemTotal.miles}
                 </div>
-                <div className="text-sm text-gray-600 mt-1">days for a full pass</div>
+                <div className="text-sm text-gray-600 mt-1">total miles maintained</div>
               </div>
             </div>
             <p className="text-xs text-gray-500 mt-5 leading-relaxed">
               {cadence.detail} The new plan doubled the cutting frequency from{" "}
-              {cadence.previousPlan.toLowerCase()} starting March 2026.
+              {cadence.previousPlan.toLowerCase()} starting March 2026. Source for acreage and zone polygons: Orleans Levee District GIS, Apr 2026.
             </p>
           </div>
         </section>
@@ -222,7 +231,7 @@ export default function GrassCuttingPage() {
         <section className="mb-12">
           <SectionSubheader
             title="Zones"
-            subtitle="Six color-coded zones across the levee system, matching the maintenance team's cutting plan map"
+            subtitle={`${zones.length} color-coded zones across the levee system. Acreage from Orleans Levee District GIS; monthly target = acreage × cycles per month.`}
           />
           <div className="grid md:grid-cols-2 gap-6">
             {zones.map((zone) => {
@@ -246,16 +255,26 @@ export default function GrassCuttingPage() {
                 >
                   {/* Zone header with color band */}
                   <div
-                    className="px-5 py-4"
+                    className="px-5 py-4 flex items-start justify-between gap-3"
                     style={{
                       backgroundColor: zone.color,
                       color: zone.darkBackground ? "white" : "#1f2937",
                     }}
                   >
-                    <p className="text-[10px] uppercase tracking-wider opacity-80 font-semibold">
-                      Zone
-                    </p>
-                    <h3 className="text-lg font-bold mt-0.5">{zone.name}</h3>
+                    <div>
+                      <p className="text-[10px] uppercase tracking-wider opacity-80 font-semibold">
+                        Zone
+                      </p>
+                      <h3 className="text-lg font-bold mt-0.5">{zone.name}</h3>
+                    </div>
+                    <div className="text-right shrink-0">
+                      <p className="text-base font-bold leading-tight">
+                        {zone.acres} ac
+                      </p>
+                      <p className="text-[11px] opacity-80 leading-tight mt-0.5">
+                        target {Math.round(zone.acres * zone.monthlyFrequency)} ac/mo
+                      </p>
+                    </div>
                   </div>
 
                   {/* Current cycle */}

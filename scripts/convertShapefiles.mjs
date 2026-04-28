@@ -74,24 +74,77 @@ function transformGeometry(geometry, sourceProj) {
 /**
  * Post-conversion fixups for the OLD Centerline reach-level shapefile.
  *
- * Kory's source has the mowing zone in a `Zone` field, with one row
+ * Source has the mowing zone in a `Zone` field, with one row
  * accidentally typed "Lakefront and Outfall Canals" while the rest say
- * "Lakefront & Outfall Canals". Both mean the same thing, but our app
- * keys off the literal string for color lookups, so we normalize here
- * and rename the property keys to camelCase to match the rest of the
- * GeoJSON files in /public/data.
+ * "Lakefront & Outfall Canals". Same meaning, but our app keys off the
+ * literal string for color lookups, so normalize here.
+ *
+ * Per Kory's Apr 28 email, the 6 reaches with empty `Zone` break down
+ * into one mowing reach plus 5 structures (locks / surge barrier /
+ * PCCP walls) that have no mowing area. Tag them so the map can dim
+ * them or hide them; the new "GIWW North" reach (LPV-115) gets its
+ * own zone since it wasn't on the original hand-drawn cutting plan.
  */
+const STRUCTURE_LABELS = {
+  // key: `${reachName}|${lpv}`  -> friendly structure name
+  'New Orleans East/Citrus Back|IHNC-02': 'Surge Barrier',
+  'Orleans Perimeter|null': 'Orleans Ave PCCP',
+  'Orleans Perimeter|IHNC-01': 'Seabrook Complex',
+  'Orleans Levee District|null': 'Industrial Canal Locks',
+  '|null': 'London Ave PCCP Wall',
+};
 function normalizeOldCenterline(geojson) {
   for (const f of geojson.features) {
     const p = f.properties || {};
-    let zone = (p.Zone ?? '').trim();
+    const reachName = (p.reach_name ?? '').replace(/\u0000+/g, '').trim();
+    // DBF strings are right-padded with NUL bytes; strip those before trim().
+    let zone = (p.Zone ?? '').replace(/\u0000+/g, '').trim();
+    const lpv = (p.LPV ?? '').replace(/\u0000+/g, '').trim() || null;
     if (zone === 'Lakefront and Outfall Canals') {
       zone = 'Lakefront & Outfall Canals';
     }
+    // LPV-115 ("Paris Rd. to Jourdan") shows up in Kory's data with
+    // an empty zone. It wasn't on the original hand-drawn cutting plan,
+    // and no one has confirmed yet whether it's actually mowed. We keep
+    // it visible on the map as "Unassigned" until the Director or
+    // maintenance team classifies it.
+    const structureKey = `${reachName}|${lpv ?? 'null'}`;
+    const isStructure = !zone && structureKey in STRUCTURE_LABELS;
     f.properties = {
-      reachName: (p.reach_name ?? '').trim(),
+      reachName,
       zone,
-      lpv: (p.LPV ?? '').trim() || null,
+      lpv,
+      isStructure,
+      structureName: isStructure ? STRUCTURE_LABELS[structureKey] : null,
+    };
+  }
+  return geojson;
+}
+
+/**
+ * Mowing-area polygon shapefile. Per Kory's Apr 28 email, this is the
+ * authoritative source for per-zone acreage and per-polygon names. We
+ * keep all 144 polygons including the empty-zone "Paris Rd. to Jourdan"
+ * (LPV-115 / GIWW North), promoting it to the new GIWW North zone the
+ * same way we do for the centerline.
+ */
+function normalizeMowingAreas(geojson) {
+  for (const f of geojson.features) {
+    const p = f.properties || {};
+    const name = (p.Name ?? '').replace(/\u0000+/g, '').trim();
+    // DBF strings are right-padded with NUL bytes; strip those before trim().
+    let zone = (p.Zone ?? '').replace(/\u0000+/g, '').trim();
+    if (zone === 'Lakefront and Outfall Canals') {
+      zone = 'Lakefront & Outfall Canals';
+    }
+    // Leave the LPV-115 polygon's zone empty so the map renders it as
+    // "Unassigned" until the Director / maintenance team confirms
+    // whether it's actually mowed.
+    const acres = typeof p.Area === 'number' ? p.Area : Number(p.Area ?? 0);
+    f.properties = {
+      name,
+      zone,
+      acres: Math.round(acres * 100) / 100,
     };
   }
   return geojson;
@@ -138,7 +191,24 @@ async function main() {
     join(outputDir, 'old-centerline.json'),
     JSON.stringify(oldCenterline, null, 2),
   );
-  console.log('  -> Normalized zone strings and renamed props to {reachName, zone, lpv}');
+  console.log('  -> Tagged structures and promoted LPV-115 to GIWW North');
+
+  // Mowing-area polygons with per-polygon name + zone + acreage (Kory,
+  // Apr 28 email). NB: this shapefile's .prj is already WGS84 lat/lon
+  // (unlike the centerline shapefiles which are in LA State Plane), so
+  // we pass WGS84 as the source -- proj4 then no-ops the transform.
+  const mowingAreas = await convertShapefile(
+    join(shapefileDir, 'OLD_Mowing_Area.shp'),
+    join(outputDir, 'old-mowing-areas.json'),
+    WGS84,
+    'OLD Mowing Areas (polygons with acreage)'
+  );
+  normalizeMowingAreas(mowingAreas);
+  writeFileSync(
+    join(outputDir, 'old-mowing-areas.json'),
+    JSON.stringify(mowingAreas, null, 2),
+  );
+  console.log('  -> Normalized properties to {name, zone, acres}; empty-zone polygons left as Unassigned');
 
   console.log('\nConversion complete!');
 }
