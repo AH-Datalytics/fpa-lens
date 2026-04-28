@@ -123,11 +123,19 @@ function normalizeOldCenterline(geojson) {
 
 /**
  * Mowing-area polygon shapefile. Per Kory's Apr 28 email, this is the
- * authoritative source for per-zone acreage and per-polygon names. We
- * keep all 144 polygons including the empty-zone "Paris Rd. to Jourdan"
- * (LPV-115 / GIWW North), promoting it to the new GIWW North zone the
- * same way we do for the centerline.
+ * authoritative source for per-zone acreage and per-polygon names. The
+ * empty-zone "Paris Rd. to Jourdan" polygon (LPV-115, ~122 ac) stays
+ * untagged - we don't yet know whether it's mowed.
  */
+
+// Manual acreage corrections from Kory's Apr 28 follow-up. The DBF
+// `Area` field was accidentally duplicated onto the wrong polygon for
+// the Florida Ave "S1 to Bienvenue" record (real value is 2.6 ac, not
+// 185.6 ac). Drop this block once Kory regenerates the source shapefile.
+const ACREAGE_OVERRIDES = {
+  'Florida Ave|S1 to Bienvenue': 2.6,
+};
+
 function normalizeMowingAreas(geojson) {
   for (const f of geojson.features) {
     const p = f.properties || {};
@@ -140,7 +148,11 @@ function normalizeMowingAreas(geojson) {
     // Leave the LPV-115 polygon's zone empty so the map renders it as
     // "Unassigned" until the Director / maintenance team confirms
     // whether it's actually mowed.
-    const acres = typeof p.Area === 'number' ? p.Area : Number(p.Area ?? 0);
+    let acres = typeof p.Area === 'number' ? p.Area : Number(p.Area ?? 0);
+    const overrideKey = `${zone}|${name}`;
+    if (overrideKey in ACREAGE_OVERRIDES) {
+      acres = ACREAGE_OVERRIDES[overrideKey];
+    }
     f.properties = {
       name,
       zone,

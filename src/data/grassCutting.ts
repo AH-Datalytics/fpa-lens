@@ -124,7 +124,7 @@ export const grassCuttingData = {
       tint: "#22c55e",
       darkBackground: true,
       operators: 1,
-      acres: 240,
+      acres: 57,
       monthlyFrequency: 2,
       subAreas: [
         "Florida Ave",
