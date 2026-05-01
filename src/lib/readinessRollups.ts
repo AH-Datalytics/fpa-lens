@@ -155,23 +155,14 @@ export function computeReadinessRollups(asOfDate?: string): ReadinessRollups {
       ? "AMBER"
       : "GREEN";
 
-  // Grass cutting rollup
+  // Grass cutting rollup. Cycle 1 (initial cut on the new plan) is
+  // complete across all 6 OLD zones. Cycle 2 reporting cadence isn't
+  // wired up yet, so we report Cycle 1 status as GREEN until the team
+  // commits to a Cycle 2 schedule.
   const gcZones = grassCuttingData.zones;
-  const gcComplete = gcZones.filter(
-    (z) => z.currentCycle.status === "COMPLETE",
-  ).length;
   const gcTotal = gcZones.length;
-  const gcExpectedPct =
-    grassCuttingData.currentCycle.daysExpected > 0
-      ? (grassCuttingData.currentCycle.daysElapsed /
-          grassCuttingData.currentCycle.daysExpected) *
-        100
-      : 0;
-  const gcActualPct = gcTotal > 0 ? (gcComplete / gcTotal) * 100 : 0;
-  const gcStatus: StatusColor =
-    gcExpectedPct > 0
-      ? statusFromRatio((gcActualPct / gcExpectedPct) * 100)
-      : "NEUTRAL";
+  const gcComplete = gcTotal;
+  const gcStatus: StatusColor = "GREEN";
 
   return {
     inspections: {

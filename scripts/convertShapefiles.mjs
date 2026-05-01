@@ -162,6 +162,81 @@ function normalizeMowingAreas(geojson) {
   return geojson;
 }
 
+/**
+ * Lake Borgne Basin Levee District shapefiles (Kory, May 1 2026).
+ *
+ * Centerline has {Zone, LPV} attributes for 8 reaches. Mowing has
+ * {Zone, LPV, Acreage} for 84 polygons (no Name field, unlike OLD).
+ * Zone label "Non-Federal Back Levee / NFL" is normalized to match
+ * Kory's email shorthand "Non-Federal Back Levee/NFL".
+ */
+function normalizeLbbldZone(raw) {
+  const z = (raw ?? '').replace(/\u0000+/g, '').trim();
+  if (z === 'Non-Federal Back Levee / NFL') return 'Non-Federal Back Levee/NFL';
+  return z;
+}
+function normalizeLbbldCenterline(geojson) {
+  for (const f of geojson.features) {
+    const p = f.properties || {};
+    const zone = normalizeLbbldZone(p.Zone);
+    const lpv = (p.LPV ?? '').toString().replace(/\u0000+/g, '').trim() || null;
+    f.properties = { zone, lpv };
+  }
+  return geojson;
+}
+function normalizeLbbldMowingAreas(geojson) {
+  for (const f of geojson.features) {
+    const p = f.properties || {};
+    const zone = normalizeLbbldZone(p.Zone);
+    const lpv = (p.LPV ?? '').toString().replace(/\u0000+/g, '').trim() || null;
+    const acresRaw = typeof p.Acreage === 'number' ? p.Acreage : Number(p.Acreage ?? 0);
+    f.properties = {
+      zone,
+      lpv,
+      acres: Math.round(acresRaw * 100) / 100,
+    };
+  }
+  return geojson;
+}
+
+/**
+ * East Jefferson Levee District shapefiles (Kory, May 1 2026).
+ *
+ * Centerline has {Zone, LPV, Length} for 16 reaches; mowing has
+ * {Id, Acreage, LPV, Zone} for 63 polygons (no Name field).
+ * Four zones per Kory's email: EJ MRL, EJ East Return, EJ West Return,
+ * EJ Lakefront Reach 1-5. LPV codes ship with mixed punctuation
+ * ("LPV 20.1" vs "LPV-20.1") so we normalize to the hyphenated form.
+ */
+function normalizeEjldLpv(raw) {
+  const s = (raw ?? '').toString().replace(/\u0000+/g, '').trim();
+  if (!s) return null;
+  return s.replace(/^LPV[\s-]+/i, 'LPV-');
+}
+function normalizeEjldCenterline(geojson) {
+  for (const f of geojson.features) {
+    const p = f.properties || {};
+    const zone = (p.Zone ?? '').replace(/\u0000+/g, '').trim();
+    const lpv = normalizeEjldLpv(p.LPV);
+    f.properties = { zone, lpv };
+  }
+  return geojson;
+}
+function normalizeEjldMowingAreas(geojson) {
+  for (const f of geojson.features) {
+    const p = f.properties || {};
+    const zone = (p.Zone ?? '').replace(/\u0000+/g, '').trim();
+    const lpv = normalizeEjldLpv(p.LPV);
+    const acresRaw = typeof p.Acreage === 'number' ? p.Acreage : Number(p.Acreage ?? 0);
+    f.properties = {
+      zone,
+      lpv,
+      acres: Math.round(acresRaw * 100) / 100,
+    };
+  }
+  return geojson;
+}
+
 async function main() {
   const shapefileDir = join(__dirname, '..', 'data', 'sources', 'shapefiles');
   const outputDir = join(__dirname, '..', 'public', 'data');
@@ -221,6 +296,66 @@ async function main() {
     JSON.stringify(mowingAreas, null, 2),
   );
   console.log('  -> Normalized properties to {name, zone, acres}; empty-zone polygons left as Unassigned');
+
+  // Lake Borgne Basin Levee District centerline + mowing areas (Kory,
+  // May 1 2026). 8 centerline reaches and 84 mowing polygons across 4
+  // zones: MRL, Non-Federal Back Levee/NFL, LPV-145, and LPV-144 through
+  // LPV-149. Both shapefiles ship in LA State Plane South.
+  const lbbldCenterline = await convertShapefile(
+    join(shapefileDir, 'LBBLD_Centerline.shp'),
+    join(outputDir, 'lbbld-centerline.json'),
+    LA_STATE_PLANE,
+    'LBBLD Centerline (with mowing zones)',
+  );
+  normalizeLbbldCenterline(lbbldCenterline);
+  writeFileSync(
+    join(outputDir, 'lbbld-centerline.json'),
+    JSON.stringify(lbbldCenterline, null, 2),
+  );
+  console.log('  -> Normalized properties to {zone, lpv}');
+
+  const lbbldMowing = await convertShapefile(
+    join(shapefileDir, 'LBBLD_Mowing_Area.shp'),
+    join(outputDir, 'lbbld-mowing-areas.json'),
+    LA_STATE_PLANE,
+    'LBBLD Mowing Areas (polygons with acreage)',
+  );
+  normalizeLbbldMowingAreas(lbbldMowing);
+  writeFileSync(
+    join(outputDir, 'lbbld-mowing-areas.json'),
+    JSON.stringify(lbbldMowing, null, 2),
+  );
+  console.log('  -> Normalized properties to {zone, lpv, acres}');
+
+  // East Jefferson Levee District centerline + mowing areas (Kory,
+  // May 1 2026). 16 centerline reaches + 63 mowing polygons across 4
+  // zones: EJ MRL, EJ East Return, EJ West Return, EJ Lakefront Reach 1-5.
+  // Both shapefiles ship in LA State Plane South.
+  const ejldCenterline = await convertShapefile(
+    join(shapefileDir, 'EJLD_Centerline.shp'),
+    join(outputDir, 'ejld-centerline.json'),
+    LA_STATE_PLANE,
+    'EJLD Centerline (with mowing zones)',
+  );
+  normalizeEjldCenterline(ejldCenterline);
+  writeFileSync(
+    join(outputDir, 'ejld-centerline.json'),
+    JSON.stringify(ejldCenterline, null, 2),
+  );
+  console.log('  -> Normalized properties to {zone, lpv}');
+
+  const ejldMowing = await convertShapefile(
+    join(shapefileDir, 'EJLD_Mowing_Area.shp'),
+    join(outputDir, 'ejld-mowing-areas.json'),
+    LA_STATE_PLANE,
+    'EJLD Mowing Areas (polygons with acreage)',
+  );
+  normalizeEjldMowingAreas(ejldMowing);
+  writeFileSync(
+    join(outputDir, 'ejld-mowing-areas.json'),
+    JSON.stringify(ejldMowing, null, 2),
+  );
+  console.log('  -> Normalized properties to {zone, lpv, acres}');
 
   console.log('\nConversion complete!');
 }

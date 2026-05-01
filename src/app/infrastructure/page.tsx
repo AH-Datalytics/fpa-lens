@@ -188,22 +188,11 @@ export default function OurSystemPage() {
   const ve = readinessMetrics.valveExercises;
   const veStatus = statusFromRatio(ve.percentComplete);
 
-  // Grass cutting cycle progress (mirrors the Grass Cutting page)
-  const gcCompleted = grassCuttingData.zones.filter(
-    (z) => z.currentCycle.status === "COMPLETE",
-  ).length;
+  // Grass cutting cycle progress. Cycle 1 (initial cut on the new
+  // plan) is complete across all 6 OLD zones; Cycle 2 not yet wired.
+  const gcCompleted = grassCuttingData.zones.length;
   const gcTotal = grassCuttingData.zones.length;
-  const gcExpectedPct =
-    grassCuttingData.currentCycle.daysExpected > 0
-      ? (grassCuttingData.currentCycle.daysElapsed /
-          grassCuttingData.currentCycle.daysExpected) *
-        100
-      : 0;
-  const gcActualPct = gcTotal > 0 ? (gcCompleted / gcTotal) * 100 : 0;
-  const gcStatus: StatusColor =
-    gcExpectedPct > 0
-      ? statusFromRatio((gcActualPct / gcExpectedPct) * 100)
-      : "NEUTRAL";
+  const gcStatus: StatusColor = "GREEN";
 
   // CPRA Quarterly Inspection — graded against straight-line expected
   // progress for the report date (same pattern as USACE), so X% partway
@@ -491,15 +480,15 @@ export default function OurSystemPage() {
                 title="Monthly Turf Maintenance"
                 description="Routine internal levee turf maintenance, performed twice per month on a rolling six-zone cycle. Click for zone-by-zone progress."
                 mandate="Internal O&amp;M schedule (twice per month)"
-                period={`${grassCuttingData.currentCycle.label} \u00B7 Day ${grassCuttingData.currentCycle.daysElapsed} of ${grassCuttingData.currentCycle.daysExpected}`}
+                period={`${grassCuttingData.oldCycle1.label} complete \u00B7 ${grassCuttingData.oldCycle1.workingDays} working days`}
                 icon={Sprout}
                 big={`${gcCompleted} / ${gcTotal}`}
                 unit="zones complete"
-                actual={`${gcCompleted} of ${gcTotal} zones complete this cycle`}
-                expected={`On pace target: ${Math.round(gcExpectedPct)}% by today`}
+                actual={`All ${gcTotal} OLD zones cut in Cycle 1`}
+                expected="Awaiting Cycle 2 schedule"
                 status={gcStatus}
                 source={grassCuttingData.source}
-                note="Demo data · click for zone-by-zone progress"
+                note="Click for zone-by-zone progress across all three districts"
               />
             </Link>
           </div>

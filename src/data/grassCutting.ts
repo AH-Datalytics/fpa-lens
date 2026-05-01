@@ -1,45 +1,49 @@
 /**
  * Grass cutting page data.
  *
- * Cycle 1 (Mar 17 - Apr 15, 2026) data is from the maintenance team's
- * "New Cutting Plan" spreadsheet (real). The public-facing page reports
- * calendar days (per the Director, Apr 2026); the source spreadsheet
- * tracks a 4-day work week, so calendar-day values here are derived from
- * the recorded start and completion dates.
+ * Cycle 1 is the initial cut on the new plan. As of May 2026, all three
+ * districts have completed Cycle 1 and we have real per-zone start/end
+ * dates and working-day totals from the maintenance team's "New Cutting
+ * Plan" spreadsheet:
+ *   - OLD: Mar 17 - Apr 15, 2026 (16 working days, 6 zones)
+ *   - EJLD: Apr 20 - Apr 29, 2026 (11.5 working days, 4 zones)
+ *   - LBBLD: Apr 8 - Apr 28, 2026 (13 working days, 4 zones)
  *
- * Current cycle progress is DEMO data for layout review and will be replaced
- * once the FPA's monthly acreage-benchmark format is wired up (per Director
- * direction, Apr 2026: target 2x/month for most reaches, ~1.5x/month for
- * NO East and Citrus Lakefront & Eastern Interior, with progress measured
- * against acreage targets).
+ * Cycle 2 is not yet underway / has no published schedule. Once the team
+ * commits to a Cycle 2 reporting cadence we'll add an "in flight" cycle
+ * back to the page.
  *
- * Zone color names match the FPA's hand-drawn cutting plan map.
+ * Per the Director (Apr 2026), the public dashboard reports calendar days
+ * for system-wide summaries; per-zone totals stay as the spreadsheet's
+ * working-day count (4-day work week).
  */
-
-export type CycleStatus = "COMPLETE" | "IN_PROGRESS" | "SCHEDULED";
 
 export interface ZoneCycleResult {
   startDate: string;
   completionDate: string;
+  /** Working days, from the spreadsheet's "Total Days" column. */
   totalDays: number;
   comments?: string;
 }
 
-export interface ZoneCurrentProgress {
-  status: CycleStatus;
-  startDate: string | null;
-  expectedCompletionDate: string;
-  daysElapsed: number;
-  daysExpected: number;
-  comments?: string;
+export interface DistrictCycleSummary {
+  label: string;
+  startDate: string;
+  completionDate: string;
+  /** Sum of per-zone working days. */
+  workingDays: number;
+  /** Calendar elapsed (start to end inclusive). */
+  calendarDays: number;
+  /** Optional note from the team about how the cycle ran. */
+  note?: string;
 }
 
-export interface GrassCuttingZone {
+export interface OldGrassCuttingZone {
   key: string;
   name: string;
-  /** Hex color matching the FPA's printed map. */
+  /** Hex color matching the FPA's printed cutting plan map. */
   color: string;
-  /** Lighter tint used for card accents and bar fills. */
+  /** Lighter tint used for card accents. */
   tint: string;
   /** Use light text on dark backgrounds. */
   darkBackground: boolean;
@@ -50,12 +54,21 @@ export interface GrassCuttingZone {
   monthlyFrequency: number;
   subAreas: string[];
   lastCycle: ZoneCycleResult;
-  currentCycle: ZoneCurrentProgress;
+}
+
+export interface OtherDistrictZone {
+  key: string;
+  name: string;
+  color: string;
+  acres: number;
+  operators: number;
+  subAreas: string[];
+  lastCycle: ZoneCycleResult;
 }
 
 export const grassCuttingData = {
-  asOfDate: "April 26, 2026",
-  source: "Maintenance team cutting plan (Carlos Metoyer, March 2026)",
+  asOfDate: "May 1, 2026",
+  source: "Maintenance team cutting plan (Carlos Metoyer, March-May 2026)",
 
   systemTotal: {
     miles: 104.79,
@@ -71,24 +84,35 @@ export const grassCuttingData = {
     previousPlan: "Once per month (prior plan)",
   },
 
-  lastCycle: {
-    label: "Cycle 1: New plan rollout",
+  oldCycle1: {
+    label: "OLD Cycle 1",
     startDate: "March 17, 2026",
     completionDate: "April 15, 2026",
+    workingDays: 16,
     calendarDays: 30,
-  },
+    note: "Initial cut on the new plan; one full pass through all six zones.",
+  } as DistrictCycleSummary,
 
-  // DEMO. Current cycle dates are placeholders chosen so the page renders
-  // a realistic mid-cycle view. Replace with real data once the monthly
-  // acreage-benchmark feed is wired up.
-  currentCycle: {
-    label: "Cycle 2: April 2026",
+  ejldCycle1: {
+    label: "EJLD Cycle 1",
     startDate: "April 20, 2026",
-    expectedCompletionDate: "May 11, 2026",
-    daysElapsed: 8,
-    daysExpected: 22,
-  },
+    completionDate: "April 29, 2026",
+    workingDays: 11.5,
+    calendarDays: 10,
+    note: "Separated into 2 cutting crews, typically 10 operators working in tandem; one full round-robin in 6-7 working days.",
+  } as DistrictCycleSummary,
 
+  lbbldCycle1: {
+    label: "LBBLD Cycle 1",
+    startDate: "April 8, 2026",
+    completionDate: "April 28, 2026",
+    workingDays: 13,
+    calendarDays: 21,
+    note: "One Levee Foreman B follows both the tractor and Heavy Equipment crews so the teams stay together; full round-robin in ~15 days.",
+  } as DistrictCycleSummary,
+
+  // Orleans Levee District zones - 6 colors matching the FPA's hand-drawn
+  // cutting plan map. Cycle 1 dates from the "Mileage log OLD" tab.
   zones: [
     {
       key: "BLACK",
@@ -109,13 +133,6 @@ export const grassCuttingData = {
         completionDate: "March 18, 2026",
         totalDays: 2,
       },
-      currentCycle: {
-        status: "COMPLETE",
-        startDate: "April 20, 2026",
-        expectedCompletionDate: "April 21, 2026",
-        daysElapsed: 2,
-        daysExpected: 2,
-      },
     },
     {
       key: "GREEN",
@@ -126,21 +143,11 @@ export const grassCuttingData = {
       operators: 1,
       acres: 57,
       monthlyFrequency: 2,
-      subAreas: [
-        "Florida Ave",
-        "IHNC East (E-01 to MRL)",
-      ],
+      subAreas: ["Florida Ave", "IHNC East (E-01 to MRL)"],
       lastCycle: {
         startDate: "March 17, 2026",
         completionDate: "March 19, 2026",
         totalDays: 3,
-      },
-      currentCycle: {
-        status: "COMPLETE",
-        startDate: "April 20, 2026",
-        expectedCompletionDate: "April 22, 2026",
-        daysElapsed: 3,
-        daysExpected: 3,
       },
     },
     {
@@ -152,23 +159,13 @@ export const grassCuttingData = {
       operators: "1 to 3",
       acres: 185,
       monthlyFrequency: 2,
-      subAreas: [
-        "Southside MRGO",
-        "Citrus Back Levee",
-      ],
+      subAreas: ["Southside MRGO", "Citrus Back Levee"],
       lastCycle: {
         startDate: "March 17, 2026",
         completionDate: "March 30, 2026",
         totalDays: 14,
         comments:
           "Citrus Back Levee has no dedicated operator yet. Once Southside MRGO crews finish their assigned areas, they roll over and complete Citrus Back. The two will be split into separate zones once an additional operator is in place.",
-      },
-      currentCycle: {
-        status: "IN_PROGRESS",
-        startDate: "April 20, 2026",
-        expectedCompletionDate: "April 30, 2026",
-        daysElapsed: 8,
-        daysExpected: 11,
       },
     },
     {
@@ -191,13 +188,6 @@ export const grassCuttingData = {
         completionDate: "March 30, 2026",
         totalDays: 14,
         comments: "Longest pass in this group was Lakefront.",
-      },
-      currentCycle: {
-        status: "IN_PROGRESS",
-        startDate: "April 20, 2026",
-        expectedCompletionDate: "April 28, 2026",
-        daysElapsed: 8,
-        daysExpected: 9,
       },
     },
     {
@@ -224,13 +214,6 @@ export const grassCuttingData = {
         comments:
           "One operator on intermittent FMLA, another out on FMLA during this cycle.",
       },
-      currentCycle: {
-        status: "IN_PROGRESS",
-        startDate: "April 20, 2026",
-        expectedCompletionDate: "May 6, 2026",
-        daysElapsed: 8,
-        daysExpected: 17,
-      },
     },
     {
       key: "ORANGE",
@@ -241,27 +224,15 @@ export const grassCuttingData = {
       operators: 3,
       acres: 650,
       monthlyFrequency: 1.5,
-      subAreas: [
-        "LPV-108",
-        "LPV-109",
-        "LPV-110",
-        "LPV-111",
-      ],
+      subAreas: ["LPV-108", "LPV-109", "LPV-110", "LPV-111"],
       lastCycle: {
         startDate: "March 17, 2026",
         completionDate: "April 15, 2026",
         totalDays: 30,
         comments: "Multiple tractor issues during this cycle.",
       },
-      currentCycle: {
-        status: "IN_PROGRESS",
-        startDate: "April 20, 2026",
-        expectedCompletionDate: "May 11, 2026",
-        daysElapsed: 8,
-        daysExpected: 22,
-      },
     },
-  ] as GrassCuttingZone[],
+  ] as OldGrassCuttingZone[],
 
   // LPV-115 ("Paris Rd. to Jourdan", roughly the GIWW North area) is in
   // Kory's polygon shapefile with ~122 acres but was NOT on the original
@@ -276,6 +247,142 @@ export const grassCuttingData = {
     note: "Not on the original cutting plan. Pending confirmation from the Director / maintenance team about whether this is mowed and at what frequency.",
   },
 
+  // East Jefferson Levee District zones from Kory's May 1 2026 GIS +
+  // cutting-plan delivery. Acreage matches the email totals; cycle dates
+  // are from the "Mileage log EJLD" tab. Colors chosen to be visually
+  // distinct from OLD's 6-color palette.
+  ejldZones: [
+    {
+      key: "EJLD_LAKEFRONT",
+      name: "EJ Lakefront Reach 1-5",
+      color: "#0369a1", // sky-700
+      acres: 360,
+      operators: 5,
+      subAreas: [
+        "St. Charles/Jeff Parish line to 17th St. Canal on EJ side",
+      ],
+      lastCycle: {
+        startDate: "April 20, 2026",
+        completionDate: "April 27, 2026",
+        totalDays: 5,
+        comments: "One operator terminated; two tractors inoperable.",
+      },
+    },
+    {
+      key: "EJLD_MRL",
+      name: "EJ MRL",
+      color: "#65a30d", // lime-600
+      acres: 205,
+      operators: 3,
+      subAreas: ["Monticello to Alliance", "St. Charles/Jeff Parish line"],
+      lastCycle: {
+        startDate: "April 20, 2026",
+        completionDate: "April 27, 2026",
+        totalDays: 5,
+      },
+    },
+    {
+      key: "EJLD_WEST_RETURN",
+      name: "EJ West Return",
+      color: "#9333ea", // purple-600
+      acres: 85,
+      operators: 5,
+      subAreas: [
+        "Airline Hwy & Lesan Dr to St. Charles/Jeff Parish line (Reach 1)",
+      ],
+      lastCycle: {
+        startDate: "April 20, 2026",
+        completionDate: "April 20, 2026",
+        totalDays: 0.5,
+        comments: "5 tractors; 2 operators on leave.",
+      },
+    },
+    {
+      key: "EJLD_EAST_RETURN",
+      name: "EJ East Return",
+      color: "#c2410c", // orange-700
+      acres: 10,
+      operators: 1,
+      subAreas: ["Along 17th St. Canal to Pinks St"],
+      lastCycle: {
+        startDate: "April 29, 2026",
+        completionDate: "April 29, 2026",
+        totalDays: 1,
+      },
+    },
+  ] as OtherDistrictZone[],
+
+  // Lake Borgne Basin Levee District zones from Kory's May 1 2026 GIS
+  // delivery. Acreage matches the email totals and reconciles with the
+  // per-polygon Acreage field. Cycle 1 dates from the "Mileage log
+  // LBBLD" tab in the cutting plan spreadsheet (5 operators per zone,
+  // full round-robin in ~13 working days).
+  lbbldZones: [
+    {
+      key: "LBBLD_LPV144_149",
+      name: "LPV-144 through LPV-149",
+      color: "#4338ca", // indigo-700
+      acres: 592,
+      operators: 5,
+      subAreas: ["Bayou Dupre Structure (St. Bernard side) to HWY 39 at MRL"],
+      lastCycle: {
+        startDate: "April 8, 2026",
+        completionDate: "April 13, 2026",
+        totalDays: 3,
+        comments: "One day, 4 tractors, 1 driver on leave.",
+      },
+    },
+    {
+      key: "LBBLD_NFL",
+      name: "Non-Federal Back Levee/NFL",
+      color: "#0d9488", // teal-600
+      acres: 316,
+      operators: 5,
+      subAreas: [
+        '"40 Arpent"',
+        "Orleans Parish line to HWY 46 Reggio in lower St. Bernard",
+      ],
+      lastCycle: {
+        startDate: "April 14, 2026",
+        completionDate: "April 16, 2026",
+        totalDays: 3,
+      },
+    },
+    {
+      key: "LBBLD_MRL",
+      name: "MRL",
+      color: "#b45309", // amber-700
+      acres: 167,
+      operators: 5,
+      subAreas: [
+        "Mississippi River Levee at HWY 39 to Arabi (Orleans Parish line)",
+      ],
+      lastCycle: {
+        startDate: "April 20, 2026",
+        completionDate: "April 22, 2026",
+        totalDays: 3,
+        comments: "One day, 4 tractors, 1 driver on leave.",
+      },
+    },
+    {
+      key: "LBBLD_LPV145",
+      name: "LPV-145",
+      color: "#be185d", // pink-700
+      acres: 278,
+      operators: 5,
+      subAreas: [
+        '"The Island" (Bayou Bienvenue Structure to Bayou Dupre Structure)',
+      ],
+      lastCycle: {
+        startDate: "April 22, 2026",
+        completionDate: "April 28, 2026",
+        totalDays: 4,
+        comments:
+          "One day safety meeting; two days with 4 tractors, 1 driver on leave.",
+      },
+    },
+  ] as OtherDistrictZone[],
+
   // Confirmed Apr 2026:
   //   - "1/2/3" labels on the printed map = number of operators assigned
   //     (Lavell Webb, FPA maintenance team).
@@ -287,5 +394,6 @@ export const grassCuttingData = {
   openQuestions: [
     "Per-reach acreage to drive monthly acreage-benchmark targets (per Director direction, Apr 2026).",
     "Format for monthly cuts data going forward (SITREP line per reach vs. separate one-pager from the maintenance team).",
+    "Cycle 2 reporting cadence and timing across all three districts.",
   ],
 };
