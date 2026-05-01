@@ -12,7 +12,7 @@ Dashboard for the Southeast Louisiana Flood Protection Authority (FPA). Built fo
 
 ### Financial (/finance)
 - Budget vs actuals is live. Refreshed from the Dashboard Reports `.xlsm` workbook Finance sends on a monthly (or quarterly) cadence.
-- Current data: FY26 YTD through Feb 28, 2026.
+- Current data: FY26 YTD through Mar 31, 2026.
 - Projects are shown separately from O&M per the Director's direction, since project timing would otherwise distort the operational spending story.
 
 ### Engineering (/engineering)
