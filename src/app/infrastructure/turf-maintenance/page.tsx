@@ -11,10 +11,8 @@ import {
 import SectionHeader, { SectionSubheader } from "@/components/SectionHeader";
 import {
   grassCuttingData,
-  DistrictCycleSummary,
   OldGrassCuttingZone,
   OtherDistrictZone,
-  ZoneCycleResult,
 } from "@/data/grassCutting";
 import type { DistrictFilter } from "@/components/GrassCuttingMap";
 
@@ -35,29 +33,101 @@ const DISTRICT_FILTERS: { key: DistrictFilter; label: string }[] = [
   { key: "ALL", label: "All districts" },
 ];
 
-function CycleResultBlock({ cycle }: { cycle: ZoneCycleResult }) {
+type KpiLevel = "green" | "amber" | "red";
+
+function ZoneProgressBody({
+  acres,
+  monthlyFrequency,
+  calendarDays,
+}: {
+  acres: number;
+  monthlyFrequency: number;
+  calendarDays: number;
+}) {
+  const monthlyTarget = Math.round(acres * monthlyFrequency);
+
+  // Projection: how many cycles can the crew sustain in 30 days at the
+  // pace Cycle 1 set? Capped so we don't show projections greater than
+  // the planned monthly target.
+  const cyclesPerMonthAtPace = 30 / calendarDays;
+  const projectedAcres = Math.min(
+    monthlyTarget,
+    Math.round(cyclesPerMonthAtPace * acres),
+  );
+  const projectedPct = Math.round((projectedAcres / monthlyTarget) * 100);
+
+  const kpiLevel: KpiLevel =
+    projectedPct >= 90 ? "green" : projectedPct >= 80 ? "amber" : "red";
+
+  const palette: Record<KpiLevel, { bar: string; badge: string; dot: string; label: string }> = {
+    green: {
+      bar: "bg-green-500",
+      badge: "bg-green-100 text-green-800",
+      dot: "bg-green-500",
+      label: "On pace",
+    },
+    amber: {
+      bar: "bg-amber-500",
+      badge: "bg-amber-100 text-amber-800",
+      dot: "bg-amber-500",
+      label: "At risk",
+    },
+    red: {
+      bar: "bg-red-500",
+      badge: "bg-red-100 text-red-800",
+      dot: "bg-red-500",
+      label: "Behind",
+    },
+  };
+  const c = palette[kpiLevel];
+
   return (
-    <div className="pt-3 border-t border-gray-100">
-      <div className="flex items-center justify-between mb-1">
-        <p className="text-[10px] uppercase tracking-wide text-gray-500 font-semibold">
-          Cycle 1
-        </p>
-        <span className="inline-flex items-center gap-1 rounded-full px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wide border bg-green-50 text-green-700 border-green-200">
-          <CheckCircle2 className="h-2.5 w-2.5" />
-          Complete
+    <div className="pt-3 border-t border-gray-100 space-y-3">
+      {/* What's been done */}
+      <div className="flex items-start gap-2 text-xs text-gray-700">
+        <CheckCircle2 className="h-3.5 w-3.5 text-green-600 flex-shrink-0 mt-0.5" />
+        <span>
+          Cycle 1 complete · <strong>{acres.toLocaleString()} ac</strong> mowed
+          in {calendarDays} day{calendarDays === 1 ? "" : "s"}
         </span>
       </div>
-      <div className="text-xs text-gray-700">
-        {cycle.startDate} – {cycle.completionDate}
+
+      {/* Projected monthly output — bar fill AND color both signal status */}
+      <div>
+        <div className="flex justify-between items-baseline mb-1">
+          <span className="text-[10px] uppercase tracking-wide text-gray-500 font-semibold">
+            Projected at this pace
+          </span>
+          <span
+            className={`inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-[10px] font-semibold ${c.badge}`}
+          >
+            <span
+              className={`inline-block w-1.5 h-1.5 rounded-full ${c.dot}`}
+              aria-hidden="true"
+            />
+            {c.label}
+          </span>
+        </div>
+        <div
+          className="h-3 rounded bg-gray-100 overflow-hidden"
+          role="img"
+          aria-label={`Projected monthly output: ${projectedAcres} of ${monthlyTarget} acres at Cycle 1 pace`}
+        >
+          <div
+            className={`h-full rounded transition-all ${c.bar}`}
+            style={{ width: `${projectedPct}%` }}
+          />
+        </div>
+        <div className="flex justify-between text-[10px] text-gray-500 mt-1">
+          <span>
+            <strong className="text-gray-700">
+              {projectedAcres.toLocaleString()}
+            </strong>{" "}
+            of {monthlyTarget.toLocaleString()} ac per month
+          </span>
+          <span className="font-semibold text-gray-700">{projectedPct}%</span>
+        </div>
       </div>
-      <div className="text-[11px] text-gray-500 mt-0.5">
-        {cycle.totalDays} working day{cycle.totalDays === 1 ? "" : "s"}
-      </div>
-      {cycle.comments && (
-        <p className="text-[11px] text-gray-500 mt-1.5 italic leading-snug">
-          {cycle.comments}
-        </p>
-      )}
     </div>
   );
 }
@@ -83,14 +153,15 @@ function ZoneCardHeader({
   darkBackground,
   name,
   acres,
-  meta,
+  monthlyFrequency,
 }: {
   color: string;
   darkBackground: boolean;
   name: string;
   acres: number;
-  meta: string;
+  monthlyFrequency: number;
 }) {
+  const monthlyTarget = Math.round(acres * monthlyFrequency);
   return (
     <div
       className="px-4 py-3"
@@ -104,14 +175,17 @@ function ZoneCardHeader({
       </p>
       <h3 className="text-sm font-bold mt-0.5 leading-tight">{name}</h3>
       <p className="text-[11px] opacity-90 mt-1.5 leading-tight">
-        <span className="font-bold">{acres} ac</span> · {meta}
+        <span className="font-bold">{acres.toLocaleString()} ac</span>
+        {" · "}
+        <span className="font-bold">{monthlyFrequency}×/mo</span>
+        {" · "}
+        {monthlyTarget.toLocaleString()} ac target
       </p>
     </div>
   );
 }
 
 function OldZoneCard({ zone }: { zone: OldGrassCuttingZone }) {
-  const meta = `${zone.operators} operator${zone.operators === 1 ? "" : "s"} · target ${Math.round(zone.acres * zone.monthlyFrequency)} ac/mo`;
   return (
     <div className="bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden">
       <ZoneCardHeader
@@ -119,18 +193,21 @@ function OldZoneCard({ zone }: { zone: OldGrassCuttingZone }) {
         darkBackground={zone.darkBackground}
         name={zone.name}
         acres={zone.acres}
-        meta={meta}
+        monthlyFrequency={zone.monthlyFrequency}
       />
       <div className="p-4">
         <CoverageList subAreas={zone.subAreas} />
-        <CycleResultBlock cycle={zone.lastCycle} />
+        <ZoneProgressBody
+          acres={zone.acres}
+          monthlyFrequency={zone.monthlyFrequency}
+          calendarDays={zone.lastCycle.calendarDays}
+        />
       </div>
     </div>
   );
 }
 
 function OtherZoneCard({ zone }: { zone: OtherDistrictZone }) {
-  const meta = `${zone.operators} operator${zone.operators === 1 ? "" : "s"}`;
   return (
     <div className="bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden">
       <ZoneCardHeader
@@ -138,11 +215,15 @@ function OtherZoneCard({ zone }: { zone: OtherDistrictZone }) {
         darkBackground
         name={zone.name}
         acres={zone.acres}
-        meta={meta}
+        monthlyFrequency={zone.monthlyFrequency}
       />
       <div className="p-4">
         <CoverageList subAreas={zone.subAreas} />
-        <CycleResultBlock cycle={zone.lastCycle} />
+        <ZoneProgressBody
+          acres={zone.acres}
+          monthlyFrequency={zone.monthlyFrequency}
+          calendarDays={zone.lastCycle.calendarDays}
+        />
       </div>
     </div>
   );
@@ -150,38 +231,30 @@ function OtherZoneCard({ zone }: { zone: OtherDistrictZone }) {
 
 function DistrictCycleStat({
   district,
-  cycle,
   zoneCount,
   acres,
 }: {
   district: string;
-  cycle: DistrictCycleSummary;
   zoneCount: number;
   acres: number;
 }) {
   return (
-    <div className="rounded-lg border border-gray-200 p-4">
+    <div className="rounded-lg border border-gray-200 bg-white p-4">
       <p className="text-xs uppercase tracking-wide text-gray-500 font-semibold">
         {district}
       </p>
-      <p className="text-sm text-gray-700 mt-1">
-        {cycle.startDate} to {cycle.completionDate}
-      </p>
-      <div className="mt-3 flex items-baseline gap-2">
+      <div className="mt-2 flex items-baseline gap-2">
         <span className="text-2xl font-bold text-[#21355a]">
-          {cycle.workingDays}
+          {zoneCount}
         </span>
-        <span className="text-xs text-gray-500">working days</span>
+        <span className="text-xs text-gray-500">
+          zone{zoneCount === 1 ? "" : "s"} · {acres.toLocaleString()} acres
+        </span>
       </div>
-      <p className="text-xs text-gray-500 mt-0.5">
-        {zoneCount} zone{zoneCount === 1 ? "" : "s"} ·{" "}
-        {acres.toLocaleString()} acres
-      </p>
-      {cycle.note && (
-        <p className="text-xs text-gray-500 italic mt-2 leading-snug">
-          {cycle.note}
-        </p>
-      )}
+      <div className="mt-2 inline-flex items-center gap-1 text-xs text-green-700 font-medium">
+        <CheckCircle2 className="h-3.5 w-3.5" />
+        All zones mowed
+      </div>
     </div>
   );
 }
@@ -196,8 +269,6 @@ export default function GrassCuttingPage() {
     lbbldCycle1,
     systemTotal,
     cadence,
-    source,
-    asOfDate,
   } = grassCuttingData;
 
   const oldAcres = zones.reduce((sum, z) => sum + z.acres, 0);
@@ -205,8 +276,6 @@ export default function GrassCuttingPage() {
   const lbbldAcres = lbbldZones.reduce((sum, z) => sum + z.acres, 0);
   const systemAcres = oldAcres + ejldAcres + lbbldAcres;
   const systemZones = zones.length + ejldZones.length + lbbldZones.length;
-  const totalWorkingDays =
-    oldCycle1.workingDays + ejldCycle1.workingDays + lbbldCycle1.workingDays;
 
   const [district, setDistrict] = useState<DistrictFilter>("OLD");
   const showOld = district === "ALL" || district === "OLD";
@@ -227,11 +296,11 @@ export default function GrassCuttingPage() {
         <SectionHeader
           title="Turf Maintenance"
           subtitle="Levee turf maintenance progress across the system"
-          source={source}
         />
 
-        {/* PLAN + PROGRESS HERO. Leads with what the maintenance plan
-            actually is, then shows current progress against it. */}
+        {/* PLAN + PROGRESS HERO. Leads with the plain-English plan
+            (defining "cycle"), then a simple green status strip
+            confirming Cycle 1 is done across every zone. */}
         <section className="mb-12">
           <div className="bg-white rounded-xl shadow-md border border-gray-100 p-6">
             <p className="text-xs uppercase tracking-wide text-gray-500 font-semibold">
@@ -246,24 +315,25 @@ export default function GrassCuttingPage() {
               <strong>{systemAcres.toLocaleString()} acres</strong> of levee
               turf across all three levee districts (Orleans, East Jefferson,
               and Lake Borgne Basin), divided into{" "}
-              <strong>{systemZones} zones</strong>. The current plan, in
-              effect since March 2026, targets{" "}
-              <strong>twice per month</strong> for most reaches and doubled
-              the cycle frequency from the prior once-a-month schedule.
+              <strong>{systemZones} zones</strong>. A{" "}
+              <strong>cycle</strong> is one full pass — every zone mowed once.
+              The current plan, in effect since March 2026, targets{" "}
+              <strong>two cycles per month</strong> for most zones (1.5 for
+              two larger zones), doubled from the prior once-a-month schedule.
             </p>
 
-            {/* Progress strip: current state of the plan */}
+            {/* Status strip: where the plan stands today */}
             <div className="mt-5 rounded-lg border border-green-200 bg-green-50 p-4">
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div className="flex items-start gap-2">
                   <CheckCircle2 className="h-5 w-5 text-green-700 flex-shrink-0 mt-0.5" />
                   <div>
                     <p className="text-sm font-semibold text-green-900">
-                      Cycle 1 complete · the initial pass under the new plan
+                      Cycle 1 complete
                     </p>
                     <p className="text-xs text-green-800 mt-0.5">
-                      March 17 to April 29, 2026. Every zone in all three
-                      districts was cut.
+                      Every zone in all three districts has been mowed once
+                      under the new plan. Cycle 2 begins next.
                     </p>
                   </div>
                 </div>
@@ -274,31 +344,21 @@ export default function GrassCuttingPage() {
               <div className="grid sm:grid-cols-3 gap-3 mt-4">
                 <DistrictCycleStat
                   district="Orleans (OLD)"
-                  cycle={oldCycle1}
                   zoneCount={zones.length}
                   acres={oldAcres}
                 />
                 <DistrictCycleStat
                   district="East Jefferson (EJLD)"
-                  cycle={ejldCycle1}
                   zoneCount={ejldZones.length}
                   acres={ejldAcres}
                 />
                 <DistrictCycleStat
                   district="Lake Borgne Basin (LBBLD)"
-                  cycle={lbbldCycle1}
                   zoneCount={lbbldZones.length}
                   acres={lbbldAcres}
                 />
               </div>
             </div>
-
-            <p className="text-xs text-gray-500 italic mt-4 leading-relaxed">
-              Cycle 2 is not yet underway. Once the maintenance team confirms
-              the Cycle 2 reporting cadence, in-flight progress will show
-              here. Total working days across all three Cycle 1 passes:{" "}
-              {totalWorkingDays}.
-            </p>
           </div>
         </section>
 
@@ -342,8 +402,6 @@ export default function GrassCuttingPage() {
             <p className="text-xs text-gray-500 mt-5 leading-relaxed">
               {cadence.detail} The new plan doubled the cutting frequency from{" "}
               {cadence.previousPlan.toLowerCase()} starting March 2026.
-              Source for acreage and zone polygons: OLD GIS (Apr 2026), EJLD
-              + LBBLD GIS (May 2026), provided by Kory.
             </p>
           </div>
         </section>
@@ -395,6 +453,61 @@ export default function GrassCuttingPage() {
           </p>
         </section>
 
+        {/* HOW TO READ THE ZONE CARDS — single-bar story: each zone shows
+            projected monthly output at the pace Cycle 1 set, with bar
+            length AND color both signaling the same status. */}
+        <section className="mb-6">
+          <div className="rounded-lg border border-gray-200 bg-gray-50 p-4">
+            <div className="flex items-start gap-2 mb-2">
+              <Info
+                className="h-4 w-4 text-[#21355a] flex-shrink-0 mt-0.5"
+                aria-hidden="true"
+              />
+              <h3 className="text-sm font-semibold text-[#21355a]">
+                How to read the zone cards
+              </h3>
+            </div>
+            <p className="text-xs text-gray-700 leading-relaxed mb-2">
+              Each card shows what Cycle 1 told us about the zone&apos;s
+              sustainable monthly output. The bar projects how many acres the
+              crew can mow per month at the pace Cycle 1 set, against the
+              monthly target (zone acres × cycles per month).
+            </p>
+            <ul className="text-xs text-gray-700 space-y-0.5">
+              <li className="flex items-center gap-1.5">
+                <span
+                  className="inline-block w-1.5 h-1.5 rounded-full bg-green-500"
+                  aria-hidden="true"
+                />
+                <span>
+                  <strong>On pace</strong> — projected to hit ≥ 90% of monthly
+                  target
+                </span>
+              </li>
+              <li className="flex items-center gap-1.5">
+                <span
+                  className="inline-block w-1.5 h-1.5 rounded-full bg-amber-500"
+                  aria-hidden="true"
+                />
+                <span>
+                  <strong>At risk</strong> — projected at 80–89%; Cycle 2 may
+                  not fully complete
+                </span>
+              </li>
+              <li className="flex items-center gap-1.5">
+                <span
+                  className="inline-block w-1.5 h-1.5 rounded-full bg-red-500"
+                  aria-hidden="true"
+                />
+                <span>
+                  <strong>Behind</strong> — projected under 80%; Cycle 2
+                  unlikely this month at current pace
+                </span>
+              </li>
+            </ul>
+          </div>
+        </section>
+
         {/* ZONE CARDS — Orleans Levee District */}
         {showOld && (
           <section className="mb-12">
@@ -440,23 +553,6 @@ export default function GrassCuttingPage() {
           </section>
         )}
 
-        {/* FOOTER NOTE */}
-        <section>
-          <div className="rounded-lg bg-gray-50 border border-gray-200 p-4 flex items-start gap-3">
-            <Info className="h-4 w-4 text-gray-500 flex-shrink-0 mt-0.5" aria-hidden="true" />
-            <div className="text-xs text-gray-600 leading-relaxed">
-              <p>
-                Source: {source}. Data as of {asOfDate}.
-              </p>
-              <p className="mt-1">
-                Zone boundaries on the map come directly from the maintenance
-                team&apos;s GIS shapefiles (OLD: Apr 2026; EJLD + LBBLD: May
-                2026). Cycle 1 working-day totals are from the spreadsheet
-                &quot;Total Days&quot; column (4-day work week).
-              </p>
-            </div>
-          </div>
-        </section>
       </div>
     </div>
   );

@@ -23,6 +23,8 @@ export interface ZoneCycleResult {
   completionDate: string;
   /** Working days, from the spreadsheet's "Total Days" column. */
   totalDays: number;
+  /** Inclusive calendar days (completionDate − startDate + 1). Used for KPI rate calculation. */
+  calendarDays: number;
   comments?: string;
 }
 
@@ -62,6 +64,8 @@ export interface OtherDistrictZone {
   color: string;
   acres: number;
   operators: number;
+  /** Target cycles per month. Assume 2 for EJLD/LBBLD until Carlos confirms exceptions. */
+  monthlyFrequency: number;
   subAreas: string[];
   lastCycle: ZoneCycleResult;
 }
@@ -132,6 +136,7 @@ export const grassCuttingData = {
         startDate: "March 17, 2026",
         completionDate: "March 18, 2026",
         totalDays: 2,
+        calendarDays: 2,
       },
     },
     {
@@ -148,6 +153,7 @@ export const grassCuttingData = {
         startDate: "March 17, 2026",
         completionDate: "March 19, 2026",
         totalDays: 3,
+        calendarDays: 3,
       },
     },
     {
@@ -164,6 +170,7 @@ export const grassCuttingData = {
         startDate: "March 17, 2026",
         completionDate: "March 30, 2026",
         totalDays: 14,
+        calendarDays: 14,
         comments:
           "Citrus Back Levee has no dedicated operator yet. Once Southside MRGO crews finish their assigned areas, they roll over and complete Citrus Back. The two will be split into separate zones once an additional operator is in place.",
       },
@@ -187,6 +194,7 @@ export const grassCuttingData = {
         startDate: "March 17, 2026",
         completionDate: "March 30, 2026",
         totalDays: 14,
+        calendarDays: 14,
         comments: "Longest pass in this group was Lakefront.",
       },
     },
@@ -211,6 +219,7 @@ export const grassCuttingData = {
         startDate: "March 17, 2026",
         completionDate: "April 8, 2026",
         totalDays: 23,
+        calendarDays: 23,
         comments:
           "One operator on intermittent FMLA, another out on FMLA during this cycle.",
       },
@@ -229,6 +238,7 @@ export const grassCuttingData = {
         startDate: "March 17, 2026",
         completionDate: "April 15, 2026",
         totalDays: 30,
+        calendarDays: 30,
         comments: "Multiple tractor issues during this cycle.",
       },
     },
@@ -258,6 +268,7 @@ export const grassCuttingData = {
       color: "#0369a1", // sky-700
       acres: 360,
       operators: 5,
+      monthlyFrequency: 2,
       subAreas: [
         "St. Charles/Jeff Parish line to 17th St. Canal on EJ side",
       ],
@@ -265,6 +276,7 @@ export const grassCuttingData = {
         startDate: "April 20, 2026",
         completionDate: "April 27, 2026",
         totalDays: 5,
+        calendarDays: 8,
         comments: "One operator terminated; two tractors inoperable.",
       },
     },
@@ -274,11 +286,13 @@ export const grassCuttingData = {
       color: "#65a30d", // lime-600
       acres: 205,
       operators: 3,
+      monthlyFrequency: 2,
       subAreas: ["Monticello to Alliance", "St. Charles/Jeff Parish line"],
       lastCycle: {
         startDate: "April 20, 2026",
         completionDate: "April 27, 2026",
         totalDays: 5,
+        calendarDays: 8,
       },
     },
     {
@@ -287,6 +301,7 @@ export const grassCuttingData = {
       color: "#9333ea", // purple-600
       acres: 85,
       operators: 5,
+      monthlyFrequency: 2,
       subAreas: [
         "Airline Hwy & Lesan Dr to St. Charles/Jeff Parish line (Reach 1)",
       ],
@@ -294,6 +309,7 @@ export const grassCuttingData = {
         startDate: "April 20, 2026",
         completionDate: "April 20, 2026",
         totalDays: 0.5,
+        calendarDays: 1,
         comments: "5 tractors; 2 operators on leave.",
       },
     },
@@ -303,11 +319,13 @@ export const grassCuttingData = {
       color: "#c2410c", // orange-700
       acres: 10,
       operators: 1,
+      monthlyFrequency: 2,
       subAreas: ["Along 17th St. Canal to Pinks St"],
       lastCycle: {
         startDate: "April 29, 2026",
         completionDate: "April 29, 2026",
         totalDays: 1,
+        calendarDays: 1,
       },
     },
   ] as OtherDistrictZone[],
@@ -324,11 +342,13 @@ export const grassCuttingData = {
       color: "#4338ca", // indigo-700
       acres: 592,
       operators: 5,
+      monthlyFrequency: 2,
       subAreas: ["Bayou Dupre Structure (St. Bernard side) to HWY 39 at MRL"],
       lastCycle: {
         startDate: "April 8, 2026",
         completionDate: "April 13, 2026",
         totalDays: 3,
+        calendarDays: 6,
         comments: "One day, 4 tractors, 1 driver on leave.",
       },
     },
@@ -338,6 +358,7 @@ export const grassCuttingData = {
       color: "#0d9488", // teal-600
       acres: 316,
       operators: 5,
+      monthlyFrequency: 2,
       subAreas: [
         '"40 Arpent"',
         "Orleans Parish line to HWY 46 Reggio in lower St. Bernard",
@@ -346,6 +367,7 @@ export const grassCuttingData = {
         startDate: "April 14, 2026",
         completionDate: "April 16, 2026",
         totalDays: 3,
+        calendarDays: 3,
       },
     },
     {
@@ -354,6 +376,7 @@ export const grassCuttingData = {
       color: "#b45309", // amber-700
       acres: 167,
       operators: 5,
+      monthlyFrequency: 2,
       subAreas: [
         "Mississippi River Levee at HWY 39 to Arabi (Orleans Parish line)",
       ],
@@ -361,6 +384,7 @@ export const grassCuttingData = {
         startDate: "April 20, 2026",
         completionDate: "April 22, 2026",
         totalDays: 3,
+        calendarDays: 3,
         comments: "One day, 4 tractors, 1 driver on leave.",
       },
     },
@@ -370,6 +394,7 @@ export const grassCuttingData = {
       color: "#be185d", // pink-700
       acres: 278,
       operators: 5,
+      monthlyFrequency: 2,
       subAreas: [
         '"The Island" (Bayou Bienvenue Structure to Bayou Dupre Structure)',
       ],
@@ -377,6 +402,7 @@ export const grassCuttingData = {
         startDate: "April 22, 2026",
         completionDate: "April 28, 2026",
         totalDays: 4,
+        calendarDays: 7,
         comments:
           "One day safety meeting; two days with 4 tractors, 1 driver on leave.",
       },
