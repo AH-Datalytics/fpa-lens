@@ -8,7 +8,7 @@ Public transparency dashboard for the Southeast Louisiana Flood Protection Autho
 |---|---|
 | `/` | Homepage with readiness gauge cards, KPIs, and quick links |
 | `/infrastructure` | Infrastructure page: interactive map, "System We Manage" table (per-district), 7 infrastructure readiness cards graded against straight-line monthly progress, real-time alerts |
-| `/infrastructure/turf-maintenance` | Turf Maintenance page: 6 color-coded zones with sub-areas, last-cycle stats, and current-cycle progress |
+| `/infrastructure/turf-maintenance` | Turf Maintenance page: ~3,520 acres across 14 zones in three levee districts (OLD, EJLD, LBBLD), with district filter, interactive map, and per-zone Cycle 1 history |
 | `/engineering` | Engineering: permits, inspections, valve exercises, PCCP repairs, maintenance activities |
 | `/engineering/idiq` | IDIQ Contract Tracker: 2022 and 2025 cycles, service categories with micro-descriptions, firm-level utilization |
 | `/safety` | Accident/incident trends, events by category, lost time tracking. FY26 YTD accident count sourced from Safety Officer |
@@ -159,17 +159,17 @@ See `data-sources/budget/UPDATE-GUIDE.md` for detailed instructions to share wit
 
 **Source files:**
 - `data-sources/kmz/` - KMZ files (Floodgates.kmz, Valves.kmz, PCCP.kmz, Complex Structures.kmz, Levee Centerline.kmz)
-- `data-sources/shapefiles/` - Shapefiles (Complex_Structures, FPA_Levee_Centerline, PCCPs)
+- `data-sources/shapefiles/` - System shapefiles (Complex_Structures, FPA_Levee_Centerline, PCCPs) plus per-district turf-maintenance shapefiles (`OLD_Centerline`, `OLD_Mowing_Area`, `EJLD_Centerline`, `EJLD_Mowing_Area`, `LBBLD_Centerline`, `LBBLD_Mowing_Area`) supplied by Kory
 
 **Extraction scripts:**
 - `scripts/convertKmz.mjs` - Converts KMZ to GeoJSON
-- `scripts/convertShapefiles.mjs` - Converts shapefiles to GeoJSON
+- `scripts/convertShapefiles.mjs` - Converts shapefiles to GeoJSON (system + per-district turf)
 
-**Output:** `public/data/` (floodgates.json, valves.json, pccps.json, complex-structures.json, levee-centerline.json)
+**Output:** `public/data/` - floodgates.json, valves.json, pccps.json, complex-structures.json, levee-centerline.json, plus per-district turf files: `{old,ejld,lbbld}-centerline.json` and `{old,ejld,lbbld}-mowing-areas.json`
 
-**Displayed on:** `/infrastructure`
+**Displayed on:** `/infrastructure` (system map), `/infrastructure/turf-maintenance` (per-district turf zones)
 
-**How to update:** These change infrequently. If Engineering provides updated KMZ or shapefiles, place them in the appropriate `data-sources/` folder and run the conversion script.
+**How to update:** These change infrequently. If Engineering provides updated KMZ or shapefiles, place them in the appropriate `data-sources/` folder and run `node scripts/convertShapefiles.mjs`.
 
 ### Source 5: Real-Time Environmental Data (Lakefront Flood Risk)
 

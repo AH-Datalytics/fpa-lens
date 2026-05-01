@@ -29,10 +29,19 @@ Dashboard for the Southeast Louisiana Flood Protection Authority (FPA). Built fo
 - Property-damage-only events are excluded from the YoY accident chart per Jamal's recommendation, but are surfaced in their own cards (FPA damage, private damage) and the YoY table.
 - Updated event logs arrive monthly from the Safety Officer; re-run `python3 scripts/extractSafetyData.py` to refresh `public/data/safety-events.json`.
 
-### Grass Cutting (potential future feature)
-- Ryan Foster (Dir. of Engineering) originally pitched a grass cutting progress map
-- Reference: Jefferson Parish's canal grass maintenance map at canalgrassmaintenance.azurewebsites.us
-- Jeff Williams loved the idea, forwarded to AHD. Not built yet, but on their radar.
+### Turf Maintenance (/infrastructure/turf-maintenance)
+- Built out May 2026. Covers all three levee districts: Orleans (OLD, 6 zones, ~1,507 ac), East Jefferson (EJLD, 4 zones, ~660 ac), and Lake Borgne Basin (LBBLD, 4 zones, ~1,353 ac). ~3,520 acres / 14 zones total.
+- Page leads with the maintenance plan (twice-monthly mowing, doubled from prior monthly schedule starting Mar 2026), a "Cycle 1 complete" status strip with per-district summaries, then a district filter that scopes both the map and the per-zone cards below it. Default filter is OLD.
+- Source data:
+  - GIS shapefiles from Kory at FPA: `data/sources/shapefiles/{OLD,EJLD,LBBLD}_{Centerline,Mowing_Area}.*`
+  - Cycle 1 dates from Carlos's "New Cutting Plan 2026" spreadsheet, three tabs: "Mileage log OLD", "Mileage log EJLD", "Mileage log LBBLD"
+- Refresh GIS: `node scripts/convertShapefiles.mjs` regenerates `public/data/{old,ejld,lbbld}-{centerline,mowing-areas}.json`
+- Per-zone Cycle 1 dates and comments are hand-entered in `src/data/grassCutting.ts` (keyed by zone).
+- Outstanding:
+  - **LPV-115 / Paris Rd. to Jourdan (~122 ac)**: in OLD's mowing-area shapefile but not on the original cutting plan. Renders as a light purple dashed "Pending classification" footprint until Carlos confirms whether it's mowed and at what cadence.
+  - **Florida Ave acreage override**: `ACREAGE_OVERRIDES` in `convertShapefiles.mjs` patches the S1 to Bienvenue polygon down to 2.6 ac (Kory confirmed the 185.6 ac value was an erroneous duplicate). Drop the override block once Kory ships an updated OLD shapefile with the fix baked in.
+  - **Cycle 2 schedule**: not yet wired up. Format and cadence for ongoing cycle reporting (same spreadsheet vs. SITREP line vs. something else) is still being confirmed with the maintenance team.
+- Origin: Ryan Foster (Dir. of Engineering) pitched the grass cutting progress map idea; reference was Jefferson Parish's canal grass maintenance map at canalgrassmaintenance.azurewebsites.us. Director Jeff Williams loved it and forwarded to AHD, which is what kicked off this feature.
 
 ## Lakefront Risk Feature
 
