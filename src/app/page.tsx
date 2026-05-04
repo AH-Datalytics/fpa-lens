@@ -22,6 +22,7 @@ import {
 } from "@/data/siteData";
 import { computeReadinessRollups } from "@/lib/readinessRollups";
 import { getOmSummary } from "@/lib/financeData";
+import { computeZoneLevel } from "@/lib/staffingZones";
 
 const quickLinks = [
   {
@@ -100,6 +101,11 @@ function statusTooltip(status: StatusLevel) {
 export default function Home() {
   const infra = getCategory("Infrastructure Readiness")!;
   const staffReadiness = getCategory("Staffing Readiness")!;
+  const staffStatus: StatusLevel =
+    (computeZoneLevel(
+      staffingData.coreFPU.aggregate.current,
+      staffingData.coreFPU.aggregate.thresholds,
+    ) as StatusLevel) ?? staffReadiness.status;
   const financial = getCategory("Financial Readiness")!;
 
   // O&M actuals come from the shared finance loader so this card never
@@ -244,16 +250,16 @@ export default function Home() {
             {/* Staff Readiness */}
             <Link
               href="/staffing"
-              className={`group bg-white rounded-xl shadow-lg border-l-4 ${statusBorder(staffReadiness.status)} p-6 hover:shadow-2xl transition-shadow duration-200`}
+              className={`group bg-white rounded-xl shadow-lg border-l-4 ${statusBorder(staffStatus)} p-6 hover:shadow-2xl transition-shadow duration-200`}
             >
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-3">
-                  <div className={`w-10 h-10 ${statusBg(staffReadiness.status)} rounded-lg flex items-center justify-center`}>
+                  <div className={`w-10 h-10 ${statusBg(staffStatus)} rounded-lg flex items-center justify-center`}>
                     <Users className="h-5 w-5 text-[#21355a]" />
                   </div>
                   <h3 className="font-semibold text-[#21355a]">Staffing Readiness</h3>
                 </div>
-                <StatusBadge status={staffReadiness.status} size="sm" tooltip={statusTooltip(staffReadiness.status)} />
+                <StatusBadge status={staffStatus} size="sm" tooltip={statusTooltip(staffStatus)} />
               </div>
               <div className="mb-4">
                 <StaffingZoneBar
@@ -262,7 +268,7 @@ export default function Home() {
                 />
               </div>
               <p className="text-sm text-gray-600 line-clamp-2">{staffReadiness.description}</p>
-              <div className={`mt-4 flex items-center text-sm font-medium ${statusText(staffReadiness.status)}`}>
+              <div className={`mt-4 flex items-center text-sm font-medium ${statusText(staffStatus)}`}>
                 View details
                 <ArrowRight className="h-4 w-4 ml-1 group-hover:translate-x-1 transition-transform" />
               </div>

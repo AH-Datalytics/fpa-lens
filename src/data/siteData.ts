@@ -79,8 +79,8 @@ export const systemReadiness = {
     {
       name: "Staffing Readiness",
       status: "AMBER" as StatusLevel,
-      description: "45 vacancies agency-wide; recruitment efforts ongoing",
-      source: "Apr 2026 SITREP",
+      description: "41 vacancies agency-wide; recruitment efforts ongoing",
+      source: "May 2026 staffing data",
     },
     {
       name: "Financial Readiness",
@@ -537,70 +537,115 @@ export const safetyData = {
 // ============================================================================
 
 export const staffingData = {
-  // Source: Apr 2026 SITREP
-  asOfDate: "April 1, 2026",
-  source: "Apr 2026 SITREP",
+  asOfDate: "May 4, 2026",
+  source: "Shannon Fazande (HR Director) email, May 4 2026",
 
   headcount: {
-    total: 256,
-    classified: 244,
-    unclassified: 12,
-    vacancies: 45,
+    total: 236,
+    vacancies: 41,
   },
 
-  // Core Flood Protection Unit (MTC + OPS + ENG) zone framework.
-  // Thresholds from Austin/Metoyer/Foster per Darren's Apr 1 2026 email;
-  // RED thresholds are provisional pending HR confirmation of COVID-era lows.
-  //
-  // `current` values are MOCK previews until HR provides the real MTC/OPS/ENG
-  // breakdown (expected week of 2026-04-27). Mocks chosen to show a realistic
-  // Amber-for-MTC, Green-for-smaller-depts scenario so the UI is meaningful.
-  // When real data arrives: replace each `current` and set isMockPreview=false.
+  // Core Flood Protection Unit (Maintenance + Operations + Engineering).
+  // Thresholds are percentage-based: Green ≥ 75% · Amber 50–74% · Red < 50%.
+  // amberMax = ceil(0.75 × full) − 1; redMax = ceil(0.50 × full) − 1.
+  // Aggregate thresholds set to sum of dept thresholds so assertAggregateMatchesSum passes.
+  // Actuals from Shannon Fazande HR data, May 4 2026.
   coreFPU: {
-    asOfDate: "April 1, 2026",
-    thresholdsSetBy: "Austin (Ops), Metoyer (Maintenance), Foster (Engineering)",
-    thresholdsDate: "April 2026",
-    thresholdsSource: "Darren Austin email, Apr 1 2026 (Subject: RE: FPA Lens: Staffing)",
-    isMockPreview: true,
+    asOfDate: "May 4, 2026",
+    thresholdsSetBy: "Regional Director",
+    thresholdsDate: "May 2026",
+    thresholdsSource: "Shannon Fazande email, May 4 2026",
+    thresholdsNote: "Green ≥ 75% · Amber 50–74% · Red < 50% capacity filled",
+    isMockPreview: false,
     aggregate: {
       key: "CORE_FPU",
       label: "Core Flood Protection Unit",
-      full: 202,
-      current: 162 as number | null, // MOCK
-      thresholds: { amberMax: 175, redMax: 95 },
+      full: 193,
+      current: 159 as number | null,
+      thresholds: { amberMax: 143, redMax: 94 },
+      policyThresholds: { redPct: 50, amberPct: 75 },
     },
     departments: [
       {
         key: "MTC",
         label: "Maintenance",
-        full: 151,
-        current: 120 as number | null, // MOCK
-        thresholds: { amberMax: 136, redMax: 71 },
+        full: 145,
+        current: 120 as number | null,
+        thresholds: { amberMax: 108, redMax: 72 },
+        policyThresholds: { redPct: 50, amberPct: 75 },
       },
       {
         key: "OPS",
         label: "Operations",
-        full: 34,
-        current: 28 as number | null, // MOCK
-        thresholds: { amberMax: 26, redMax: 16 },
+        full: 30,
+        current: 25 as number | null,
+        thresholds: { amberMax: 22, redMax: 14 },
+        policyThresholds: { redPct: 50, amberPct: 75 },
       },
       {
         key: "ENG",
         label: "Engineering",
-        full: 17,
-        current: 14 as number | null, // MOCK
+        full: 18,
+        current: 14 as number | null,
         thresholds: { amberMax: 13, redMax: 8 },
+        policyThresholds: { redPct: 50, amberPct: 75 },
       },
     ],
   },
 
-  // Operational Support zones (Exec, HR, IT, Finance) — framework in development
-  // with Regional Director. Placeholder only; no thresholds yet.
-  opSupport: {
-    status: "placeholder" as const,
-    label: "Operational Support",
-    groups: ["Executive", "Human Resources", "Information Technology", "Finance"],
-    note: "Framework in development with Regional Director; thresholds to come",
+  // Administrative Functions (HR, IT, Finance, Executive).
+  // Thresholds are percentage-based per Shannon Fazande, May 4 2026:
+  //   Green ≥ 85% · Amber 75–84% · Red < 75%
+  // amberMax = highest filled count still in amber (ceil(0.85 * full) − 1)
+  // redMax   = highest filled count still in red   (ceil(0.75 * full) − 1)
+  adminFunctions: {
+    asOfDate: "May 4, 2026",
+    thresholdsSetBy: "Fazande (HR Director)",
+    thresholdsDate: "May 2026",
+    thresholdsSource: "Shannon Fazande email, May 4 2026",
+    thresholdsNote: "Green ≥ 85% · Amber 75–84% · Red < 75% capacity filled",
+    aggregate: {
+      key: "ADMIN",
+      label: "Administrative Functions",
+      full: 43,
+      current: 36 as number | null,
+      thresholds: { amberMax: 36, redMax: 32 },
+      policyThresholds: { redPct: 75, amberPct: 85 },
+    },
+    departments: [
+      {
+        key: "HR",
+        label: "Human Resources",
+        full: 8,
+        current: 6 as number | null,
+        thresholds: { amberMax: 6, redMax: 5 },
+        policyThresholds: { redPct: 75, amberPct: 85 },
+      },
+      {
+        key: "IT",
+        label: "Information Technology",
+        full: 6,
+        current: 5 as number | null,
+        thresholds: { amberMax: 5, redMax: 4 },
+        policyThresholds: { redPct: 75, amberPct: 85 },
+      },
+      {
+        key: "FIN",
+        label: "Finance",
+        full: 17,
+        current: 15 as number | null,
+        thresholds: { amberMax: 14, redMax: 12 },
+        policyThresholds: { redPct: 75, amberPct: 85 },
+      },
+      {
+        key: "EXEC",
+        label: "Executive",
+        full: 12,
+        current: 10 as number | null,
+        thresholds: { amberMax: 10, redMax: 8 },
+        policyThresholds: { redPct: 75, amberPct: 85 },
+      },
+    ],
   },
 
   recentHires: [
@@ -628,15 +673,37 @@ export const staffingData = {
   // Source: floodauthority.org/about-us/our-team/ (Apr 2026)
   // Headshots stored locally in /public/headshots/
   leadership: [
-    { name: "Jeff Williams", title: "Regional Director", image: "/headshots/jeff-williams.png", bio: "Bio pending." },
-    { name: "Ryan Foster, P.E.", title: "Director of Engineering", image: "/headshots/ryan-foster.png", bio: "Bio pending." },
-    { name: "Darren J. Austin, P.E.", title: "Director of Operations", image: "/headshots/darren-austin.png", bio: "Bio pending." },
+    {
+      name: "L. Jeff Williams, MBA",
+      title: "Regional Director",
+      image: "/headshots/jeff-williams.png",
+      bio: [
+        { heading: "Current Role", text: "L. Jeff Williams serves as Regional Director where he is responsible for leading day-to-day operations, coordinating across levee districts, and ensuring system-wide readiness of critical flood protection infrastructure." },
+        { heading: "Professional Experience", text: "Williams brings more than 28 years of experience in civil engineering, infrastructure program and project delivery, operations and maintenance, and public sector leadership. Prior to his current role, he served in multiple leadership positions with the U.S. Army Corps of Engineers, including Acting Deputy District Project Manager, where he supported district-level oversight of large-scale program delivery, and Senior Project Manager for major hurricane and storm risk reduction efforts such as West Shore Lake Pontchartrain, West Bank & Vicinity, and the Permanent Canal Closures and Pumps (PCCP) Major Repair Projects. His expertise includes large-scale program and project management, capital delivery, facilities operations and maintenance, and interagency coordination across complex flood protection systems." },
+        { heading: "Education / Credentials", text: "Williams holds a Bachelor of Science in Civil Engineering from Southern University, Baton Rouge and an MBA with a concentration in finance from Tulane University." },
+        { heading: "Commitment to the Mission", text: "He is committed to keeping the main thing the main thing, ensuring the reliability, readiness, and long-term resilience of the region's flood protection system to protect the people, property and prosperity of this region and the state." },
+      ],
+    },
     { name: "Kirk Ordoyne", title: "Executive Counsel", image: "/headshots/kirk-ordoyne.png", bio: "Bio pending." },
-    { name: "Stephanie Gerarve", title: "Director of Governmental Affairs", image: "/headshots/stephanie-gerarve.png", bio: "Bio pending." },
-    { name: "Shannon Fazande", title: "Director of Human Resources", image: "/headshots/shannon-fazande.png", bio: "Bio pending." },
-    { name: "Roman Dody, MSCIS", title: "Regional Director of Information Technology", image: "/headshots/roman-dody.png", bio: "Bio pending." },
     { name: "Joshua T. Rondeno", title: "Superintendent of Police", image: "/headshots/josh-rondeno.png", bio: "Bio pending." },
+    { name: "Ryan Foster, P.E.", title: "Director of Engineering", image: "/headshots/ryan-foster.png", bio: "Bio pending." },
+    { name: "Harold Daigle, P.E., PMP", title: "Director of Operations (Interim)", bio: "Bio pending." },
+    { name: "Denise Williams", title: "Director of Finance and Risk Management", bio: "Bio pending." },
+    { name: "Shannon Fazande", title: "Director of Human Resources", image: "/headshots/shannon-fazande.png", bio: "Bio pending." },
+    { name: "Stephanie Gerarve", title: "Director of Governmental Affairs", image: "/headshots/stephanie-gerarve.png", bio: "Bio pending." },
+    { name: "Roman Dody, MSCIS", title: "Director of Information Technology", image: "/headshots/roman-dody.png", bio: "Bio pending." },
+    { name: "Stacy Gilmore", title: "Public Information Director", bio: "Bio pending." },
     { name: "Jamal Dortch", title: "Safety Risk Agency Manager", image: "/headshots/jamal-dortch.png", bio: "Bio pending." },
+    {
+      name: "Lawrence Williams, MBA, PMP",
+      title: "Senior Project Manager",
+      bio: [
+        { heading: "Current Role", text: "Lawrence Williams serves as Senior Project Manager, where he is responsible for leading cross-functional initiatives, overseeing project planning and execution, and ensuring alignment with organizational priorities. He manages complex programs, coordinates with internal departments and external stakeholders, and supports the delivery of strategic initiatives across the Authority." },
+        { heading: "Professional Experience", text: "Williams brings over 15 years of experience in infrastructure, construction, and capital project management across public and nonprofit sectors. His background includes overseeing multi-project portfolios, managing procurement processes, and ensuring compliance with funding and regulatory requirements. Prior to joining the Authority, he served as an Infrastructure Project Manager with the City of New Orleans, where he managed American Rescue Plan Act (ARPA) initiatives, and as Executive Director of a community development organization focused on affordable housing delivery. His expertise includes project planning, budgeting, stakeholder engagement, and program implementation." },
+        { heading: "Education / Credentials", text: "Williams holds a Bachelor's degree and an MBA from Loyola University New Orleans and is a certified Project Management Professional (PMP)." },
+        { heading: "Commitment to the Mission", text: "He is committed to advancing the Authority's mission by delivering well-managed, accountable projects that strengthen the region's flood protection system." },
+      ],
+    },
   ],
 };
 

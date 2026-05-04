@@ -23,6 +23,9 @@ export interface ZoneGroup {
   full: number;
   current: number | null;
   thresholds: ZoneThresholds;
+  // When set, percent-mode bar segments and tick labels snap to these exact
+  // policy percentages instead of being computed from the integer thresholds.
+  policyThresholds?: { redPct: number; amberPct: number };
 }
 
 export function computeZoneLevel(

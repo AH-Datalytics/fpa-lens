@@ -13,14 +13,22 @@ interface NavItem {
 }
 
 const navigation: NavItem[] = [
-  { name: "Infrastructure", href: "/infrastructure" },
+  {
+    name: "Infrastructure",
+    href: "/infrastructure",
+    submenu: [{ name: "Turf Maintenance", href: "/infrastructure/turf-maintenance" }],
+  },
   { name: "Finance", href: "/finance" },
-  { name: "Engineering", href: "/engineering" },
+  {
+    name: "Engineering",
+    href: "/engineering",
+    submenu: [{ name: "Contracts (IDIQ)", href: "/engineering/idiq" }],
+  },
   { name: "Safety", href: "/safety" },
   { name: "Staffing", href: "/staffing" },
   { name: "Environment", href: "/environment" },
   { name: "Protection", href: "/protection" },
-  { name: "About Us", href: "/about/what-we-do" },
+  { name: "About Us", href: "/about" },
 ];
 
 export default function Header() {
@@ -58,12 +66,13 @@ export default function Header() {
                   onMouseEnter={() => setOpenDropdown(item.name)}
                   onMouseLeave={() => setOpenDropdown(null)}
                 >
-                  <button
+                  <Link
+                    href={item.href}
                     className="flex items-center gap-1 px-3 py-2 text-sm font-medium text-white/90 hover:text-white hover:bg-white/10 rounded-md transition-colors"
                   >
                     {item.name}
                     <ChevronDown className="h-4 w-4" />
-                  </button>
+                  </Link>
                   {openDropdown === item.name && (
                     <div className="absolute top-full left-0 pt-1 w-48 z-50">
                       <div className="bg-white rounded-md shadow-lg py-1">

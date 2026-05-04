@@ -23,11 +23,34 @@ export default function StaffingZoneBar({
   const level = computeZoneLevel(current, thresholds);
   const colors = zoneColor(level);
 
-  const redPct = positionPercent(thresholds.redMax, full);
-  const amberPct = positionPercent(thresholds.amberMax, full) - redPct;
-  const greenPct = 100 - redPct - amberPct;
+  const policy = group.policyThresholds;
 
-  const markerPct = current !== null ? positionPercent(current, full) : null;
+  // In raw mode, scale to full+1 so integer positions align with tick labels.
+  // E.g. for IT (full=6): scale is 0–7, marker "5" at 5/7, tick "6" at 6/7.
+  const rawDisplayFull = axisMode === "raw" ? full + 1 : full;
+
+  // Bar segment boundary positions (%).
+  // In percent mode: snap to exact policy %s. In raw mode: (threshold+1)/rawDisplayFull.
+  const redPosPct = axisMode === "percent" && policy
+    ? policy.redPct
+    : positionPercent(thresholds.redMax + 1, rawDisplayFull);
+  const amberPosPct = axisMode === "percent" && policy
+    ? policy.amberPct
+    : positionPercent(thresholds.amberMax + 1, rawDisplayFull);
+
+  const redPct = redPosPct;
+  const amberPct = Math.max(0, amberPosPct - redPosPct);
+  const greenPct = Math.max(0, 100 - amberPosPct);
+
+  // Tick label text
+  const redTickLabel = axisMode === "percent"
+    ? `${Math.round(redPosPct)}%`
+    : String(thresholds.redMax + 1);
+  const amberTickLabel = axisMode === "percent"
+    ? `${Math.round(amberPosPct)}%`
+    : String(thresholds.amberMax + 1);
+
+  const markerPct = current !== null ? positionPercent(current, rawDisplayFull) : null;
   const currentPct = current !== null && full > 0 ? Math.round((current / full) * 100) : null;
   const barHeight = variant === "compact" ? "h-2.5" : "h-5";
   const ariaLabel =
@@ -132,26 +155,19 @@ export default function StaffingZoneBar({
             </span>
             <span
               className="absolute"
-              style={{ left: `${redPct}%`, transform: "translateX(-50%)" }}
+              style={{ left: `${redPosPct}%`, transform: "translateX(-50%)" }}
             >
-              {axisMode === "percent"
-                ? `${Math.round(redPct)}%`
-                : thresholds.redMax}
+              {redTickLabel}
             </span>
             <span
               className="absolute"
-              style={{
-                left: `${redPct + amberPct}%`,
-                transform: "translateX(-50%)",
-              }}
+              style={{ left: `${amberPosPct}%`, transform: "translateX(-50%)" }}
             >
-              {axisMode === "percent"
-                ? `${Math.round(redPct + amberPct)}%`
-                : thresholds.amberMax}
+              {amberTickLabel}
             </span>
-            <span className="absolute right-0">
-              {axisMode === "percent" ? "100%" : full}
-            </span>
+            {axisMode === "percent" && (
+              <span className="absolute right-0">100%</span>
+            )}
           </div>
         )}
       </div>

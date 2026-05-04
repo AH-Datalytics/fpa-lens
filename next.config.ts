@@ -42,6 +42,7 @@ const nextConfig: NextConfig = {
       { source: "/our-team/:path*", destination: "/staffing/:path*", permanent: true },
       { source: "/environmental", destination: "/environment", permanent: true },
       { source: "/environmental/:path*", destination: "/environment/:path*", permanent: true },
+      { source: "/about/what-we-do", destination: "/about", permanent: true },
     ];
   },
 };

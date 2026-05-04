@@ -1,36 +1,32 @@
-interface ZoneDefinition {
-  label: string;
-  rangeLabel: string;
-  description: string;
-  swatch: string;
-  text: string;
+interface ZoneLegendProps {
+  thresholds?: { green: string; amber: string; red: string };
 }
 
-const zones: ZoneDefinition[] = [
-  {
-    label: "Green",
-    rangeLabel: "Above Amber threshold",
-    description: "Adequate staffing; routine operations and storm response sustainable.",
-    swatch: "bg-green-200 border-green-400",
-    text: "text-green-700",
-  },
-  {
-    label: "Amber",
-    rangeLabel: "At or below Amber threshold",
-    description: "Meaningful reduction; management attention and mitigation required.",
-    swatch: "bg-amber-200 border-amber-400",
-    text: "text-amber-700",
-  },
-  {
-    label: "Red",
-    rangeLabel: "At or below Red threshold",
-    description: "Critical understaffing; ability to respond during storm events compromised.",
-    swatch: "bg-red-200 border-red-400",
-    text: "text-red-700",
-  },
-];
+export default function ZoneLegend({ thresholds }: ZoneLegendProps = {}) {
+  const zones = [
+    {
+      label: "Green",
+      rangeLabel: thresholds?.green ?? "Above amber threshold",
+      description: "Adequate staffing; routine operations and storm response sustainable.",
+      swatch: "bg-green-200 border-green-400",
+      text: "text-green-700",
+    },
+    {
+      label: "Amber",
+      rangeLabel: thresholds?.amber ?? "At or below amber threshold",
+      description: "Meaningful reduction; management attention and mitigation required.",
+      swatch: "bg-amber-200 border-amber-400",
+      text: "text-amber-700",
+    },
+    {
+      label: "Red",
+      rangeLabel: thresholds?.red ?? "At or below red threshold",
+      description: "Critical understaffing; ability to respond during storm events compromised.",
+      swatch: "bg-red-200 border-red-400",
+      text: "text-red-700",
+    },
+  ];
 
-export default function ZoneLegend() {
   return (
     <div className="grid md:grid-cols-3 gap-3">
       {zones.map((zone) => (

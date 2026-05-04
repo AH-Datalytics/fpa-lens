@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { FileText, Wrench, CheckCircle, Clock, ArrowRight } from "lucide-react";
+import { FileText, Wrench, CheckCircle, Clock, ArrowRight, ClipboardCheck, CalendarDays } from "lucide-react";
 import {
   BarChart,
   Bar,
@@ -15,10 +15,130 @@ import {
 import { SectionSubheader } from "@/components/SectionHeader";
 import DataCard from "@/components/DataCard";
 import KPICard from "@/components/KPICard";
-import { operationsData } from "@/data/siteData";
+import { operationsData, readinessMetrics } from "@/data/siteData";
+
+type StatusColor = "GREEN" | "AMBER" | "RED" | "NEUTRAL";
+
+function statusFromRatio(ratio: number): StatusColor {
+  if (ratio >= 90) return "GREEN";
+  if (ratio >= 80) return "AMBER";
+  return "RED";
+}
+
+function statusStyles(color: StatusColor) {
+  switch (color) {
+    case "GREEN":
+      return { bg: "bg-green-50", border: "border-green-200", text: "text-green-700", dot: "bg-green-500", label: "text-green-800" };
+    case "AMBER":
+      return { bg: "bg-amber-50", border: "border-amber-200", text: "text-amber-700", dot: "bg-amber-500", label: "text-amber-800" };
+    case "RED":
+      return { bg: "bg-red-50", border: "border-red-200", text: "text-red-700", dot: "bg-red-500", label: "text-red-800" };
+    case "NEUTRAL":
+      return { bg: "bg-gray-50", border: "border-gray-200", text: "text-gray-700", dot: "bg-gray-400", label: "text-gray-800" };
+  }
+}
+
+function expectedFromRate(
+  monthlyRate: number,
+  periodStart: Date,
+  asOf: Date,
+  target?: number,
+): number {
+  const ms = (asOf.getTime() - periodStart.getTime()) / (1000 * 60 * 60 * 24 * 30.4375);
+  const exp = Math.max(0, monthlyRate * ms);
+  return target !== undefined ? Math.min(exp, target) : exp;
+}
+
+function ReadinessCard({
+  title,
+  description,
+  mandate,
+  period,
+  icon: Icon,
+  actual,
+  expected,
+  unit,
+  status,
+  source,
+  note,
+  big,
+}: {
+  title: string;
+  description?: string;
+  mandate: string;
+  period?: string;
+  icon: React.ComponentType<{ className?: string }>;
+  actual: string;
+  expected?: string;
+  unit?: string;
+  status: StatusColor;
+  source: string;
+  note?: string;
+  big: string;
+}) {
+  const s = statusStyles(status);
+  return (
+    <div className={`bg-white rounded-xl shadow-md border ${s.border} overflow-hidden h-full flex flex-col`}>
+      <div className={`${s.bg} px-5 py-3 border-b ${s.border} flex items-center justify-between`}>
+        <div className="flex items-center gap-2">
+          <Icon className={`h-5 w-5 ${s.text}`} />
+          <h3 className="font-semibold text-[#21355a] text-sm leading-tight">{title}</h3>
+        </div>
+        <span className={`inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${s.label}`}>
+          <span className={`h-1.5 w-1.5 rounded-full ${s.dot}`} />
+          {status === "NEUTRAL" ? "Not Active" : status}
+        </span>
+      </div>
+      <div className="p-5 flex-1 flex flex-col">
+        {description && (
+          <p className="text-xs text-gray-600 leading-snug mb-3">{description}</p>
+        )}
+        <div className="flex items-baseline gap-2 mb-1">
+          <span className="text-3xl font-bold text-[#21355a]">{big}</span>
+          {unit && <span className="text-sm text-gray-500">{unit}</span>}
+        </div>
+        <div className="text-xs text-gray-600 space-y-1">
+          <div>Actual: {actual}</div>
+          {expected && <div>Expected: {expected}</div>}
+          {period && (
+            <div className="flex items-center gap-1 text-gray-500">
+              <CalendarDays className="h-3 w-3" />
+              {period}
+            </div>
+          )}
+          <div className="text-gray-500">Mandate: {mandate}</div>
+          {note && <div className="text-gray-500 italic pt-1">{note}</div>}
+        </div>
+        <p className="text-[10px] text-gray-400 mt-3">Source: {source}</p>
+      </div>
+    </div>
+  );
+}
 
 export default function OperationsPage() {
   const [showFullPipeline, setShowFullPipeline] = useState(false);
+
+  const asOf = new Date(readinessMetrics.dataAsOf + "T00:00:00");
+
+  const cpra = readinessMetrics.cpraQuarterlyInspection;
+  const cpraExpected = expectedFromRate(
+    cpra.monthlyRate,
+    new Date(cpra.periodStart + "T00:00:00"),
+    asOf,
+    100,
+  );
+  const cpraRatio = cpraExpected > 0 ? (cpra.currentQuarterPercent / cpraExpected) * 100 : 100;
+  const cpraStatus = statusFromRatio(cpraRatio);
+
+  const usace = readinessMetrics.usaceSemiAnnualInspection;
+  const usaceExpected = expectedFromRate(
+    usace.monthlyRate,
+    new Date(usace.periodStart + "T00:00:00"),
+    asOf,
+    100,
+  );
+  const usaceRatio = usaceExpected > 0 ? (usace.currentHalfPercent / usaceExpected) * 100 : 100;
+  const usaceStatus = statusFromRatio(usaceRatio);
 
   const permitChartData = operationsData.permitsIssued.map((item) => ({
     month: item.month.split(" ")[0].substring(0, 3),
@@ -46,6 +166,43 @@ export default function OperationsPage() {
             <ArrowRight className="h-4 w-4 text-[#65bc7b] group-hover:translate-x-0.5 transition-transform" />
           </Link>
         </div>
+
+        {/* Federal & State Inspections */}
+        <section className="mb-12">
+          <SectionSubheader title="Federal &amp; State Inspections" />
+          <div className="grid md:grid-cols-2 gap-4">
+            <ReadinessCard
+              title="CPRA Quarterly Inspection"
+              description="State-mandated quarterly visual inspection of the levee system, with findings reported to the Coastal Protection and Restoration Authority."
+              mandate={cpra.mandate}
+              period={cpra.currentQuarter}
+              icon={ClipboardCheck}
+              big={`${cpra.currentQuarterPercent}%`}
+              actual={`${cpra.currentQuarter} field inspections complete`}
+              expected={`${Math.round(cpraExpected)}% by report date (100% by end of quarter)`}
+              status={cpraStatus}
+              source={cpra.source}
+              note={cpra.reportSubmittedDate ? `Report submitted to CPRA ${cpra.reportSubmittedDate}` : "CPRA submission date pending"}
+            />
+            <ReadinessCard
+              title="USACE Semi-Annual Inspection"
+              description="Federal inspection of HSDRRS levees, floodwalls, PCCPs, and complex structures. 100% = on pace for this point in the half-year cycle."
+              mandate={usace.mandate}
+              period="Semi-Annual &middot; Ongoing"
+              icon={ClipboardCheck}
+              big={`${Math.min(100, Math.round(usaceRatio))}%`}
+              unit="on pace"
+              actual={`${usace.currentHalfPercent}% complete · LPV done; PCCP/Complex in progress Apr 14-28`}
+              expected={`Target: ${Math.round(usaceExpected)}% by today, 100% by end of half`}
+              status={usaceStatus}
+              source={usace.source}
+              note={usace.reportSubmittedDate ? `Report submitted ${usace.reportSubmittedDate}` : "Submission pending"}
+            />
+          </div>
+        </section>
+
+        {/* Permits */}
+        <SectionSubheader title="Permits" />
 
         {/* Key Metrics */}
         <section className="mb-12">
@@ -78,7 +235,7 @@ export default function OperationsPage() {
 
         {/* Permit Pipeline */}
         <section className="mb-12">
-          <SectionSubheader title="Permit Processing Pipeline" />
+          <p className="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-4">Permit Processing Pipeline</p>
           <DataCard
             title={
               <div className="flex items-center justify-between">
@@ -172,7 +329,7 @@ export default function OperationsPage() {
 
         {/* Permits Chart */}
         <section className="mb-12">
-          <SectionSubheader title="Permits Issued" />
+          <p className="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-4">Permits Issued</p>
           <DataCard title="Monthly Permits Trend" source="SITREPs">
             <div className="h-64">
               <ResponsiveContainer width="100%" height="100%">
@@ -210,7 +367,7 @@ export default function OperationsPage() {
 
         {/* Maintenance Activities */}
         <section>
-          <SectionSubheader title="Routine Maintenance Activities" />
+          <p className="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-4">Routine Maintenance Activities</p>
           <DataCard title="Current Maintenance Work" source={operationsData.maintenanceSource}>
             <ul className="space-y-3">
               {operationsData.maintenanceActivities.map((activity, index) => (
