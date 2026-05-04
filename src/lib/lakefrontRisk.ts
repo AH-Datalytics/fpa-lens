@@ -199,10 +199,10 @@ export const RISK_THRESHOLDS = {
 // ============================================================================
 
 const RISK_ACTIONS: Record<RiskLevel, string> = {
-  GREEN: "Normal conditions — No action required",
-  YELLOW: "Risk developing — Monitor conditions",
-  ORANGE: "Elevated risk — Stage barricades",
-  RED: "High risk — Close roadway",
+  GREEN: "Normal conditions, no action required",
+  YELLOW: "Risk developing, monitor conditions",
+  ORANGE: "Elevated risk, stage barricades",
+  RED: "High risk, close roadway",
 };
 
 const RISK_DESCRIPTIONS: Record<RiskLevel, string> = {

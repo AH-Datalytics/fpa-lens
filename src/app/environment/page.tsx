@@ -618,7 +618,7 @@ export default function EnvironmentalPage() {
                       <p className="text-xs text-gray-400">
                         {risk.windPersistence.effectiveHours > 0
                           ? `~${risk.windPersistence.effectiveHours} of ${risk.windPersistence.hoursAnalyzed} hrs onshore above threshold (need 70%)`
-                          : `No onshore wind in last ${risk.windPersistence.hoursAnalyzed} hrs — currently ${risk.isOnshore ? "onshore" : "offshore"} (${current.wind.cardinal})`}
+                          : `No onshore wind in last ${risk.windPersistence.hoursAnalyzed} hrs (currently ${risk.isOnshore ? "onshore" : "offshore"}, ${current.wind.cardinal})`}
                       </p>
                     </div>
                   )}
@@ -1067,7 +1067,7 @@ export default function EnvironmentalPage() {
               On calm days with offshore wind, elevated surge is usually rain runoff, river inflow, or pressure
               noise rather than wind-driven flood risk, so it is suppressed.
             </p>
-            <p className="text-xs text-amber-600 mt-2">
+            <p className="text-xs text-gray-600 italic mt-2">
               These thresholds are preliminary and subject to calibration based on operational experience.
             </p>
           </DataCard>

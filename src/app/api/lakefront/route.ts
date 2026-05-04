@@ -701,6 +701,47 @@ export async function GET(request: Request) {
       risk.factors.push(`Note: Some data sources unavailable (${dataGaps.join(", ")})`);
     }
 
+    // Diagnostic log for elevated risk levels. Captures the raw inputs that
+    // drove the decision so we can reconstruct false alarms after the fact
+    // (Vercel retains function logs). Logged on every cache refresh while
+    // ORANGE+; the 5-min cache means at most ~12 entries/hour per event.
+    if (risk.level === "ORANGE" || risk.level === "RED") {
+      const next24h = forecast.slice(0, 24);
+      const peakForecastWind = next24h.reduce(
+        (m, f) => (f.windSpeed != null && f.windSpeed > m ? f.windSpeed : m),
+        0
+      );
+      const peakForecastWater = next24h.reduce(
+        (m, f) => (f.waterLevel != null && f.waterLevel > m ? f.waterLevel : m),
+        -Infinity
+      );
+      console.warn(
+        "[lakefront-risk]",
+        JSON.stringify({
+          level: risk.level,
+          factors: risk.factors,
+          wind: {
+            speed: current.wind.speed,
+            cardinal: current.wind.cardinal,
+            direction: current.wind.direction,
+            timestamp: current.wind.timestamp,
+          },
+          water: {
+            level: current.waterLevel.level,
+            predicted: current.waterLevel.predicted,
+            anomaly: current.waterLevel.anomaly,
+            timestamp: current.waterLevel.timestamp,
+          },
+          forecast24h: {
+            peakWind: peakForecastWind,
+            peakWater: peakForecastWater === -Infinity ? null : peakForecastWater,
+          },
+          dataGaps,
+          lastUpdated: new Date().toISOString(),
+        })
+      );
+    }
+
     // Store forecast snapshots for historical accuracy comparison.
     // Only the first forecast seen for each target hour is saved.
     if (forecast.length > 0) {

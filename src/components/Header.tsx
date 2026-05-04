@@ -74,7 +74,7 @@ export default function Header() {
                     <ChevronDown className="h-4 w-4" />
                   </Link>
                   {openDropdown === item.name && (
-                    <div className="absolute top-full left-0 pt-1 w-48 z-50">
+                    <div className="absolute top-full left-0 pt-1 w-max z-50">
                       <div className="bg-white rounded-md shadow-lg py-1">
                         {item.submenu.map((subitem) => (
                           <Link
