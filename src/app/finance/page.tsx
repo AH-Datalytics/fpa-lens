@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import {
   Info,
   ChevronUp,
@@ -8,6 +9,7 @@ import {
   CalendarDays,
   TrendingDown,
   TrendingUp,
+  ArrowRight,
 } from "lucide-react";
 import {
   BarChart,
@@ -535,6 +537,19 @@ export default function FinancialPage() {
         {/* Major Future Projects */}
         <section className="mb-12">
           <SectionSubheader title="Major Future Projects" />
+          <p className="text-sm text-gray-600 mb-2">
+            Long-term capital needs the Authority has identified but that are not yet funded
+            or scheduled. For projects currently under contract, in construction, or out for
+            bid, see{" "}
+            <Link
+              href="/engineering#current-capital-projects"
+              className="inline-flex items-center gap-1 text-[#21355a] font-medium underline decoration-[#21355a]/30 underline-offset-2 hover:decoration-[#21355a] transition-colors"
+            >
+              Current Capital Projects
+              <ArrowRight className="h-3 w-3" aria-hidden="true" />
+            </Link>{" "}
+            on the Engineering page.
+          </p>
           <DataCard title="Long-Term Capital Requirements" source="Oct 2025 SITREP">
             <div className="overflow-x-auto lg:overflow-visible">
               <table className="w-full min-w-[600px] lg:min-w-0 text-sm tabular-nums">
@@ -571,38 +586,6 @@ export default function FinancialPage() {
           </DataCard>
         </section>
 
-        {/* Capital Projects */}
-        <section className="mb-12">
-          <SectionSubheader title="Current Capital Projects" />
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {financialData.capitalProjects.map((project) => (
-              <div
-                key={project.name}
-                className="bg-white rounded-lg shadow-sm border border-gray-100 p-4"
-              >
-                <div className="flex items-start justify-between mb-2">
-                  <h4 className="font-semibold text-[#21355a]">{project.name}</h4>
-                  <span
-                    className={`text-xs px-2 py-1 rounded-full ${
-                      project.status === "Awarded"
-                        ? "bg-green-100 text-green-700"
-                        : project.status === "Design Complete"
-                        ? "bg-blue-100 text-blue-700"
-                        : project.status === "In Progress"
-                        ? "bg-amber-100 text-amber-700"
-                        : "bg-gray-100 text-gray-700"
-                    }`}
-                  >
-                    {project.status}
-                  </span>
-                </div>
-                <p className="text-sm text-gray-600">{project.description}</p>
-                <p className="text-xs text-gray-400 mt-2">Source: {project.source}</p>
-              </div>
-            ))}
-          </div>
-        </section>
-
         {/* Data Note */}
         <section>
           <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
@@ -615,7 +598,8 @@ export default function FinancialPage() {
                   multi-year project timing. Hover over any acronym for its full name.
                 </p>
                 <p>
-                  Future projects and capital projects sourced from SITREP reports.
+                  Future projects sourced from SITREP reports. Current capital projects
+                  live on the Engineering page.
                 </p>
               </div>
             </div>

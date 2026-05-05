@@ -15,7 +15,7 @@ import {
 import { SectionSubheader } from "@/components/SectionHeader";
 import DataCard from "@/components/DataCard";
 import KPICard from "@/components/KPICard";
-import { operationsData, readinessMetrics } from "@/data/siteData";
+import { financialData, operationsData, readinessMetrics } from "@/data/siteData";
 
 type StatusColor = "GREEN" | "AMBER" | "RED" | "NEUTRAL";
 
@@ -196,6 +196,41 @@ export default function OperationsPage() {
               status={usaceStatus}
               note={usace.reportSubmittedDate ? `Report submitted ${usace.reportSubmittedDate}` : "Submission pending"}
             />
+          </div>
+        </section>
+
+        {/* Current Capital Projects */}
+        <section id="current-capital-projects" className="mb-12 scroll-mt-24">
+          <SectionSubheader title="Current Capital Projects" />
+          <p className="text-sm text-gray-600 mb-4">
+            Major capital projects currently under contract, in construction, or in active bidding.
+          </p>
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {financialData.capitalProjects.map((project) => (
+              <div
+                key={project.name}
+                className="bg-white rounded-lg shadow-sm border border-gray-100 p-4"
+              >
+                <div className="flex items-start justify-between mb-2">
+                  <h4 className="font-semibold text-[#21355a]">{project.name}</h4>
+                  <span
+                    className={`text-xs px-2 py-1 rounded-full ${
+                      project.status === "Awarded"
+                        ? "bg-green-100 text-green-700"
+                        : project.status === "Design Complete"
+                        ? "bg-blue-100 text-blue-700"
+                        : project.status === "In Progress"
+                        ? "bg-amber-100 text-amber-700"
+                        : "bg-gray-100 text-gray-700"
+                    }`}
+                  >
+                    {project.status}
+                  </span>
+                </div>
+                <p className="text-sm text-gray-600">{project.description}</p>
+                <p className="text-xs text-gray-400 mt-2">Source: {project.source}</p>
+              </div>
+            ))}
           </div>
         </section>
 
