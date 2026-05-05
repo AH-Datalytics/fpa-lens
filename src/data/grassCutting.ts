@@ -145,9 +145,36 @@ export const grassCuttingData = {
       },
     },
     {
+      key: "LIGHT_BLUE",
+      name: "Southside MRGO & Citrus Back",
+      color: "#1e3a8a",
+      tint: "#3b82f6",
+      darkBackground: true,
+      operators: "1 to 3",
+      // 185 ac (Southside MRGO + Citrus Back from the original cutting
+      // plan) + 122 ac for the LPV-115 / Paris Rd. to Jourdan polygon
+      // Carlos confirmed in May 2026 is also Citrus Back Levee and is
+      // mowed twice a month (4 working days w/ 4 operators).
+      acres: 307,
+      monthlyFrequency: 2,
+      subAreas: [
+        "Southside MRGO",
+        "Citrus Back Levee",
+        "LPV-115 (Paris Rd. to Jourdan)",
+      ],
+      lastCycle: {
+        startDate: "March 17, 2026",
+        completionDate: "March 30, 2026",
+        totalDays: 14,
+        calendarDays: 14,
+        comments:
+          "Cycle 1 calendar days reflect Southside MRGO only; LPV-115 / Paris Rd. to Jourdan (122 ac) is not yet logged in the Mileage log OLD tab. Carlos confirmed it's done in 4 working days with 4 operators on the same 2x/mo cadence; folding it in will likely lengthen the combined Cycle 1 footprint once the spreadsheet starts tracking it.",
+      },
+    },
+    {
       key: "NAVY_BLUE",
       name: "Lakefront & Outfall Canals",
-      color: "#1e3a8a",
+      color: "#1d4ed8",
       tint: "#3b82f6",
       darkBackground: true,
       operators: 3,
@@ -170,8 +197,8 @@ export const grassCuttingData = {
     {
       key: "YELLOW",
       name: "Citrus Lakefront & Eastern Interior",
-      color: "#1d4ed8",
-      tint: "#3b82f6",
+      color: "#3b82f6",
+      tint: "#60a5fa",
       darkBackground: true,
       operators: 3,
       acres: 253,
@@ -191,25 +218,6 @@ export const grassCuttingData = {
         calendarDays: 23,
         comments:
           "One operator on intermittent FMLA, another out on FMLA during this cycle.",
-      },
-    },
-    {
-      key: "LIGHT_BLUE",
-      name: "Southside MRGO & Citrus Back",
-      color: "#3b82f6",
-      tint: "#60a5fa",
-      darkBackground: true,
-      operators: "1 to 3",
-      acres: 185,
-      monthlyFrequency: 2,
-      subAreas: ["Southside MRGO", "Citrus Back Levee"],
-      lastCycle: {
-        startDate: "March 17, 2026",
-        completionDate: "March 30, 2026",
-        totalDays: 14,
-        calendarDays: 14,
-        comments:
-          "Citrus Back Levee has no dedicated operator yet. Once Southside MRGO crews finish their assigned areas, they roll over and complete Citrus Back. The two will be split into separate zones once an additional operator is in place.",
       },
     },
     {
@@ -251,19 +259,6 @@ export const grassCuttingData = {
       },
     },
   ] as OldGrassCuttingZone[],
-
-  // LPV-115 ("Paris Rd. to Jourdan", roughly the GIWW North area) is in
-  // Kory's polygon shapefile with ~122 acres but was NOT on the original
-  // hand-drawn cutting plan, and no one (Jeff, Carlos, or the maintenance
-  // team) has confirmed it's actually mowed. Until that's confirmed, it
-  // renders as the gray "Unassigned / pending classification" footprint
-  // on the map and is left out of the 6 zones, the system-overview
-  // totals, and the monthly-target math.
-  pendingClassification: {
-    name: "LPV-115 (Paris Rd. to Jourdan)",
-    acres: 122,
-    note: "Not on the original cutting plan. Pending confirmation from the Director / maintenance team about whether this is mowed and at what frequency.",
-  },
 
   // East Jefferson Levee District zones — green spectrum (district color
   // family). Cycle dates from the "Mileage log EJLD" tab.

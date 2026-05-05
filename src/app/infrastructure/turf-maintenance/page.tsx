@@ -494,7 +494,7 @@ export default function GrassCuttingPage() {
             {district === "ALL"
               ? `Showing all three districts: Orleans (144 polygons across 6 zones, ~${oldAcres.toLocaleString()} acres), East Jefferson (63 polygons across 4 zones, ~${ejldAcres.toLocaleString()} acres), and Lake Borgne Basin (84 polygons across 4 zones, ~${lbbldAcres.toLocaleString()} acres).`
               : district === "OLD"
-                ? `Showing Orleans Levee District: 144 polygons across 6 zones, ~${oldAcres.toLocaleString()} acres. One ~122-acre polygon (LPV-115 / Paris Rd. to Jourdan) is shown in gray as "Pending classification" until the maintenance team confirms whether it's mowed.`
+                ? `Showing Orleans Levee District: 144 polygons across 6 zones, ~${oldAcres.toLocaleString()} acres.`
                 : district === "EJLD"
                   ? `Showing East Jefferson Levee District: 63 polygons across 4 zones, ~${ejldAcres.toLocaleString()} acres.`
                   : `Showing Lake Borgne Basin Levee District: 84 polygons across 4 zones, ~${lbbldAcres.toLocaleString()} acres.`}

@@ -276,23 +276,6 @@ export default function GrassCuttingMap({
                   </span>
                 </li>
               ))}
-              <li className="flex items-start gap-2 pt-1 border-t border-gray-100 mt-1">
-                <span
-                  className="w-3 h-3 rounded-sm mt-0.5 flex-shrink-0 border border-dashed"
-                  style={{
-                    backgroundColor: UNASSIGNED_COLOR,
-                    opacity: 0.5,
-                    borderColor: UNASSIGNED_COLOR,
-                  }}
-                  aria-hidden="true"
-                />
-                <span className="text-gray-500 italic">
-                  Pending classification{" "}
-                  <span className="text-gray-400 not-italic">
-                    · {grassCuttingData.pendingClassification.acres} ac
-                  </span>
-                </span>
-              </li>
             </ul>
           </>
         )}

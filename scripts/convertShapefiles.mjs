@@ -123,9 +123,11 @@ function normalizeOldCenterline(geojson) {
 
 /**
  * Mowing-area polygon shapefile. Per Kory's Apr 28 email, this is the
- * authoritative source for per-zone acreage and per-polygon names. The
- * empty-zone "Paris Rd. to Jourdan" polygon (LPV-115, ~122 ac) stays
- * untagged - we don't yet know whether it's mowed.
+ * authoritative source for per-zone acreage and per-polygon names. Per
+ * Carlos's May 2026 email, the LPV-115 "Paris Rd. to Jourdan" polygon
+ * is actually Citrus Back Levee and gets mowed twice a month, so we
+ * fold it into the Southside MRGO & Citrus Back zone (Kory's source
+ * shapefile still ships it with an empty Zone field).
  */
 
 // Manual acreage corrections from Kory's Apr 28 follow-up. The DBF
@@ -134,6 +136,15 @@ function normalizeOldCenterline(geojson) {
 // 185.6 ac). Drop this block once Kory regenerates the source shapefile.
 const ACREAGE_OVERRIDES = {
   'Florida Ave|S1 to Bienvenue': 2.6,
+};
+
+// Manual zone assignments for polygons that ship with an empty Zone
+// field. Drop entries here once Kory bakes them into the source
+// shapefile. Keyed by the per-polygon Name attribute.
+const ZONE_BY_NAME = {
+  // Carlos confirmed (May 2026) that LPV-115 is Citrus Back Levee and
+  // is mowed twice/month with the Southside MRGO crews.
+  'Paris Rd. to Jourdan': 'Southside MRGO & Citrus Back',
 };
 
 function normalizeMowingAreas(geojson) {
@@ -145,9 +156,9 @@ function normalizeMowingAreas(geojson) {
     if (zone === 'Lakefront and Outfall Canals') {
       zone = 'Lakefront & Outfall Canals';
     }
-    // Leave the LPV-115 polygon's zone empty so the map renders it as
-    // "Unassigned" until the Director / maintenance team confirms
-    // whether it's actually mowed.
+    if (!zone && name in ZONE_BY_NAME) {
+      zone = ZONE_BY_NAME[name];
+    }
     let acres = typeof p.Area === 'number' ? p.Area : Number(p.Area ?? 0);
     const overrideKey = `${zone}|${name}`;
     if (overrideKey in ACREAGE_OVERRIDES) {
