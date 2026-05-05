@@ -684,7 +684,17 @@ export const staffingData = {
         { heading: "Commitment to the Mission", text: "He is committed to keeping the main thing the main thing, ensuring the reliability, readiness, and long-term resilience of the region's flood protection system to protect the people, property and prosperity of this region and the state." },
       ],
     },
-    { name: "Kirk Ordoyne", title: "Executive Counsel", image: "/headshots/kirk-ordoyne.png", bio: "Bio pending." },
+    {
+      name: "Kirk Ordoyne",
+      title: "Executive Counsel",
+      image: "/headshots/kirk-ordoyne.png",
+      bio: [
+        { heading: "Current Role", text: "Kirk Ordoyne, Executive Counsel, oversees the Legal Department and counsels the Board of Commissioners." },
+        { heading: "Professional Experience", text: "Ordoyne has 20 years of legal experience working in government and private sectors. Before joining FPA, he served as Assistant General Counsel for Dallas ISD, one of the largest school districts in the U.S. with 240 schools, 23,000 employees, and 141,000 students. At Dallas ISD, he advised the Construction Services Department on all legal matters related to $5.1 billion in bond programs for school construction and renovations, worked extensively with five nationally recognized engineering firms managing construction projects, and served as lead attorney for the Real Estate, Purchasing, and IT Departments. He also provided legal advice to the Dallas board, superintendent, and executive leadership on important District legal matters. Earlier in his career, he worked as an attorney with the Port of New Orleans, the Jefferson Parish District Attorney's Office as an Assistant District Attorney, RR Donnelley & Sons Company, and the U.S. Small Business Administration Disaster Area Office. He was a member of the TASB Council of School Attorneys Construction Contracts Committee, drafting updates to AIA construction documents used nationwide." },
+        { heading: "Education / Credentials", text: "Licensed to practice law in Louisiana and Texas. Ordoyne holds a BA in Political Science and a Juris Doctor from Loyola University New Orleans, with Certificates in Civil Law and Common Law." },
+        { heading: "Commitment to the Mission", text: "He is committed to providing effective legal counsel to support the mission of the Authority's regional flood risk management system." },
+      ],
+    },
     { name: "Joshua T. Rondeno", title: "Superintendent of Police", image: "/headshots/josh-rondeno.png", bio: "Bio pending." },
     {
       name: "Ryan Foster, P.E.",
