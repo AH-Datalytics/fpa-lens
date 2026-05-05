@@ -62,6 +62,8 @@ export interface OtherDistrictZone {
   key: string;
   name: string;
   color: string;
+  /** Use light text on dark backgrounds. */
+  darkBackground: boolean;
   acres: number;
   operators: number;
   /** Target cycles per month. Assume 2 for EJLD/LBBLD until Carlos confirms exceptions. */
@@ -115,64 +117,31 @@ export const grassCuttingData = {
     note: "One Levee Foreman B follows both the tractor and Heavy Equipment crews so the teams stay together; full round-robin in ~15 days.",
   } as DistrictCycleSummary,
 
-  // Orleans Levee District zones - 6 colors matching the FPA's hand-drawn
-  // cutting plan map. Cycle 1 dates from the "Mileage log OLD" tab.
+  // Orleans Levee District zones — navy spectrum (district color family).
+  // Sorted by acreage (largest first); colors are assigned darkest →
+  // lightest so the largest zone gets the strongest shade. Legend and
+  // per-zone cards follow the same order. Cycle 1 dates from the
+  // "Mileage log OLD" tab. Zone keys (BLACK/NAVY_BLUE/etc.) are stable
+  // identifiers carried over from the original printed cutting plan and
+  // are referenced by the polygon→zone mapping in
+  // public/data/grass-cutting-zones.json — do not rename.
   zones: [
     {
-      key: "BLACK",
-      name: "Upper Protection",
-      color: "#1f2937",
-      tint: "#374151",
+      key: "ORANGE",
+      name: "New Orleans East",
+      color: "#21355a",
+      tint: "#3b5b96",
       darkBackground: true,
-      operators: 2,
-      acres: 62,
-      monthlyFrequency: 2,
-      subAreas: [
-        "Mississippi River East Bank",
-        "MRL (Jefferson Parish line to EB-00)",
-        "MRL (IHNC to St. Bernard Parish line)",
-      ],
+      operators: 3,
+      acres: 650,
+      monthlyFrequency: 1.5,
+      subAreas: ["LPV-108", "LPV-109", "LPV-110", "LPV-111"],
       lastCycle: {
         startDate: "March 17, 2026",
-        completionDate: "March 18, 2026",
-        totalDays: 2,
-        calendarDays: 2,
-      },
-    },
-    {
-      key: "GREEN",
-      name: "Florida Ave",
-      color: "#16a34a",
-      tint: "#22c55e",
-      darkBackground: true,
-      operators: 1,
-      acres: 57,
-      monthlyFrequency: 2,
-      subAreas: ["Florida Ave", "IHNC East (E-01 to MRL)"],
-      lastCycle: {
-        startDate: "March 17, 2026",
-        completionDate: "March 19, 2026",
-        totalDays: 3,
-        calendarDays: 3,
-      },
-    },
-    {
-      key: "LIGHT_BLUE",
-      name: "Southside MRGO & Citrus Back",
-      color: "#38bdf8",
-      tint: "#7dd3fc",
-      darkBackground: false,
-      operators: "1 to 3",
-      acres: 185,
-      monthlyFrequency: 2,
-      subAreas: ["Southside MRGO", "Citrus Back Levee"],
-      lastCycle: {
-        startDate: "March 17, 2026",
-        completionDate: "March 30, 2026",
-        totalDays: 14,
-        calendarDays: 14,
-        comments:
-          "Citrus Back Levee has no dedicated operator yet. Once Southside MRGO crews finish their assigned areas, they roll over and complete Citrus Back. The two will be split into separate zones once an additional operator is in place.",
+        completionDate: "April 15, 2026",
+        totalDays: 30,
+        calendarDays: 30,
+        comments: "Multiple tractor issues during this cycle.",
       },
     },
     {
@@ -201,9 +170,9 @@ export const grassCuttingData = {
     {
       key: "YELLOW",
       name: "Citrus Lakefront & Eastern Interior",
-      color: "#facc15",
-      tint: "#fde047",
-      darkBackground: false,
+      color: "#1d4ed8",
+      tint: "#3b82f6",
+      darkBackground: true,
       operators: 3,
       acres: 253,
       monthlyFrequency: 1.5,
@@ -225,21 +194,60 @@ export const grassCuttingData = {
       },
     },
     {
-      key: "ORANGE",
-      name: "New Orleans East",
-      color: "#ea580c",
-      tint: "#fb923c",
+      key: "LIGHT_BLUE",
+      name: "Southside MRGO & Citrus Back",
+      color: "#3b82f6",
+      tint: "#60a5fa",
       darkBackground: true,
-      operators: 3,
-      acres: 650,
-      monthlyFrequency: 1.5,
-      subAreas: ["LPV-108", "LPV-109", "LPV-110", "LPV-111"],
+      operators: "1 to 3",
+      acres: 185,
+      monthlyFrequency: 2,
+      subAreas: ["Southside MRGO", "Citrus Back Levee"],
       lastCycle: {
         startDate: "March 17, 2026",
-        completionDate: "April 15, 2026",
-        totalDays: 30,
-        calendarDays: 30,
-        comments: "Multiple tractor issues during this cycle.",
+        completionDate: "March 30, 2026",
+        totalDays: 14,
+        calendarDays: 14,
+        comments:
+          "Citrus Back Levee has no dedicated operator yet. Once Southside MRGO crews finish their assigned areas, they roll over and complete Citrus Back. The two will be split into separate zones once an additional operator is in place.",
+      },
+    },
+    {
+      key: "BLACK",
+      name: "Upper Protection",
+      color: "#60a5fa",
+      tint: "#93c5fd",
+      darkBackground: false,
+      operators: 2,
+      acres: 62,
+      monthlyFrequency: 2,
+      subAreas: [
+        "Mississippi River East Bank",
+        "MRL (Jefferson Parish line to EB-00)",
+        "MRL (IHNC to St. Bernard Parish line)",
+      ],
+      lastCycle: {
+        startDate: "March 17, 2026",
+        completionDate: "March 18, 2026",
+        totalDays: 2,
+        calendarDays: 2,
+      },
+    },
+    {
+      key: "GREEN",
+      name: "Florida Ave",
+      color: "#93c5fd",
+      tint: "#bfdbfe",
+      darkBackground: false,
+      operators: 1,
+      acres: 57,
+      monthlyFrequency: 2,
+      subAreas: ["Florida Ave", "IHNC East (E-01 to MRL)"],
+      lastCycle: {
+        startDate: "March 17, 2026",
+        completionDate: "March 19, 2026",
+        totalDays: 3,
+        calendarDays: 3,
       },
     },
   ] as OldGrassCuttingZone[],
@@ -257,15 +265,14 @@ export const grassCuttingData = {
     note: "Not on the original cutting plan. Pending confirmation from the Director / maintenance team about whether this is mowed and at what frequency.",
   },
 
-  // East Jefferson Levee District zones from Kory's May 1 2026 GIS +
-  // cutting-plan delivery. Acreage matches the email totals; cycle dates
-  // are from the "Mileage log EJLD" tab. Colors chosen to be visually
-  // distinct from OLD's 6-color palette.
+  // East Jefferson Levee District zones — green spectrum (district color
+  // family). Cycle dates from the "Mileage log EJLD" tab.
   ejldZones: [
     {
       key: "EJLD_LAKEFRONT",
       name: "EJ Lakefront Reach 1-5",
-      color: "#0369a1", // sky-700
+      color: "#166534", // green-800
+      darkBackground: true,
       acres: 360,
       operators: 5,
       monthlyFrequency: 2,
@@ -283,7 +290,8 @@ export const grassCuttingData = {
     {
       key: "EJLD_MRL",
       name: "EJ MRL",
-      color: "#65a30d", // lime-600
+      color: "#16a34a", // green-600
+      darkBackground: true,
       acres: 205,
       operators: 3,
       monthlyFrequency: 2,
@@ -298,7 +306,8 @@ export const grassCuttingData = {
     {
       key: "EJLD_WEST_RETURN",
       name: "EJ West Return",
-      color: "#9333ea", // purple-600
+      color: "#4ade80", // green-400
+      darkBackground: false,
       acres: 85,
       operators: 5,
       monthlyFrequency: 2,
@@ -316,7 +325,8 @@ export const grassCuttingData = {
     {
       key: "EJLD_EAST_RETURN",
       name: "EJ East Return",
-      color: "#c2410c", // orange-700
+      color: "#86efac", // green-300
+      darkBackground: false,
       acres: 10,
       operators: 1,
       monthlyFrequency: 2,
@@ -339,7 +349,8 @@ export const grassCuttingData = {
     {
       key: "LBBLD_LPV144_149",
       name: "LPV-144 through LPV-149",
-      color: "#4338ca", // indigo-700
+      color: "#78350f", // amber-900
+      darkBackground: true,
       acres: 592,
       operators: 5,
       monthlyFrequency: 2,
@@ -355,7 +366,8 @@ export const grassCuttingData = {
     {
       key: "LBBLD_NFL",
       name: "Non-Federal Back Levee/NFL",
-      color: "#0d9488", // teal-600
+      color: "#a16207", // yellow-700
+      darkBackground: true,
       acres: 316,
       operators: 5,
       monthlyFrequency: 2,
@@ -371,27 +383,10 @@ export const grassCuttingData = {
       },
     },
     {
-      key: "LBBLD_MRL",
-      name: "MRL",
-      color: "#b45309", // amber-700
-      acres: 167,
-      operators: 5,
-      monthlyFrequency: 2,
-      subAreas: [
-        "Mississippi River Levee at HWY 39 to Arabi (Orleans Parish line)",
-      ],
-      lastCycle: {
-        startDate: "April 20, 2026",
-        completionDate: "April 22, 2026",
-        totalDays: 3,
-        calendarDays: 3,
-        comments: "One day, 4 tractors, 1 driver on leave.",
-      },
-    },
-    {
       key: "LBBLD_LPV145",
       name: "LPV-145",
-      color: "#be185d", // pink-700
+      color: "#ca8a04", // yellow-600
+      darkBackground: false,
       acres: 278,
       operators: 5,
       monthlyFrequency: 2,
@@ -405,6 +400,25 @@ export const grassCuttingData = {
         calendarDays: 7,
         comments:
           "One day safety meeting; two days with 4 tractors, 1 driver on leave.",
+      },
+    },
+    {
+      key: "LBBLD_MRL",
+      name: "MRL",
+      color: "#eab308", // yellow-500
+      darkBackground: false,
+      acres: 167,
+      operators: 5,
+      monthlyFrequency: 2,
+      subAreas: [
+        "Mississippi River Levee at HWY 39 to Arabi (Orleans Parish line)",
+      ],
+      lastCycle: {
+        startDate: "April 20, 2026",
+        completionDate: "April 22, 2026",
+        totalDays: 3,
+        calendarDays: 3,
+        comments: "One day, 4 tractors, 1 driver on leave.",
       },
     },
   ] as OtherDistrictZone[],

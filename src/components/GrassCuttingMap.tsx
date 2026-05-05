@@ -57,10 +57,10 @@ function escapeHtml(value: unknown): string {
   return String(value ?? "").replace(/[&<>"']/g, (c) => HTML_ESCAPES[c]);
 }
 
-// Light purple stands out clearly against the gray basemap and the 6
-// confirmed zone colors; dashed outline reinforces "this is a question,
-// not a confirmed mowing zone."
-const UNASSIGNED_COLOR = "#a78bfa"; // violet-400
+// Neutral light gray reads as "no classification yet" against the
+// district color families; dashed outline reinforces "this is a
+// question, not a confirmed mowing zone."
+const UNASSIGNED_COLOR = "#9ca3af"; // gray-400
 
 function zoneColor(
   district: "OLD" | "LBBLD" | "EJLD",

@@ -41,7 +41,7 @@ Dashboard for the Southeast Louisiana Flood Protection Authority (FPA). Built fo
 - Per-zone Cycle 1 calendar days and comments are hand-entered in `src/data/grassCutting.ts` (keyed by zone). EJLD/LBBLD `monthlyFrequency` is currently assumed 2×/mo across the board pending Carlos confirmation.
 - Outstanding:
   - **EJLD/LBBLD cadence confirmation**: Carlos still needs to confirm which zones are 1.5×/mo vs 2×/mo. Currently all assumed 2.
-  - **LPV-115 / Paris Rd. to Jourdan (~122 ac)**: in OLD's mowing-area shapefile but not on the original cutting plan. Renders as a light purple dashed "Pending classification" footprint until Carlos confirms whether it's mowed and at what cadence.
+  - **LPV-115 / Paris Rd. to Jourdan (~122 ac)**: in OLD's mowing-area shapefile but not on the original cutting plan. Renders as a light gray dashed "Pending classification" footprint until Carlos confirms whether it's mowed and at what cadence.
   - **Florida Ave acreage override**: `ACREAGE_OVERRIDES` in `convertShapefiles.mjs` patches the S1 to Bienvenue polygon down to 2.6 ac (Kory confirmed the 185.6 ac value was an erroneous duplicate). Drop the override block once Kory ships an updated OLD shapefile with the fix baked in.
   - **Cycle 2 reporting**: Director's Q2 answer is to keep the same spreadsheet as source of truth, updated weekly and submitted Mondays for the prior week. Page wiring for Cycle 2 not yet built.
 - Origin: Ryan Foster (Dir. of Engineering) pitched the grass cutting progress map idea; reference was Jefferson Parish's canal grass maintenance map at canalgrassmaintenance.azurewebsites.us. Director Jeff Williams loved it and forwarded to AHD, which is what kicked off this feature.
