@@ -2,12 +2,11 @@
 
 import { useEffect, useState } from "react";
 import {
-  HardHat,
-  Target,
-  CheckCircle,
   Info,
   ShieldAlert,
   FileWarning,
+  AlertTriangle,
+  CheckCircle,
 } from "lucide-react";
 import {
   BarChart,
@@ -23,8 +22,7 @@ import {
 } from "recharts";
 import SectionHeader, { SectionSubheader } from "@/components/SectionHeader";
 import DataCard from "@/components/DataCard";
-import KPICard from "@/components/KPICard";
-import { safetyData, kpiMetrics } from "@/data/siteData";
+import { safetyData } from "@/data/siteData";
 
 interface YearlyTotal {
   year: number;
@@ -64,8 +62,14 @@ const MONTH_NAMES = [
   "Jan", "Feb", "Mar", "Apr", "May", "Jun",
   "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
 ];
+const MONTH_NAMES_FULL = [
+  "January", "February", "March", "April", "May", "June",
+  "July", "August", "September", "October", "November", "December",
+];
 
 const CURRENT_CY = 2026;
+const ANNUAL_GOAL = safetyData.goalMax;
+const MONTHLY_GOAL_PACE = ANNUAL_GOAL / 12;
 
 export default function SafetyPage() {
   const [data, setData] = useState<SafetyEvents | null>(null);
@@ -98,23 +102,53 @@ export default function SafetyPage() {
       monthNum: m.month,
       accidents: m.accidents,
       incidents: m.incidents,
-      noFault: m.noFault,
     }));
 
+  // Total Events excludes no-fault events from the public view per the
+  // simplified accidents/incidents framing.
   const yearlyTrendData = data.yearlyTotals.map((y) => ({
     year: y.year.toString(),
     accidents: y.accidents,
-    totalEvents: y.totalEvents,
+    totalEvents: y.accidents + y.incidents,
     lostTime: y.lostTime,
   }));
 
   const categorizedTypes = data.eventTypes
     .filter((t) => t.type !== "Not categorized")
+    .map((t) => ({
+      type: t.type,
+      count: t.accidents + t.incidents,
+      accidents: t.accidents,
+      incidents: t.incidents,
+    }))
+    .filter((t) => t.count > 0)
     .sort((a, b) => b.count - a.count);
 
   const availableYears = data.yearlyTotals.map((y) => y.year);
-  const ytdAccidents = currentYearData?.accidents ?? safetyData.ytdAtFaultAccidents;
-  const onTrack = ytdAccidents <= safetyData.goalMax;
+  const ytdAccidents = currentYearData?.accidents ?? safetyData.ytdAccidents;
+
+  // Pace logic: monthsElapsed = highest month with reported data this CY.
+  // Goal pace is 0.5 accidents/month (6/year). Above that pace is bad → red.
+  const monthsElapsed = Math.max(
+    1,
+    ...data.monthlyData.filter((m) => m.year === CURRENT_CY).map((m) => m.month),
+  );
+  const expectedAtPace = monthsElapsed * MONTHLY_GOAL_PACE;
+  const overPace = ytdAccidents > expectedAtPace;
+  const monthLabel = MONTH_NAMES[monthsElapsed - 1];
+  const currentRate = ytdAccidents / monthsElapsed;
+  const projected = currentRate * 12;
+
+  const headerBg = overPace ? "bg-red-50 border-red-100" : "bg-green-50 border-green-100";
+  const cardBorder = overPace ? "border-red-200" : "border-green-200";
+  const badgeBg = overPace ? "bg-red-100 text-red-800" : "bg-green-100 text-green-800";
+  const fillColor = overPace ? "bg-red-500" : "bg-green-500";
+  const StatusIcon = overPace ? AlertTriangle : CheckCircle;
+  const statusLabel = overPace ? "Over Pace" : "On Pace";
+
+  // Bar widths (clamp to 100 on the visual)
+  const actualPct = Math.min(100, (ytdAccidents / ANNUAL_GOAL) * 100);
+  const expectedPct = Math.min(100, (expectedAtPace / ANNUAL_GOAL) * 100);
 
   return (
     <div className="py-12">
@@ -125,39 +159,73 @@ export default function SafetyPage() {
           source="FPA Safety Officer & Event Logs (2022-2026, calendar year)"
         />
 
-        {/* Headline Metrics */}
+        {/* Headline Pace Card */}
         <section className="mb-12">
-          <div className="grid md:grid-cols-3 gap-6">
-            <KPICard
-              label="2026 YTD At-Fault Accidents"
-              value={ytdAccidents}
-              goal={kpiMetrics.ytdAccidents.goal}
-              goalLabel={kpiMetrics.ytdAccidents.goalLabel}
-              icon={<HardHat className="h-6 w-6" />}
-              source="FPA Safety Officer (calendar year YTD)"
-            />
-            <div className="bg-white rounded-xl shadow-md border border-gray-100 p-6">
-              <div className="flex items-start justify-between mb-3">
-                <span className="text-sm font-medium text-gray-500 uppercase tracking-wide">
-                  2026 Safety Goal
-                </span>
-                <Target className="h-6 w-6 text-[#21355a]" />
-              </div>
-              <p className="text-sm text-gray-700 leading-relaxed">{safetyData.cy26Goal}</p>
+          <div className={`bg-white rounded-2xl shadow-md border-2 ${cardBorder} overflow-hidden`}>
+            <div className={`${headerBg} px-6 py-3 border-b flex items-center justify-between`}>
+              <h3 className="font-semibold text-[#21355a]">
+                Accidents Through {MONTH_NAMES_FULL[monthsElapsed - 1]} {CURRENT_CY}
+              </h3>
+              <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wide ${badgeBg}`}>
+                <StatusIcon className="h-3.5 w-3.5" />
+                {statusLabel}
+              </span>
             </div>
-            <div className={`rounded-xl border p-6 ${onTrack ? "bg-green-50 border-green-200" : "bg-amber-50 border-amber-200"}`}>
-              <div className="flex items-center gap-3 mb-3">
-                <CheckCircle className={`h-8 w-8 ${onTrack ? "text-green-600" : "text-amber-600"}`} />
-                <span className={`text-lg font-bold ${onTrack ? "text-green-800" : "text-amber-800"}`}>
-                  {onTrack ? "On Track" : "Watch"}
-                </span>
+            <div className="p-6 grid md:grid-cols-3 gap-6">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-1">
+                  Accidents YTD
+                </p>
+                <div className="flex items-baseline gap-2">
+                  <span className="text-6xl font-bold text-[#21355a] leading-none">{ytdAccidents}</span>
+                  <span className="text-sm text-gray-500">of {ANNUAL_GOAL} annual goal</span>
+                </div>
               </div>
-              <p className={`text-sm ${onTrack ? "text-green-700" : "text-amber-700"}`}>
-                {ytdAccidents} at-fault accident{ytdAccidents !== 1 ? "s" : ""} YTD vs goal of {"\u2264"}{safetyData.goalMax}
-              </p>
-              <p className={`text-xs mt-1 ${onTrack ? "text-green-600" : "text-amber-600"}`}>
-                {currentYearData?.lostTime ?? 0} lost-time event{(currentYearData?.lostTime ?? 0) === 1 ? "" : "s"}
-              </p>
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-1">
+                  Current pace
+                </p>
+                <div className="flex items-baseline gap-2">
+                  <span className="text-3xl font-bold text-[#21355a]">{currentRate.toFixed(2)}</span>
+                  <span className="text-sm text-gray-500">/ month</span>
+                </div>
+                <p className="text-xs text-gray-500 mt-1">
+                  Goal pace: {MONTHLY_GOAL_PACE.toFixed(2)} / month
+                </p>
+                <p className="text-xs text-gray-500">
+                  Projects to ~{projected.toFixed(1)} for the year
+                </p>
+              </div>
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-2">
+                  YTD vs goal pace
+                </p>
+                <div className="relative h-3 bg-gray-100 rounded overflow-hidden">
+                  <div
+                    className={`absolute inset-y-0 left-0 ${fillColor} transition-all`}
+                    style={{ width: `${actualPct}%` }}
+                  />
+                  <div
+                    className="absolute -top-1 -bottom-1 w-px bg-gray-900"
+                    style={{ left: `${expectedPct}%` }}
+                    aria-hidden="true"
+                  />
+                </div>
+                <div className="relative mt-1.5 h-4 text-[10px]">
+                  <span className="absolute left-0 text-gray-400">0</span>
+                  <span
+                    className="absolute -translate-x-1/2 text-gray-600 whitespace-nowrap"
+                    style={{ left: `${expectedPct}%` }}
+                  >
+                    {expectedAtPace.toFixed(1)} expected
+                  </span>
+                  <span className="absolute right-0 text-gray-400">{ANNUAL_GOAL} annual</span>
+                </div>
+                <p className="text-xs text-gray-600 mt-4 leading-snug">
+                  {ytdAccidents} actual vs. {expectedAtPace.toFixed(1)} expected through {monthLabel}.{" "}
+                  Goal: {safetyData.cy26Goal}
+                </p>
+              </div>
             </div>
           </div>
         </section>
@@ -165,7 +233,7 @@ export default function SafetyPage() {
         {/* Definitions */}
         <section className="mb-12">
           <SectionSubheader title="Definitions" />
-          <div className="grid md:grid-cols-2 gap-6 mb-4">
+          <div className="grid md:grid-cols-2 gap-6">
             <div className="bg-red-50 rounded-xl border border-red-200 p-6">
               <div className="flex items-start gap-3">
                 <ShieldAlert className="h-6 w-6 text-red-800 flex-shrink-0 mt-0.5" />
@@ -192,27 +260,13 @@ export default function SafetyPage() {
               </div>
             </div>
           </div>
-          <div className="bg-gray-50 rounded-xl border border-gray-200 p-5">
-            <div className="flex items-start gap-3">
-              <Info className="h-5 w-5 text-gray-400 flex-shrink-0 mt-0.5" />
-              <p className="text-sm text-gray-600 leading-relaxed">
-                <span className="font-semibold text-gray-700">At-fault vs. no-fault</span>{" "}
-                is a separate qualifier that applies to either category. An accident or
-                incident is no-fault when the FPA employee was not the cause (for example,
-                struck by another driver). All events are tracked for visibility, but the
-                headline performance metric and the year-over-year accident chart count
-                only at-fault accidents, consistent with industry practice for evaluating
-                preventable safety performance.
-              </p>
-            </div>
-          </div>
         </section>
 
         {/* Multi-Year Trend */}
         <section className="mb-12">
           <SectionSubheader title="Multi-Year Safety Trends" />
           <div className="grid lg:grid-cols-2 gap-6">
-            <DataCard title="At-Fault Accidents by Year" source="FPA Event Logs (calendar year)">
+            <DataCard title="Accidents by Year" source="FPA Event Logs (calendar year)">
               <div className="h-72">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={yearlyTrendData}>
@@ -223,16 +277,15 @@ export default function SafetyPage() {
                     <Bar
                       dataKey="accidents"
                       fill="#991b1b"
-                      name="At-Fault Accidents"
+                      name="Accidents"
                       radius={[4, 4, 0, 0]}
                     />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
               <p className="text-xs text-gray-500 mt-3">
-                OSHA-recordable accidents where the FPA employee was at fault. Incidents
-                and no-fault events are tracked separately and are not counted here, per
-                the Safety Officer&apos;s recommendation for fair year-over-year reporting.
+                OSHA-recordable accidents only. Incidents are tracked in the breakdown
+                table below.
               </p>
             </DataCard>
             <DataCard
@@ -242,7 +295,7 @@ export default function SafetyPage() {
                   <span className="relative cursor-default border-b border-dashed border-gray-400 group">
                     Lost Time Events
                     <span className="invisible group-hover:visible absolute left-0 top-full mt-2 w-64 rounded-lg bg-gray-800 text-white text-xs font-normal p-3 leading-relaxed shadow-lg z-50">
-                      Any accident or incident where the injury or illness causes the employee to miss one or more subsequent workdays.
+                      Any accident or incident where the injury or illness causes the employee to miss one or more subsequent workdays. Lost time is a subset of injuries.
                     </span>
                   </span>
                 </>
@@ -277,7 +330,7 @@ export default function SafetyPage() {
                 </ResponsiveContainer>
               </div>
               <p className="text-xs text-gray-500 mt-3">
-                2026 data is calendar year-to-date.
+                Total Events = Accidents + Incidents. 2026 data is calendar year-to-date.
               </p>
             </DataCard>
           </div>
@@ -286,7 +339,7 @@ export default function SafetyPage() {
             <DataCard
               title="Annual Event Breakdown"
               source="FPA Event Logs (calendar year)"
-              note="Includes all classifications (Accidents, Incidents, No-Fault) for transparency. The headline Accidents-by-Year chart above counts only at-fault OSHA-recordable accidents per the Safety Officer's framework. N/A events are excluded everywhere."
+              note="OSHA-recordable accidents and tracked incidents. Lost time is a subset of injuries shown for severity context."
             >
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
@@ -294,20 +347,17 @@ export default function SafetyPage() {
                     <tr className="border-b border-gray-200">
                       <th className="text-left py-3 font-semibold text-gray-700">Year</th>
                       <th className="text-center py-3 font-semibold text-gray-700">Total Events</th>
-                      <th className="text-center py-3 font-semibold text-gray-700">At-Fault Accidents</th>
-                      <th className="text-center py-3 font-semibold text-gray-700">At-Fault Incidents</th>
-                      <th className="text-center py-3 font-semibold text-gray-700">No-Fault</th>
+                      <th className="text-center py-3 font-semibold text-gray-700">Accidents</th>
+                      <th className="text-center py-3 font-semibold text-gray-700">Incidents</th>
                       <th className="text-center py-3 font-semibold text-gray-700">
                         <span className="relative cursor-default border-b border-dashed border-gray-400 group">
                           Lost Time
                           <span className="invisible group-hover:visible absolute right-0 top-full mt-2 w-64 rounded-lg bg-gray-800 text-white text-xs font-normal p-3 leading-relaxed shadow-lg z-50">
-                            Any accident or incident where the injury or illness causes the employee to miss one or more subsequent workdays.
+                            Any accident or incident where the injury or illness causes the employee to miss one or more subsequent workdays. Lost time is a subset of injuries.
                           </span>
                         </span>
                       </th>
                       <th className="text-center py-3 font-semibold text-gray-700">Injuries</th>
-                      <th className="text-center py-3 font-semibold text-gray-700">FPA Damage</th>
-                      <th className="text-center py-3 font-semibold text-gray-700">Private Damage</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -319,14 +369,13 @@ export default function SafetyPage() {
                             <span className="text-xs text-gray-400 ml-1">(YTD)</span>
                           )}
                         </td>
-                        <td className="py-3 text-center text-[#21355a] font-semibold">{y.totalEvents}</td>
+                        <td className="py-3 text-center text-[#21355a] font-semibold">
+                          {y.accidents + y.incidents}
+                        </td>
                         <td className="py-3 text-center font-semibold text-red-800">{y.accidents}</td>
                         <td className="py-3 text-center text-orange-700">{y.incidents}</td>
-                        <td className="py-3 text-center text-gray-400">{y.noFault}</td>
                         <td className="py-3 text-center text-gray-600">{y.lostTime}</td>
                         <td className="py-3 text-center text-gray-600">{y.injuries}</td>
-                        <td className="py-3 text-center text-gray-600">{y.propertyDamageFpa}</td>
-                        <td className="py-3 text-center text-gray-600">{y.propertyDamagePrivate}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -372,19 +421,13 @@ export default function SafetyPage() {
                     dataKey="accidents"
                     stackId="stack"
                     fill="#991b1b"
-                    name="At-Fault Accidents"
+                    name="Accidents"
                   />
                   <Bar
                     dataKey="incidents"
                     stackId="stack"
                     fill="#fb923c"
-                    name="At-Fault Incidents"
-                  />
-                  <Bar
-                    dataKey="noFault"
-                    stackId="stack"
-                    fill="#d1d5db"
-                    name="No-Fault"
+                    name="Incidents"
                     radius={[4, 4, 0, 0]}
                   />
                 </BarChart>
@@ -410,9 +453,8 @@ export default function SafetyPage() {
                     <YAxis type="category" dataKey="type" width={120} tick={{ fontSize: 11 }} />
                     <Tooltip />
                     <Legend />
-                    <Bar dataKey="accidents" stackId="stack" fill="#991b1b" name="At-Fault Accidents" />
-                    <Bar dataKey="incidents" stackId="stack" fill="#fb923c" name="At-Fault Incidents" />
-                    <Bar dataKey="noFault" stackId="stack" fill="#d1d5db" name="No-Fault" radius={[0, 4, 4, 0]} />
+                    <Bar dataKey="accidents" stackId="stack" fill="#991b1b" name="Accidents" />
+                    <Bar dataKey="incidents" stackId="stack" fill="#fb923c" name="Incidents" radius={[0, 4, 4, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
@@ -432,11 +474,10 @@ export default function SafetyPage() {
                   employee privacy.
                 </p>
                 <p>
-                  Source data: FPA Event Logs 2022-2026, reclassified by the Safety Officer
-                  in April 2026. Each event is tagged Accident (at-fault, OSHA-recordable),
-                  Incident (at-fault, not recordable), or No-Fault. A small number of
-                  events flagged N/A by the Safety Officer (reporting errors and
-                  duplicates) are excluded from all metrics.
+                  Source data: FPA Event Logs 2022-2026, classified by the Safety Officer
+                  in April 2026. Each event is tagged Accident (OSHA-recordable) or
+                  Incident (not recordable). Events flagged N/A by the Safety Officer
+                  (reporting errors and duplicates) are excluded from all metrics.
                 </p>
                 <p>
                   Reporting period is the calendar year (Jan 1 - Dec 31). 2026 figures are

@@ -135,7 +135,7 @@ export const kpiMetrics = {
     source: "Apr 2026 SITREP",
   },
   ytdAccidents: {
-    label: "YTD At-Fault Accidents",
+    label: "YTD Recordable Accidents",
     value: 3,
     goal: 6,
     goalLabel: "2026 Goal: ≤6",
@@ -526,8 +526,8 @@ export const safetyData = {
   // Per Director and Safety Officer direction, the page is reported by
   // calendar year (Jan 1 - Dec 31). YTD figures cover Jan 1 of the current
   // year through the latest event log entry.
-  cy26Goal: "≤6 at-fault accidents and maintain zero lost-time, fatal, or catastrophic events",
-  ytdAtFaultAccidents: 3,
+  cy26Goal: "≤6 recordable accidents for the year",
+  ytdAccidents: 3,
   goalMax: 6,
   source: "FPA Safety Officer reclassified event log, Apr 2026",
 };
