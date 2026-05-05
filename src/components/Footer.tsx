@@ -86,8 +86,12 @@ export default function Footer() {
         {/* Bottom bar */}
         <div className="mt-8 pt-8 border-t border-white/20">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 text-sm text-blue-200">
-            <p>&copy; {new Date().getFullYear()} {siteConfig.organizationShort}</p>
-            <p className="text-center">
+            <p className="order-1 sm:order-1">&copy; {new Date().getFullYear()} {siteConfig.organizationShort}</p>
+            <p className="order-2 sm:order-3 flex items-center gap-2 sm:justify-end">
+              <span className="inline-block w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
+              Data last updated: {siteConfig.lastUpdated}
+            </p>
+            <p className="order-3 sm:order-2 text-center">
               Built by{" "}
               <a
                 href="https://ahdatalytics.com"
@@ -97,10 +101,6 @@ export default function Footer() {
               >
                 AH Datalytics
               </a>
-            </p>
-            <p className="flex items-center gap-2 sm:justify-end">
-              <span className="inline-block w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
-              Data last updated: {siteConfig.lastUpdated}
             </p>
           </div>
         </div>

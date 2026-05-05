@@ -36,7 +36,7 @@ export default function WhatWeDoPage() {
               <p className="text-blue-100 text-sm leading-relaxed mb-5">
                 The <span className="text-white font-semibold">{formatCurrency(14600000000)}</span> HSDRRS provides defense against a 100-year storm surge for Orleans, Jefferson, and St. Bernard Parishes.
               </p>
-              <div className="mt-auto grid grid-cols-4 gap-2">
+              <div className="mt-auto grid grid-cols-2 sm:grid-cols-4 gap-2">
                 {([
                   { Icon: Waves, label: "Levees", sub: "Earthen barriers" },
                   { Icon: Building2, label: "Floodwalls", sub: "Concrete barriers" },
@@ -60,7 +60,7 @@ export default function WhatWeDoPage() {
                 The east-bank river levees and floodwalls in Orleans and Jefferson Parishes are part of this national system.{" "}
                 <span className="text-white font-semibold">SLFPA-E operates and maintains it locally</span>.
               </p>
-              <div className="mt-auto grid grid-cols-4 gap-2">
+              <div className="mt-auto grid grid-cols-2 sm:grid-cols-4 gap-2">
                 {([
                   { Icon: Waves, label: "River Levees", sub: "Earthen embankments" },
                   { Icon: Building2, label: "Floodwalls", sub: "Concrete barriers" },
