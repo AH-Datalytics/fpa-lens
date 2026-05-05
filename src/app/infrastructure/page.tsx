@@ -27,6 +27,7 @@ import {
   infrastructureAssets,
   systemReadiness,
   readinessMetrics,
+  kpiMetrics,
 } from "@/data/siteData";
 import { grassCuttingData } from "@/data/grassCutting";
 
@@ -102,24 +103,37 @@ function ReadinessCard({
   big,
   hideStatusBorder,
   cta,
+  topCta,
+  progress,
+  reservePaceSpace,
+  dataAsOf,
 }: {
   title: string;
   description?: string;
-  mandate: string;
+  mandate?: string;
   period?: string;
   icon: React.ComponentType<{ className?: string }>;
-  actual: string;
+  actual?: string;
   expected?: string;
   unit?: string;
   status: StatusColor;
-  source: string;
+  source?: string;
   note?: string;
   big: string;
   hideStatusBorder?: boolean;
   cta?: string;
+  topCta?: string;
+  progress?: { actual: number; expected: number; total: number; unit: string };
+  reservePaceSpace?: boolean;
+  dataAsOf?: string;
 }) {
   const s = statusStyles(status);
   const outerBorder = hideStatusBorder ? "border-transparent" : s.border;
+  const badgeText = status === "NEUTRAL" ? "Not Active" : status;
+  const actualPct = progress && progress.total > 0 ? (progress.actual / progress.total) * 100 : 0;
+  const expectedPct = progress && progress.total > 0 ? (progress.expected / progress.total) * 100 : 0;
+  const clampedActual = Math.max(0, Math.min(100, actualPct));
+  const clampedExpected = Math.max(0, Math.min(100, expectedPct));
   return (
     <div className={`bg-white rounded-xl shadow-md border ${outerBorder} overflow-hidden h-full flex flex-col`}>
       <div className={`${s.bg} px-5 py-3 border-b ${s.border} flex items-center justify-between`}>
@@ -129,10 +143,16 @@ function ReadinessCard({
         </div>
         <span className={`inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${s.label}`}>
           <span className={`h-1.5 w-1.5 rounded-full ${s.dot}`} />
-          {status === "NEUTRAL" ? "Not Active" : status}
+          {badgeText}
         </span>
       </div>
-      <div className="p-5 flex-1 flex flex-col">
+      <div className="relative p-5 flex-1 flex flex-col">
+        {topCta && (
+          <span className="absolute top-3 right-4 inline-flex items-center gap-1 text-xs font-medium text-[#21355a] hover:underline">
+            {topCta}
+            <ArrowRight className="h-3 w-3" aria-hidden="true" />
+          </span>
+        )}
         {description && (
           <p className="text-xs text-gray-600 leading-snug mb-3">{description}</p>
         )}
@@ -140,8 +160,48 @@ function ReadinessCard({
           <span className="text-3xl font-bold text-[#21355a]">{big}</span>
           {unit && <span className="text-sm text-gray-500">{unit}</span>}
         </div>
+        {progress && (
+          <div
+            className="mt-2 mb-3"
+            role="img"
+            aria-label={`${progress.actual} of ${progress.total} ${progress.unit} complete; ${progress.expected} expected by report date`}
+          >
+            {/* Bar */}
+            <div className="relative h-3 rounded bg-gray-100 overflow-hidden">
+              <div
+                className={`h-full transition-all ${s.dot}`}
+                style={{ width: `${clampedActual}%` }}
+              />
+              {progress.expected < progress.total && (
+                <div
+                  className="absolute -top-1 -bottom-1 w-px bg-gray-900"
+                  style={{ left: `${clampedExpected}%` }}
+                  aria-hidden="true"
+                />
+              )}
+            </div>
+            {/* Axis row: 0, expected (centered on tick), total */}
+            <div className="relative mt-1.5 h-4 text-[10px] leading-none">
+              <span className="absolute left-0 text-gray-400">0</span>
+              {progress.expected < progress.total && (
+                <span
+                  className="absolute -translate-x-1/2 text-gray-600 whitespace-nowrap"
+                  style={{ left: `${clampedExpected}%` }}
+                >
+                  {progress.expected} expected
+                </span>
+              )}
+              <span className="absolute right-0 text-gray-400">
+                {progress.total} {progress.unit}
+              </span>
+            </div>
+          </div>
+        )}
+        {!progress && reservePaceSpace && (
+          <div className="mt-2 mb-3 h-[34px]" aria-hidden="true" />
+        )}
         <div className="text-xs text-gray-600 space-y-1">
-          <div>Actual: {actual}</div>
+          {actual && <div>Actual: {actual}</div>}
           {expected && <div>Expected: {expected}</div>}
           {period && (
             <div className="flex items-center gap-1 text-gray-500">
@@ -149,10 +209,16 @@ function ReadinessCard({
               {period}
             </div>
           )}
-          <div className="text-gray-500">Mandate: {mandate}</div>
+          {mandate && <div className="text-gray-500">Mandate: {mandate}</div>}
           {note && <div className="text-gray-500 italic pt-1">{note}</div>}
         </div>
-        <p className="text-[10px] text-gray-400 mt-3">Source: {source}</p>
+        {dataAsOf && (
+          <div className="text-xs text-gray-500 flex items-center gap-1">
+            <CalendarDays className="h-3 w-3" />
+            Data as of {dataAsOf}
+          </div>
+        )}
+        {source && <p className="text-[10px] text-gray-400 mt-3">Source: {source}</p>}
         {cta && (
           <div className="mt-3 pt-3 border-t border-gray-100 flex items-center justify-end gap-1 text-xs font-medium text-[#21355a]">
             {cta}
@@ -196,10 +262,18 @@ export default function OurSystemPage() {
   const ve = readinessMetrics.valveExercises;
   const veStatus = statusFromRatio(ve.percentComplete);
 
-  // Grass cutting cycle progress. Cycle 1 (initial cut on the new
-  // plan) is complete across all 6 OLD zones; Cycle 2 not yet wired.
-  const gcCompleted = grassCuttingData.zones.length;
-  const gcTotal = grassCuttingData.zones.length;
+  // Grass cutting cycle progress: Cycle 1 (initial cut on the new
+  // twice-per-month plan) is complete across every zone in all three
+  // districts. Card on this page rolls the three districts up so the
+  // count reflects the system, not just OLD.
+  const gcZonesAll = [
+    ...grassCuttingData.zones,
+    ...grassCuttingData.ejldZones,
+    ...grassCuttingData.lbbldZones,
+  ];
+  const gcCompleted = gcZonesAll.length;
+  const gcTotal = gcZonesAll.length;
+  const gcAcres = Math.round(gcZonesAll.reduce((sum, z) => sum + z.acres, 0));
   const gcStatus: StatusColor = "GREEN";
 
   return (
@@ -379,19 +453,21 @@ export default function OurSystemPage() {
               <div className="grid md:grid-cols-3 gap-4">
                 <ReadinessCard
                   title="Hurricane Floodgate Inspections"
-                  mandate={hg.mandate}
                   period="Annual &middot; Jan 1 to May 31"
                   icon={Shield}
-                  big={`${hg.percentComplete}%`}
-                  actual={`${hg.completed} of ${hg.total} gates`}
-                  expected={`${Math.round(hgExpected)} gates (${Math.round((hgExpected / hg.total) * 100)}%) by report date`}
+                  big={`${Math.round(hgRatio)}%`}
+                  unit="of pace"
+                  actual={`${hg.completed} of ${hg.total} gates (${hg.percentComplete}%)`}
                   status={hgStatus}
-                  source={hg.source}
+                  progress={{
+                    actual: hg.completed,
+                    expected: Math.round(hgExpected),
+                    total: hg.total,
+                    unit: "gates",
+                  }}
                 />
                 <ReadinessCard
                   title="River Floodgate Inspections"
-                  description={`Annual federal inspection of all ${rg.total} river floodgates, conducted October 1 through December 31 each year. Outside the window, the card reflects whether the previous cycle was completed.`}
-                  mandate={rg.mandate}
                   period="Annual &middot; Oct 1 to Dec 31"
                   icon={Shield}
                   big={
@@ -401,6 +477,7 @@ export default function OurSystemPage() {
                         ? "100%"
                         : "Upcoming"
                   }
+                  unit={rgInSeason || rgPriorCycleComplete ? "complete" : undefined}
                   actual={
                     rgInSeason
                       ? `${rg.completed} of ${rg.total} gates`
@@ -408,25 +485,32 @@ export default function OurSystemPage() {
                         ? `All ${rg.total} gates inspected last cycle (${rg.lastCycleLabel})`
                         : `${rg.completed} of ${rg.total} gates`
                   }
-                  expected={
-                    rgInSeason
-                      ? `${Math.round(rgExpected)} gates by report date`
-                      : rgPriorCycleComplete
-                        ? "Next cycle begins Oct 1"
-                        : undefined
-                  }
                   status={rgStatus}
-                  source={rg.source}
+                  progress={{
+                    actual: rgInSeason
+                      ? rg.completed
+                      : rgPriorCycleComplete
+                        ? rg.total
+                        : 0,
+                    expected: rgInSeason ? Math.round(rgExpected) : rg.total,
+                    total: rg.total,
+                    unit: "gates",
+                  }}
                 />
                 <ReadinessCard
                   title="Quarterly Valve Exercises"
-                  mandate={ve.mandate}
                   period="Quarterly &middot; Ongoing"
                   icon={Wrench}
                   big={`${ve.percentComplete}%`}
+                  unit="complete"
                   actual={ve.currentQuarterStatus}
                   status={veStatus}
-                  source={ve.source}
+                  progress={{
+                    actual: Math.round((ve.percentComplete / 100) * 104),
+                    expected: 104,
+                    total: 104,
+                    unit: "valves",
+                  }}
                 />
               </div>
               <Link
@@ -445,8 +529,24 @@ export default function OurSystemPage() {
             </div>
 
             <div>
-              <p className="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-3">Turf Maintenance</p>
-              <div className="max-w-sm">
+              <p className="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-3">Assets</p>
+              <div className="grid md:grid-cols-3 gap-4">
+                <ReadinessCard
+                  title="PCCP Pumps"
+                  icon={Droplets}
+                  big={`${kpiMetrics.pccpPumps.value}/${kpiMetrics.pccpPumps.total}`}
+                  unit="available"
+                  status="GREEN"
+                  dataAsOf="April 2026"
+                />
+                <ReadinessCard
+                  title="Complex Structures"
+                  icon={Ship}
+                  big={`${readinessMetrics.navigableFloodgatesOperable.operable}/${readinessMetrics.navigableFloodgatesOperable.total}`}
+                  unit="operable"
+                  status="GREEN"
+                  dataAsOf="April 2026"
+                />
                 <Link
                   href="/infrastructure/turf-maintenance"
                   className="block h-full rounded-xl transition-shadow hover:shadow-lg"
@@ -454,17 +554,13 @@ export default function OurSystemPage() {
                 >
                   <ReadinessCard
                     title="Monthly Turf Maintenance"
-                    description="Routine internal levee turf maintenance, performed twice per month on a rolling six-zone cycle."
-                    mandate="Internal O&amp;M schedule (twice per month)"
-                    period={`${grassCuttingData.oldCycle1.label} complete \u00B7 ${grassCuttingData.oldCycle1.workingDays} working days`}
+                    mandate="Twice per month (internal O&amp;M)"
                     icon={Sprout}
                     big={`${gcCompleted} / ${gcTotal}`}
-                    unit="zones complete"
-                    actual={`All ${gcTotal} OLD zones cut in Cycle 1`}
-                    expected="Awaiting Cycle 2 schedule"
+                    unit="zones cut"
+                    actual={`Cycle 1 complete across all 3 districts (~${gcAcres.toLocaleString()} ac)`}
                     status={gcStatus}
-                    source={grassCuttingData.source}
-                    cta="View full page"
+                    topCta="View full page"
                   />
                 </Link>
               </div>

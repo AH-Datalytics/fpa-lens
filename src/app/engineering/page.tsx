@@ -72,7 +72,7 @@ function ReadinessCard({
   expected?: string;
   unit?: string;
   status: StatusColor;
-  source: string;
+  source?: string;
   note?: string;
   big: string;
 }) {
@@ -109,7 +109,7 @@ function ReadinessCard({
           <div className="text-gray-500">Mandate: {mandate}</div>
           {note && <div className="text-gray-500 italic pt-1">{note}</div>}
         </div>
-        <p className="text-[10px] text-gray-400 mt-3">Source: {source}</p>
+        {source && <p className="text-[10px] text-gray-400 mt-3">Source: {source}</p>}
       </div>
     </div>
   );
@@ -181,7 +181,6 @@ export default function OperationsPage() {
               actual={`${cpra.currentQuarter} field inspections complete`}
               expected={`${Math.round(cpraExpected)}% by report date (100% by end of quarter)`}
               status={cpraStatus}
-              source={cpra.source}
               note={cpra.reportSubmittedDate ? `Report submitted to CPRA ${cpra.reportSubmittedDate}` : "CPRA submission date pending"}
             />
             <ReadinessCard
@@ -195,7 +194,6 @@ export default function OperationsPage() {
               actual={`${usace.currentHalfPercent}% complete · LPV done; PCCP/Complex in progress Apr 14-28`}
               expected={`Target: ${Math.round(usaceExpected)}% by today, 100% by end of half`}
               status={usaceStatus}
-              source={usace.source}
               note={usace.reportSubmittedDate ? `Report submitted ${usace.reportSubmittedDate}` : "Submission pending"}
             />
           </div>
