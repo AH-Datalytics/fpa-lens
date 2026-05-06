@@ -125,19 +125,33 @@ export default function Header() {
               {navigation.map((item) =>
                 item.submenu ? (
                   <div key={item.name}>
-                    <button
-                      onClick={() =>
-                        setOpenDropdown(openDropdown === item.name ? null : item.name)
-                      }
-                      className="flex items-center justify-between w-full px-3 py-2 text-base font-medium text-white/90 hover:text-white hover:bg-white/10 rounded-md"
-                    >
-                      {item.name}
-                      <ChevronDown
-                        className={`h-4 w-4 transition-transform ${
-                          openDropdown === item.name ? "rotate-180" : ""
-                        }`}
-                      />
-                    </button>
+                    <div className="flex items-stretch w-full rounded-md hover:bg-white/10">
+                      <Link
+                        href={item.href}
+                        onClick={() => {
+                          setMobileMenuOpen(false);
+                          setOpenDropdown(null);
+                        }}
+                        className="flex-1 px-3 py-2 text-base font-medium text-white/90 hover:text-white"
+                      >
+                        {item.name}
+                      </Link>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setOpenDropdown(openDropdown === item.name ? null : item.name)
+                        }
+                        aria-expanded={openDropdown === item.name}
+                        aria-label={`Toggle ${item.name} submenu`}
+                        className="px-3 py-2 text-white/90 hover:text-white"
+                      >
+                        <ChevronDown
+                          className={`h-4 w-4 transition-transform ${
+                            openDropdown === item.name ? "rotate-180" : ""
+                          }`}
+                        />
+                      </button>
+                    </div>
                     {openDropdown === item.name && (
                       <div className="pl-4 space-y-1">
                         {item.submenu.map((subitem) => (
