@@ -99,7 +99,7 @@ export default function OurTeamPage() {
             </div>
 
             <div className="mb-6">
-              <ZoneLegend thresholds={{ green: "≥ 75% filled", amber: "50–74% filled", red: "< 50% filled" }} />
+              <ZoneLegend thresholds={{ green: "≥ 85% filled", amber: "75–84% filled", red: "< 75% filled" }} />
             </div>
 
             <div className="mb-5">
@@ -190,7 +190,7 @@ export default function OurTeamPage() {
             </div>
 
             <div className="mb-6">
-              <ZoneLegend thresholds={{ green: "≥ 85% filled", amber: "75–84% filled", red: "< 75% filled" }} />
+              <ZoneLegend thresholds={{ green: "≥ 75% filled", amber: "50–74% filled", red: "< 50% filled" }} />
             </div>
 
             <div className="mb-5">
