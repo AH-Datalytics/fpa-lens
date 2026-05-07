@@ -86,7 +86,7 @@ export const grassCuttingData = {
   cadence: {
     headline: "Twice per month",
     detail:
-      "Target frequency is twice per month for most reaches, with New Orleans East and Citrus Lakefront & Eastern Interior targeted at roughly 1.5 cycles per month (about every three weeks).",
+      "Target frequency is twice per month for most OLD and EJLD reaches, with New Orleans East and Citrus Lakefront & Eastern Interior targeted at roughly 1.5 cycles per month (about every three weeks). Lake Borgne Basin currently runs once per month due to manpower and equipment constraints.",
     previousPlan: "Once per month (prior plan)",
   },
 
@@ -135,7 +135,7 @@ export const grassCuttingData = {
       operators: 3,
       acres: 650,
       monthlyFrequency: 1.5,
-      subAreas: ["LPV-108", "LPV-109", "LPV-110", "LPV-111"],
+      subAreas: ["LPV-108", "LPV-109", "LPV-111"],
       lastCycle: {
         startDate: "March 17, 2026",
         completionDate: "April 15, 2026",
@@ -227,12 +227,14 @@ export const grassCuttingData = {
       tint: "#93c5fd",
       darkBackground: false,
       operators: 2,
-      acres: 62,
+      // Updated May 2026 per Kory's revised OLD shapefile: zone reduced
+      // from 62 → 53 ac after MRL edits east of the IHNC moved to the
+      // Florida Ave zone.
+      acres: 53,
       monthlyFrequency: 2,
       subAreas: [
-        "Mississippi River East Bank",
+        "Upper Protection (Earhart Blvd to the MRL)",
         "MRL (Jefferson Parish line to EB-00)",
-        "MRL (IHNC to St. Bernard Parish line)",
       ],
       lastCycle: {
         startDate: "March 17, 2026",
@@ -250,7 +252,11 @@ export const grassCuttingData = {
       operators: 1,
       acres: 57,
       monthlyFrequency: 2,
-      subAreas: ["Florida Ave", "IHNC East (E-01 to MRL)"],
+      subAreas: [
+        "Florida Ave",
+        "IHNC East (E-01 to MRL)",
+        "MRL (IHNC East to St. Bernard Parish line)",
+      ],
       lastCycle: {
         startDate: "March 17, 2026",
         completionDate: "March 19, 2026",
@@ -348,7 +354,7 @@ export const grassCuttingData = {
       darkBackground: true,
       acres: 592,
       operators: 5,
-      monthlyFrequency: 2,
+      monthlyFrequency: 1,
       subAreas: ["Bayou Dupre Structure (St. Bernard side) to HWY 39 at MRL"],
       lastCycle: {
         startDate: "April 8, 2026",
@@ -365,10 +371,9 @@ export const grassCuttingData = {
       darkBackground: true,
       acres: 316,
       operators: 5,
-      monthlyFrequency: 2,
+      monthlyFrequency: 1,
       subAreas: [
-        '"40 Arpent"',
-        "Orleans Parish line to HWY 46 Reggio in lower St. Bernard",
+        "40 Arpent Levee — Orleans Parish line to HWY 46 Reggio in lower St. Bernard",
       ],
       lastCycle: {
         startDate: "April 14, 2026",
@@ -384,7 +389,7 @@ export const grassCuttingData = {
       darkBackground: false,
       acres: 278,
       operators: 5,
-      monthlyFrequency: 2,
+      monthlyFrequency: 1,
       subAreas: [
         '"The Island" (Bayou Bienvenue Structure to Bayou Dupre Structure)',
       ],
@@ -404,7 +409,7 @@ export const grassCuttingData = {
       darkBackground: false,
       acres: 167,
       operators: 5,
-      monthlyFrequency: 2,
+      monthlyFrequency: 1,
       subAreas: [
         "Mississippi River Levee at HWY 39 to Arabi (Orleans Parish line)",
       ],
