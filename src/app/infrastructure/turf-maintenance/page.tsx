@@ -13,7 +13,15 @@ import {
   grassCuttingData,
   OldGrassCuttingZone,
   OtherDistrictZone,
+  Reach,
 } from "@/data/grassCutting";
+import {
+  computeMonthlyKpi,
+  cycle1TickPosition,
+  monthlyTargetAcres,
+  type AnyZone,
+  type KpiLevel,
+} from "@/lib/turfMaintenance";
 import type { DistrictFilter } from "@/components/GrassCuttingMap";
 
 // Map uses Leaflet (touches `window`), so load it client-side only.
@@ -33,163 +41,134 @@ const DISTRICT_FILTERS: { key: DistrictFilter; label: string }[] = [
   { key: "LBBLD", label: "Lake Borgne Basin (LBBLD)" },
 ];
 
-type KpiLevel = "green" | "amber" | "red";
+const PALETTE: Record<
+  KpiLevel,
+  { solid: string; badge: string; dot: string }
+> = {
+  green: {
+    solid: "bg-green-500",
+    badge: "bg-green-100 text-green-800",
+    dot: "bg-green-500",
+  },
+  amber: {
+    solid: "bg-amber-500",
+    badge: "bg-amber-100 text-amber-800",
+    dot: "bg-amber-500",
+  },
+  red: {
+    solid: "bg-red-500",
+    badge: "bg-red-100 text-red-800",
+    dot: "bg-red-500",
+  },
+};
 
-function ZoneProgressBody({
-  acres,
-  monthlyFrequency,
-  calendarDays,
-}: {
-  acres: number;
-  monthlyFrequency: number;
-  calendarDays: number;
-}) {
-  const monthlyTarget = Math.round(acres * monthlyFrequency);
-
-  // On-pace, the first cycle should finish in 30 / monthlyFrequency days
-  // (so 15 days for 2x/mo, 20 days for 1.5x/mo). Comparing that to the
-  // actual calendarDays gives how much of the cycle would have been covered
-  // in the planned window — the basis for the bar's "behind" visual.
-  const cycle1TargetDays = 30 / monthlyFrequency;
-  const onTimeRatio = cycle1TargetDays / calendarDays;
-
-  // Solid fill = acres covered by the time Cycle 1 was *supposed to* finish.
-  // Capped at `acres` so the solid bar tops out at the Cycle 1 tick when
-  // the crew met (or beat) the planned cycle window.
-  const onTimeAcres = Math.min(acres, Math.round(acres * onTimeRatio));
-
-  // Tick = Cycle 1 boundary on the monthly target. Solid endpoint coincides
-  // with the tick for green; for amber/red, solid sits left of the tick.
-  const actualPct = Math.min(100, (onTimeAcres / monthlyTarget) * 100);
-  const cycle1Pct = Math.min(100, (acres / monthlyTarget) * 100);
-
-  // Green = met Cycle 1 target in time. Amber = within 20% of target.
-  // Red = more than 20% short.
-  const kpiLevel: KpiLevel =
-    onTimeRatio >= 1 ? "green" : onTimeRatio >= 0.8 ? "amber" : "red";
-
-  const palette: Record<
-    KpiLevel,
-    {
-      solid: string;
-      hash: string;
-      badge: string;
-      dot: string;
-      label: string;
-    }
-  > = {
-    green: {
-      solid: "bg-green-500",
-      hash: "rgba(34, 197, 94, 0.5)", // green-500
-      badge: "bg-green-100 text-green-800",
-      dot: "bg-green-500",
-      label: "On pace",
-    },
-    amber: {
-      solid: "bg-amber-500",
-      hash: "rgba(245, 158, 11, 0.5)", // amber-500
-      badge: "bg-amber-100 text-amber-800",
-      dot: "bg-amber-500",
-      label: "At risk",
-    },
-    red: {
-      solid: "bg-red-500",
-      hash: "rgba(239, 68, 68, 0.5)", // red-500
-      badge: "bg-red-100 text-red-800",
-      dot: "bg-red-500",
-      label: "Behind",
-    },
-  };
-  const c = palette[kpiLevel];
-
-  return (
-    <div className="pt-3 border-t border-gray-100 space-y-3">
-      <p className="text-[11px] text-gray-500">
-        Cycle 1 pace:{" "}
-        <span className="font-semibold text-gray-700">
-          {(acres / calendarDays).toFixed(1)} ac/day
-        </span>
-      </p>
-
-      {/* Whole bar = monthly target (acres). Solid = acres mowed (Cycle 1).
-          Tick = Cycle 1 boundary on the monthly target. Hashed remainder =
-          work still owed this month; its color signals whether the Cycle 1
-          pace projects to hit the monthly target. */}
-      <div>
-        <div className="flex justify-between items-baseline mb-1">
+function ZoneProgressBody({ zone }: { zone: AnyZone }) {
+  // No reported actuals yet (e.g. EJLD — foreman hasn't started logging
+  // weekly cumulative C1/C2 percentages). Show a neutral placeholder.
+  if (!zone.hasReportedData) {
+    const target = monthlyTargetAcres(zone);
+    return (
+      <div className="pt-3 border-t border-gray-100 space-y-2">
+        <div className="flex justify-between items-baseline">
           <span className="text-[10px] uppercase tracking-wide text-gray-500 font-semibold">
             Monthly progress
           </span>
-          <span
-            className={`inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-[10px] font-semibold ${c.badge}`}
-          >
+          <span className="inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-[10px] font-semibold bg-gray-100 text-gray-600">
             <span
-              className={`inline-block w-1.5 h-1.5 rounded-full ${c.dot}`}
+              className="inline-block w-1.5 h-1.5 rounded-full bg-gray-400"
               aria-hidden="true"
             />
-            {c.label}
+            Awaiting weekly update
           </span>
         </div>
-        <div
-          className="relative"
-          role="img"
-          aria-label={`At Cycle 1 pace, ${onTimeAcres} of ${acres} ac would be covered in the planned cycle window; monthly target ${monthlyTarget} ac`}
+        <div className="relative h-3 rounded bg-gray-100 overflow-hidden" />
+        <p className="text-[10px] text-gray-500">
+          Monthly target {target.toLocaleString()} ac
+        </p>
+      </div>
+    );
+  }
+
+  const kpi = computeMonthlyKpi(zone, grassCuttingData.reportingMonth);
+  const fillPct = Math.min(100, kpi.progressFraction * 100);
+  const tick = cycle1TickPosition(zone);
+  const tickPct = tick === null ? null : tick * 100;
+  const c = PALETTE[kpi.level];
+
+  return (
+    <div className="pt-3 border-t border-gray-100 space-y-2">
+      <div className="flex justify-between items-baseline">
+        <span className="text-[10px] uppercase tracking-wide text-gray-500 font-semibold">
+          {grassCuttingData.reportingMonth.label} progress
+        </span>
+        <span
+          className={`inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-[10px] font-semibold ${c.badge}`}
         >
-          <div className="relative h-3 rounded bg-gray-100 overflow-hidden">
-            <div
-              className={`absolute inset-y-0 left-0 ${c.solid} transition-all`}
-              style={{ width: `${actualPct}%` }}
-            />
-            <div
-              className="absolute inset-y-0 right-0"
-              style={{
-                left: `${actualPct}%`,
-                backgroundImage: `repeating-linear-gradient(45deg, ${c.hash} 0 5px, transparent 5px 10px)`,
-              }}
-            />
+          <span
+            className={`inline-block w-1.5 h-1.5 rounded-full ${c.dot}`}
+            aria-hidden="true"
+          />
+          {kpi.badgeLabel}
+        </span>
+      </div>
+      <div
+        className="relative"
+        role="img"
+        aria-label={`${kpi.done} of ${kpi.target} acres completed this month`}
+      >
+        <div className="relative h-3 rounded bg-gray-100 overflow-hidden">
+          <div
+            className={`absolute inset-y-0 left-0 ${c.solid} transition-all`}
+            style={{ width: `${fillPct}%` }}
+          />
+          {tickPct !== null && (
             <div
               className="absolute inset-y-0 w-0.5 bg-gray-800"
-              style={{ left: `calc(${cycle1Pct}% - 1px)` }}
+              style={{ left: `calc(${tickPct}% - 1px)` }}
               aria-hidden="true"
             />
-          </div>
-          {/* Tick label: makes "what does this dark line mean?" obvious */}
+          )}
+        </div>
+        {tickPct !== null && (
           <div className="relative h-3 mt-0.5">
             <span
               className="absolute text-[9px] uppercase tracking-wider font-semibold text-gray-600 whitespace-nowrap"
               style={{
-                left: `${cycle1Pct}%`,
-                transform: cycle1Pct > 80 ? "translateX(-100%)" : "translateX(-50%)",
+                left: `${tickPct}%`,
+                transform:
+                  tickPct > 80 ? "translateX(-100%)" : "translateX(-50%)",
               }}
             >
               Cycle 1
             </span>
           </div>
-        </div>
-        <div className="flex justify-between text-[10px] text-gray-500 mt-1">
-          <span>
-            <strong className="text-gray-700">
-              {onTimeAcres.toLocaleString()} of {acres.toLocaleString()} ac
-            </strong>{" "}
-            in cycle window
-          </span>
-          <span>{monthlyTarget.toLocaleString()} ac monthly target</span>
-        </div>
+        )}
       </div>
+      <p className="text-[11px] text-gray-700">
+        <strong className="text-gray-900">
+          {kpi.done.toLocaleString()} of {kpi.target.toLocaleString()} ac
+        </strong>{" "}
+        completed this month
+      </p>
     </div>
   );
 }
 
-function CoverageList({ subAreas }: { subAreas: string[] }) {
-  if (subAreas.length === 0) return null;
+function ReachList({ reaches }: { reaches: Reach[] }) {
+  if (reaches.length === 0) return null;
   return (
     <div className="mb-3">
       <p className="text-[10px] uppercase tracking-wide text-gray-500 font-semibold mb-1">
-        Coverage
+        Reaches
       </p>
-      <ul className="text-xs text-gray-700 list-disc pl-4 space-y-0.5">
-        {subAreas.map((sa) => (
-          <li key={sa}>{sa}</li>
+      <ul className="text-xs text-gray-700 space-y-0.5">
+        {reaches.map((r) => (
+          <li key={r.name} className="flex justify-between gap-2">
+            <span className="truncate">{r.name}</span>
+            <span className="text-gray-500 flex-shrink-0">
+              {r.acres.toLocaleString()} ac
+            </span>
+          </li>
         ))}
       </ul>
     </div>
@@ -244,12 +223,8 @@ function OldZoneCard({ zone }: { zone: OldGrassCuttingZone }) {
         monthlyFrequency={zone.monthlyFrequency}
       />
       <div className="p-4">
-        <CoverageList subAreas={zone.subAreas} />
-        <ZoneProgressBody
-          acres={zone.acres}
-          monthlyFrequency={zone.monthlyFrequency}
-          calendarDays={zone.lastCycle.calendarDays}
-        />
+        <ReachList reaches={zone.reaches} />
+        <ZoneProgressBody zone={zone} />
       </div>
     </div>
   );
@@ -266,12 +241,8 @@ function OtherZoneCard({ zone }: { zone: OtherDistrictZone }) {
         monthlyFrequency={zone.monthlyFrequency}
       />
       <div className="p-4">
-        <CoverageList subAreas={zone.subAreas} />
-        <ZoneProgressBody
-          acres={zone.acres}
-          monthlyFrequency={zone.monthlyFrequency}
-          calendarDays={zone.lastCycle.calendarDays}
-        />
+        <ReachList reaches={zone.reaches} />
+        <ZoneProgressBody zone={zone} />
       </div>
     </div>
   );
@@ -519,10 +490,12 @@ export default function GrassCuttingPage() {
               </h3>
             </div>
             <p className="text-xs text-gray-700 leading-relaxed mb-2">
-              Each card shows what Cycle 1 told us about the zone&apos;s
-              sustainable monthly output. The bar projects how many acres the
-              crew can mow per month at the pace Cycle 1 set, against the
-              monthly target (zone acres × cycles per month).
+              Each card shows how much of the zone&apos;s monthly mowing
+              target has been completed in {grassCuttingData.reportingMonth.label}.
+              The bar fills with cumulative acres mowed against the monthly
+              target (zone acres × cycles per month). The dark tick marks
+              where Cycle 1 should land for zones running more than once per
+              month.
             </p>
             <ul className="text-xs text-gray-700 space-y-0.5">
               <li className="flex items-center gap-1.5">
@@ -531,8 +504,7 @@ export default function GrassCuttingPage() {
                   aria-hidden="true"
                 />
                 <span>
-                  <strong>On pace</strong> — projected to hit ≥ 90% of monthly
-                  target
+                  <strong>On pace</strong> — at or above 90% of monthly target
                 </span>
               </li>
               <li className="flex items-center gap-1.5">
@@ -541,8 +513,7 @@ export default function GrassCuttingPage() {
                   aria-hidden="true"
                 />
                 <span>
-                  <strong>At risk</strong> — projected at 80–89%; Cycle 2 may
-                  not fully complete
+                  <strong>At risk</strong> — 80 to 89% of monthly target
                 </span>
               </li>
               <li className="flex items-center gap-1.5">
@@ -551,8 +522,7 @@ export default function GrassCuttingPage() {
                   aria-hidden="true"
                 />
                 <span>
-                  <strong>Behind</strong> — projected under 80%; Cycle 2
-                  unlikely this month at current pace
+                  <strong>Behind</strong> — under 80% of monthly target
                 </span>
               </li>
             </ul>

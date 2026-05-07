@@ -40,6 +40,32 @@ export interface DistrictCycleSummary {
   note?: string;
 }
 
+/**
+ * Per-reach progress for the current reporting month. Cumulative percent
+ * complete is taken from the maintenance team's weekly input workbook
+ * (max value across the month's weeks per cycle column).
+ */
+export interface Reach {
+  name: string;
+  /** Estimated reach acreage from Kory's reach breakdown. */
+  acres: number;
+  /** Cumulative Cycle 1 % complete this reporting month, 0–1. */
+  cycle1Pct: number;
+  /** Cumulative Cycle 2 % complete this reporting month, 0–1. null when zone runs once per month. */
+  cycle2Pct: number | null;
+}
+
+export interface ReportingMonth {
+  /** Display label, e.g. "April 2026". */
+  label: string;
+  /** ISO year. */
+  year: number;
+  /** 1-indexed month (Apr = 4). */
+  month: number;
+  /** True when the month is past and KPI should compare to full-month target. */
+  isComplete: boolean;
+}
+
 export interface OldGrassCuttingZone {
   key: string;
   name: string;
@@ -54,7 +80,9 @@ export interface OldGrassCuttingZone {
   acres: number;
   /** Target cycles per month (most are 2; NO East and Citrus Lakefront are ~1.5). */
   monthlyFrequency: number;
-  subAreas: string[];
+  reaches: Reach[];
+  /** False when the maintenance team has not yet submitted weekly progress for this zone. */
+  hasReportedData: boolean;
   lastCycle: ZoneCycleResult;
 }
 
@@ -68,13 +96,25 @@ export interface OtherDistrictZone {
   operators: number;
   /** Target cycles per month. Assume 2 for EJLD/LBBLD until Carlos confirms exceptions. */
   monthlyFrequency: number;
-  subAreas: string[];
+  reaches: Reach[];
+  hasReportedData: boolean;
   lastCycle: ZoneCycleResult;
 }
 
 export const grassCuttingData = {
   asOfDate: "May 1, 2026",
   source: "Maintenance team cutting plan (Carlos Metoyer, March-May 2026)",
+
+  // Reporting month for the per-zone monthly progress KPI. April 2026 is
+  // the first month-completed reporting period under the new plan, so KPI
+  // compares actuals to the full monthly target. When May closes out we'll
+  // bump the label/year/month and flip isComplete to true.
+  reportingMonth: {
+    label: "April 2026",
+    year: 2026,
+    month: 4,
+    isComplete: true,
+  } as ReportingMonth,
 
   systemTotal: {
     miles: 104.79,
@@ -135,7 +175,12 @@ export const grassCuttingData = {
       operators: 3,
       acres: 650,
       monthlyFrequency: 1.5,
-      subAreas: ["LPV-108", "LPV-109", "LPV-111"],
+      reaches: [
+        { name: "LPV-108", acres: 220, cycle1Pct: 1.0, cycle2Pct: 0 },
+        { name: "LPV-109", acres: 215, cycle1Pct: 1.0, cycle2Pct: 0 },
+        { name: "LPV-111", acres: 215, cycle1Pct: 1.0, cycle2Pct: 0 },
+      ],
+      hasReportedData: true,
       lastCycle: {
         startDate: "March 17, 2026",
         completionDate: "April 15, 2026",
@@ -157,11 +202,12 @@ export const grassCuttingData = {
       // mowed twice a month (4 working days w/ 4 operators).
       acres: 307,
       monthlyFrequency: 2,
-      subAreas: [
-        "Southside MRGO",
-        "Citrus Back Levee",
-        "LPV-115 (Paris Rd. to Jourdan)",
+      reaches: [
+        { name: "Southside MRGO", acres: 100, cycle1Pct: 1.0, cycle2Pct: 0 },
+        { name: "Citrus Back Levee", acres: 85, cycle1Pct: 1.0, cycle2Pct: 0 },
+        { name: "LPV-115 (Paris Rd. to Jourdan)", acres: 122, cycle1Pct: 1.0, cycle2Pct: 0 },
       ],
+      hasReportedData: true,
       lastCycle: {
         startDate: "March 17, 2026",
         completionDate: "March 30, 2026",
@@ -180,12 +226,13 @@ export const grassCuttingData = {
       operators: 3,
       acres: 300,
       monthlyFrequency: 2,
-      subAreas: [
-        "Lakefront",
-        "Outfall Canals (17th Street, Orleans, Bayou St. John, London)",
-        "IHNC West",
-        "IHNC East (E-13 to N-01)",
+      reaches: [
+        { name: "Lakefront", acres: 130, cycle1Pct: 1.0, cycle2Pct: 0 },
+        { name: "Outfall Canals (17th Street, Orleans, Bayou St. John, London)", acres: 90, cycle1Pct: 1.0, cycle2Pct: 0 },
+        { name: "IHNC West", acres: 45, cycle1Pct: 1.0, cycle2Pct: 0 },
+        { name: "IHNC East (E-13 to N-01)", acres: 35, cycle1Pct: 1.0, cycle2Pct: 0 },
       ],
+      hasReportedData: true,
       lastCycle: {
         startDate: "March 17, 2026",
         completionDate: "March 30, 2026",
@@ -203,14 +250,15 @@ export const grassCuttingData = {
       operators: 3,
       acres: 253,
       monthlyFrequency: 1.5,
-      subAreas: [
-        "Citrus Lakefront",
-        "Paris Rd",
-        "Maxent",
-        "Michoud Canal Floodwall",
-        "NASA",
-        "Entergy",
+      reaches: [
+        { name: "Citrus Lakefront", acres: 130, cycle1Pct: 1.0, cycle2Pct: 0 },
+        { name: "Paris Rd", acres: 35, cycle1Pct: 1.0, cycle2Pct: 0 },
+        { name: "Maxent", acres: 25, cycle1Pct: 1.0, cycle2Pct: 0 },
+        { name: "Michoud Canal Floodwall", acres: 25, cycle1Pct: 1.0, cycle2Pct: 0 },
+        { name: "NASA", acres: 20, cycle1Pct: 1.0, cycle2Pct: 0 },
+        { name: "Entergy", acres: 18, cycle1Pct: 1.0, cycle2Pct: 0 },
       ],
+      hasReportedData: true,
       lastCycle: {
         startDate: "March 17, 2026",
         completionDate: "April 8, 2026",
@@ -232,10 +280,11 @@ export const grassCuttingData = {
       // Florida Ave zone.
       acres: 53,
       monthlyFrequency: 2,
-      subAreas: [
-        "Upper Protection (Earhart Blvd to the MRL)",
-        "MRL (Jefferson Parish line to EB-00)",
+      reaches: [
+        { name: "Upper Protection (Earhart Blvd to the MRL)", acres: 32, cycle1Pct: 1.0, cycle2Pct: 0 },
+        { name: "MRL (Jefferson Parish line to EB-00)", acres: 21, cycle1Pct: 1.0, cycle2Pct: 0 },
       ],
+      hasReportedData: true,
       lastCycle: {
         startDate: "March 17, 2026",
         completionDate: "March 18, 2026",
@@ -252,11 +301,12 @@ export const grassCuttingData = {
       operators: 1,
       acres: 57,
       monthlyFrequency: 2,
-      subAreas: [
-        "Florida Ave",
-        "IHNC East (E-01 to MRL)",
-        "MRL (IHNC East to St. Bernard Parish line)",
+      reaches: [
+        { name: "Florida Ave", acres: 10, cycle1Pct: 1.0, cycle2Pct: 0 },
+        { name: "IHNC East (E-01 to MRL)", acres: 21, cycle1Pct: 1.0, cycle2Pct: 0 },
+        { name: "MRL (IHNC East to St. Bernard Parish line)", acres: 26, cycle1Pct: 1.0, cycle2Pct: 0 },
       ],
+      hasReportedData: true,
       lastCycle: {
         startDate: "March 17, 2026",
         completionDate: "March 19, 2026",
@@ -277,9 +327,10 @@ export const grassCuttingData = {
       acres: 360,
       operators: 5,
       monthlyFrequency: 2,
-      subAreas: [
-        "St. Charles/Jeff Parish line to 17th St. Canal on EJ side",
+      reaches: [
+        { name: "St. Charles/Jeff Parish line to 17th St. Canal on EJ side", acres: 360, cycle1Pct: 0, cycle2Pct: 0 },
       ],
+      hasReportedData: false,
       lastCycle: {
         startDate: "April 20, 2026",
         completionDate: "April 27, 2026",
@@ -296,7 +347,11 @@ export const grassCuttingData = {
       acres: 205,
       operators: 3,
       monthlyFrequency: 2,
-      subAreas: ["Monticello to Alliance", "St. Charles/Jeff Parish line"],
+      reaches: [
+        { name: "Monticello to Alliance", acres: 110, cycle1Pct: 0, cycle2Pct: 0 },
+        { name: "St. Charles/Jeff Parish line", acres: 95, cycle1Pct: 0, cycle2Pct: 0 },
+      ],
+      hasReportedData: false,
       lastCycle: {
         startDate: "April 20, 2026",
         completionDate: "April 27, 2026",
@@ -312,9 +367,10 @@ export const grassCuttingData = {
       acres: 85,
       operators: 5,
       monthlyFrequency: 2,
-      subAreas: [
-        "Airline Hwy & Lesan Dr to St. Charles/Jeff Parish line (Reach 1)",
+      reaches: [
+        { name: "Airline Hwy & Lesan Dr to St. Charles/Jeff Parish line (Reach 1)", acres: 85, cycle1Pct: 0, cycle2Pct: 0 },
       ],
+      hasReportedData: false,
       lastCycle: {
         startDate: "April 20, 2026",
         completionDate: "April 20, 2026",
@@ -331,7 +387,10 @@ export const grassCuttingData = {
       acres: 10,
       operators: 1,
       monthlyFrequency: 2,
-      subAreas: ["Along 17th St. Canal to Pinks St"],
+      reaches: [
+        { name: "Along 17th St. Canal to Pinks St", acres: 10, cycle1Pct: 0, cycle2Pct: 0 },
+      ],
+      hasReportedData: false,
       lastCycle: {
         startDate: "April 29, 2026",
         completionDate: "April 29, 2026",
@@ -355,7 +414,10 @@ export const grassCuttingData = {
       acres: 592,
       operators: 5,
       monthlyFrequency: 1,
-      subAreas: ["Bayou Dupre Structure (St. Bernard side) to HWY 39 at MRL"],
+      reaches: [
+        { name: "Bayou Dupre Structure (St. Bernard side) to HWY 39 at MRL", acres: 592, cycle1Pct: 1.0, cycle2Pct: null },
+      ],
+      hasReportedData: true,
       lastCycle: {
         startDate: "April 8, 2026",
         completionDate: "April 13, 2026",
@@ -372,9 +434,10 @@ export const grassCuttingData = {
       acres: 316,
       operators: 5,
       monthlyFrequency: 1,
-      subAreas: [
-        "40 Arpent Levee — Orleans Parish line to HWY 46 Reggio in lower St. Bernard",
+      reaches: [
+        { name: "40 Arpent Levee — Orleans Parish line to HWY 46 Reggio in lower St. Bernard", acres: 316, cycle1Pct: 1.0, cycle2Pct: null },
       ],
+      hasReportedData: true,
       lastCycle: {
         startDate: "April 14, 2026",
         completionDate: "April 16, 2026",
@@ -390,9 +453,10 @@ export const grassCuttingData = {
       acres: 278,
       operators: 5,
       monthlyFrequency: 1,
-      subAreas: [
-        '"The Island" (Bayou Bienvenue Structure to Bayou Dupre Structure)',
+      reaches: [
+        { name: '"The Island" (Bayou Bienvenue Structure to Bayou Dupre Structure)', acres: 278, cycle1Pct: 1.0, cycle2Pct: null },
       ],
+      hasReportedData: true,
       lastCycle: {
         startDate: "April 22, 2026",
         completionDate: "April 28, 2026",
@@ -410,9 +474,10 @@ export const grassCuttingData = {
       acres: 167,
       operators: 5,
       monthlyFrequency: 1,
-      subAreas: [
-        "Mississippi River Levee at HWY 39 to Arabi (Orleans Parish line)",
+      reaches: [
+        { name: "Mississippi River Levee at HWY 39 to Arabi (Orleans Parish line)", acres: 167, cycle1Pct: 1.0, cycle2Pct: null },
       ],
+      hasReportedData: true,
       lastCycle: {
         startDate: "April 20, 2026",
         completionDate: "April 22, 2026",
