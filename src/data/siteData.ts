@@ -797,6 +797,7 @@ export const staffingData = {
     {
       name: "Lawrence Williams, MBA, PMP",
       title: "Senior Project Manager",
+      image: "/headshots/lawrence-williams.jpg",
       bio: [
         { heading: "Current Role", text: "Lawrence Williams serves as Senior Project Manager, where he is responsible for leading cross-functional initiatives, overseeing project planning and execution, and ensuring alignment with organizational priorities. He manages complex programs, coordinates with internal departments and external stakeholders, and supports the delivery of strategic initiatives across the Authority." },
         { heading: "Professional Experience", text: "Williams brings over 15 years of experience in infrastructure, construction, and capital project management across public and nonprofit sectors. His background includes overseeing multi-project portfolios, managing procurement processes, and ensuring compliance with funding and regulatory requirements. Prior to joining the Authority, he served as an Infrastructure Project Manager with the City of New Orleans, where he managed American Rescue Plan Act (ARPA) initiatives, and as Executive Director of a community development organization focused on affordable housing delivery. His expertise includes project planning, budgeting, stakeholder engagement, and program implementation." },
