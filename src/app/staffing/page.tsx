@@ -64,7 +64,7 @@ export default function OurTeamPage() {
           <div className="bg-white rounded-xl shadow-md border border-gray-100 p-6">
             <div className="flex flex-wrap items-start justify-between gap-3 mb-5">
               <p className="text-sm text-gray-600 max-w-2xl">
-                Operational capacity across Maintenance, Operations, and Engineering.
+                Operational capacity across Maintenance, Operations, Engineering, and Police.
               </p>
               <div
                 role="group"

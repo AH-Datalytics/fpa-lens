@@ -537,23 +537,24 @@ export const safetyData = {
 // ============================================================================
 
 export const staffingData = {
-  asOfDate: "May 4, 2026",
-  source: "Shannon Fazande (HR Director) email, May 4 2026",
+  asOfDate: "May 7, 2026",
+  source: "FPA Lens Staffing Headcount workbook, May 7 2026",
 
   headcount: {
-    total: 236,
-    vacancies: 41,
+    total: 302,
+    vacancies: 50,
   },
 
-  // Core Flood Protection Unit (Maintenance + Operations + Engineering).
+  // Core Flood Protection Unit (Maintenance + Operations + Engineering + Police).
+  // Police added May 2026 per Director direction.
   // Thresholds are percentage-based per Director, May 2026 (flipped with Admin
   // because Core is more mission-critical and needs higher fill to be green):
   //   Green ≥ 85% · Amber 75–84% · Red < 75%
   // amberMax = ceil(0.85 × full) − 1; redMax = ceil(0.75 × full) − 1.
   // Aggregate thresholds set to sum of dept thresholds so assertAggregateMatchesSum passes.
-  // Actuals from Shannon Fazande HR data, May 4 2026.
+  // Actuals from FPA Lens Staffing Headcount workbook, May 7 2026.
   coreFPU: {
-    asOfDate: "May 4, 2026",
+    asOfDate: "May 7, 2026",
     thresholdsSetBy: "Regional Director",
     thresholdsDate: "May 2026",
     thresholdsSource: "Director direction, May 2026 (flipped from Admin)",
@@ -562,25 +563,25 @@ export const staffingData = {
     aggregate: {
       key: "CORE_FPU",
       label: "Core Flood Protection Unit",
-      full: 193,
-      current: 159 as number | null,
-      thresholds: { amberMax: 163, redMax: 143 },
+      full: 260,
+      current: 216 as number | null,
+      thresholds: { amberMax: 219, redMax: 192 },
       policyThresholds: { redPct: 75, amberPct: 85 },
     },
     departments: [
       {
         key: "MTC",
         label: "Maintenance",
-        full: 145,
-        current: 120 as number | null,
-        thresholds: { amberMax: 123, redMax: 108 },
+        full: 148,
+        current: 123 as number | null,
+        thresholds: { amberMax: 125, redMax: 110 },
         policyThresholds: { redPct: 75, amberPct: 85 },
       },
       {
         key: "OPS",
         label: "Operations",
         full: 30,
-        current: 25 as number | null,
+        current: 27 as number | null,
         thresholds: { amberMax: 25, redMax: 22 },
         policyThresholds: { redPct: 75, amberPct: 85 },
       },
@@ -590,6 +591,14 @@ export const staffingData = {
         full: 18,
         current: 14 as number | null,
         thresholds: { amberMax: 15, redMax: 13 },
+        policyThresholds: { redPct: 75, amberPct: 85 },
+      },
+      {
+        key: "POL",
+        label: "Police",
+        full: 64,
+        current: 52 as number | null,
+        thresholds: { amberMax: 54, redMax: 47 },
         policyThresholds: { redPct: 75, amberPct: 85 },
       },
     ],
@@ -602,7 +611,7 @@ export const staffingData = {
   // amberMax = highest filled count still in amber (ceil(0.75 * full) − 1)
   // redMax   = highest filled count still in red   (ceil(0.50 * full) − 1)
   adminFunctions: {
-    asOfDate: "May 4, 2026",
+    asOfDate: "May 7, 2026",
     thresholdsSetBy: "Regional Director",
     thresholdsDate: "May 2026",
     thresholdsSource: "Director direction, May 2026 (flipped from Core)",
@@ -610,9 +619,9 @@ export const staffingData = {
     aggregate: {
       key: "ADMIN",
       label: "Administrative Functions",
-      full: 43,
+      full: 42,
       current: 36 as number | null,
-      thresholds: { amberMax: 32, redMax: 21 },
+      thresholds: { amberMax: 29, redMax: 18 },
       policyThresholds: { redPct: 50, amberPct: 75 },
     },
     departments: [
@@ -643,7 +652,7 @@ export const staffingData = {
       {
         key: "EXEC",
         label: "Executive",
-        full: 12,
+        full: 11,
         current: 10 as number | null,
         thresholds: { amberMax: 8, redMax: 5 },
         policyThresholds: { redPct: 50, amberPct: 75 },
