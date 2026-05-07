@@ -355,8 +355,8 @@ export default function GrassCuttingPage() {
               The maintenance plan
             </p>
             <h2 className="text-2xl font-bold text-[#21355a] mt-1">
-              Twice-monthly mowing across {systemAcres.toLocaleString()} acres
-              of levee turf
+              Routine mowing across {systemAcres.toLocaleString()} acres of
+              levee turf
             </h2>
             <p className="text-sm text-gray-700 mt-2 leading-relaxed max-w-3xl">
               The Authority&apos;s maintenance team mows{" "}
@@ -366,8 +366,11 @@ export default function GrassCuttingPage() {
               <strong>{systemZones} zones</strong>. A{" "}
               <strong>cycle</strong> is one full pass — every zone mowed once.
               The current plan, in effect since March 2026, targets{" "}
-              <strong>two cycles per month</strong> for most zones (1.5 for
-              two larger zones), doubled from the prior once-a-month schedule.
+              <strong>two cycles per month</strong> for most Orleans and East
+              Jefferson zones (1.5 for two larger zones), doubled from the
+              prior once-a-month schedule. Lake Borgne Basin currently runs{" "}
+              <strong>one cycle per month</strong> due to manpower and
+              equipment constraints.
             </p>
 
             {/* Status strip: where the plan stands today */}
