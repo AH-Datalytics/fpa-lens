@@ -10,8 +10,8 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "FPA Lens | SLFPA-E Transparency Dashboard",
-  description: "Public transparency dashboard for the Southeast Louisiana Flood Protection Authority - East. View system readiness, financial data, operations, and more.",
+  title: "FPA Lens | Southeast Louisiana Flood Protection Authority",
+  description: "Public transparency dashboard for the Southeast Louisiana Flood Protection Authority - East. Track infrastructure readiness, finances, engineering, safety, staffing, and Lakefront flood risk.",
   keywords: ["flood protection", "New Orleans", "SLFPA-E", "levees", "transparency", "public dashboard"],
   icons: {
     icon: [
