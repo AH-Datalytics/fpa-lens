@@ -79,7 +79,12 @@ export const systemReadiness = {
     {
       name: "Staffing Readiness",
       status: "AMBER" as StatusLevel,
-      description: "41 vacancies agency-wide; recruitment efforts ongoing",
+      // Description derives from staffingData so the vacancy count never
+      // drifts when headcount is refreshed. Resolved lazily at access time
+      // (staffingData is declared further down in this file).
+      get description() {
+        return `${staffingData.headcount.vacancies} vacancies agency-wide; recruitment efforts ongoing`;
+      },
       source: "May 2026 staffing data",
     },
     {
