@@ -62,7 +62,7 @@ export const protectionData = {
       items: [
         { label: "Flood gate checks", count: 31548 },
         { label: "Pump station / reach checks", count: 13121 },
-        { label: "River batcher checks", count: 2745 },
+        { label: "River batture checks", count: 2745 },
       ],
     },
     {
