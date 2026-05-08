@@ -179,16 +179,8 @@ export default function Home() {
               </div>
               <div className="grid grid-cols-2 gap-3 mb-4">
                 <div className="text-center">
-                  {/*
-                    Manual override per Director, Apr 2026: display 4/5 even
-                    though the rollup currently computes 5/5. When the
-                    override is removed, restore:
-                      {rollups.inspections.greenCount}/{rollups.inspections.total}
-                    so the card auto-derives from the infrastructure data
-                    again.
-                  */}
                   <div className="text-xl font-bold text-[#21355a]">
-                    4/{rollups.inspections.total}
+                    {rollups.inspections.greenCount}/{rollups.inspections.total}
                   </div>
                   <div className="text-xs text-gray-500 leading-snug mt-0.5">
                     Mandatory inspections on pace

@@ -16,12 +16,25 @@
 // SITE METADATA
 // ============================================================================
 
+// Format an ISO YYYY-MM-DD as e.g. "April 2026" so the displayed month auto-
+// rolls over when the source date is bumped.
+export function formatMonthLabel(iso: string): string {
+  return new Date(iso + "T00:00:00").toLocaleDateString("en-US", {
+    month: "long",
+    year: "numeric",
+  });
+}
+
 export const siteConfig = {
   name: "FPA Lens",
   tagline: "Your Flood Defense System",
   organization: "Southeast Louisiana Flood Protection Authority - East",
   organizationShort: "SLFPA-E",
-  lastUpdated: "April 2026", // Source: Apr 2026 SITREP
+  // Derived from readinessMetrics.dataAsOf (declared below). Resolved lazily
+  // so updating the SITREP date rolls every "Data last updated" label.
+  get lastUpdated() {
+    return formatMonthLabel(readinessMetrics.dataAsOf);
+  },
   address: {
     street: "6920 Franklin Avenue",
     city: "New Orleans",
@@ -66,8 +79,11 @@ export interface ReadinessCategory {
 }
 
 export const systemReadiness = {
-  // Source: Apr 2026 SITREP
-  lastUpdated: "April 2026",
+  // Source: Apr 2026 SITREP. Label is derived from readinessMetrics.dataAsOf
+  // so refreshing that one ISO date rolls every surface that reads it.
+  get lastUpdated() {
+    return formatMonthLabel(readinessMetrics.dataAsOf);
+  },
   overallStatus: "GREEN" as StatusLevel,
   categories: [
     {

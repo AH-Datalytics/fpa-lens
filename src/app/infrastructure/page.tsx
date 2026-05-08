@@ -28,6 +28,7 @@ import {
   systemReadiness,
   readinessMetrics,
   kpiMetrics,
+  formatMonthLabel,
 } from "@/data/siteData";
 import { grassCuttingData } from "@/data/grassCutting";
 import { computeMonthlyKpi, type AnyZone } from "@/lib/turfMaintenance";
@@ -556,7 +557,7 @@ export default function OurSystemPage() {
                   big={`${kpiMetrics.pccpPumps.value}/${kpiMetrics.pccpPumps.total}`}
                   unit="available"
                   status="GREEN"
-                  dataAsOf="April 2026"
+                  dataAsOf={formatMonthLabel(readinessMetrics.dataAsOf)}
                 />
                 <ReadinessCard
                   title="Complex Structures"
@@ -564,7 +565,7 @@ export default function OurSystemPage() {
                   big={`${readinessMetrics.navigableFloodgatesOperable.operable}/${readinessMetrics.navigableFloodgatesOperable.total}`}
                   unit="operable"
                   status="GREEN"
-                  dataAsOf="April 2026"
+                  dataAsOf={formatMonthLabel(readinessMetrics.dataAsOf)}
                 />
                 <Link
                   href="/infrastructure/turf-maintenance"
