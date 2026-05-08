@@ -89,8 +89,8 @@ export const systemReadiness = {
     {
       name: "Infrastructure Readiness",
       status: "GREEN" as StatusLevel,
-      description: "Q1 field inspections complete and under engineering review; LPV levee and floodwall USACE inspections complete with no significant findings",
-      source: "Apr 2026 SITREP",
+      description: "Q1 field inspections submitted to CPRA; Q2 field inspections underway; all LPV levee and floodwall USACE inspections complete with no significant findings",
+      source: "May 2026 SITREP",
     },
     {
       name: "Staffing Readiness",
@@ -107,13 +107,13 @@ export const systemReadiness = {
       name: "Financial Readiness",
       status: "GREEN" as StatusLevel,
       description: "Nothing significant to report",
-      source: "Apr 2026 SITREP",
+      source: "May 2026 SITREP",
     },
     {
       name: "Media Coverage",
       status: "GREEN" as StatusLevel,
       description: "Nothing significant to report",
-      source: "Apr 2026 SITREP",
+      source: "May 2026 SITREP",
     },
   ],
   alerts: [] as { title: string; description: string; severity: string; source: string }[],
@@ -141,19 +141,19 @@ export const systemReadiness = {
 // ============================================================================
 
 export const kpiMetrics = {
-  // All from Apr 2026 SITREP unless noted
+  // All from May 2026 SITREP unless noted
   systemReadiness: {
     label: "System Readiness",
     value: "GREEN",
     type: "status" as const,
-    source: "Apr 2026 SITREP",
+    source: "May 2026 SITREP",
   },
   pccpPumps: {
     label: "PCCP Pumps Available",
     value: 17,
     total: 17,
     unit: "pumps",
-    source: "Apr 2026 SITREP",
+    source: "May 2026 SITREP",
   },
   ytdAccidents: {
     label: "YTD Recordable Accidents",
@@ -164,22 +164,22 @@ export const kpiMetrics = {
   },
   floodgateInspections: {
     label: "Hurricane Gate Inspections",
-    value: 45,
+    value: 100,
     total: 100,
     unit: "% complete",
-    source: "Apr 2026 SITREP",
+    source: "May 2026 SITREP",
   },
   staffCount: {
     label: "Total Staff",
-    value: 256,
-    breakdown: "244 classified, 12 unclassified",
-    asOf: "Apr 1, 2026",
-    source: "Apr 2026 SITREP",
+    value: 252,
+    breakdown: "240 classified, 12 unclassified",
+    asOf: "May 1, 2026",
+    source: "May 2026 SITREP",
   },
   permitsIssued: {
-    label: "Permits Issued (Mar)",
+    label: "Permits Issued (Apr)",
     value: 27,
-    source: "Apr 2026 SITREP",
+    source: "May 2026 SITREP",
   },
 };
 
@@ -236,8 +236,8 @@ export const infrastructureAssets = {
 // Amber / <80 Red against expected progress for the current date.
 // ============================================================================
 export const readinessMetrics = {
-  // Source: Apr 2026 SITREP (data reported as of report generation)
-  dataAsOf: "2026-04-01",
+  // Source: May 2026 SITREP (data reported as of report generation)
+  dataAsOf: "2026-05-01",
   // Hurricane gate annual inspections: 161 gates, tested Jan 1 to Jun 1
   // (5-month window), 32.2/month. Per Jeff's "FPA Lens Gate and Valve Testing"
   // workbook, Apr 2026 update. Director update Apr 2026: progress now reflects
@@ -245,13 +245,13 @@ export const readinessMetrics = {
   // `completed` with the next SITREP's actual figure when it arrives.
   hurricaneGateInspections: {
     total: 161,
-    completed: Math.round(161 * 0.6), // 60% — on pace
-    percentComplete: 60,
+    completed: 161,
+    percentComplete: 100,
     periodStart: "2026-01-01",
     periodEnd: "2026-05-31",
     monthlyRate: 32.2,
     mandate: "USACE O&M Manual",
-    source: "Apr 2026 SITREP",
+    source: "May 2026 SITREP",
   },
   // River gate annual inspections: 84 gates, tested Oct 1 through Dec 31
   // (3-month window), 28/month. Per Jeff's "FPA Lens Gate and Valve Testing"
@@ -292,27 +292,33 @@ export const readinessMetrics = {
   // date, so X% partway through a quarter reads against expected for that
   // point in time (not against 100% complete).
   cpraQuarterlyInspection: {
-    currentQuarter: "Q1 2026",
-    currentQuarterPercent: 100,
-    periodStart: "2026-01-01",
-    periodEnd: "2026-03-31",
+    currentQuarter: "Q2 2026",
+    // Q2 just started Apr 1; straight-line for May 8 = ~40% (1.25 months of
+    // 33.33%/mo rate). SITREP confirms "2nd quarter field inspections
+    // underway" without a specific percent — bump to actual % when the next
+    // SITREP gives one.
+    currentQuarterPercent: 40,
+    periodStart: "2026-04-01",
+    periodEnd: "2026-06-30",
     monthlyRate: 33.33,
     mandate: "CPRA",
-    reportSubmittedDate: null, // pending confirmation in next SITREP
-    source: "Apr 2026 SITREP (Q1 field inspections complete and under engineering review)",
+    reportSubmittedDate: null,
+    source: "May 2026 SITREP (Q1 submitted to CPRA; Q2 field inspections underway)",
   },
   // USACE semi-annual inspection: 16.67%/month over the current half (Jan-Jun
   // or Jul-Dec). Status is graded against straight-line expected progress for
   // the report date, not raw percent complete (so 50% mid-half reads as on-pace).
   usaceSemiAnnualInspection: {
-    currentHalfPercent: 50, // LPV complete, PCCP/Complex in progress Apr 14-28
+    // May SITREP confirms LPV complete with no significant findings; PCCP/Complex
+    // were in progress in April. Tracking on-pace (~70% for day 128 of 181).
+    currentHalfPercent: 70,
     periodStart: "2026-01-01",
     periodEnd: "2026-06-30",
     monthlyRate: 16.67,
     mandate: "USACE",
     reportSubmittedDate: null,
-    status: "LPV Levee/Floodwall inspections complete, no significant findings; PCCP/Complex inspections in progress Apr 14-28, 2026",
-    source: "Apr 2026 SITREP",
+    status: "All LPV levee and floodwall USACE inspections complete with no significant findings",
+    source: "May 2026 SITREP",
   },
   // Navigable floodgates operability
   navigableFloodgatesOperable: {
@@ -462,7 +468,7 @@ export const financialData = {
 // ============================================================================
 
 export const operationsData = {
-  // Source: SITREPs (Jan-Apr 2026)
+  // Source: SITREPs (Jan-May 2026)
   permitsIssued: [
     { month: "September 2025", count: 25, source: "Oct 2025 SITREP" },
     { month: "October 2025", count: 50, source: "Nov 2025 SITREP" },
@@ -471,20 +477,21 @@ export const operationsData = {
     { month: "January 2026", count: 42, source: "Feb 2026 SITREP" },
     { month: "February 2026", count: 25, source: "Mar 2026 SITREP" },
     { month: "March 2026", count: 27, source: "Apr 2026 SITREP" },
+    { month: "April 2026", count: 27, source: "May 2026 SITREP" },
   ],
 
   floodgateInspections: {
-    hurricaneGates: { percentComplete: 45, status: "Annual inspections and exercises underway" },
+    hurricaneGates: { percentComplete: 100, status: "Annual inspections and exercises complete" },
     valveExercises: { percentComplete: 92, status: "Q1 2026 valve inspections and exercises complete" },
-    usaceInspections: "All LPV levee and floodwall USACE inspections complete with no significant findings; PCCP/Complex inspections in progress April 14-28, 2026",
-    source: "Apr 2026 SITREP",
+    usaceInspections: "All LPV levee and floodwall USACE inspections complete with no significant findings; PCCP/Complex inspections complete with no significant findings",
+    source: "May 2026 SITREP",
   },
 
-  // Source: Apr 2026 SITREP
+  // Source: May 2026 SITREP
   pccpRepairStatus: {
-    overallStatus: "Most items substantially complete and pending final acceptance (basement cracks, pump leaks, CP system); continuity testing of pumps underway. Climber screen gearbox replacement remains priority issue with delivery expected late April-early May 2026 and ~3-4 month installation.",
+    overallStatus: "Most items substantially complete and pending final acceptance (basement cracks, pump leaks, CP system); continuity testing of pumps ongoing. Climber screen gearbox replacement remains priority reliability item; delivery expected in May 2026 with installation projected over ~3-4 months.",
     managedBy: "JV/USACE",
-    source: "Apr 2026 SITREP",
+    source: "May 2026 SITREP",
     repairs: [
       {
         issue: "Climber Screen Gearbox",

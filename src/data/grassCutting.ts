@@ -227,7 +227,7 @@ export const grassCuttingData = {
       monthlyFrequency: 2,
       reaches: [
         { name: "Lakefront", acres: 95, cycle1Pct: 1.0, cycle2Pct: 1.0 },
-        { name: "Outfall Canals (17th Street, Orleans, Bayou St. John, London)", acres: 123, cycle1Pct: 1.0, cycle2Pct: 0 },
+        { name: "Outfall Canals (17th Street, Orleans, Bayou St. John, London)", acres: 123, cycle1Pct: 1.0, cycle2Pct: 1.0 },
         { name: "IHNC West", acres: 57, cycle1Pct: 1.0, cycle2Pct: 1.0 },
         { name: "IHNC East (E-13 to N-01)", acres: 25, cycle1Pct: 0, cycle2Pct: 1.0 },
       ],
