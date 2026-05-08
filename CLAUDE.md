@@ -32,15 +32,25 @@ Dashboard for the Southeast Louisiana Flood Protection Authority (FPA). Built fo
 ### Turf Maintenance (/infrastructure/turf-maintenance)
 - Built out May 2026. Covers all three levee districts: Orleans (OLD, 6 zones, ~1,507 ac), East Jefferson (EJLD, 4 zones, ~660 ac), and Lake Borgne Basin (LBBLD, 4 zones, ~1,353 ac). ~3,520 acres / 14 zones total.
 - Page leads with the maintenance plan (twice-monthly mowing, doubled from prior monthly schedule starting Mar 2026), a simplified "Cycle 1 complete" status strip, then a district filter that scopes both the map and the per-zone cards below it. Default filter is OLD.
-- Per-zone cards (redesigned May 2026 per Director feedback): show acres, cycles/mo, monthly acreage target, a single projected-monthly-output bar (fill + color), and an on-pace / at-risk / behind KPI badge. Cycle 1 calendar days drive the projection. Dates, working days, and spreadsheet notes were intentionally removed as noise.
-- KPI formula: `cyclesPerMonthAtPace = 30 / calendarDays; projectedAcres = min(monthlyTarget, cyclesPerMonthAtPace × acres); projectedPct = projectedAcres / monthlyTarget`. Green ≥ 90%, Amber 80-89%, Red < 80%.
+- Per-zone cards (redesigned May 2026, second pass per Director feedback): focus on a single question — *how much of the monthly cutting goal has been completed?* Header shows acres, cycles/mo, and the monthly target. Body shows a Reach list (renamed from "Coverage") with per-reach acreage, then a single progress bar headlined "X of Y acres completed this month" with a Cycle 1 tick mark and a Green/Amber/Red badge. Projection math, acres-per-day pace, Cycle 1 dates, and working-day counts are all hidden. Zones with no reported actuals (currently EJLD) show an "Awaiting weekly update" gray state.
+- Data model (`src/data/grassCutting.ts`): each zone carries `reaches: Reach[]` (name, acres, `cycle1Pct`, `cycle2Pct`) and `hasReportedData: boolean`. `cycle1Pct`/`cycle2Pct` are cumulative percent-complete from the maintenance team's weekly workbook (max value across the month's weeks per cycle). `cycle2Pct` is `null` for 1×/mo zones (LBBLD). A `reportingMonth` field on `grassCuttingData` (`{ label, year, month, isComplete }`) drives the period the cards report against.
+- KPI helpers (`src/lib/turfMaintenance.ts`):
+  - `monthlyTargetAcres = zone.acres × monthlyFrequency`
+  - `monthAcresDone = Σ reach.acres × (cycle1Pct + (cycle2Pct ?? 0))`
+  - `computeMonthlyKpi`: when `reportingMonth.isComplete`, level is set on raw `done/target`. When the month is in flight, level is pace-adjusted by `done / (elapsedFraction × target)`. Thresholds: Green ≥ 90%, Amber 80–89%, Red < 80% (mirrors the rest of the dashboard, pending Director confirmation).
+  - `cycle1TickPosition = 1 / monthlyFrequency`, returns `null` for 1×/mo (no intermediate tick — the bar *is* the cycle).
 - Source data:
   - GIS shapefiles from Kory at FPA: `data/sources/shapefiles/{OLD,EJLD,LBBLD}_{Centerline,Mowing_Area}.*`
-  - Cycle 1 dates from Carlos's "New Cutting Plan 2026" spreadsheet, three tabs: "Mileage log OLD", "Mileage log EJLD", "Mileage log LBBLD"
+  - Cycle 1 dates and weekly C1/C2 percentages from Lavell/Angel's "New Cutting Plan 2026" workbook, tabs: "Mileage log OLD", "Mileage log EJLD", "Mileage log LBBLD". Director's Q2 direction (Apr 2026): same workbook is the source of truth, updated weekly and submitted Mondays for the prior week.
 - Refresh GIS: `node scripts/convertShapefiles.mjs` regenerates `public/data/{old,ejld,lbbld}-{centerline,mowing-areas}.json`
-- Per-zone Cycle 1 calendar days and comments are hand-entered in `src/data/grassCutting.ts` (keyed by zone). EJLD/LBBLD `monthlyFrequency` is currently assumed 2×/mo across the board pending Carlos confirmation.
-- Outstanding:
-  - **EJLD/LBBLD cadence confirmation**: Carlos still needs to confirm which zones are 1.5×/mo vs 2×/mo. Currently all assumed 2.
+- Per-reach acreages and per-month cycle percentages are hand-entered in `src/data/grassCutting.ts`. Current values reflect April 2026 finals: OLD reaches at C1=1.0/C2=0 (placeholders pending real workbook ingestion), LBBLD reaches at C1=1.0/C2=null, EJLD `hasReportedData=false`. EJLD `monthlyFrequency` is assumed 2×/mo across the board pending Carlos confirmation.
+- Outstanding (sent to Director May 7, 2026 in `drafts/turf-redesign-followup-email.md`):
+  - **Green / Amber / Red thresholds**: using ≥90% / 80–89% / <80% to mirror the rest of the dashboard; awaiting Director confirmation.
+  - **Cycle 1 tick placement**: 50% for 2×/mo, ~67% for 1.5×/mo, no tick for 1×/mo; awaiting Director confirmation.
+  - **Reporting period rollover**: April shown as current period; awaiting Director's preference (calendar 1st vs first Monday vs first weekly data drop).
+  - **Florida Ave reach count**: treating as 3 reaches (10+21+26 = 57 ac) but Lavell's spreadsheet "Reach Count" column still reads 2; awaiting confirmation.
+  - **EJLD cadence confirmation**: all four EJLD zones currently assumed 2×/mo; awaiting confirmation that none are closer to 1.5×/mo.
+  - **EJLD April actuals**: no weekly C1/C2 percentages received; cards show "Awaiting weekly update."
   - **LPV-115 in the spreadsheet**: Carlos confirmed (May 2026) LPV-115 / Paris Rd. to Jourdan is Citrus Back Levee, mowed 2×/mo (4 working days w/ 4 operators). Polygon is folded into "Southside MRGO & Citrus Back" and the +122 ac is in the zone total (185 → 307 ac). Maintenance team still needs to start logging LPV-115 in the "Mileage log OLD" tab so Cycle 1 calendar days for the combined zone are accurate (currently 14 days, reflects Southside MRGO only).
   - **Florida Ave acreage override**: `ACREAGE_OVERRIDES` in `convertShapefiles.mjs` patches the S1 to Bienvenue polygon down to 2.6 ac (Kory confirmed the 185.6 ac value was an erroneous duplicate). Drop the override block once Kory ships an updated OLD shapefile with the fix baked in.
   - **Cycle 2 reporting**: Director's Q2 answer is to keep the same spreadsheet as source of truth, updated weekly and submitted Mondays for the prior week. Page wiring for Cycle 2 not yet built.
