@@ -327,9 +327,9 @@ export const grassCuttingData = {
       operators: 5,
       monthlyFrequency: 2,
       reaches: [
-        { name: "St. Charles/Jeff Parish line to 17th St. Canal on EJ side", acres: 360, cycle1Pct: 0, cycle2Pct: 0 },
+        { name: "St. Charles/Jeff Parish line to 17th St. Canal on EJ side", acres: 360, cycle1Pct: 1.0, cycle2Pct: 1.0 },
       ],
-      hasReportedData: false,
+      hasReportedData: true,
       lastCycle: {
         startDate: "April 20, 2026",
         completionDate: "April 27, 2026",
@@ -347,10 +347,10 @@ export const grassCuttingData = {
       operators: 3,
       monthlyFrequency: 2,
       reaches: [
-        { name: "Monticello to Alliance", acres: 202, cycle1Pct: 0, cycle2Pct: 0 },
-        { name: "St. Charles/Jeff Parish line", acres: 3, cycle1Pct: 0, cycle2Pct: 0 },
+        { name: "Monticello to Alliance", acres: 202, cycle1Pct: 1.0, cycle2Pct: 1.0 },
+        { name: "St. Charles/Jeff Parish line", acres: 3, cycle1Pct: 1.0, cycle2Pct: 1.0 },
       ],
-      hasReportedData: false,
+      hasReportedData: true,
       lastCycle: {
         startDate: "April 20, 2026",
         completionDate: "April 27, 2026",
@@ -367,9 +367,9 @@ export const grassCuttingData = {
       operators: 5,
       monthlyFrequency: 2,
       reaches: [
-        { name: "Airline Hwy & Lesan Dr to St. Charles/Jeff Parish line (Reach 1)", acres: 85, cycle1Pct: 0, cycle2Pct: 0 },
+        { name: "Airline Hwy & Lesan Dr to St. Charles/Jeff Parish line (Reach 1)", acres: 85, cycle1Pct: 1.0, cycle2Pct: 1.0 },
       ],
-      hasReportedData: false,
+      hasReportedData: true,
       lastCycle: {
         startDate: "April 20, 2026",
         completionDate: "April 20, 2026",
@@ -387,9 +387,9 @@ export const grassCuttingData = {
       operators: 1,
       monthlyFrequency: 2,
       reaches: [
-        { name: "Along 17th St. Canal to Pinks St", acres: 10, cycle1Pct: 0, cycle2Pct: 0 },
+        { name: "Along 17th St. Canal to Pinks St", acres: 10, cycle1Pct: 1.0, cycle2Pct: 1.0 },
       ],
-      hasReportedData: false,
+      hasReportedData: true,
       lastCycle: {
         startDate: "April 29, 2026",
         completionDate: "April 29, 2026",
