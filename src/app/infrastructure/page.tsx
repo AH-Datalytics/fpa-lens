@@ -30,6 +30,7 @@ import {
   kpiMetrics,
 } from "@/data/siteData";
 import { grassCuttingData } from "@/data/grassCutting";
+import { computeMonthlyKpi, type AnyZone } from "@/lib/turfMaintenance";
 
 const smsKeywords = [
   {
@@ -262,19 +263,37 @@ export default function OurSystemPage() {
   const ve = readinessMetrics.valveExercises;
   const veStatus = statusFromRatio(ve.percentComplete);
 
-  // Grass cutting cycle progress: Cycle 1 (initial cut on the new
-  // twice-per-month plan) is complete across every zone in all three
-  // districts. Card on this page rolls the three districts up so the
-  // count reflects the system, not just OLD.
-  const gcZonesAll = [
+  // Turf maintenance rollup. Each zone produces a Green/Amber/Red KPI
+  // from its monthly progress; "on pace" = Green. Zones without
+  // reported actuals (hasReportedData=false, e.g. EJLD pending the
+  // team's weekly input) count against the total but not toward "on
+  // pace." Worst-of aggregation drives the card status.
+  const gcZonesAll: AnyZone[] = [
     ...grassCuttingData.zones,
     ...grassCuttingData.ejldZones,
     ...grassCuttingData.lbbldZones,
   ];
-  const gcCompleted = gcZonesAll.length;
   const gcTotal = gcZonesAll.length;
   const gcAcres = Math.round(gcZonesAll.reduce((sum, z) => sum + z.acres, 0));
-  const gcStatus: StatusColor = "GREEN";
+  let gcCompleted = 0;
+  let gcAnyRed = false;
+  let gcAnyAmber = false;
+  let gcAnyGray = false;
+  for (const zone of gcZonesAll) {
+    if (!zone.hasReportedData) {
+      gcAnyGray = true;
+      continue;
+    }
+    const kpi = computeMonthlyKpi(zone, grassCuttingData.reportingMonth);
+    if (kpi.level === "green") gcCompleted += 1;
+    else if (kpi.level === "amber") gcAnyAmber = true;
+    else gcAnyRed = true;
+  }
+  const gcStatus: StatusColor = gcAnyRed
+    ? "RED"
+    : gcAnyAmber || gcAnyGray
+      ? "AMBER"
+      : "GREEN";
 
   return (
     <div className="py-12">
@@ -554,10 +573,10 @@ export default function OurSystemPage() {
                 >
                   <ReadinessCard
                     title="Monthly Turf Maintenance"
-                    mandate="Twice per month (internal O&amp;M)"
+                    mandate="Internal O&amp;M (per-zone monthly target)"
                     icon={Sprout}
                     big={`${gcCompleted} / ${gcTotal}`}
-                    unit="zones cut"
+                    unit="zones on pace"
                     actual={`${grassCuttingData.reportingMonth.label} progress across all 3 districts (~${gcAcres.toLocaleString()} ac)`}
                     status={gcStatus}
                     topCta="View full page"

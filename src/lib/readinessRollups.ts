@@ -11,6 +11,7 @@
 
 import { readinessMetrics } from "@/data/siteData";
 import { grassCuttingData } from "@/data/grassCutting";
+import { computeMonthlyKpi, type AnyZone } from "@/lib/turfMaintenance";
 
 export type StatusColor = "GREEN" | "AMBER" | "RED" | "NEUTRAL";
 
@@ -155,14 +156,36 @@ export function computeReadinessRollups(asOfDate?: string): ReadinessRollups {
       ? "AMBER"
       : "GREEN";
 
-  // Grass cutting rollup. Cycle 1 (initial cut on the new plan) is
-  // complete across all 6 OLD zones. Cycle 2 reporting cadence isn't
-  // wired up yet, so we report Cycle 1 status as GREEN until the team
-  // commits to a Cycle 2 schedule.
-  const gcZones = grassCuttingData.zones;
-  const gcTotal = gcZones.length;
-  const gcComplete = gcTotal;
-  const gcStatus: StatusColor = "GREEN";
+  // Turf maintenance rollup. Each zone produces a Green/Amber/Red KPI
+  // from its monthly progress (per-reach C1+C2 percentages × acres,
+  // compared to zone.acres × monthlyFrequency). Zones without reported
+  // actuals (hasReportedData=false, e.g. EJLD pending the team's
+  // weekly input) count against the total but not toward "on pace."
+  const gcZonesAll: AnyZone[] = [
+    ...grassCuttingData.zones,
+    ...grassCuttingData.ejldZones,
+    ...grassCuttingData.lbbldZones,
+  ];
+  const gcTotal = gcZonesAll.length;
+  let gcComplete = 0;
+  let anyRed = false;
+  let anyAmber = false;
+  let anyGray = false;
+  for (const zone of gcZonesAll) {
+    if (!zone.hasReportedData) {
+      anyGray = true;
+      continue;
+    }
+    const kpi = computeMonthlyKpi(zone, grassCuttingData.reportingMonth);
+    if (kpi.level === "green") gcComplete += 1;
+    else if (kpi.level === "amber") anyAmber = true;
+    else anyRed = true;
+  }
+  const gcStatus: StatusColor = anyRed
+    ? "RED"
+    : anyAmber || anyGray
+      ? "AMBER"
+      : "GREEN";
 
   return {
     inspections: {

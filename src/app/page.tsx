@@ -199,7 +199,7 @@ export default function Home() {
                     {rollups.grassCutting.complete}/{rollups.grassCutting.total}
                   </div>
                   <div className="text-xs text-gray-500 leading-snug mt-0.5">
-                    Turf maintenance reaches on pace
+                    Turf maintenance zones on pace
                   </div>
                 </div>
               </div>
