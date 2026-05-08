@@ -245,13 +245,33 @@ function OtherZoneCard({ zone }: { zone: OtherDistrictZone }) {
 }
 
 export default function GrassCuttingPage() {
-  const { zones, ejldZones, lbbldZones, systemTotal } = grassCuttingData;
+  const { zones, ejldZones, lbbldZones, systemTotal, reportingMonth } =
+    grassCuttingData;
 
   const oldAcres = zones.reduce((sum, z) => sum + z.acres, 0);
   const ejldAcres = ejldZones.reduce((sum, z) => sum + z.acres, 0);
   const lbbldAcres = lbbldZones.reduce((sum, z) => sum + z.acres, 0);
   const systemAcres = oldAcres + ejldAcres + lbbldAcres;
   const systemZones = zones.length + ejldZones.length + lbbldZones.length;
+
+  // System-wide rollup shown alongside the totals so this page surfaces
+  // the same on-pace count and Green/Amber/Red status the home and
+  // infrastructure pages use. Same 90/80 thresholds as the rest of the
+  // site.
+  const allZonesForRollup: AnyZone[] = [...zones, ...ejldZones, ...lbbldZones];
+  const onPaceCount = allZonesForRollup.reduce((n, zone) => {
+    if (!zone.hasReportedData) return n;
+    return computeMonthlyKpi(zone, reportingMonth).level === "green" ? n + 1 : n;
+  }, 0);
+  const onPaceRatio = systemZones > 0 ? (onPaceCount / systemZones) * 100 : 100;
+  const rollupLevel: KpiLevel =
+    onPaceRatio >= 90 ? "green" : onPaceRatio >= 80 ? "amber" : "red";
+  const rollupBadgeLabel =
+    rollupLevel === "green"
+      ? "On pace"
+      : rollupLevel === "amber"
+        ? "Watch"
+        : "Behind";
 
   const [district, setDistrict] = useState<DistrictFilter>("ALL");
   const showOld = district === "ALL" || district === "OLD";
@@ -300,10 +320,37 @@ export default function GrassCuttingPage() {
         </section>
 
         {/* SYSTEM AT A GLANCE — moved above the map so the totals frame
-            the detailed exploration that follows. */}
+            the detailed exploration that follows. The summary badge
+            mirrors the system-wide on-pace status shown on the home
+            and infrastructure pages. */}
         <section className="mb-12">
           <SectionSubheader title="System overview" />
           <div className="bg-white rounded-xl shadow-md border border-gray-100 p-6">
+            <div className="flex flex-wrap items-start justify-between gap-3 mb-6">
+              <div>
+                <div className="text-xs uppercase tracking-wide text-gray-500 font-semibold">
+                  {reportingMonth.label} system status
+                </div>
+                <div className="text-sm text-gray-700 mt-1">
+                  <span className="text-2xl font-bold text-[#21355a] align-middle">
+                    {onPaceCount}
+                  </span>
+                  <span className="align-middle">
+                    {" "}
+                    of {systemZones} zones on pace this month
+                  </span>
+                </div>
+              </div>
+              <span
+                className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold ${PALETTE[rollupLevel].badge}`}
+              >
+                <span
+                  className={`inline-block w-1.5 h-1.5 rounded-full ${PALETTE[rollupLevel].dot}`}
+                  aria-hidden="true"
+                />
+                {rollupBadgeLabel}
+              </span>
+            </div>
             <div className="grid md:grid-cols-4 gap-6">
               <div>
                 <div className="text-3xl font-bold text-[#21355a]">

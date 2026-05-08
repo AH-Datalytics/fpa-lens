@@ -266,9 +266,10 @@ export default function OurSystemPage() {
 
   // Turf maintenance rollup. Each zone produces a Green/Amber/Red KPI
   // from its monthly progress; "on pace" = Green. Zones without
-  // reported actuals (hasReportedData=false, e.g. EJLD pending the
-  // team's weekly input) count against the total but not toward "on
-  // pace." Worst-of aggregation drives the card status.
+  // reported actuals (hasReportedData=false) count against the total
+  // but not toward "on pace." Card status uses the on-pace ratio with
+  // the same Green ≥ 90 / Amber ≥ 80 / Red < 80 thresholds the rest of
+  // the site uses, so 13/14 reads Green like every other ≥ 90% metric.
   const gcZonesAll: AnyZone[] = [
     ...grassCuttingData.zones,
     ...grassCuttingData.ejldZones,
@@ -277,24 +278,13 @@ export default function OurSystemPage() {
   const gcTotal = gcZonesAll.length;
   const gcAcres = Math.round(gcZonesAll.reduce((sum, z) => sum + z.acres, 0));
   let gcCompleted = 0;
-  let gcAnyRed = false;
-  let gcAnyAmber = false;
-  let gcAnyGray = false;
   for (const zone of gcZonesAll) {
-    if (!zone.hasReportedData) {
-      gcAnyGray = true;
-      continue;
-    }
+    if (!zone.hasReportedData) continue;
     const kpi = computeMonthlyKpi(zone, grassCuttingData.reportingMonth);
     if (kpi.level === "green") gcCompleted += 1;
-    else if (kpi.level === "amber") gcAnyAmber = true;
-    else gcAnyRed = true;
   }
-  const gcStatus: StatusColor = gcAnyRed
-    ? "RED"
-    : gcAnyAmber || gcAnyGray
-      ? "AMBER"
-      : "GREEN";
+  const gcRatio = gcTotal > 0 ? (gcCompleted / gcTotal) * 100 : 100;
+  const gcStatus: StatusColor = statusFromRatio(gcRatio);
 
   return (
     <div className="py-12">

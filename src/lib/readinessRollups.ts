@@ -159,8 +159,10 @@ export function computeReadinessRollups(asOfDate?: string): ReadinessRollups {
   // Turf maintenance rollup. Each zone produces a Green/Amber/Red KPI
   // from its monthly progress (per-reach C1+C2 percentages × acres,
   // compared to zone.acres × monthlyFrequency). Zones without reported
-  // actuals (hasReportedData=false, e.g. EJLD pending the team's
-  // weekly input) count against the total but not toward "on pace."
+  // actuals (hasReportedData=false) count against the total but not
+  // toward "on pace." Aggregate status uses the on-pace ratio with the
+  // site-wide 90/80 thresholds so a single off-pace zone in a 14-zone
+  // system doesn't drag the rollup to Red.
   const gcZonesAll: AnyZone[] = [
     ...grassCuttingData.zones,
     ...grassCuttingData.ejldZones,
@@ -168,24 +170,13 @@ export function computeReadinessRollups(asOfDate?: string): ReadinessRollups {
   ];
   const gcTotal = gcZonesAll.length;
   let gcComplete = 0;
-  let anyRed = false;
-  let anyAmber = false;
-  let anyGray = false;
   for (const zone of gcZonesAll) {
-    if (!zone.hasReportedData) {
-      anyGray = true;
-      continue;
-    }
+    if (!zone.hasReportedData) continue;
     const kpi = computeMonthlyKpi(zone, grassCuttingData.reportingMonth);
     if (kpi.level === "green") gcComplete += 1;
-    else if (kpi.level === "amber") anyAmber = true;
-    else anyRed = true;
   }
-  const gcStatus: StatusColor = anyRed
-    ? "RED"
-    : anyAmber || anyGray
-      ? "AMBER"
-      : "GREEN";
+  const gcRatio = gcTotal > 0 ? (gcComplete / gcTotal) * 100 : 100;
+  const gcStatus: StatusColor = statusFromRatio(gcRatio);
 
   return {
     inspections: {
