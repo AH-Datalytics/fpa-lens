@@ -245,8 +245,7 @@ function OtherZoneCard({ zone }: { zone: OtherDistrictZone }) {
 }
 
 export default function GrassCuttingPage() {
-  const { zones, ejldZones, lbbldZones, systemTotal, cadence } =
-    grassCuttingData;
+  const { zones, ejldZones, lbbldZones, systemTotal } = grassCuttingData;
 
   const oldAcres = zones.reduce((sum, z) => sum + z.acres, 0);
   const ejldAcres = ejldZones.reduce((sum, z) => sum + z.acres, 0);
@@ -337,10 +336,6 @@ export default function GrassCuttingPage() {
                 </div>
               </div>
             </div>
-            <p className="text-xs text-gray-500 mt-5 leading-relaxed">
-              {cadence.detail} The new plan doubled the cutting frequency from{" "}
-              {cadence.previousPlan.toLowerCase()} starting March 2026.
-            </p>
           </div>
         </section>
 
