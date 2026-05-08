@@ -18,6 +18,8 @@ import {
   siteConfig,
   systemReadiness,
   staffingData,
+  kpiMetrics,
+  readinessMetrics,
   StatusLevel,
 } from "@/data/siteData";
 import { computeReadinessRollups } from "@/lib/readinessRollups";
@@ -119,6 +121,17 @@ export default function Home() {
 
   const rollups = computeReadinessRollups();
 
+  // Mission-critical assets shown alongside inspections on the home card.
+  // Turf maintenance is tracked separately on the infrastructure page; per
+  // Director it isn't mission-critical for the headline readiness signal.
+  const assetsHealthy =
+    (kpiMetrics.pccpPumps.value === kpiMetrics.pccpPumps.total ? 1 : 0) +
+    (readinessMetrics.navigableFloodgatesOperable.operable ===
+    readinessMetrics.navigableFloodgatesOperable.total
+      ? 1
+      : 0);
+  const assetsTotal = 2;
+
   return (
     <div>
       {/* Hero Section */}
@@ -188,10 +201,10 @@ export default function Home() {
                 </div>
                 <div className="text-center">
                   <div className="text-xl font-bold text-[#21355a]">
-                    {rollups.grassCutting.complete}/{rollups.grassCutting.total}
+                    {assetsHealthy}/{assetsTotal}
                   </div>
                   <div className="text-xs text-gray-500 leading-snug mt-0.5">
-                    Turf maintenance zones on pace
+                    Critical assets fully operational
                   </div>
                 </div>
               </div>
