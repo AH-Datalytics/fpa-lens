@@ -5,6 +5,10 @@ Dashboard for the Southeast Louisiana Flood Protection Authority (FPA). Built fo
 
 ## Dashboard Pages
 
+### Home (/)
+- Infrastructure Readiness card shows two metrics: mandatory inspections on pace (from `readinessRollups.inspections`) and critical assets fully operational (PCCP Pumps + Complex Structures, computed inline from `kpiMetrics`/`readinessMetrics`). Turf maintenance is intentionally not on this card -- per Director (May 2026) it's important but not mission-critical for the headline readiness signal. Turf detail lives on `/infrastructure` and `/infrastructure/turf-maintenance`.
+- Date labels (`siteConfig.lastUpdated`, `systemReadiness.lastUpdated`, PCCP and Complex Structures `dataAsOf`) all derive from `readinessMetrics.dataAsOf` via `formatMonthLabel()` -- bumping that one ISO date rolls every month label across the site.
+
 ### Staffing (/staffing)
 - Removed individual recent hires (names/positions) -- too much detail for public dashboard
 - Keep vacancy count (45) for now since that's all the data we have
@@ -39,6 +43,7 @@ Dashboard for the Southeast Louisiana Flood Protection Authority (FPA). Built fo
   - `monthAcresDone = Σ reach.acres × (cycle1Pct + (cycle2Pct ?? 0))`
   - `computeMonthlyKpi`: when `reportingMonth.isComplete`, level is set on raw `done/target`. When the month is in flight, level is pace-adjusted by `done / (elapsedFraction × target)`. Thresholds: Green ≥ 90%, Amber 80–89%, Red < 80% (Director confirmed May 7, 2026).
   - `cycle1TickPosition = 1 / monthlyFrequency`, returns `null` for 1×/mo (no intermediate tick — the bar *is* the cycle). Director confirmed May 7, 2026.
+- System-wide rollup (the badge on the infrastructure-page turf card and on the turf-maintenance page System overview) uses the same 90/80 thresholds applied to the on-pace zone ratio (`greenZones / totalZones`). Not worst-of -- a single off-pace zone in a 14-zone system shouldn't drag the rollup to Red. Both `src/lib/readinessRollups.ts` and `src/app/infrastructure/page.tsx` keep this in sync.
 - Source data:
   - GIS shapefiles from Kory at FPA: `data/sources/shapefiles/{OLD,EJLD,LBBLD}_{Centerline,Mowing_Area}.*`
   - Weekly C1/C2 percentages now flow from the **FPA Turf Maintenance Input Template** (Jeff's Excel workbook with Orleans / East Jefferson / Lake Borgne Basin tabs), columns G/J/M/P/S = weekly C1 % and H/K/N/Q/T = weekly C2 % across up to five week-ending columns. Per Director (May 2026), updated weekly and submitted Mondays for the prior week. The legacy "New Cutting Plan 2026" / "Mileage log" tabs are no longer the source of truth for percentages, only for the Cycle 1 historic dates carried in `oldCycle1` / `ejldCycle1` / `lbbldCycle1` summaries.

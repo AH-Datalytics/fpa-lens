@@ -8,7 +8,7 @@ Public transparency dashboard for the Southeast Louisiana Flood Protection Autho
 |---|---|
 | `/` | Homepage with readiness gauge cards, KPIs, and quick links |
 | `/infrastructure` | Infrastructure page: interactive map, "System We Manage" table (per-district), 7 infrastructure readiness cards graded against straight-line monthly progress, real-time alerts |
-| `/infrastructure/turf-maintenance` | Turf Maintenance page: ~3,520 acres across 14 zones in three levee districts (OLD, EJLD, LBBLD), with district filter, interactive map, and per-zone projected monthly output bar with on-pace/at-risk/behind KPI |
+| `/infrastructure/turf-maintenance` | Turf Maintenance page: 3,633 acres across 14 zones in three levee districts (OLD, EJLD, LBBLD), with district filter, interactive map, system-wide on-pace badge, and per-zone Green/Amber/Red monthly progress |
 | `/engineering` | Engineering: permits, inspections, valve exercises, PCCP repairs, maintenance activities |
 | `/engineering/idiq` | IDIQ Contract Tracker: 2022 and 2025 cycles, service categories with micro-descriptions, firm-level utilization |
 | `/safety` | Accident/incident trends, events by category, lost time tracking. FY26 YTD accident count sourced from Safety Officer |
