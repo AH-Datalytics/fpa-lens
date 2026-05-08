@@ -7,6 +7,8 @@ import {
   FileWarning,
   AlertTriangle,
   CheckCircle,
+  Clock,
+  HeartPulse,
 } from "lucide-react";
 import {
   BarChart,
@@ -259,6 +261,31 @@ export default function SafetyPage() {
                 </div>
               </div>
             </div>
+            <div className="bg-amber-50 rounded-xl border border-amber-200 p-6">
+              <div className="flex items-start gap-3">
+                <Clock className="h-6 w-6 text-amber-700 flex-shrink-0 mt-0.5" />
+                <div>
+                  <h4 className="font-semibold text-amber-900 mb-2">Lost-Time Injury</h4>
+                  <p className="text-sm text-amber-800 leading-relaxed">
+                    A work-related injury or illness that causes an employee to miss
+                    one or more scheduled workdays after the day of the event.
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div className="bg-blue-50 rounded-xl border border-blue-200 p-6">
+              <div className="flex items-start gap-3">
+                <HeartPulse className="h-6 w-6 text-blue-700 flex-shrink-0 mt-0.5" />
+                <div>
+                  <h4 className="font-semibold text-blue-900 mb-2">Non-Lost-Time Injury</h4>
+                  <p className="text-sm text-blue-800 leading-relaxed">
+                    A work-related injury or illness that does not cause the employee
+                    to miss a scheduled workday. This may include first aid, medical
+                    treatment, or restricted duty, depending on the event.
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
         </section>
 
@@ -339,7 +366,6 @@ export default function SafetyPage() {
             <DataCard
               title="Annual Event Breakdown"
               source="FPA Event Logs (calendar year)"
-              note="OSHA-recordable accidents and tracked incidents. Lost time is a subset of injuries shown for severity context."
             >
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
