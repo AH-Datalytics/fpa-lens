@@ -150,7 +150,7 @@
                   "projectNumber": "O8200091",
                   "leveeDistrict": "OLD",
                   "maximum": 95126.0,
-                  "costToDate": 50214.38,
+                  "costToDate": 50905.63,
                   "startDate": "2023-08-10",
                   "endDate": "2025-10-09"
                 },
@@ -161,7 +161,7 @@
                   "projectNumber": "O8300072",
                   "leveeDistrict": "OLD",
                   "maximum": 37064.25,
-                  "costToDate": 32180.13,
+                  "costToDate": 36430.630000000005,
                   "startDate": "2024-08-01",
                   "endDate": "2024-12-31"
                 }
@@ -429,7 +429,7 @@
                   "projectNumber": "O2640162",
                   "leveeDistrict": "OLD",
                   "maximum": 98738.0,
-                  "costToDate": 80672.5,
+                  "costToDate": 81913.75,
                   "startDate": "2024-09-02",
                   "endDate": "2025-01-14"
                 },
@@ -881,8 +881,8 @@
           "service": "Constuction Materials & Testing",
           "contractCount": 3,
           "totalMaximum": 900000.0,
-          "totalUtilized": 4876.25,
-          "utilizationPct": 1,
+          "totalUtilized": 19572.25,
+          "utilizationPct": 2,
           "contracts": [
             {
               "number": "37-01",
@@ -890,7 +890,7 @@
               "contractDate": "2025-01-16",
               "endDate": "2028-01-16",
               "maximum": 300000.0,
-              "remaining": 295123.75,
+              "remaining": 281092.75,
               "taskOrders": [
                 {
                   "number": "01",
@@ -899,13 +899,13 @@
                   "projectNumber": "E2780165",
                   "leveeDistrict": "EJLD",
                   "maximum": 33616.5,
-                  "costToDate": 4876.25,
+                  "costToDate": 18907.25,
                   "startDate": "2025-12-01",
                   "endDate": "2026-05-01"
                 }
               ],
-              "utilized": 4876.25,
-              "utilizationPct": 2
+              "utilized": 18907.25,
+              "utilizationPct": 6
             },
             {
               "number": "37-02",
@@ -913,7 +913,7 @@
               "contractDate": "2025-01-16",
               "endDate": "2028-01-16",
               "maximum": 300000.0,
-              "remaining": 300000.0,
+              "remaining": 299335.0,
               "taskOrders": [
                 {
                   "number": "01",
@@ -922,12 +922,12 @@
                   "projectNumber": "O2440185",
                   "leveeDistrict": "OLD",
                   "maximum": 5820.0,
-                  "costToDate": 0.0,
+                  "costToDate": 665.0,
                   "startDate": "2025-10-06",
                   "endDate": "2025-12-31"
                 }
               ],
-              "utilized": 0,
+              "utilized": 665.0,
               "utilizationPct": 0
             },
             {
@@ -947,7 +947,7 @@
           "service": "MEP Services",
           "contractCount": 3,
           "totalMaximum": 1500000.0,
-          "totalUtilized": 0,
+          "totalUtilized": 2900.0,
           "utilizationPct": 0,
           "contracts": [
             {
@@ -990,10 +990,22 @@
               "contractDate": "2025-01-16",
               "endDate": "2028-01-16",
               "maximum": 500000.0,
-              "remaining": 500000.0,
-              "taskOrders": [],
-              "utilized": 0,
-              "utilizationPct": 0
+              "remaining": 497100.0,
+              "taskOrders": [
+                {
+                  "number": "01",
+                  "status": "Active",
+                  "description": "Vault 4-Generator Backup (Engineering Services)",
+                  "projectNumber": "O3000151",
+                  "leveeDistrict": "OLD",
+                  "maximum": 53000.0,
+                  "costToDate": 2900.0,
+                  "startDate": "2026-03-02",
+                  "endDate": "2026-12-25"
+                }
+              ],
+              "utilized": 2900.0,
+              "utilizationPct": 1
             }
           ]
         },
@@ -1034,7 +1046,19 @@
               "endDate": "2028-10-14",
               "maximum": 500000.0,
               "remaining": 500000.0,
-              "taskOrders": [],
+              "taskOrders": [
+                {
+                  "number": "01",
+                  "status": "Active",
+                  "description": "2026-Complex Structures Bathymetric Survey",
+                  "projectNumber": "O8300103",
+                  "leveeDistrict": "OLD",
+                  "maximum": 36638.85,
+                  "costToDate": 0.0,
+                  "startDate": "2026-04-27",
+                  "endDate": "2026-07-01"
+                }
+              ],
               "utilized": 0,
               "utilizationPct": 0
             },
@@ -1064,11 +1088,22 @@
         },
         {
           "service": "Civil Engineering",
-          "contractCount": 9,
-          "totalMaximum": 8100000.0,
-          "totalUtilized": 14326.439999999944,
-          "utilizationPct": 0,
+          "contractCount": 10,
+          "totalMaximum": 9100000.0,
+          "totalUtilized": 76844.30000000005,
+          "utilizationPct": 1,
           "contracts": [
+            {
+              "number": "40-01",
+              "consultant": "AECOM",
+              "contractDate": "2026-02-19",
+              "endDate": "2029-02-19",
+              "maximum": 1000000.0,
+              "remaining": 1000000.0,
+              "taskOrders": [],
+              "utilized": 0,
+              "utilizationPct": 0
+            },
             {
               "number": "40-02",
               "consultant": "Burk-Kleinpeter",
@@ -1076,7 +1111,19 @@
               "endDate": "2028-10-14",
               "maximum": 1000000.0,
               "remaining": 1000000.0,
-              "taskOrders": [],
+              "taskOrders": [
+                {
+                  "number": "01",
+                  "status": "Active",
+                  "description": "PCCP Pump Stations Operator Training 2025-2028",
+                  "projectNumber": "O8200231",
+                  "leveeDistrict": "OLD",
+                  "maximum": 49927.4,
+                  "costToDate": 0.0,
+                  "startDate": "2026-03-26",
+                  "endDate": "2028-10-13"
+                }
+              ],
               "utilized": 0,
               "utilizationPct": 0
             },
@@ -1095,7 +1142,7 @@
                   "projectNumber": "O3000219",
                   "leveeDistrict": "OLD",
                   "maximum": 34228.58,
-                  "costToDate": 1592.37,
+                  "costToDate": 11035.55,
                   "startDate": "2026-01-01",
                   "endDate": "2027-01-21"
                 }
@@ -1109,7 +1156,7 @@
               "contractDate": "2025-09-16",
               "endDate": "2028-09-16",
               "maximum": 1000000.0,
-              "remaining": 1000000.0,
+              "remaining": 978667.0,
               "taskOrders": [
                 {
                   "number": "01",
@@ -1118,13 +1165,13 @@
                   "projectNumber": "O2150172",
                   "leveeDistrict": "OLD",
                   "maximum": 86944.0,
-                  "costToDate": 0.0,
+                  "costToDate": 21333.0,
                   "startDate": "2026-02-23",
                   "endDate": "2026-07-03"
                 }
               ],
-              "utilized": 0,
-              "utilizationPct": 0
+              "utilized": 21333.0,
+              "utilizationPct": 2
             },
             {
               "number": "40-05",
@@ -1144,7 +1191,30 @@
               "endDate": "2029-02-03",
               "maximum": 1000000.0,
               "remaining": 1000000.0,
-              "taskOrders": [],
+              "taskOrders": [
+                {
+                  "number": "01",
+                  "status": "Active",
+                  "description": "Orpheum Ave Crest Widening & Slope Paving_CA",
+                  "projectNumber": "E2430017",
+                  "leveeDistrict": "EJLD",
+                  "maximum": 86964.0,
+                  "costToDate": 0.0,
+                  "startDate": "2026-03-01",
+                  "endDate": "2027-02-03"
+                },
+                {
+                  "number": "02",
+                  "status": "Active",
+                  "description": "Orpheum Ave Crest Widening & Slope Paving_RI",
+                  "projectNumber": "E2430018",
+                  "leveeDistrict": "EJLD",
+                  "maximum": 56732.0,
+                  "costToDate": 0.0,
+                  "startDate": "2026-04-01",
+                  "endDate": "2027-02-03"
+                }
+              ],
               "utilized": 0,
               "utilizationPct": 0
             },
@@ -1187,7 +1257,7 @@
               "contractDate": "2025-11-04",
               "endDate": "2028-11-04",
               "maximum": 1000000.0,
-              "remaining": 985673.56,
+              "remaining": 944488.7,
               "taskOrders": [
                 {
                   "number": "01",
@@ -1196,7 +1266,7 @@
                   "projectNumber": "E2780167",
                   "leveeDistrict": "EJLD",
                   "maximum": 41000.0,
-                  "costToDate": 13926.439999999999,
+                  "costToDate": 22411.3,
                   "startDate": "2025-11-10",
                   "endDate": "2026-06-01"
                 },
@@ -1207,13 +1277,13 @@
                   "projectNumber": "E2780168",
                   "leveeDistrict": "EJLD",
                   "maximum": 80000.0,
-                  "costToDate": 400.0,
+                  "costToDate": 33100.0,
                   "startDate": "2025-11-10",
                   "endDate": "2026-06-01"
                 }
               ],
-              "utilized": 14326.439999999944,
-              "utilizationPct": 1
+              "utilized": 55511.30000000005,
+              "utilizationPct": 6
             }
           ]
         }
@@ -1221,10 +1291,10 @@
     }
   ],
   "summary": {
-    "totalContracts": 36,
-    "totalMaxValue": 26000000.0,
-    "totalUtilized": 4423895.9399999995,
-    "activeTaskOrders": 21,
+    "totalContracts": 37,
+    "totalMaxValue": 27000000.0,
+    "totalUtilized": 4504009.8,
+    "activeTaskOrders": 26,
     "completedTaskOrders": 45,
     "serviceTypes": 6,
     "firms": 30

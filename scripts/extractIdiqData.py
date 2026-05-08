@@ -2,8 +2,12 @@
 """
 Extract IDIQ contract data from Excel and output JSON for the dashboard.
 
-Reads from: ~/Development/fpa/data/sources/idiq/IDIQ Tracker.xlsx
+Reads from: ~/Development/fpa/data/sources/idiq/Contract Master List Revised Beg July 1 2021.xlsx
 Outputs to:  ~/Development/fpa/public/data/idiq-contracts.json
+
+Per Director (May 2026), this workbook is refreshed monthly. Drop the new
+copy into data/sources/idiq/ (keeping the same filename) and re-run this
+script to regenerate the dashboard JSON.
 """
 
 import json
@@ -152,7 +156,7 @@ def build_summary(pools):
 
 
 def main():
-    filepath = os.path.join(BASE_DIR, "IDIQ Tracker.xlsx")
+    filepath = os.path.join(BASE_DIR, "Contract Master List Revised Beg July 1 2021.xlsx")
     wb = openpyxl.load_workbook(filepath, read_only=True, data_only=True)
 
     pools = []
