@@ -194,9 +194,9 @@ export const infrastructureAssets = {
     source: "Regional Director, Apr 2026",
   },
   turfMaintenance: {
-    acres: 3530,
-    byDistrict: { EJLD: 730, OLD: 1400, LBBLD: 1400 },
-    source: "Regional Director, Apr 2026",
+    acres: 3633,
+    byDistrict: { EJLD: 660, OLD: 1620, LBBLD: 1353 },
+    source: "Regional Director, May 2026",
   },
   landFloodgates: {
     total: 244,

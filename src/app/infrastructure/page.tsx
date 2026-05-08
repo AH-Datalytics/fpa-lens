@@ -558,7 +558,7 @@ export default function OurSystemPage() {
                     icon={Sprout}
                     big={`${gcCompleted} / ${gcTotal}`}
                     unit="zones cut"
-                    actual={`Cycle 1 complete across all 3 districts (~${gcAcres.toLocaleString()} ac)`}
+                    actual={`${grassCuttingData.reportingMonth.label} progress across all 3 districts (~${gcAcres.toLocaleString()} ac)`}
                     status={gcStatus}
                     topCta="View full page"
                   />

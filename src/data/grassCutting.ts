@@ -176,9 +176,9 @@ export const grassCuttingData = {
       acres: 650,
       monthlyFrequency: 1.5,
       reaches: [
-        { name: "LPV-108", acres: 220, cycle1Pct: 1.0, cycle2Pct: 0 },
-        { name: "LPV-109", acres: 215, cycle1Pct: 1.0, cycle2Pct: 0 },
-        { name: "LPV-111", acres: 215, cycle1Pct: 1.0, cycle2Pct: 0 },
+        { name: "LPV-108", acres: 141, cycle1Pct: 1.0, cycle2Pct: 1.0 },
+        { name: "LPV-109", acres: 289, cycle1Pct: 1.0, cycle2Pct: 1.0 },
+        { name: "LPV-111", acres: 220, cycle1Pct: 1.0, cycle2Pct: 1.0 },
       ],
       hasReportedData: true,
       lastCycle: {
@@ -203,9 +203,8 @@ export const grassCuttingData = {
       acres: 307,
       monthlyFrequency: 2,
       reaches: [
-        { name: "Southside MRGO", acres: 100, cycle1Pct: 1.0, cycle2Pct: 0 },
-        { name: "Citrus Back Levee", acres: 85, cycle1Pct: 1.0, cycle2Pct: 0 },
-        { name: "LPV-115 (Paris Rd. to Jourdan)", acres: 122, cycle1Pct: 1.0, cycle2Pct: 0 },
+        { name: "Southside MRGO (LPV-142/LPV-143)", acres: 185, cycle1Pct: 1.0, cycle2Pct: 1.0 },
+        { name: "Citrus Back Levee — LPV-115 (Paris Rd. Bridge to Jourdan Rd)", acres: 122, cycle1Pct: 1.0, cycle2Pct: 0.75 },
       ],
       hasReportedData: true,
       lastCycle: {
@@ -227,10 +226,10 @@ export const grassCuttingData = {
       acres: 300,
       monthlyFrequency: 2,
       reaches: [
-        { name: "Lakefront", acres: 130, cycle1Pct: 1.0, cycle2Pct: 0 },
-        { name: "Outfall Canals (17th Street, Orleans, Bayou St. John, London)", acres: 90, cycle1Pct: 1.0, cycle2Pct: 0 },
-        { name: "IHNC West", acres: 45, cycle1Pct: 1.0, cycle2Pct: 0 },
-        { name: "IHNC East (E-13 to N-01)", acres: 35, cycle1Pct: 1.0, cycle2Pct: 0 },
+        { name: "Lakefront", acres: 95, cycle1Pct: 1.0, cycle2Pct: 1.0 },
+        { name: "Outfall Canals (17th Street, Orleans, Bayou St. John, London)", acres: 123, cycle1Pct: 1.0, cycle2Pct: 0 },
+        { name: "IHNC West", acres: 57, cycle1Pct: 1.0, cycle2Pct: 1.0 },
+        { name: "IHNC East (E-13 to N-01)", acres: 25, cycle1Pct: 0, cycle2Pct: 1.0 },
       ],
       hasReportedData: true,
       lastCycle: {
@@ -251,12 +250,12 @@ export const grassCuttingData = {
       acres: 253,
       monthlyFrequency: 1.5,
       reaches: [
-        { name: "Citrus Lakefront", acres: 130, cycle1Pct: 1.0, cycle2Pct: 0 },
-        { name: "Paris Rd", acres: 35, cycle1Pct: 1.0, cycle2Pct: 0 },
-        { name: "Maxent", acres: 25, cycle1Pct: 1.0, cycle2Pct: 0 },
-        { name: "Michoud Canal Floodwall", acres: 25, cycle1Pct: 1.0, cycle2Pct: 0 },
-        { name: "NASA", acres: 20, cycle1Pct: 1.0, cycle2Pct: 0 },
-        { name: "Entergy", acres: 18, cycle1Pct: 1.0, cycle2Pct: 0 },
+        { name: "Citrus Lakefront", acres: 57, cycle1Pct: 1.0, cycle2Pct: 1.0 },
+        { name: "Paris Rd", acres: 12, cycle1Pct: 1.0, cycle2Pct: 1.0 },
+        { name: "Maxent", acres: 41, cycle1Pct: 1.0, cycle2Pct: 1.0 },
+        { name: "Michoud Canal Floodwall", acres: 75, cycle1Pct: 1.0, cycle2Pct: 1.0 },
+        { name: "NASA", acres: 52, cycle1Pct: 1.0, cycle2Pct: 1.0 },
+        { name: "Entergy", acres: 16, cycle1Pct: 1.0, cycle2Pct: 1.0 },
       ],
       hasReportedData: true,
       lastCycle: {
@@ -281,8 +280,8 @@ export const grassCuttingData = {
       acres: 53,
       monthlyFrequency: 2,
       reaches: [
-        { name: "Upper Protection (Earhart Blvd to the MRL)", acres: 32, cycle1Pct: 1.0, cycle2Pct: 0 },
-        { name: "MRL (Jefferson Parish line to EB-00)", acres: 21, cycle1Pct: 1.0, cycle2Pct: 0 },
+        { name: "Upper Protection (Earhart Blvd to the MRL)", acres: 8, cycle1Pct: 1.0, cycle2Pct: 1.0 },
+        { name: "MRL (Jefferson Parish line to EB-00)", acres: 45, cycle1Pct: 1.0, cycle2Pct: 1.0 },
       ],
       hasReportedData: true,
       lastCycle: {
@@ -302,9 +301,9 @@ export const grassCuttingData = {
       acres: 57,
       monthlyFrequency: 2,
       reaches: [
-        { name: "Florida Ave", acres: 10, cycle1Pct: 1.0, cycle2Pct: 0 },
-        { name: "IHNC East (E-01 to MRL)", acres: 21, cycle1Pct: 1.0, cycle2Pct: 0 },
-        { name: "MRL (IHNC East to St. Bernard Parish line)", acres: 26, cycle1Pct: 1.0, cycle2Pct: 0 },
+        { name: "Florida Ave", acres: 10, cycle1Pct: 1.0, cycle2Pct: 1.0 },
+        { name: "IHNC East (E-01 to MRL)", acres: 21, cycle1Pct: 1.0, cycle2Pct: 1.0 },
+        { name: "MRL (IHNC East to St. Bernard Parish line)", acres: 26, cycle1Pct: 1.0, cycle2Pct: 1.0 },
       ],
       hasReportedData: true,
       lastCycle: {
@@ -348,8 +347,8 @@ export const grassCuttingData = {
       operators: 3,
       monthlyFrequency: 2,
       reaches: [
-        { name: "Monticello to Alliance", acres: 110, cycle1Pct: 0, cycle2Pct: 0 },
-        { name: "St. Charles/Jeff Parish line", acres: 95, cycle1Pct: 0, cycle2Pct: 0 },
+        { name: "Monticello to Alliance", acres: 202, cycle1Pct: 0, cycle2Pct: 0 },
+        { name: "St. Charles/Jeff Parish line", acres: 3, cycle1Pct: 0, cycle2Pct: 0 },
       ],
       hasReportedData: false,
       lastCycle: {

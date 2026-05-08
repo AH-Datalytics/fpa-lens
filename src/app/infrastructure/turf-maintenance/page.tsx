@@ -3,11 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
-import {
-  ArrowLeft,
-  CheckCircle2,
-  Info,
-} from "lucide-react";
+import { ArrowLeft, Info } from "lucide-react";
 import SectionHeader, { SectionSubheader } from "@/components/SectionHeader";
 import {
   grassCuttingData,
@@ -248,47 +244,9 @@ function OtherZoneCard({ zone }: { zone: OtherDistrictZone }) {
   );
 }
 
-function DistrictCycleStat({
-  district,
-  zoneCount,
-  acres,
-}: {
-  district: string;
-  zoneCount: number;
-  acres: number;
-}) {
-  return (
-    <div className="rounded-lg border border-gray-200 bg-white p-4">
-      <p className="text-xs uppercase tracking-wide text-gray-500 font-semibold">
-        {district}
-      </p>
-      <div className="mt-2 flex items-baseline gap-2">
-        <span className="text-2xl font-bold text-[#21355a]">
-          {zoneCount}
-        </span>
-        <span className="text-xs text-gray-500">
-          zone{zoneCount === 1 ? "" : "s"} · {acres.toLocaleString()} acres
-        </span>
-      </div>
-      <div className="mt-2 inline-flex items-center gap-1 text-xs text-green-700 font-medium">
-        <CheckCircle2 className="h-3.5 w-3.5" />
-        All zones mowed
-      </div>
-    </div>
-  );
-}
-
 export default function GrassCuttingPage() {
-  const {
-    zones,
-    ejldZones,
-    lbbldZones,
-    oldCycle1,
-    ejldCycle1,
-    lbbldCycle1,
-    systemTotal,
-    cadence,
-  } = grassCuttingData;
+  const { zones, ejldZones, lbbldZones, systemTotal, cadence } =
+    grassCuttingData;
 
   const oldAcres = zones.reduce((sum, z) => sum + z.acres, 0);
   const ejldAcres = ejldZones.reduce((sum, z) => sum + z.acres, 0);
@@ -317,9 +275,9 @@ export default function GrassCuttingPage() {
           subtitle="Levee turf maintenance progress across the system"
         />
 
-        {/* PLAN + PROGRESS HERO. Leads with the plain-English plan
-            (defining "cycle"), then a simple green status strip
-            confirming Cycle 1 is done across every zone. */}
+        {/* PLAN HERO. Plain-English summary of what the dashboard tracks.
+            Per-zone Green/Amber/Red status carries the progress story
+            below — cards are the single source of truth. */}
         <section className="mb-12">
           <div className="bg-white rounded-xl shadow-md border border-gray-100 p-6">
             <p className="text-xs uppercase tracking-wide text-gray-500 font-semibold">
@@ -330,57 +288,15 @@ export default function GrassCuttingPage() {
               levee turf
             </h2>
             <p className="text-sm text-gray-700 mt-2 leading-relaxed max-w-3xl">
-              The Authority&apos;s maintenance team mows{" "}
+              SLFPA-East maintains{" "}
               <strong>{systemAcres.toLocaleString()} acres</strong> of levee
-              turf across all three levee districts (Orleans, East Jefferson,
-              and Lake Borgne Basin), divided into{" "}
-              <strong>{systemZones} zones</strong>. A{" "}
-              <strong>cycle</strong> is one full pass — every zone mowed once.
-              The current plan, in effect since March 2026, targets{" "}
-              <strong>two cycles per month</strong> for most Orleans and East
-              Jefferson zones (1.5 for two larger zones), doubled from the
-              prior once-a-month schedule. Lake Borgne Basin currently runs{" "}
-              <strong>one cycle per month</strong> due to manpower and
-              equipment constraints.
+              turf across <strong>{systemZones} zones</strong> in three levee
+              districts. Mowing targets vary by zone based on size, location,
+              and operating conditions. This dashboard shows monthly progress
+              against those targets using a simple Green / Amber / Red status,
+              as defined in the &ldquo;How to read the zone cards&rdquo;
+              section below.
             </p>
-
-            {/* Status strip: where the plan stands today */}
-            <div className="mt-5 rounded-lg border border-green-200 bg-green-50 p-4">
-              <div className="flex flex-wrap items-start justify-between gap-3">
-                <div className="flex items-start gap-2">
-                  <CheckCircle2 className="h-5 w-5 text-green-700 flex-shrink-0 mt-0.5" />
-                  <div>
-                    <p className="text-sm font-semibold text-green-900">
-                      Cycle 1 complete
-                    </p>
-                    <p className="text-xs text-green-800 mt-0.5">
-                      Every zone in all three districts has been mowed once
-                      under the new plan. Cycle 2 begins next.
-                    </p>
-                  </div>
-                </div>
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-white text-green-700 border border-green-200 px-2.5 py-1 text-xs font-semibold uppercase tracking-wide">
-                  Cycle 1 · Complete
-                </span>
-              </div>
-              <div className="grid sm:grid-cols-3 gap-3 mt-4">
-                <DistrictCycleStat
-                  district="Orleans (OLD)"
-                  zoneCount={zones.length}
-                  acres={oldAcres}
-                />
-                <DistrictCycleStat
-                  district="East Jefferson (EJLD)"
-                  zoneCount={ejldZones.length}
-                  acres={ejldAcres}
-                />
-                <DistrictCycleStat
-                  district="Lake Borgne Basin (LBBLD)"
-                  zoneCount={lbbldZones.length}
-                  acres={lbbldAcres}
-                />
-              </div>
-            </div>
           </div>
         </section>
 
@@ -533,8 +449,8 @@ export default function GrassCuttingPage() {
         {showOld && (
           <section className="mb-12">
             <SectionSubheader
-              title="Zones — Orleans Levee District"
-              subtitle={`${zones.length} color-coded zones. Cycle 1 ran ${oldCycle1.startDate} to ${oldCycle1.completionDate} (${oldCycle1.workingDays} working days). Monthly target = acreage × cycles per month.`}
+              title="Orleans Levee District Zones"
+              subtitle={`${zones.length} color-coded zones. ${grassCuttingData.reportingMonth.label}.`}
             />
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {zones.map((zone) => (
@@ -548,8 +464,8 @@ export default function GrassCuttingPage() {
         {showEjld && (
           <section className="mb-12">
             <SectionSubheader
-              title="Zones — East Jefferson Levee District"
-              subtitle={`${ejldZones.length} zones. Cycle 1 ran ${ejldCycle1.startDate} to ${ejldCycle1.completionDate} (${ejldCycle1.workingDays} working days). ${ejldCycle1.note ?? ""}`}
+              title="East Jefferson Levee District Zones"
+              subtitle={`${ejldZones.length} color-coded zones. ${grassCuttingData.reportingMonth.label}.`}
             />
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {ejldZones.map((zone) => (
@@ -563,8 +479,8 @@ export default function GrassCuttingPage() {
         {showLbbld && (
           <section className="mb-12">
             <SectionSubheader
-              title="Zones — Lake Borgne Basin Levee District"
-              subtitle={`${lbbldZones.length} zones. Cycle 1 ran ${lbbldCycle1.startDate} to ${lbbldCycle1.completionDate} (${lbbldCycle1.workingDays} working days). ${lbbldCycle1.note ?? ""}`}
+              title="Lake Borgne Basin Levee District Zones"
+              subtitle={`${lbbldZones.length} color-coded zones. ${grassCuttingData.reportingMonth.label}.`}
             />
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {lbbldZones.map((zone) => (
