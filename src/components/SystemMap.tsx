@@ -49,6 +49,8 @@ interface LayerVisibility {
   valves: boolean;
 }
 
+type GateStatuses = Record<string, string>;
+
 // Dynamically import map to avoid SSR issues with Leaflet
 const MapContainer = dynamic(
   () => import("react-leaflet").then((mod) => mod.MapContainer),
@@ -197,7 +199,7 @@ function MapLegend({
             <svg width="16" height="14" viewBox="0 0 16 14" style={{ filter: "drop-shadow(0 1px 2px rgba(0,0,0,0.3))" }}>
               <polygon
                 points="8,1 15,13 1,13"
-                fill="#65bc7b"
+                fill="#3b82f6"
                 stroke="white"
                 strokeWidth="2"
                 strokeLinejoin="round"
@@ -216,32 +218,48 @@ function MapLegend({
         {/* Toggleable layers */}
         <div className="border-t border-gray-200 pt-2 mt-2">
           <p className="text-xs text-gray-400 mb-2">Toggle layers</p>
-          <label className="flex items-center gap-2 cursor-pointer">
-            <div className="w-5 flex-shrink-0 flex justify-center">
-              <div className="w-[10px] h-[10px] bg-[#3b82f6] border-[1.5px] border-white shadow"></div>
+
+          {/* Floodgates — colored by live CPRA gate status */}
+          <div className="mb-2">
+            <div className="flex items-center gap-2 mb-1">
+              <div className="w-5 flex-shrink-0 flex justify-center">
+                <div className="w-[10px] h-[10px] rounded-full bg-[#22c55e] border-[1.5px] border-white shadow"></div>
+              </div>
+              <span className={`flex-1 ${layerVisibility.floodgates ? "text-gray-600" : "text-gray-400"}`}>
+                Floodgates — Open
+              </span>
             </div>
-            <span className={`flex-1 ${layerVisibility.floodgates ? "text-gray-600" : "text-gray-400"}`}>
-              Floodgates ({floodgateCount})
-            </span>
-            <button
-              onClick={() => onToggleLayer("floodgates")}
-              className={`relative w-9 h-5 rounded-full transition-colors ${
-                layerVisibility.floodgates ? "bg-[#65bc7b]" : "bg-gray-300"
-              }`}
-            >
-              <span
-                className={`absolute top-0.5 left-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform ${
-                  layerVisibility.floodgates ? "translate-x-4" : ""
+            <div className="flex items-center gap-2 mb-1">
+              <div className="w-5 flex-shrink-0 flex justify-center">
+                <div className="w-[10px] h-[10px] rounded-full bg-[#ef4444] border-[1.5px] border-white shadow"></div>
+              </div>
+              <span className={`flex-1 ${layerVisibility.floodgates ? "text-gray-600" : "text-gray-400"}`}>
+                Floodgates — Closed
+              </span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] text-gray-400 italic">Live status via CPRA</span>
+              <button
+                onClick={() => onToggleLayer("floodgates")}
+                className={`relative w-9 h-5 rounded-full transition-colors ${
+                  layerVisibility.floodgates ? "bg-[#65bc7b]" : "bg-gray-300"
                 }`}
-              />
-            </button>
-          </label>
+              >
+                <span
+                  className={`absolute top-0.5 left-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform ${
+                    layerVisibility.floodgates ? "translate-x-4" : ""
+                  }`}
+                />
+              </button>
+            </div>
+          </div>
+
           <label className="flex items-center gap-2 cursor-pointer mt-2">
             <div className="w-5 flex-shrink-0 flex justify-center">
               <svg width="14" height="14" viewBox="0 0 14 14" style={{ filter: "drop-shadow(0 1px 2px rgba(0,0,0,0.3))" }}>
                 <rect
                   x="3" y="3" width="8" height="8"
-                  fill="#dc143c"
+                  fill="#8b5cf6"
                   stroke="white"
                   strokeWidth="2"
                   transform="rotate(45 7 7)"
@@ -284,6 +302,7 @@ export default function SystemMap() {
     floodgates: false,
     valves: false,
   });
+  const [gateStatus, setGateStatus] = useState<GateStatuses>({});
 
   const toggleLayer = (layer: keyof LayerVisibility) => {
     setLayerVisibility((prev) => ({ ...prev, [layer]: !prev[layer] }));
@@ -328,7 +347,20 @@ export default function SystemMap() {
       }
     }
 
+    async function loadGateStatus() {
+      try {
+        const res = await fetch("/api/gate-status");
+        if (res.ok) {
+          const { statuses } = await res.json();
+          setGateStatus(statuses ?? {});
+        }
+      } catch {
+        // Best-effort — map still works without live status
+      }
+    }
+
     loadData();
+    loadGateStatus();
   }, []);
 
   if (loading) {
@@ -437,7 +469,7 @@ export default function SystemMap() {
             <Marker
               key={`pccp-${index}`}
               position={[coords[1], coords[0]]}
-              icon={createTriangleIcon("#65bc7b", 24)}
+              icon={createTriangleIcon("#3b82f6", 24)}
               zIndexOffset={1000}
             >
               <Popup>
@@ -450,25 +482,36 @@ export default function SystemMap() {
           );
         })}
 
-        {/* Floodgates (toggleable) */}
+        {/* Floodgates (toggleable, colored by live CPRA gate status) */}
         {layerVisibility.floodgates &&
           mapData.floodgates?.features.map((feature, index) => {
             const coords = feature.geometry.coordinates as [number, number];
             const props = feature.properties;
+            const gateCode = String(props.GateCode);
+            const status = gateStatus[gateCode];
+            const color =
+              status === "Open" ? "#22c55e" :
+              status === "Closed" ? "#ef4444" :
+              "#3b82f6";
             return (
               <Marker
                 key={`floodgate-${index}`}
                 position={[coords[1], coords[0]]}
-                icon={createSquareIcon("#3b82f6", 10)}
+                icon={createSquareIcon(color, 10)}
               >
                 <Popup>
                   <div className="text-sm">
                     <strong className="text-[#21355a]">
-                      Floodgate {String(props.GateCode)}
+                      Floodgate {gateCode}
                     </strong>
                     <p className="text-gray-600">
                       {String(props.OperatingAuthority)}
                     </p>
+                    {status && (
+                      <p className={`font-medium mt-1 ${status === "Open" ? "text-green-600" : "text-red-600"}`}>
+                        {status}
+                      </p>
+                    )}
                   </div>
                 </Popup>
               </Marker>
@@ -484,7 +527,7 @@ export default function SystemMap() {
               <Marker
                 key={`valve-${index}`}
                 position={[coords[1], coords[0]]}
-                icon={createDiamondIcon("#dc143c", 11)}
+                icon={createDiamondIcon("#8b5cf6", 11)}
               >
                 <Popup>
                   <div className="text-sm">
@@ -508,6 +551,7 @@ export default function SystemMap() {
         layerVisibility={layerVisibility}
         onToggleLayer={toggleLayer}
       />
+
     </div>
   );
 }
