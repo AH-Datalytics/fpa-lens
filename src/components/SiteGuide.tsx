@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
+import Link from "next/link";
 import {
   Info,
   X,
@@ -11,6 +12,7 @@ import {
   HardHat,
   Users,
   Wind,
+  MessageSquare,
 } from "lucide-react";
 
 const pages = [
@@ -113,6 +115,16 @@ export default function SiteGuide() {
                 Data refreshes vary by source. Environmental conditions update every 5 minutes.
                 Financial and operational metrics are updated as new reports become available.
               </p>
+              <div className="mt-4 pt-4 border-t border-gray-100">
+                <Link
+                  href="/feedback"
+                  onClick={() => setOpen(false)}
+                  className="flex items-center gap-2 text-sm text-[#21355a] hover:underline"
+                >
+                  <MessageSquare className="h-4 w-4 flex-shrink-0" />
+                  Have a question or comment? Send feedback to the Flood Authority
+                </Link>
+              </div>
             </div>
           </div>
         </div>,
