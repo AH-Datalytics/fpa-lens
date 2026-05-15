@@ -2,7 +2,12 @@ import { NextRequest, NextResponse } from "next/server";
 import { Resend } from "resend";
 import { z } from "zod";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+// Lazy-initialized so the build doesn't fail when RESEND_API_KEY is absent
+let resend: Resend | null = null;
+function getResend() {
+  if (!resend) resend = new Resend(process.env.RESEND_API_KEY);
+  return resend;
+}
 
 const rateLimitMap = new Map<string, number[]>();
 const RATE_LIMIT = 5;
@@ -60,7 +65,7 @@ export async function POST(request: NextRequest) {
 
   const { name, email, topic, message } = result.data;
 
-  const { error } = await resend.emails.send({
+  const { error } = await getResend().emails.send({
     from: "FPA Lens Feedback <feedback@fpalens.org>",
     to: "lwilliams@slfpae.gov",
     replyTo: email,

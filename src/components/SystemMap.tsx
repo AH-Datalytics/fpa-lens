@@ -169,7 +169,6 @@ const createDiamondIcon = (color: string, size: number = 10) => {
 interface MapLegendProps {
   pccpCount: number;
   structureCount: number;
-  floodgateCount: number;
   valveCount: number;
   layerVisibility: LayerVisibility;
   onToggleLayer: (layer: keyof LayerVisibility) => void;
@@ -178,7 +177,6 @@ interface MapLegendProps {
 function MapLegend({
   pccpCount,
   structureCount,
-  floodgateCount,
   valveCount,
   layerVisibility,
   onToggleLayer,
@@ -542,8 +540,7 @@ export default function SystemMap() {
       <MapLegend
         pccpCount={mapData.pccps?.features.length || 0}
         structureCount={mapData.structures?.features.length || 0}
-        floodgateCount={mapData.floodgates?.features.length || 0}
-        valveCount={mapData.valves?.features.length || 0}
+valveCount={mapData.valves?.features.length || 0}
         layerVisibility={layerVisibility}
         onToggleLayer={toggleLayer}
       />
