@@ -336,7 +336,16 @@ export default function OurSystemPage() {
           </p>
           <SystemMap />
           <p className="text-xs text-gray-400 mt-2">
-            Source: SLFPA-E GIS Data (Centerline and Structures Shapefiles)
+            Source: SLFPA-E GIS Data (Centerline and Structures Shapefiles) &middot;{" "}
+            Gate status:{" "}
+            <a
+              href="https://cims.coastal.louisiana.gov/Viewer/Map.aspx?gui&guid=433fb169-3e54-49ed-a697-e8bda2af0b94"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline hover:text-gray-600 transition-colors"
+            >
+              CPRA CIMS
+            </a>
           </p>
         </section>
 

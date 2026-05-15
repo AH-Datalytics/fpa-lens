@@ -279,19 +279,6 @@ function MapLegend({
             </button>
           </label>
         </div>
-        <div className="border-t border-gray-100 pt-2 mt-2">
-          <a
-            href="https://cims.coastal.louisiana.gov/Viewer/Map.aspx?gui&guid=433fb169-3e54-49ed-a697-e8bda2af0b94"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-[10px] text-gray-400 hover:text-[#21355a] transition-colors flex items-center gap-1"
-          >
-            Gate status: CPRA CIMS
-            <svg width="8" height="8" viewBox="0 0 8 8" fill="currentColor">
-              <path d="M1 1h6v6M7 1L1 7" stroke="currentColor" strokeWidth="1.2" fill="none" strokeLinecap="round"/>
-            </svg>
-          </a>
-        </div>
       </div>
     </div>
   );
