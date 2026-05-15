@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { MapPin, Phone, ExternalLink, Scissors, FileText } from "lucide-react";
+import { MapPin, Phone, ExternalLink, Scissors, FileText, MessageSquare } from "lucide-react";
 import { siteConfig } from "@/data/siteData";
 
 export default function Footer() {
@@ -31,15 +31,13 @@ export default function Footer() {
                 <Phone className="h-4 w-4" />
                 <span>(504) 286-3100</span>
               </div>
-              <a
-                href="https://www.floodauthority.org/contact/"
-                target="_blank"
-                rel="noopener noreferrer"
+              <Link
+                href="/feedback"
                 className="flex items-center gap-2 hover:text-white transition-colors"
               >
-                <ExternalLink className="h-4 w-4" />
-                Contact form
-              </a>
+                <MessageSquare className="h-4 w-4" />
+                Send feedback
+              </Link>
             </div>
           </div>
 

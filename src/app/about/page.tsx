@@ -1,4 +1,5 @@
 import { Shield, Waves, Building2, Fence, Droplets, CircleDot } from "lucide-react";
+import Link from "next/link";
 import SectionHeader, { SectionSubheader } from "@/components/SectionHeader";
 import DataCard from "@/components/DataCard";
 import LeadershipSection from "@/components/LeadershipSection";
@@ -252,7 +253,8 @@ export default function WhatWeDoPage() {
               <strong className="text-gray-600">Reporting an issue?</strong> If your concern is about
               street flooding, drainage, water service, or sewage, contact the Sewerage &amp; Water Board
               at <strong>504-529-2837</strong> or <a href="https://www.swbno.org" className="text-[#21355a] underline" target="_blank" rel="noopener noreferrer">swbno.org</a>.
-              For concerns about levees, floodgates, or storm surge protection, contact us.
+              For concerns about levees, floodgates, or storm surge protection,{" "}
+              <Link href="/feedback" className="text-[#21355a] underline">contact us</Link>.
             </p>
           </div>
         </section>

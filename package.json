@@ -20,7 +20,9 @@
     "react-dom": "19.2.3",
     "react-leaflet": "^5.0.0",
     "recharts": "^3.7.0",
-    "shapefile": "^0.6.6"
+    "resend": "^6.12.3",
+    "shapefile": "^0.6.6",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
