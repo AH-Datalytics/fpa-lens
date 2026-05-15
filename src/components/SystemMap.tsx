@@ -221,24 +221,8 @@ function MapLegend({
 
           {/* Floodgates — colored by live CPRA gate status */}
           <div className="mb-2">
-            <div className="flex items-center gap-2 mb-1">
-              <div className="w-5 flex-shrink-0 flex justify-center">
-                <div className="w-[10px] h-[10px] bg-[#22c55e] border-[1.5px] border-white shadow"></div>
-              </div>
-              <span className={`flex-1 ${layerVisibility.floodgates ? "text-gray-600" : "text-gray-400"}`}>
-                Floodgates — Open
-              </span>
-            </div>
-            <div className="flex items-center gap-2 mb-1">
-              <div className="w-5 flex-shrink-0 flex justify-center">
-                <div className="w-[10px] h-[10px] bg-[#ef4444] border-[1.5px] border-white shadow"></div>
-              </div>
-              <span className={`flex-1 ${layerVisibility.floodgates ? "text-gray-600" : "text-gray-400"}`}>
-                Floodgates — Closed
-              </span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-[10px] text-gray-400 italic">Live status via CPRA</span>
+            <div className="flex items-center justify-between mb-1">
+              <span className="text-xs font-medium text-gray-500">Floodgates</span>
               <button
                 onClick={() => onToggleLayer("floodgates")}
                 className={`relative w-9 h-5 rounded-full transition-colors ${
@@ -251,6 +235,18 @@ function MapLegend({
                   }`}
                 />
               </button>
+            </div>
+            <div className="flex items-center gap-2 mb-1 pl-1">
+              <div className="w-5 flex-shrink-0 flex justify-center">
+                <div className="w-[10px] h-[10px] bg-[#22c55e] border-[1.5px] border-white shadow"></div>
+              </div>
+              <span className={`flex-1 ${layerVisibility.floodgates ? "text-gray-600" : "text-gray-400"}`}>Open</span>
+            </div>
+            <div className="flex items-center gap-2 pl-1">
+              <div className="w-5 flex-shrink-0 flex justify-center">
+                <div className="w-[10px] h-[10px] bg-[#ef4444] border-[1.5px] border-white shadow"></div>
+              </div>
+              <span className={`flex-1 ${layerVisibility.floodgates ? "text-gray-600" : "text-gray-400"}`}>Closed</span>
             </div>
           </div>
 
@@ -282,6 +278,19 @@ function MapLegend({
               />
             </button>
           </label>
+        </div>
+        <div className="border-t border-gray-100 pt-2 mt-2">
+          <a
+            href="https://cims.coastal.louisiana.gov/Viewer/Map.aspx?gui&guid=433fb169-3e54-49ed-a697-e8bda2af0b94"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-[10px] text-gray-400 hover:text-[#21355a] transition-colors flex items-center gap-1"
+          >
+            Gate status: CPRA CIMS
+            <svg width="8" height="8" viewBox="0 0 8 8" fill="currentColor">
+              <path d="M1 1h6v6M7 1L1 7" stroke="currentColor" strokeWidth="1.2" fill="none" strokeLinecap="round"/>
+            </svg>
+          </a>
         </div>
       </div>
     </div>
