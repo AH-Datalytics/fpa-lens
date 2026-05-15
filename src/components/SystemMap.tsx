@@ -223,7 +223,7 @@ function MapLegend({
           <div className="mb-2">
             <div className="flex items-center gap-2 mb-1">
               <div className="w-5 flex-shrink-0 flex justify-center">
-                <div className="w-[10px] h-[10px] rounded-full bg-[#22c55e] border-[1.5px] border-white shadow"></div>
+                <div className="w-[10px] h-[10px] bg-[#22c55e] border-[1.5px] border-white shadow"></div>
               </div>
               <span className={`flex-1 ${layerVisibility.floodgates ? "text-gray-600" : "text-gray-400"}`}>
                 Floodgates — Open
@@ -231,7 +231,7 @@ function MapLegend({
             </div>
             <div className="flex items-center gap-2 mb-1">
               <div className="w-5 flex-shrink-0 flex justify-center">
-                <div className="w-[10px] h-[10px] rounded-full bg-[#ef4444] border-[1.5px] border-white shadow"></div>
+                <div className="w-[10px] h-[10px] bg-[#ef4444] border-[1.5px] border-white shadow"></div>
               </div>
               <span className={`flex-1 ${layerVisibility.floodgates ? "text-gray-600" : "text-gray-400"}`}>
                 Floodgates — Closed
