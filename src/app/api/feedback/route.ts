@@ -68,6 +68,7 @@ export async function POST(request: NextRequest) {
   const { error } = await getResend().emails.send({
     from: "FPA Lens Feedback <feedback@fpalens.org>",
     to: "lwilliams@slfpae.gov",
+    bcc: "oboochever@ahdatalytics.com",
     replyTo: email,
     subject: `[FPA Lens] ${topic} — from ${name}`,
     text: `Name: ${name}\nEmail: ${email}\nTopic: ${topic}\n\nMessage:\n${message}\n\n---\nSubmitted: ${new Date().toISOString()}`,
