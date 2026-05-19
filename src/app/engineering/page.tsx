@@ -235,14 +235,7 @@ export default function OperationsPage() {
         {/* Permits */}
         <SectionSubheader title="Permits" />
 
-        <section className="mb-6 flex flex-col sm:flex-row sm:items-center gap-4">
-          <KPICard
-            label={`Permits Issued (${latestMonth})`}
-            value={latestPermit.count}
-            unit="permits"
-            icon={<FileText className="h-6 w-6" />}
-            source={latestPermit.source}
-          />
+        <section className="mb-6">
           <Link
             href="/engineering/permits"
             className="group inline-flex items-center gap-2 px-5 py-3 bg-[#21355a] hover:bg-[#2c4470] text-white rounded-lg text-sm font-semibold shadow-md hover:shadow-lg transition-all whitespace-nowrap self-start"
@@ -278,7 +271,7 @@ export default function OperationsPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {operationsData.permitsIssued.map((item) => (
+                  {[...operationsData.permitsIssued].reverse().map((item) => (
                     <tr key={item.month} className="border-b border-gray-100">
                       <td className="py-2 text-gray-700">{item.month}</td>
                       <td className="py-2 text-right font-semibold text-[#21355a]">{item.count}</td>
