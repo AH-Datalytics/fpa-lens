@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
-import { ArrowLeft, FileText, Clock, Users, Building2, ArrowRight } from "lucide-react";
+import { ArrowLeft, FileText, Clock, CheckCircle, ArrowRight } from "lucide-react";
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell,
 } from "recharts";
@@ -96,9 +96,8 @@ export default function PermitsPage() {
       .sort((a, b) => b.count - a.count);
   }, [permits]);
 
-  const inFPAReview = (stageCounts["Submitted"] ?? 0) + (stageCounts["FPA Review"] ?? 0);
-  const externalCount = stageCounts["External Agency"] ?? 0;
-  const awaitingApplicant = stageCounts["Awaiting Applicant"] ?? 0;
+  const latestMonthIssued = 27; // Apr 2026, May 2026 SITREP
+  const latestMonthLabel = "Apr 2026";
 
   if (loading) {
     return (
@@ -136,22 +135,27 @@ export default function PermitsPage() {
             subtitle="currently in pipeline"
           />
           <KPICard
-            label="In FPA Review"
-            value={inFPAReview.toLocaleString()}
+            label={`Issued (${latestMonthLabel})`}
+            value={latestMonthIssued}
+            unit="permits"
+            icon={<CheckCircle className="h-5 w-5" />}
+            source="May 2026 SITREP"
+          />
+          <KPICard
+            label="Avg Processing Time"
+            value={107}
+            unit="days"
             icon={<Clock className="h-5 w-5" />}
-            subtitle="under active review"
+            subtitle="last 4 quarters"
+            source="FPA Engineering Dept"
           />
           <KPICard
-            label="With External Agency"
-            value={externalCount.toLocaleString()}
-            icon={<Building2 className="h-5 w-5" />}
-            subtitle="outside FPA's control"
-          />
-          <KPICard
-            label="Awaiting Applicant"
-            value={awaitingApplicant.toLocaleString()}
-            icon={<Users className="h-5 w-5" />}
-            subtitle="pending applicant response"
+            label="Approval Rate"
+            value={84}
+            unit="%"
+            icon={<CheckCircle className="h-5 w-5" />}
+            subtitle="last 4 quarters"
+            source="FPA Engineering Dept"
           />
         </div>
 
