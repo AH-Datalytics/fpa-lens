@@ -57,6 +57,7 @@ export default function PermitsPage() {
   const [permits, setPermits] = useState<Permit[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+  const [showTiming, setShowTiming] = useState(false);
 
   useEffect(() => {
     fetch("/api/permits")
@@ -161,44 +162,93 @@ export default function PermitsPage() {
 
         {/* Pipeline flow with live counts */}
         <div className="bg-white rounded-xl border border-gray-200 p-5">
-          <h3 className="text-sm font-semibold text-[#21355a] mb-4">Active Pipeline: Where Permits Stand Today</h3>
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-0">
-            {PIPELINE_STAGES.map((stage, i) => {
-              const count = stageCounts[stage.key] ?? 0;
-              const isExternal = stage.key === "External Agency";
-              const isAwaiting = stage.key === "Awaiting Applicant";
-              const isFinal = stage.key === "Final Review";
-              return (
-                <div key={stage.key} className="flex flex-col sm:flex-row items-center flex-1">
-                  <div className={`flex flex-col items-center justify-center px-4 py-4 rounded-lg border-2 w-full text-center min-h-[90px] ${
-                    isFinal ? "border-[#65bc7b] bg-green-50" :
-                    isExternal ? "border-purple-300 bg-purple-50" :
-                    isAwaiting ? "border-amber-300 bg-amber-50" :
-                    "border-[#21355a]/20 bg-[#21355a]/5"
-                  }`}>
-                    <span className={`text-2xl font-bold ${
-                      isFinal ? "text-[#65bc7b]" :
-                      isExternal ? "text-purple-700" :
-                      isAwaiting ? "text-amber-700" :
-                      "text-[#21355a]"
-                    }`}>{count.toLocaleString()}</span>
-                    <span className="text-xs font-semibold text-gray-700 mt-1">{stage.label}</span>
-                    <span className="text-[10px] text-gray-400 mt-0.5">{stage.note}</span>
-                  </div>
-                  {i < PIPELINE_STAGES.length - 1 && (
-                    <>
-                      <ArrowRight className="hidden sm:block h-4 w-4 text-gray-300 mx-1 flex-shrink-0" />
-                      <ArrowRight className="sm:hidden h-4 w-4 text-gray-300 rotate-90 my-1 self-center" />
-                    </>
-                  )}
-                </div>
-              );
-            })}
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-sm font-semibold text-[#21355a]">Active Pipeline: Where Permits Stand Today</h3>
+            <button
+              onClick={() => setShowTiming(!showTiming)}
+              className="text-xs font-medium text-[#21355a] hover:text-[#21355a]/70 border border-gray-300 rounded-md px-2.5 py-1 transition-colors"
+            >
+              {showTiming ? "Show pipeline" : "Show timing"}
+            </button>
           </div>
-          <p className="text-[10px] text-gray-400 mt-3">
-            Permits in &ldquo;External Agency&rdquo; and &ldquo;Awaiting Applicant&rdquo; stages are outside FPA&rsquo;s active review queue.
-            Source: Vinformatix · Updates hourly
-          </p>
+
+          {showTiming ? (
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-0 py-4 flex-wrap">
+              <div className="flex flex-col items-center px-6 py-4 border-2 border-[#21355a] rounded-lg min-w-[120px] text-center">
+                <span className="text-xs font-medium text-gray-500 uppercase tracking-wide">Submitted</span>
+                <span className="text-2xl font-bold text-[#21355a]">502</span>
+                <span className="text-[10px] text-gray-400">last 4 quarters</span>
+              </div>
+              <div className="flex flex-col items-center px-4">
+                <span className="text-xs font-medium text-gray-500 mb-1">69 days avg</span>
+                <div className="hidden sm:flex items-center">
+                  <div className="w-16 h-px bg-gray-300" />
+                  <ArrowRight className="h-4 w-4 text-gray-400 -ml-1" />
+                </div>
+                <ArrowRight className="h-4 w-4 text-gray-400 rotate-90 sm:hidden" />
+              </div>
+              <div className="flex flex-col items-center px-6 py-4 border-2 border-gray-300 rounded-lg min-w-[120px] bg-gray-50 text-center">
+                <span className="text-xs font-medium text-gray-500 uppercase tracking-wide border-b border-dashed border-gray-300 cursor-help" title="LNO: Letter of No Objection from coordinating agency">
+                  LNO Review
+                </span>
+                <span className="text-sm text-gray-600 mt-1">External Agency</span>
+              </div>
+              <div className="flex flex-col items-center px-4">
+                <span className="text-xs font-medium text-gray-500 mb-1">38 days avg</span>
+                <div className="hidden sm:flex items-center">
+                  <div className="w-16 h-px bg-gray-300" />
+                  <ArrowRight className="h-4 w-4 text-gray-400 -ml-1" />
+                </div>
+                <ArrowRight className="h-4 w-4 text-gray-400 rotate-90 sm:hidden" />
+              </div>
+              <div className="flex flex-col items-center px-6 py-4 border-2 border-[#65bc7b] rounded-lg min-w-[120px] text-center">
+                <span className="text-xs font-medium text-gray-500 uppercase tracking-wide">Approved</span>
+                <span className="text-2xl font-bold text-[#65bc7b]">420</span>
+                <span className="text-[10px] text-gray-400">last 4 quarters</span>
+              </div>
+              <p className="w-full text-[10px] text-gray-400 mt-2">Source: FPA Engineering Department · Last 4 quarters · LNO = Letter of No Objection</p>
+            </div>
+          ) : (
+            <>
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-0">
+                {PIPELINE_STAGES.map((stage, i) => {
+                  const count = stageCounts[stage.key] ?? 0;
+                  const isExternal = stage.key === "External Agency";
+                  const isAwaiting = stage.key === "Awaiting Applicant";
+                  const isFinal = stage.key === "Final Review";
+                  return (
+                    <div key={stage.key} className="flex flex-col sm:flex-row items-center flex-1">
+                      <div className={`flex flex-col items-center justify-center px-4 py-4 rounded-lg border-2 w-full text-center min-h-[90px] ${
+                        isFinal ? "border-[#65bc7b] bg-green-50" :
+                        isExternal ? "border-purple-300 bg-purple-50" :
+                        isAwaiting ? "border-amber-300 bg-amber-50" :
+                        "border-[#21355a]/20 bg-[#21355a]/5"
+                      }`}>
+                        <span className={`text-2xl font-bold ${
+                          isFinal ? "text-[#65bc7b]" :
+                          isExternal ? "text-purple-700" :
+                          isAwaiting ? "text-amber-700" :
+                          "text-[#21355a]"
+                        }`}>{count.toLocaleString()}</span>
+                        <span className="text-xs font-semibold text-gray-700 mt-1">{stage.label}</span>
+                        <span className="text-[10px] text-gray-400 mt-0.5">{stage.note}</span>
+                      </div>
+                      {i < PIPELINE_STAGES.length - 1 && (
+                        <>
+                          <ArrowRight className="hidden sm:block h-4 w-4 text-gray-300 mx-1 flex-shrink-0" />
+                          <ArrowRight className="sm:hidden h-4 w-4 text-gray-300 rotate-90 my-1 self-center" />
+                        </>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+              <p className="text-[10px] text-gray-400 mt-3">
+                Permits in &ldquo;External Agency&rdquo; and &ldquo;Awaiting Applicant&rdquo; stages are outside FPA&rsquo;s active review queue.
+                Source: Vinformatix · Updates hourly
+              </p>
+            </>
+          )}
         </div>
 
         {/* District + Applicant breakdown */}
