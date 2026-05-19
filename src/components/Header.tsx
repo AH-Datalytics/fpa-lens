@@ -24,7 +24,7 @@ const navigation: NavItem[] = [
     href: "/engineering",
     submenu: [
       { name: "Contracts (IDIQ)", href: "/engineering/idiq" },
-      { name: "Permit Overview", href: "/engineering/permits" },
+      { name: "Permits", href: "/engineering/permits" },
     ],
   },
   { name: "Safety", href: "/safety" },

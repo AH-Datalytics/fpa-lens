@@ -82,7 +82,7 @@ export default function Footer() {
                 className="flex items-center gap-2 text-blue-200 hover:text-white transition-colors"
               >
                 <FileText className="h-4 w-4" />
-                Permit Overview
+                Permits
               </Link>
             </div>
           </div>
