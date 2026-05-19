@@ -108,11 +108,10 @@ export async function GET(request: Request) {
       const prevOrder = lastLevel ? LEVEL_ORDER[lastLevel] : -1;
       const currOrder = LEVEL_ORDER[currentLevel];
 
-      // Alert on any upward escalation, or when returning to GREEN (all-clear).
-      // Never alert on de-escalation within elevated tiers (ORANGE→YELLOW).
-      const isEscalation = levelChanged && currOrder > prevOrder && currentLevel !== "GREEN";
-      const isAllClear = levelChanged && currentLevel === "GREEN" && lastLevel !== null && lastLevel !== "GREEN";
-      const shouldAlert = isEscalation || isAllClear;
+      // Alert on any level change except first-run GREEN (no news is no news).
+      // All changes between elevated tiers (up or down) and all-clear are notified.
+      const isFirstRunGreen = lastLevel === null && currentLevel === "GREEN";
+      const shouldAlert = levelChanged && !isFirstRunGreen;
 
       if (shouldAlert) {
         try {
