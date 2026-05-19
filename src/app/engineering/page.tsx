@@ -248,8 +248,7 @@ export default function OperationsPage() {
 
         {/* Permits Chart */}
         <section className="mb-12">
-          <p className="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-4">Permits Issued</p>
-          <DataCard title="Monthly Permits Trend" source="SITREPs">
+          <DataCard title="Monthly Permits Issued" source="SITREPs">
             <div className="h-64">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={permitChartData}>
