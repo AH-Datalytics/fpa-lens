@@ -104,14 +104,15 @@ export async function GET(request: Request) {
       const lastLevel = await getLastRiskLevel();
       const levelChanged = lastLevel !== currentLevel;
 
-      // Alert when escalating from GREEN (or first run and already elevated),
-      // or when returning to GREEN from an elevated level.
-      // Never alert on mid-tier changes (YELLOW→ORANGE) or first-run GREEN.
-      const isEscalation =
-        (lastLevel === "GREEN" || lastLevel === null) && currentLevel !== "GREEN";
-      const isAllClear =
-        lastLevel !== null && lastLevel !== "GREEN" && currentLevel === "GREEN";
-      const shouldAlert = levelChanged && (isEscalation || isAllClear);
+      const LEVEL_ORDER: Record<RiskLevel, number> = { GREEN: 0, YELLOW: 1, ORANGE: 2, RED: 3 };
+      const prevOrder = lastLevel ? LEVEL_ORDER[lastLevel] : -1;
+      const currOrder = LEVEL_ORDER[currentLevel];
+
+      // Alert on any upward escalation, or when returning to GREEN (all-clear).
+      // Never alert on de-escalation within elevated tiers (ORANGE→YELLOW).
+      const isEscalation = levelChanged && currOrder > prevOrder && currentLevel !== "GREEN";
+      const isAllClear = levelChanged && currentLevel === "GREEN" && lastLevel !== null && lastLevel !== "GREEN";
+      const shouldAlert = isEscalation || isAllClear;
 
       if (shouldAlert) {
         try {
