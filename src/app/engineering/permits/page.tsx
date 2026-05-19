@@ -157,7 +157,7 @@ export default function PermitsPage() {
 
         {/* Pipeline flow with live counts */}
         <div className="bg-white rounded-xl border border-gray-200 p-5">
-          <h3 className="text-sm font-semibold text-[#21355a] mb-4">Active Pipeline — Where Permits Stand Today</h3>
+          <h3 className="text-sm font-semibold text-[#21355a] mb-4">Active Pipeline: Where Permits Stand Today</h3>
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-0">
             {PIPELINE_STAGES.map((stage, i) => {
               const count = stageCounts[stage.key] ?? 0;
