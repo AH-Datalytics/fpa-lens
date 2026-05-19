@@ -2,14 +2,15 @@
 
 import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
-import { ArrowLeft, FileText, Clock, AlertCircle, Building2, Search } from "lucide-react";
-import SectionHeader from "@/components/SectionHeader";
+import { ArrowLeft, FileText, Clock, Users, Building2, ArrowRight } from "lucide-react";
+import {
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell,
+} from "recharts";
 import KPICard from "@/components/KPICard";
 
 interface Permit {
   permitId: string;
   permitSubmitDate: string | null;
-  permitType: string;
   permitStatus: string;
   permitStatusDate: string | null;
   lnoDate: string | null;
@@ -19,101 +20,90 @@ interface Permit {
   projectDescription: string | null;
 }
 
+// Map raw API statuses to pipeline stages
+const STAGE_MAP: Record<string, string> = {
+  "Pre Review":                              "Submitted",
+  "With Permitting Office for Initial Review": "FPA Review",
+  "Under Review - Permitting Office":         "FPA Review",
+  "Under Review - 3rd Party":                 "External Agency",
+  "With Applicant or Agent for Signature":    "Awaiting Applicant",
+  "With Permitting Office for Signature":     "Final Review",
+  "Pending Completion":                       "Final Review",
+};
+
+const PIPELINE_STAGES = [
+  { key: "Submitted",         label: "Submitted",          note: "Pre-review queue" },
+  { key: "FPA Review",        label: "FPA Review",         note: "Active internal review" },
+  { key: "External Agency",   label: "External Agency",    note: "Outside FPA's control" },
+  { key: "Awaiting Applicant",label: "Awaiting Applicant", note: "Ball in applicant's court" },
+  { key: "Final Review",      label: "Issued / In Progress", note: "Permit issued, work underway" },
+];
+
 const DISTRICT_LABELS: Record<string, string> = {
-  "Orleans Levee District": "OLD",
-  "East Jefferson Levee District": "EJLD",
-  "Lake Borgne Levee District": "LBBLD",
+  "Orleans Levee District":       "OLD",
+  "East Jefferson Levee District":"EJLD",
+  "Lake Borgne Levee District":   "LBBLD",
 };
 
-const DISTRICT_FILTERS = ["All", "Orleans Levee District", "East Jefferson Levee District", "Lake Borgne Levee District"];
-
-const STATUS_GROUPS: Record<string, string> = {
-  "Pre Review": "Pending",
-  "With Permitting Office for Initial Review": "Under Review",
-  "Under Review - Permitting Office": "Under Review",
-  "Under Review - 3rd Party": "3rd Party",
-  "With Applicant or Agent for Signature": "Awaiting Applicant",
-  "With Permitting Office for Signature": "Final Review",
-  "Pending Completion": "Final Review",
+const DISTRICT_COLORS: Record<string, string> = {
+  OLD:   "#21355a",
+  EJLD:  "#65bc7b",
+  LBBLD: "#2FA4A9",
 };
 
-const STATUS_COLORS: Record<string, string> = {
-  "Pending": "bg-gray-100 text-gray-700",
-  "Under Review": "bg-blue-100 text-blue-700",
-  "3rd Party": "bg-purple-100 text-purple-700",
-  "Awaiting Applicant": "bg-amber-100 text-amber-700",
-  "Final Review": "bg-green-100 text-green-700",
-};
-
-function daysOpen(submitDate: string | null): number | null {
-  if (!submitDate) return null;
-  const ms = Date.now() - new Date(submitDate).getTime();
-  return Math.floor(ms / (1000 * 60 * 60 * 24));
-}
-
-function formatDate(iso: string | null): string {
-  if (!iso) return "—";
-  return new Date(iso).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
-}
+const APPLICANT_COLORS = ["#21355a", "#65bc7b", "#2FA4A9", "#8b5cf6"];
 
 export default function PermitsPage() {
   const [permits, setPermits] = useState<Permit[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
-  const [district, setDistrict] = useState("All");
-  const [search, setSearch] = useState("");
-  const [statusFilter, setStatusFilter] = useState("All");
 
   useEffect(() => {
     fetch("/api/permits")
       .then((r) => r.json())
-      .then((data) => {
-        setPermits(Array.isArray(data) ? data : []);
-        setLoading(false);
-      })
+      .then((data) => { setPermits(Array.isArray(data) ? data : []); setLoading(false); })
       .catch(() => { setError(true); setLoading(false); });
   }, []);
 
-  const filtered = useMemo(() => {
-    return permits.filter((p) => {
-      if (district !== "All" && p.leveeDistrict !== district) return false;
-      const group = STATUS_GROUPS[p.permitStatus ?? ""] ?? "Other";
-      if (statusFilter !== "All" && group !== statusFilter) return false;
-      if (search) {
-        const q = search.toLowerCase();
-        return (
-          p.permitId.toLowerCase().includes(q) ||
-          (p.projectDescription ?? "").toLowerCase().includes(q) ||
-          (p.applicantType ?? "").toLowerCase().includes(q)
-        );
-      }
-      return true;
-    });
-  }, [permits, district, statusFilter, search]);
-
-  const avgDays = useMemo(() => {
-    const withDates = filtered.filter((p) => p.permitSubmitDate);
-    if (!withDates.length) return null;
-    const total = withDates.reduce((sum, p) => sum + (daysOpen(p.permitSubmitDate) ?? 0), 0);
-    return Math.round(total / withDates.length);
-  }, [filtered]);
-
-  const awaitingApplicant = filtered.filter((p) => p.permitStatus === "With Applicant or Agent for Signature").length;
-  const lnoPending = filtered.filter((p) => !p.lnoDate && p.permitStatus === "Under Review - 3rd Party").length;
-
-  const statusGroups = useMemo(() => {
-    const groups: Record<string, number> = {};
+  const stageCounts = useMemo(() => {
+    const counts: Record<string, number> = {};
+    for (const stage of PIPELINE_STAGES) counts[stage.key] = 0;
     for (const p of permits) {
-      const g = STATUS_GROUPS[p.permitStatus ?? ""] ?? "Other";
-      groups[g] = (groups[g] ?? 0) + 1;
+      const stage = STAGE_MAP[p.permitStatus ?? ""];
+      if (stage) counts[stage]++;
     }
-    return groups;
+    return counts;
   }, [permits]);
+
+  const districtData = useMemo(() => {
+    const counts: Record<string, number> = {};
+    for (const p of permits) {
+      const label = DISTRICT_LABELS[p.leveeDistrict ?? ""] ?? "Other";
+      counts[label] = (counts[label] ?? 0) + 1;
+    }
+    return Object.entries(counts).map(([name, count]) => ({ name, count })).sort((a, b) => b.count - a.count);
+  }, [permits]);
+
+  const applicantData = useMemo(() => {
+    const counts: Record<string, number> = {};
+    for (const p of permits) {
+      const type = p.applicantType ?? "Unknown";
+      counts[type] = (counts[type] ?? 0) + 1;
+    }
+    return Object.entries(counts)
+      .filter(([k]) => k !== "Unknown")
+      .map(([name, count]) => ({ name, count }))
+      .sort((a, b) => b.count - a.count);
+  }, [permits]);
+
+  const inFPAReview = (stageCounts["Submitted"] ?? 0) + (stageCounts["FPA Review"] ?? 0);
+  const externalCount = stageCounts["External Agency"] ?? 0;
+  const awaitingApplicant = stageCounts["Awaiting Applicant"] ?? 0;
 
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-gray-500 text-sm">Loading permits...</div>
+        <div className="text-gray-500 text-sm">Loading permit data...</div>
       </div>
     );
   }
@@ -128,15 +118,14 @@ export default function PermitsPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <SectionHeader
-        title="Permit Applications"
-        subtitle="Active levee safety permit pipeline — SLFPA-East"
-      />
-
-      <div className="max-w-7xl mx-auto px-4 py-6 space-y-6">
-        <Link href="/engineering" className="inline-flex items-center gap-1.5 text-sm text-[#21355a] hover:underline">
-          <ArrowLeft className="h-4 w-4" /> Back to Engineering
-        </Link>
+      <div className="max-w-7xl mx-auto px-4 py-8 space-y-6">
+        <div>
+          <Link href="/engineering" className="inline-flex items-center gap-1.5 text-sm text-[#21355a] hover:underline mb-3">
+            <ArrowLeft className="h-4 w-4" /> Back to Engineering
+          </Link>
+          <h1 className="text-3xl font-bold text-[#21355a]">Permit Overview</h1>
+          <p className="mt-1 text-gray-600">SLFPA-East reviews permit applications for construction, encroachments, and events on or near the levee system.</p>
+        </div>
 
         {/* KPI strip */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -144,138 +133,108 @@ export default function PermitsPage() {
             label="Active Permits"
             value={permits.length.toLocaleString()}
             icon={<FileText className="h-5 w-5" />}
+            subtitle="currently in pipeline"
           />
           <KPICard
-            label="Avg. Days Open"
-            value={avgDays !== null ? `${avgDays}d` : "—"}
+            label="In FPA Review"
+            value={inFPAReview.toLocaleString()}
             icon={<Clock className="h-5 w-5" />}
-            subtitle="from submission date"
+            subtitle="under active review"
+          />
+          <KPICard
+            label="With External Agency"
+            value={externalCount.toLocaleString()}
+            icon={<Building2 className="h-5 w-5" />}
+            subtitle="outside FPA's control"
           />
           <KPICard
             label="Awaiting Applicant"
-            value={awaitingApplicant.toString()}
-            icon={<AlertCircle className="h-5 w-5" />}
+            value={awaitingApplicant.toLocaleString()}
+            icon={<Users className="h-5 w-5" />}
             subtitle="pending applicant response"
           />
-          <KPICard
-            label="Pending 3rd Party"
-            value={lnoPending.toString()}
-            icon={<Building2 className="h-5 w-5" />}
-            subtitle="external agency review"
-          />
         </div>
 
-        {/* Status breakdown */}
-        <div className="bg-white rounded-xl border border-gray-200 p-4">
-          <h3 className="text-sm font-semibold text-[#21355a] mb-3">Pipeline by Status</h3>
-          <div className="flex flex-wrap gap-2">
-            {Object.entries(statusGroups).sort((a, b) => b[1] - a[1]).map(([group, count]) => (
-              <div key={group} className={`px-3 py-1.5 rounded-lg text-xs font-medium flex items-center gap-2 ${STATUS_COLORS[group] ?? "bg-gray-100 text-gray-700"}`}>
-                <span>{group}</span>
-                <span className="font-bold">{count}</span>
-              </div>
-            ))}
+        {/* Pipeline flow with live counts */}
+        <div className="bg-white rounded-xl border border-gray-200 p-5">
+          <h3 className="text-sm font-semibold text-[#21355a] mb-4">Active Pipeline — Where Permits Stand Today</h3>
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-0">
+            {PIPELINE_STAGES.map((stage, i) => {
+              const count = stageCounts[stage.key] ?? 0;
+              const isExternal = stage.key === "External Agency";
+              const isAwaiting = stage.key === "Awaiting Applicant";
+              const isFinal = stage.key === "Final Review";
+              return (
+                <div key={stage.key} className="flex flex-col sm:flex-row items-center flex-1">
+                  <div className={`flex flex-col items-center justify-center px-4 py-4 rounded-lg border-2 w-full text-center min-h-[90px] ${
+                    isFinal ? "border-[#65bc7b] bg-green-50" :
+                    isExternal ? "border-purple-300 bg-purple-50" :
+                    isAwaiting ? "border-amber-300 bg-amber-50" :
+                    "border-[#21355a]/20 bg-[#21355a]/5"
+                  }`}>
+                    <span className={`text-2xl font-bold ${
+                      isFinal ? "text-[#65bc7b]" :
+                      isExternal ? "text-purple-700" :
+                      isAwaiting ? "text-amber-700" :
+                      "text-[#21355a]"
+                    }`}>{count.toLocaleString()}</span>
+                    <span className="text-xs font-semibold text-gray-700 mt-1">{stage.label}</span>
+                    <span className="text-[10px] text-gray-400 mt-0.5">{stage.note}</span>
+                  </div>
+                  {i < PIPELINE_STAGES.length - 1 && (
+                    <>
+                      <ArrowRight className="hidden sm:block h-4 w-4 text-gray-300 mx-1 flex-shrink-0" />
+                      <ArrowRight className="sm:hidden h-4 w-4 text-gray-300 rotate-90 my-1 self-center" />
+                    </>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+          <p className="text-[10px] text-gray-400 mt-3">
+            Permits in &ldquo;External Agency&rdquo; and &ldquo;Awaiting Applicant&rdquo; stages are outside FPA&rsquo;s active review queue.
+            Source: Vinformatix · Updates hourly
+          </p>
+        </div>
+
+        {/* District + Applicant breakdown */}
+        <div className="grid md:grid-cols-2 gap-4">
+          <div className="bg-white rounded-xl border border-gray-200 p-5">
+            <h3 className="text-sm font-semibold text-[#21355a] mb-4">Permits by Levee District</h3>
+            <ResponsiveContainer width="100%" height={180}>
+              <BarChart data={districtData} layout="vertical" margin={{ left: 8, right: 16, top: 0, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" horizontal={false} />
+                <XAxis type="number" tick={{ fontSize: 11 }} />
+                <YAxis type="category" dataKey="name" tick={{ fontSize: 12 }} width={48} />
+                <Tooltip formatter={(v: number | undefined) => [v != null ? v.toLocaleString() : "—", "Permits"]} />
+                <Bar dataKey="count" radius={[0, 4, 4, 0]}>
+                  {districtData.map((entry) => (
+                    <Cell key={entry.name} fill={DISTRICT_COLORS[entry.name] ?? "#94a3b8"} />
+                  ))}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+
+          <div className="bg-white rounded-xl border border-gray-200 p-5">
+            <h3 className="text-sm font-semibold text-[#21355a] mb-4">Permits by Applicant Type</h3>
+            <ResponsiveContainer width="100%" height={180}>
+              <BarChart data={applicantData} layout="vertical" margin={{ left: 8, right: 16, top: 0, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" horizontal={false} />
+                <XAxis type="number" tick={{ fontSize: 11 }} />
+                <YAxis type="category" dataKey="name" tick={{ fontSize: 11 }} width={128} />
+                <Tooltip formatter={(v: number | undefined) => [v != null ? v.toLocaleString() : "—", "Permits"]} />
+                <Bar dataKey="count" radius={[0, 4, 4, 0]}>
+                  {applicantData.map((entry, i) => (
+                    <Cell key={entry.name} fill={APPLICANT_COLORS[i % APPLICANT_COLORS.length]} />
+                  ))}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
           </div>
         </div>
 
-        {/* Filters */}
-        <div className="bg-white rounded-xl border border-gray-200 p-4 space-y-3">
-          <div className="flex flex-wrap gap-2 items-center">
-            {/* District tabs */}
-            <div className="flex gap-1 flex-wrap">
-              {DISTRICT_FILTERS.map((d) => (
-                <button
-                  key={d}
-                  onClick={() => setDistrict(d)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-                    district === d
-                      ? "bg-[#21355a] text-white"
-                      : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                  }`}
-                >
-                  {d === "All" ? "All Districts" : DISTRICT_LABELS[d]}
-                </button>
-              ))}
-            </div>
-
-            {/* Status filter */}
-            <select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-              className="text-xs border border-gray-200 rounded-lg px-2 py-1.5 text-gray-600 bg-white"
-            >
-              <option value="All">All Statuses</option>
-              {Object.keys(STATUS_COLORS).map((g) => (
-                <option key={g} value={g}>{g}</option>
-              ))}
-            </select>
-
-            {/* Search */}
-            <div className="flex items-center gap-1.5 border border-gray-200 rounded-lg px-2 py-1.5 bg-white flex-1 min-w-[200px]">
-              <Search className="h-3.5 w-3.5 text-gray-400 flex-shrink-0" />
-              <input
-                type="text"
-                placeholder="Search permit ID or description..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="text-xs outline-none w-full text-gray-700 placeholder-gray-400"
-              />
-            </div>
-          </div>
-
-          <p className="text-xs text-gray-400">Showing {filtered.length.toLocaleString()} of {permits.length.toLocaleString()} permits</p>
-        </div>
-
-        {/* Table */}
-        <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-gray-100 bg-gray-50 text-xs text-gray-500 uppercase tracking-wide">
-                  <th className="text-left px-4 py-3 font-medium">Permit ID</th>
-                  <th className="text-left px-4 py-3 font-medium">District</th>
-                  <th className="text-left px-4 py-3 font-medium">Applicant Type</th>
-                  <th className="text-left px-4 py-3 font-medium">Submitted</th>
-                  <th className="text-left px-4 py-3 font-medium">Status</th>
-                  <th className="text-right px-4 py-3 font-medium">Days Open</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-50">
-                {filtered.slice(0, 200).map((p) => {
-                  const group = STATUS_GROUPS[p.permitStatus ?? ""] ?? "Other";
-                  const days = daysOpen(p.permitSubmitDate);
-                  return (
-                    <tr key={p.permitId} className="hover:bg-gray-50 transition-colors">
-                      <td className="px-4 py-3 font-mono text-xs text-[#21355a] font-medium">{p.permitId}</td>
-                      <td className="px-4 py-3 text-xs text-gray-600">
-                        {p.leveeDistrict ? DISTRICT_LABELS[p.leveeDistrict] ?? p.leveeDistrict : "—"}
-                      </td>
-                      <td className="px-4 py-3 text-xs text-gray-600">{p.applicantType ?? "—"}</td>
-                      <td className="px-4 py-3 text-xs text-gray-500">{formatDate(p.permitSubmitDate)}</td>
-                      <td className="px-4 py-3">
-                        <span className={`inline-flex px-2 py-0.5 rounded text-xs font-medium ${STATUS_COLORS[group] ?? "bg-gray-100 text-gray-700"}`}>
-                          {group}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3 text-right text-xs text-gray-500">
-                        {days !== null ? `${days}d` : "—"}
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-          {filtered.length > 200 && (
-            <div className="px-4 py-3 border-t border-gray-100 text-xs text-gray-400 text-center">
-              Showing first 200 of {filtered.length.toLocaleString()} results — use filters to narrow
-            </div>
-          )}
-        </div>
-
-        <p className="text-xs text-gray-400">
-          Source: Vinformatix Permitting System · Data refreshes hourly
-        </p>
+        <p className="text-xs text-gray-400">Source: Vinformatix Permitting System · Data refreshes hourly</p>
       </div>
     </div>
   );
