@@ -266,10 +266,10 @@ export default function PermitsPage() {
         {/* KPI strip */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <KPICard
-            label="Total Permits (YTD)"
+            label={dateFilter === "This year (YTD)" ? "Total Permits (YTD)" : "Total Permits"}
             value={filtered.length.toLocaleString()}
             icon={<FileText className="h-5 w-5" />}
-            subtitle={filtersActive ? "matching filters" : "active + closed"}
+            subtitle="active + closed"
             source={dateRangeLabel}
           />
 
