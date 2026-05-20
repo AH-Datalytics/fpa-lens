@@ -95,11 +95,11 @@ const STAGE_CONTROL: Record<Stage, "fpa" | "external" | "applicant"> = {
 };
 
 const STAGE_META: Record<Stage, { label: string; color: string; bg: string; border: string }> = {
-  "Submitted":          { label:"Submitted",            color:"text-[#21355a]", bg:"bg-[#21355a]/5", border:"border-[#21355a]/30" },
-  "FPA Review":         { label:"FPA Review",           color:"text-[#21355a]", bg:"bg-[#21355a]/5", border:"border-[#21355a]/30" },
-  "External Agency":    { label:"External Agency",      color:"text-gray-600",  bg:"bg-gray-50",     border:"border-gray-300"     },
-  "Awaiting Applicant": { label:"Awaiting Applicant",   color:"text-gray-600",  bg:"bg-gray-50",     border:"border-gray-300"     },
-  "Final Review":       { label:"Issued / In Progress", color:"text-[#21355a]", bg:"bg-[#21355a]/5", border:"border-[#21355a]/30" },
+  "Submitted":          { label:"Submitted",            color:"text-white",    bg:"bg-[#21355a]",  border:"border-[#21355a]" },
+  "FPA Review":         { label:"FPA Review",           color:"text-white",    bg:"bg-[#21355a]",  border:"border-[#21355a]" },
+  "External Agency":    { label:"External Agency",      color:"text-gray-600", bg:"bg-gray-50",    border:"border-gray-300"  },
+  "Awaiting Applicant": { label:"Awaiting Applicant",   color:"text-gray-600", bg:"bg-gray-50",    border:"border-gray-300"  },
+  "Final Review":       { label:"Issued / In Progress", color:"text-white",    bg:"bg-[#21355a]",  border:"border-[#21355a]" },
 };
 
 const STAGE_TIMING: Record<Stage, number> = {
@@ -307,7 +307,7 @@ export default function PermitsPage() {
                 <div key={stage} className="flex flex-col sm:flex-row items-center flex-1">
                   <div className={`flex flex-col items-center justify-center px-3 py-4 rounded-lg border-2 w-full text-center min-h-[80px] ${meta.bg} ${meta.border}`}>
                     <span className={`text-2xl font-bold ${meta.color}`}>{count.toLocaleString()}</span>
-                    <span className="text-xs font-semibold text-gray-700 mt-1">{meta.label}</span>
+                    <span className={`text-xs font-semibold mt-1 ${meta.color === "text-white" ? "text-white/80" : "text-gray-600"}`}>{meta.label}</span>
                   </div>
                   {i < STAGES.length - 1 && (
                     <>
