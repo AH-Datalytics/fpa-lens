@@ -216,7 +216,10 @@ export default function PermitsPage() {
                       </div>
                       {i < SAMPLE_PIPELINE.length - 1 && (
                         <>
-                          <ArrowRight className="hidden sm:block h-4 w-4 text-gray-300 mx-1 flex-shrink-0" />
+                          <div className="hidden sm:flex flex-col items-center mx-1 flex-shrink-0">
+                            <span className="text-[10px] text-gray-400 mb-0.5">{SAMPLE_STAGE_TIMING[i].days}d avg</span>
+                            <ArrowRight className="h-4 w-4 text-gray-300" />
+                          </div>
                           <ArrowRight className="sm:hidden h-4 w-4 text-gray-300 rotate-90 my-1 self-center" />
                         </>
                       )}
