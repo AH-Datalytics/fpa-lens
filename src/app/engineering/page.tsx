@@ -155,10 +155,10 @@ export default function OperationsPage() {
             <p className="mt-2 text-lg text-gray-600">Permits, inspections, and engineering contracts</p>
             <p className="mt-2 text-sm text-gray-400">Data source: {latestPermit.source}</p>
           </div>
-          <div className="flex flex-col gap-2 self-start">
+          <div className="flex flex-row gap-3 self-start flex-wrap">
             <Link
               href="/engineering/idiq"
-              className="group inline-flex items-center gap-2 px-5 py-3 bg-[#21355a] hover:bg-[#2c4470] text-white rounded-lg text-sm font-semibold shadow-md hover:shadow-lg transition-all whitespace-nowrap"
+              className="group inline-flex items-center gap-2 px-5 py-2.5 bg-[#21355a] hover:bg-[#2c4470] text-white rounded-lg text-sm font-semibold shadow-md hover:shadow-lg transition-all whitespace-nowrap"
             >
               <FileText className="h-4 w-4" />
               Engineering Contracts (IDIQ)
@@ -166,7 +166,7 @@ export default function OperationsPage() {
             </Link>
             <Link
               href="/engineering/permits"
-              className="group inline-flex items-center gap-2 px-5 py-3 bg-[#21355a] hover:bg-[#2c4470] text-white rounded-lg text-sm font-semibold shadow-md hover:shadow-lg transition-all whitespace-nowrap"
+              className="group inline-flex items-center gap-2 px-5 py-2.5 border-2 border-[#21355a] text-[#21355a] hover:bg-[#21355a] hover:text-white rounded-lg text-sm font-semibold shadow-sm hover:shadow-md transition-all whitespace-nowrap"
             >
               <FileText className="h-4 w-4" />
               Permit Overview
