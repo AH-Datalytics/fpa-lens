@@ -95,11 +95,11 @@ const STAGE_CONTROL: Record<Stage, "fpa" | "external" | "applicant"> = {
 };
 
 const STAGE_META: Record<Stage, { label: string; color: string; bg: string; border: string }> = {
-  "Submitted":          { label:"Submitted",            color:"text-[#21355a]",  bg:"bg-[#21355a]/5",  border:"border-[#21355a]/20" },
-  "FPA Review":         { label:"FPA Review",           color:"text-[#21355a]",  bg:"bg-[#21355a]/5",  border:"border-[#21355a]/20" },
-  "External Agency":    { label:"External Agency",      color:"text-purple-700", bg:"bg-purple-50",    border:"border-purple-300"   },
-  "Awaiting Applicant": { label:"Awaiting Applicant",   color:"text-amber-700",  bg:"bg-amber-50",     border:"border-amber-300"    },
-  "Final Review":       { label:"Issued / In Progress", color:"text-[#65bc7b]",  bg:"bg-green-50",     border:"border-[#65bc7b]"    },
+  "Submitted":          { label:"Submitted",            color:"text-[#21355a]", bg:"bg-[#21355a]/5", border:"border-[#21355a]/30" },
+  "FPA Review":         { label:"FPA Review",           color:"text-[#21355a]", bg:"bg-[#21355a]/5", border:"border-[#21355a]/30" },
+  "External Agency":    { label:"External Agency",      color:"text-gray-600",  bg:"bg-gray-50",     border:"border-gray-300"     },
+  "Awaiting Applicant": { label:"Awaiting Applicant",   color:"text-gray-600",  bg:"bg-gray-50",     border:"border-gray-300"     },
+  "Final Review":       { label:"Issued / In Progress", color:"text-[#21355a]", bg:"bg-[#21355a]/5", border:"border-[#21355a]/30" },
 };
 
 const STAGE_TIMING: Record<Stage, number> = {
@@ -301,21 +301,20 @@ export default function PermitsPage() {
 
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-0">
             {STAGES.map((stage, i) => {
-              const meta    = STAGE_META[stage];
-              const control = STAGE_CONTROL[stage];
-              const badge   = CONTROL_BADGE[control];
-              const count   = stageCounts[stage] ?? 0;
+              const meta  = STAGE_META[stage];
+              const count = stageCounts[stage] ?? 0;
               return (
                 <div key={stage} className="flex flex-col sm:flex-row items-center flex-1">
-                  <div className={`flex flex-col items-center justify-center px-3 py-3 rounded-lg border-2 w-full text-center ${meta.bg} ${meta.border}`}>
+                  <div className={`flex flex-col items-center justify-center px-3 py-4 rounded-lg border-2 w-full text-center min-h-[80px] ${meta.bg} ${meta.border}`}>
                     <span className={`text-2xl font-bold ${meta.color}`}>{count.toLocaleString()}</span>
-                    <span className="text-xs font-semibold text-gray-700 mt-0.5">{meta.label}</span>
-                    <span className="text-[10px] text-gray-500 mt-0.5">~{STAGE_TIMING[stage]}d avg</span>
-                    <span className={`mt-1.5 text-[10px] font-medium px-1.5 py-0.5 rounded-full ${badge.cls}`}>{badge.label}</span>
+                    <span className="text-xs font-semibold text-gray-700 mt-1">{meta.label}</span>
                   </div>
                   {i < STAGES.length - 1 && (
                     <>
-                      <ArrowRight className="hidden sm:block h-4 w-4 text-gray-300 mx-1 flex-shrink-0" />
+                      <div className="hidden sm:flex flex-col items-center mx-1 flex-shrink-0">
+                        <span className="text-[10px] text-gray-400 mb-0.5">~{STAGE_TIMING[stage]}d avg</span>
+                        <ArrowRight className="h-4 w-4 text-gray-300" />
+                      </div>
                       <ArrowRight className="sm:hidden h-4 w-4 text-gray-300 rotate-90 my-1 self-center" />
                     </>
                   )}
@@ -325,8 +324,7 @@ export default function PermitsPage() {
           </div>
 
           <p className="text-[10px] text-gray-400 mt-3">
-            Avg days per stage shown on each card · Total avg: {FPA_DAYS + EXTERNAL_DAYS} days
-            ({FPA_DAYS}d FPA-controlled + {EXTERNAL_DAYS}d outside FPA&rsquo;s queue) ·
+            Avg days to advance from each stage · navy = FPA-controlled · gray = outside FPA&rsquo;s queue ·
             LNO = Letter of No Objection · Source: sample data
           </p>
         </div>
