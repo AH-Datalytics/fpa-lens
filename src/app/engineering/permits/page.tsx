@@ -136,7 +136,9 @@ function FilterPills<T extends string>({
   );
 }
 
-const DATE_OPTIONS = ["Last 3 months","Last 6 months","Last 12 months"] as const;
+const YTD_MONTHS = MONTHS.filter(m => m.includes("'26")); // Jan '26 – Apr '26
+
+const DATE_OPTIONS = ["This year (YTD)","Last 3 months","Last 6 months","Last 12 months"] as const;
 type DateRange = typeof DATE_OPTIONS[number];
 
 // ---------------------------------------------------------------------------
@@ -145,13 +147,14 @@ export default function PermitsPage() {
   const [districtFilter, setDistrictFilter] = useState<District   | "All">("All");
   const [stageFilter,    setStageFilter]    = useState<Stage      | "All">("All");
   const [typeFilter,     setTypeFilter]     = useState<PermitType | "All">("All");
-  const [dateFilter,     setDateFilter]     = useState<DateRange  | "All">("All");
+  const [dateFilter,     setDateFilter]     = useState<DateRange  | "All">("This year (YTD)");
 
   const filtersActive = districtFilter !== "All" || stageFilter !== "All" || typeFilter !== "All" || dateFilter !== "All";
   const clearFilters  = () => { setDistrictFilter("All"); setStageFilter("All"); setTypeFilter("All"); setDateFilter("All"); };
 
   const allowedMonths = useMemo(() => {
-    if (dateFilter === "All") return MONTHS;
+    if (dateFilter === "All")                return MONTHS;
+    if (dateFilter === "This year (YTD)")   return YTD_MONTHS;
     const n = dateFilter === "Last 3 months" ? 3 : dateFilter === "Last 6 months" ? 6 : 12;
     return MONTHS.slice(-n);
   }, [dateFilter]);
