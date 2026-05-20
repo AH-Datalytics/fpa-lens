@@ -312,8 +312,8 @@ export default function PermitsPage() {
                   {i < STAGES.length - 1 && (
                     <>
                       <div className="hidden sm:flex flex-col items-center mx-1 flex-shrink-0">
-                        <span className="text-[10px] text-gray-400 mb-0.5">~{STAGE_TIMING[stage]}d avg</span>
-                        <ArrowRight className="h-4 w-4 text-gray-300" />
+                        <span className={`text-[10px] mb-0.5 ${meta.color}`}>~{STAGE_TIMING[stage]}d avg</span>
+                        <ArrowRight className={`h-4 w-4 ${meta.color === "text-[#21355a]" ? "text-[#21355a]/40" : "text-gray-300"}`} />
                       </div>
                       <ArrowRight className="sm:hidden h-4 w-4 text-gray-300 rotate-90 my-1 self-center" />
                     </>
