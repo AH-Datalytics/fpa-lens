@@ -155,14 +155,24 @@ export default function OperationsPage() {
             <p className="mt-2 text-lg text-gray-600">Permits, inspections, and engineering contracts</p>
             <p className="mt-2 text-sm text-gray-400">Data source: {latestPermit.source}</p>
           </div>
-          <Link
-            href="/engineering/idiq"
-            className="group inline-flex items-center gap-2 px-5 py-3 bg-[#21355a] hover:bg-[#2c4470] text-white rounded-lg text-sm font-semibold shadow-md hover:shadow-lg transition-all whitespace-nowrap self-start"
-          >
-            <FileText className="h-4 w-4" />
-            Engineering Contracts (IDIQ)
-            <ArrowRight className="h-4 w-4 text-[#65bc7b] group-hover:translate-x-0.5 transition-transform" />
-          </Link>
+          <div className="flex flex-col gap-2 self-start">
+            <Link
+              href="/engineering/idiq"
+              className="group inline-flex items-center gap-2 px-5 py-3 bg-[#21355a] hover:bg-[#2c4470] text-white rounded-lg text-sm font-semibold shadow-md hover:shadow-lg transition-all whitespace-nowrap"
+            >
+              <FileText className="h-4 w-4" />
+              Engineering Contracts (IDIQ)
+              <ArrowRight className="h-4 w-4 text-[#65bc7b] group-hover:translate-x-0.5 transition-transform" />
+            </Link>
+            <Link
+              href="/engineering/permits"
+              className="group inline-flex items-center gap-2 px-5 py-3 bg-[#21355a] hover:bg-[#2c4470] text-white rounded-lg text-sm font-semibold shadow-md hover:shadow-lg transition-all whitespace-nowrap"
+            >
+              <FileText className="h-4 w-4" />
+              Permit Overview
+              <ArrowRight className="h-4 w-4 text-[#65bc7b] group-hover:translate-x-0.5 transition-transform" />
+            </Link>
+          </div>
         </div>
 
         {/* Federal & State Inspections */}
@@ -234,17 +244,6 @@ export default function OperationsPage() {
 
         {/* Permits */}
         <SectionSubheader title="Permits" />
-
-        <section className="mb-6">
-          <Link
-            href="/engineering/permits"
-            className="group inline-flex items-center gap-2 px-5 py-3 bg-[#21355a] hover:bg-[#2c4470] text-white rounded-lg text-sm font-semibold shadow-md hover:shadow-lg transition-all whitespace-nowrap self-start"
-          >
-            <FileText className="h-4 w-4" />
-            Permit Overview
-            <ArrowRight className="h-4 w-4 text-[#65bc7b] group-hover:translate-x-0.5 transition-transform" />
-          </Link>
-        </section>
 
         {/* Permit Processing Pipeline */}
         <section className="mb-12">
@@ -335,7 +334,7 @@ export default function OperationsPage() {
 
         {/* Maintenance Activities */}
         <section>
-          <p className="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-4">Routine Maintenance Activities</p>
+          <SectionSubheader title="Routine Maintenance Activities" />
           <DataCard title="Current Maintenance Work" source={operationsData.maintenanceSource}>
             <ul className="space-y-3">
               {operationsData.maintenanceActivities.map((activity, index) => (
