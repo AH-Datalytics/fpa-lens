@@ -203,13 +203,6 @@ export default function PermitsPage() {
       .sort((a, b) => b.count - a.count)
   , [filtered]);
 
-  const monthlyData = useMemo(() =>
-    allowedMonths.map(m => {
-      const row: Record<string, string | number> = { month: m };
-      for (const t of PERMIT_TYPES) row[t] = filtered.filter(p => p.submitMonth === m && p.permitType === t).length;
-      return row;
-    })
-  , [filtered, allowedMonths]);
 
   const fpaBarWidth = fpaReviewDays != null && avgProcessingDays
     ? Math.round((fpaReviewDays / avgProcessingDays) * 100)
@@ -314,30 +307,6 @@ export default function PermitsPage() {
             icon={<CheckCircle className="h-5 w-5" />}
             subtitle="closed permits, filtered"
           />
-        </div>
-
-        {/* Monthly volume by permit type */}
-        <div className="bg-white rounded-xl border border-gray-200 p-5">
-          <h3 className="text-sm font-semibold text-[#21355a] mb-4">Monthly Permit Volume by Type</h3>
-          <ResponsiveContainer width="100%" height={200}>
-            <BarChart data={monthlyData} margin={{ left: 0, right: 16, top: 4, bottom: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} />
-              <XAxis dataKey="month" tick={{ fontSize: 11 }} />
-              <YAxis tick={{ fontSize: 11 }} />
-              <Tooltip />
-              {PERMIT_TYPES.map(t => (
-                <Bar key={t} dataKey={t} stackId="a" fill={TYPE_COLORS[t]} />
-              ))}
-            </BarChart>
-          </ResponsiveContainer>
-          <div className="flex flex-wrap gap-3 mt-3">
-            {PERMIT_TYPES.map(t => (
-              <span key={t} className="flex items-center gap-1.5 text-xs text-gray-600">
-                <span className="inline-block w-2.5 h-2.5 rounded-sm flex-shrink-0" style={{ backgroundColor: TYPE_COLORS[t] }} />
-                {t}
-              </span>
-            ))}
-          </div>
         </div>
 
         {/* Pipeline flow */}
