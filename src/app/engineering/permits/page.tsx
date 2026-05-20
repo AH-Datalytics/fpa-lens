@@ -263,7 +263,7 @@ export default function PermitsPage() {
             value={filtered.length.toLocaleString()}
             icon={<FileText className="h-5 w-5" />}
             subtitle="active + closed"
-            source={dateRangeLabel}
+            footer={`Date Range: ${dateRangeLabel}`}
           />
 
           <KPICard
