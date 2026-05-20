@@ -189,6 +189,8 @@ export default function PermitsPage() {
     (stageCounts["External Agency"] ?? 0) + (stageCounts["Awaiting Applicant"] ?? 0)
   , [stageCounts]);
 
+  const dateRangeLabel = `${allowedMonths[0]} – ${allowedMonths[allowedMonths.length - 1]}`;
+
   const districtData = useMemo(() =>
     DISTRICTS.map(d => ({ name: d, count: filtered.filter(p => p.district === d).length }))
   , [filtered]);
@@ -219,7 +221,12 @@ export default function PermitsPage() {
             <ArrowLeft className="h-4 w-4" /> Back to Engineering
           </Link>
           <h1 className="text-3xl font-bold text-[#21355a]">Permit Overview</h1>
-          <p className="mt-1 text-gray-600">SLFPA-East reviews permit applications for construction, encroachments, and events on or near the levee system.</p>
+          <p className="mt-2 text-gray-600 max-w-3xl">
+            SLFPA-East reviews and approves permit applications for construction, encroachments, and events on or near the levee system.
+            Once a permit is submitted, FPA conducts its own engineering review -- but some steps require action from outside parties,
+            such as a federal Letter of No Objection from the U.S. Army Corps of Engineers or a response from the applicant.
+            Processing time reflects the full timeline from submission to decision, including any periods outside FPA&rsquo;s control.
+          </p>
         </div>
 
         {/* Sample data banner */}
@@ -260,6 +267,7 @@ export default function PermitsPage() {
             value={filtered.length.toLocaleString()}
             icon={<FileText className="h-5 w-5" />}
             subtitle={filtersActive ? "matching filters" : "active + closed"}
+            source={dateRangeLabel}
           />
 
           <KPICard
