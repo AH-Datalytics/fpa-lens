@@ -1,18 +1,26 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
-export const revalidate = 3600; // cache 1 hour
+export const revalidate = 3600;
 
-export async function GET() {
-  const url = process.env.PERMIT_API_URL;
+export async function GET(request: NextRequest) {
+  const base = process.env.PERMIT_API_URL;
   const password = process.env.PERMIT_API_PASSWORD;
 
-  if (!url || !password) {
+  if (!base || !password) {
     return NextResponse.json({ error: "Permit API not configured" }, { status: 503 });
   }
 
+  const { searchParams } = request.nextUrl;
+  const startDate = searchParams.get("startDate");
+  const endDate = searchParams.get("endDate");
+
+  const upstream = new URL(base);
+  if (startDate) upstream.searchParams.set("startDate", startDate);
+  if (endDate)   upstream.searchParams.set("enddate", endDate); // Vinformatix uses lowercase 'enddate'
+
   try {
     const credentials = Buffer.from(`analytics:${password}`).toString("base64");
-    const res = await fetch(url, {
+    const res = await fetch(upstream.toString(), {
       headers: { Authorization: `Basic ${credentials}` },
       next: { revalidate: 3600 },
     });
