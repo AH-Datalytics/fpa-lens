@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from "react";
 import Link from "next/link";
-import { ArrowLeft, FileText, CheckCircle, ArrowRight, FlaskConical, X, AlertCircle, HelpCircle } from "lucide-react";
+import { ArrowLeft, FileText, CheckCircle, ArrowRight, FlaskConical, X, AlertCircle } from "lucide-react";
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell,
 } from "recharts";
@@ -19,7 +19,7 @@ const MONTHS = [
 
 const STAGES       = ["Submitted","FPA Review","External Agency","Awaiting Applicant","Final Review"] as const;
 const DISTRICTS    = ["OLD","EJLD","LBBLD"] as const;
-const PERMIT_TYPES = ["Levee Safety","Canal","Event","After the Fact"] as const;
+const PERMIT_TYPES = ["Levee Safety","Canal","Event"] as const;
 
 type Stage      = typeof STAGES[number];
 type District   = typeof DISTRICTS[number];
@@ -111,7 +111,6 @@ const TYPE_COLORS: Record<PermitType, string> = {
   "Levee Safety":   "#21355a",
   "Canal":          "#2FA4A9",
   "Event":          "#65bc7b",
-  "After the Fact": "#f59e0b",
 };
 
 // ---------------------------------------------------------------------------
@@ -234,14 +233,6 @@ export default function PermitsPage() {
           </div>
         </div>
 
-        {/* After the Fact question */}
-        <div className="flex items-start gap-3 bg-blue-50 border border-blue-200 rounded-xl px-4 py-3 text-sm text-blue-900">
-          <HelpCircle className="h-4 w-4 mt-0.5 flex-shrink-0 text-blue-500" />
-          <div>
-            <span className="font-semibold">Open question:</span>{" "}
-            After the Fact permits are currently shown on this page. Please confirm whether these should be visible on the public dashboard or kept internal.
-          </div>
-        </div>
 
         {/* Filter bar */}
         <div className="bg-white rounded-xl border border-gray-200 px-4 py-3 space-y-2.5">
