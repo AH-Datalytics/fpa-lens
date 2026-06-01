@@ -17,9 +17,9 @@ const MONTHS = [
   "Nov '25","Dec '25","Jan '26","Feb '26","Mar '26","Apr '26",
 ];
 
-const STAGES       = ["Submitted","FPA Review","External Agency","Awaiting Applicant","Final Review"] as const;
+const STAGES       = ["Submitted","FPA Review","External Agency Review","Awaiting Applicant","Issued"] as const;
 const DISTRICTS    = ["OLD","EJLD","LBBLD"] as const;
-const PERMIT_TYPES = ["Levee Safety","Canal","Event"] as const;
+const PERMIT_TYPES = ["Governmental","Commercial","Residential"] as const;
 
 type Stage      = typeof STAGES[number];
 type District   = typeof DISTRICTS[number];
@@ -51,7 +51,7 @@ const FAKE_PERMITS: FakePermit[] = (() => {
 
   const stageW   = [95, 285, 312, 118, 37].map(n => n / 847);
   const districtW= [385, 295, 167].map(n => n / 847);
-  const typeW    = [0.45, 0.28, 0.17, 0.10];
+  const typeW    = [0.35, 0.42, 0.23];
   const monthW   = [0.06,0.08,0.07,0.09,0.07,0.12,0.11,0.05,0.10,0.07,0.09,0.09];
 
   const active: FakePermit[] = Array.from({ length: 847 }, (_, i) => ({
@@ -84,21 +84,21 @@ const FAKE_PERMITS: FakePermit[] = (() => {
 const STAGE_CONTROL: Record<Stage, "fpa" | "external"> = {
   "Submitted":          "fpa",
   "FPA Review":         "fpa",
-  "External Agency":    "external",
+  "External Agency Review":    "external",
   "Awaiting Applicant": "external",
-  "Final Review":       "fpa",
+  "Issued":       "fpa",
 };
 
 const STAGE_META: Record<Stage, { label: string; color: string; labelColor: string; border: string }> = {
   "Submitted":          { label:"Submitted",            color:"text-[#21355a]", labelColor:"text-[#21355a]", border:"border-gray-200" },
   "FPA Review":         { label:"FPA Review",           color:"text-[#21355a]", labelColor:"text-[#21355a]", border:"border-gray-200" },
-  "External Agency":    { label:"External Agency",      color:"text-gray-400",  labelColor:"text-gray-400",  border:"border-gray-200" },
+  "External Agency Review":    { label:"External Agency Review",      color:"text-gray-400",  labelColor:"text-gray-400",  border:"border-gray-200" },
   "Awaiting Applicant": { label:"Awaiting Applicant",   color:"text-gray-400",  labelColor:"text-gray-400",  border:"border-gray-200" },
-  "Final Review":       { label:"Issued / In Progress", color:"text-[#21355a]", labelColor:"text-[#21355a]", border:"border-gray-200" },
+  "Issued":       { label:"Issued",               color:"text-[#21355a]", labelColor:"text-[#21355a]", border:"border-gray-200" },
 };
 
 const STAGE_TIMING: Record<Stage, number> = {
-  "Submitted": 8, "FPA Review": 32, "External Agency": 45, "Awaiting Applicant": 16, "Final Review": 6,
+  "Submitted": 8, "FPA Review": 32, "External Agency Review": 45, "Awaiting Applicant": 16, "Issued": 6,
 };
 
 const FPA_DAYS      = STAGES.filter(s => STAGE_CONTROL[s] === "fpa").reduce((sum, s) => sum + STAGE_TIMING[s], 0);
@@ -108,9 +108,9 @@ const TOTAL_DAYS    = FPA_DAYS + EXTERNAL_DAYS;
 const DISTRICT_COLORS: Record<District, string> = { OLD:"#21355a", EJLD:"#65bc7b", LBBLD:"#2FA4A9" };
 
 const TYPE_COLORS: Record<PermitType, string> = {
-  "Levee Safety":   "#21355a",
-  "Canal":          "#2FA4A9",
-  "Event":          "#65bc7b",
+  "Governmental":   "#21355a",
+  "Commercial":     "#2FA4A9",
+  "Residential":    "#65bc7b",
 };
 
 // ---------------------------------------------------------------------------
@@ -188,7 +188,7 @@ export default function PermitsPage() {
   }, [activePermits]);
 
   const outsideCount = useMemo(() =>
-    (stageCounts["External Agency"] ?? 0) + (stageCounts["Awaiting Applicant"] ?? 0)
+    (stageCounts["External Agency Review"] ?? 0) + (stageCounts["Awaiting Applicant"] ?? 0)
   , [stageCounts]);
 
   const dateRangeLabel = `${allowedMonths[0]} – ${allowedMonths[allowedMonths.length - 1]}`;
@@ -219,7 +219,8 @@ export default function PermitsPage() {
           <p className="mt-2 text-gray-600 max-w-3xl">
             SLFPA-East reviews and approves permit applications for construction, encroachments, and events on or near the levee system.
             Once a permit is submitted, FPA conducts its own engineering review -- but some steps require action from outside parties,
-            such as a federal Letter of No Objection from the U.S. Army Corps of Engineers or a response from the applicant.
+            such as a Letter of No Objection from the U.S. Army Corps of Engineers or the Coastal Protection and Restoration Authority,
+            or a response from the applicant.
             Processing time reflects the full timeline from submission to decision, including any periods outside FPA&rsquo;s control.
           </p>
         </div>
@@ -309,30 +310,33 @@ export default function PermitsPage() {
               <AlertCircle className="h-3.5 w-3.5 mt-0.5 flex-shrink-0 text-amber-600" />
               <span>
                 <span className="font-semibold">{outsideCount.toLocaleString()} permits</span> are outside FPA&rsquo;s active review queue
-                ({stageCounts["External Agency"] ?? 0} awaiting external agency sign-off,{" "}
+                ({stageCounts["External Agency Review"] ?? 0} awaiting external agency sign-off,{" "}
                 {stageCounts["Awaiting Applicant"] ?? 0} awaiting applicant response).
                 FPA cannot advance these until the other party acts.
               </span>
             </div>
           )}
 
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-0">
+          <div className="flex flex-col sm:flex-row items-stretch gap-2 sm:gap-0">
             {STAGES.map((stage, i) => {
-              const meta  = STAGE_META[stage];
-              const count = stageCounts[stage] ?? 0;
-              const isFpa = STAGE_CONTROL[stage] === "fpa";
+              const meta   = STAGE_META[stage];
+              const count  = stageCounts[stage] ?? 0;
+              const isFpa  = STAGE_CONTROL[stage] === "fpa";
+              const isLast = i === STAGES.length - 1;
               return (
-                <div key={stage} className="flex flex-col sm:flex-row items-center flex-1">
-                  <div className={`flex flex-col items-center justify-center px-3 py-4 rounded-lg border w-full text-center min-h-[80px] bg-white ${meta.border}`}>
+                <div key={stage} className="flex flex-col sm:flex-row items-stretch sm:items-center flex-1">
+                  <div className={`flex flex-col items-center justify-start px-3 py-4 rounded-lg border w-full text-center min-h-[104px] bg-white ${meta.border}`}>
                     <span className={`text-2xl font-bold ${meta.color}`}>{count.toLocaleString()}</span>
                     <span className={`text-xs font-medium mt-1 ${meta.labelColor}`}>{meta.label}</span>
+                    {!isLast && (
+                      <span className={`text-[10px] mt-2 ${isFpa ? "text-[#21355a]" : "text-gray-400"}`}>
+                        ~{STAGE_TIMING[stage]}d avg in review
+                      </span>
+                    )}
                   </div>
-                  {i < STAGES.length - 1 && (
+                  {!isLast && (
                     <>
-                      <div className="hidden sm:flex flex-col items-center mx-1 flex-shrink-0">
-                        <span className={`text-[10px] mb-0.5 ${isFpa ? "text-[#21355a]" : "text-gray-400"}`}>~{STAGE_TIMING[stage]}d avg</span>
-                        <ArrowRight className={`h-4 w-4 ${isFpa ? "text-[#21355a]/40" : "text-gray-300"}`} />
-                      </div>
+                      <ArrowRight className="hidden sm:block h-4 w-4 mx-1 flex-shrink-0 text-gray-300" />
                       <ArrowRight className="sm:hidden h-4 w-4 text-gray-300 rotate-90 my-1 self-center" />
                     </>
                   )}
@@ -341,7 +345,7 @@ export default function PermitsPage() {
             })}
           </div>
           <p className="text-[10px] text-gray-400 mt-3">
-            Avg days to advance from each stage · navy = FPA-controlled · gray = outside FPA&rsquo;s queue · LNO = Letter of No Objection · Source: sample data
+            ~Nd avg in review = typical days a permit spends in that stage · navy = FPA-controlled · gray = outside FPA&rsquo;s queue · Source: sample data
           </p>
         </div>
 
