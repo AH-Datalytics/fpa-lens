@@ -4,7 +4,7 @@ import { useState, useMemo } from "react";
 import Link from "next/link";
 import { ArrowLeft, FileText, CheckCircle, ArrowRight, FlaskConical, X, AlertCircle } from "lucide-react";
 import {
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell,
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
 } from "recharts";
 import KPICard from "@/components/KPICard";
 
@@ -105,13 +105,8 @@ const FPA_DAYS      = STAGES.filter(s => STAGE_CONTROL[s] === "fpa").reduce((sum
 const EXTERNAL_DAYS = STAGES.filter(s => STAGE_CONTROL[s] !== "fpa").reduce((sum, s) => sum + STAGE_TIMING[s], 0);
 const TOTAL_DAYS    = FPA_DAYS + EXTERNAL_DAYS;
 
-const DISTRICT_COLORS: Record<District, string> = { OLD:"#21355a", EJLD:"#65bc7b", LBBLD:"#2FA4A9" };
-
-const TYPE_COLORS: Record<PermitType, string> = {
-  "Governmental":   "#21355a",
-  "Commercial":     "#2FA4A9",
-  "Residential":    "#65bc7b",
-};
+// Bars are a single brand color -- the hue carries no meaning, it just shows magnitude.
+const BAR_COLOR = "#21355a";
 
 // ---------------------------------------------------------------------------
 
@@ -359,9 +354,7 @@ export default function PermitsPage() {
                 <XAxis type="number" tick={{ fontSize: 11 }} />
                 <YAxis type="category" dataKey="name" tick={{ fontSize: 11 }} width={96} />
                 <Tooltip formatter={(v: number | undefined) => [v != null ? v.toLocaleString() : "—", "Permits"]} />
-                <Bar dataKey="count" radius={[0, 4, 4, 0]}>
-                  {typeData.map(e => <Cell key={e.name} fill={TYPE_COLORS[e.name as PermitType] ?? "#94a3b8"} />)}
-                </Bar>
+                <Bar dataKey="count" radius={[0, 4, 4, 0]} fill={BAR_COLOR} />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -374,9 +367,7 @@ export default function PermitsPage() {
                 <XAxis type="number" tick={{ fontSize: 11 }} />
                 <YAxis type="category" dataKey="name" tick={{ fontSize: 12 }} width={48} />
                 <Tooltip formatter={(v: number | undefined) => [v != null ? v.toLocaleString() : "—", "Permits"]} />
-                <Bar dataKey="count" radius={[0, 4, 4, 0]}>
-                  {districtData.map(e => <Cell key={e.name} fill={DISTRICT_COLORS[e.name as District] ?? "#94a3b8"} />)}
-                </Bar>
+                <Bar dataKey="count" radius={[0, 4, 4, 0]} fill={BAR_COLOR} />
               </BarChart>
             </ResponsiveContainer>
           </div>
