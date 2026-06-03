@@ -78,6 +78,30 @@ they change rarely and stay manual.
 6. **Staffing** is intentionally minimal today (vacancy count); low-value, simple parser.
 7. **`Engineering/` folder** purpose unclear — confirm with FPA.
 
+## 7b. Reconnaissance findings (Jun 3 2026, against live LensRepository)
+
+- **Fetch core built + live-tested** (`scripts/sharepoint/`). Auth, newest-by-convention,
+  doubled-extension tolerance, empty-folder handling, binary download all verified.
+- **GitHub secrets set:** all `SHAREPOINT_*` (cleaned) + `ANTHROPIC_API_KEY`. Also in Vercel.
+- **`data/sources/` is gitignored** → CI must fetch sources fresh each run; the generated
+  `public/data/*.json` is what gets committed. Implication: the **safety historical logs
+  (2022–2025) must be committed** (they're static) so the aggregation works in Actions.
+- **Per-category file reality:**
+  - **Finance ✅** `budget-actuals_2026-05.xlsm` has all required entity sheets. Wires cleanly
+    once `extractActualsData.py` takes a dynamic input path. (May file had the `.xlsm.xlsm`
+    typo — now handled by the fetcher.)
+  - **Safety ✅** `safety-events_2026-05.xlsx` = current-year log, `Sheet1`, exact columns.
+    Wire by saving it as the current-year file; confirm Recordable fill-color classification
+    survives the round-trip; commit historical logs.
+  - **IDIQ ⚠ decision needed** `idiq-contracts_2026-05.xlsx` columns match A–Q exactly, but it's
+    a **single flat `Sheet1` for the current (2025) cycle**, while the extractor + IDIQ page use
+    **two pools (2022 + 2025)**. Options: (a) freeze 2022 as historical, refresh 2025 from the
+    upload; (b) move the page to a single current-contracts list; (c) ask FPA to upload both
+    cycles as two tabs. Recommend (a).
+  - **Staffing** populated (`staffing_2026-06.xlsx`) but no extractor exists yet + intentionally
+    minimal today; low priority.
+  - **SITREP / Turf** folders still empty.
+
 ## 8. Build order
 
 - **Phase A (unblocked, testable now):** Graph lib + fetch + secrets + workflow skeleton + Tier-1
