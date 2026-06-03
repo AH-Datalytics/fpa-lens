@@ -12,6 +12,7 @@ script to regenerate the dashboard JSON.
 
 import json
 import os
+import sys
 from collections import OrderedDict
 from datetime import datetime
 
@@ -155,24 +156,102 @@ def build_summary(pools):
     }
 
 
+DEFAULT_FILENAME = "Contract Master List Revised Beg July 1 2021.xlsx"
+
+
+def resolve_input():
+    """Input workbook path: CLI arg > IDIQ_INPUT env > default legacy file."""
+    if len(sys.argv) > 1:
+        return os.path.expanduser(sys.argv[1])
+    if os.environ.get("IDIQ_INPUT"):
+        return os.path.expanduser(os.environ["IDIQ_INPUT"])
+    return os.path.join(BASE_DIR, DEFAULT_FILENAME)
+
+
+def find_sheet(wb, name):
+    """Find a sheet tolerant of trailing/leading whitespace (e.g. '2022 IDIQ ')."""
+    if name in wb.sheetnames:
+        return wb[name]
+    target = name.strip().lower()
+    for s in wb.sheetnames:
+        if s.strip().lower() == target:
+            return wb[s]
+    return None
+
+
+def derive_cycle(pool):
+    """Derive a cycle id/name from the earliest contract date year in a pool."""
+    years = [
+        c["contractDate"][:4]
+        for st in pool["serviceTypes"]
+        for c in st["contracts"]
+        if c.get("contractDate")
+    ]
+    year = min(years) if years else "current"
+    return year, f"{year} IDIQ Contracts"
+
+
+def load_existing_pools(path):
+    """Read the contract pools already on disk, or [] if none/unreadable."""
+    if not os.path.exists(path):
+        return []
+    try:
+        with open(path) as f:
+            return json.load(f).get("contractPools", [])
+    except (ValueError, OSError):
+        return []
+
+
+def upsert_pool(existing, pool):
+    """Replace a same-id pool in place, else append. Preserves other cycles
+    (e.g. a 2025 upload refreshes the 2025 pool without wiping 2022)."""
+    out = list(existing)
+    for i, p in enumerate(out):
+        if p.get("id") == pool["id"]:
+            out[i] = pool
+            return out
+    out.append(pool)
+    return out
+
+
 def main():
-    filepath = os.path.join(BASE_DIR, "Contract Master List Revised Beg July 1 2021.xlsx")
+    filepath = resolve_input()
+    print(f"Reading {filepath}")
     wb = openpyxl.load_workbook(filepath, read_only=True, data_only=True)
 
+    # Two supported shapes:
+    #   legacy -> multiple "<year> IDIQ" tabs (the Contract Master List workbook)
+    #   upload -> a single flat sheet of all current contracts (FPA's monthly
+    #             idiq-contracts_YYYY-MM.xlsx). Whatever the upload contains IS
+    #             the dashboard data -- no merging or freezing of prior cycles.
+    idiq_tabs = [s for s in wb.sheetnames if "IDIQ" in s.upper()]
+
     pools = []
-    for sheet_name, pool_id, pool_name in SHEETS:
-        ws = wb[sheet_name]
-        pool = extract_pool(ws, pool_id, pool_name)
-        pools.append(pool)
+    if idiq_tabs:
+        for sheet_name, pool_id, pool_name in SHEETS:
+            ws = find_sheet(wb, sheet_name)
+            if ws is None:
+                print(f"  (skipping missing tab: {sheet_name!r})")
+                continue
+            pools.append(extract_pool(ws, pool_id, pool_name))
+    else:
+        ws = wb[wb.sheetnames[0]]
+        pool = extract_pool(ws, "current", "Current IDIQ Contracts")
+        pool["id"], pool["name"] = derive_cycle(pool)
+        # Upsert into existing data: refresh this cycle, keep prior cycles (2022)
+        # so historic contracts never silently disappear.
+        pools = upsert_pool(load_existing_pools(OUTPUT_PATH), pool)
+
+    wb.close()
+
+    for pool in pools:
         contract_count = sum(st["contractCount"] for st in pool["serviceTypes"])
         to_count = sum(
             len(c["taskOrders"])
             for st in pool["serviceTypes"]
             for c in st["contracts"]
         )
-        print(f"{pool_name}: {contract_count} contracts, {to_count} task orders")
-
-    wb.close()
+        print(f"{pool['name']}: {contract_count} contracts, {to_count} task orders")
 
     summary = build_summary(pools)
     output = {"contractPools": pools, "summary": summary}
