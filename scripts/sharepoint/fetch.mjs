@@ -70,12 +70,20 @@ export const CATEGORIES = {
   },
 };
 
-/** Build the strict filename regex for a category. */
+/** Build the filename regex for a category. */
 function nameRegex(cat) {
   const date = cat.cadence === "weekly" ? "(\\d{4})-(\\d{2})-(\\d{2})" : "(\\d{4})-(\\d{2})";
   const esc = cat.descriptor.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   const ext = cat.ext.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-  return new RegExp(`^${esc}_${date}\\.${ext}$`, "i");
+  // Tolerate an accidentally doubled extension (e.g. "...xlsm.xlsm"); we can't
+  // rely on uploaders fixing typos. The saved name is normalized on download.
+  return new RegExp(`^${esc}_${date}\\.${ext}(?:\\.${ext})?$`, "i");
+}
+
+/** Collapse a doubled extension, e.g. foo.xlsm.xlsm -> foo.xlsm. */
+function normalizeName(name, cat) {
+  const ext = cat.ext.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  return name.replace(new RegExp(`(\\.${ext})\\.${ext}$`, "i"), "$1");
 }
 
 /** Parse the date in a filename into a sortable integer (YYYYMMDD), or null. */
@@ -96,7 +104,7 @@ export async function inspectCategory(key) {
   for (const f of files) {
     const dk = dateKey(f.name, cat);
     if (dk === null) skipped.push(f.name);
-    else matched.push({ ...f, dateKey: dk });
+    else matched.push({ ...f, dateKey: dk, normalizedName: normalizeName(f.name, cat) });
   }
   matched.sort((a, b) =>
     b.dateKey - a.dateKey ||
@@ -109,7 +117,7 @@ export async function inspectCategory(key) {
 export async function fetchCategory(key) {
   const { cat, newest } = await inspectCategory(key);
   if (!newest) return null;
-  const dest = cat.dest.replace("{name}", newest.name);
+  const dest = cat.dest.replace("{name}", newest.normalizedName);
   await downloadTo(newest, dest);
   return { name: newest.name, dest };
 }
@@ -130,6 +138,9 @@ if (isMain) {
           ? `newest = ${newest.name}  (${(newest.size / 1024).toFixed(0)}kb, mod ${newest.lastModified?.slice(0, 10)})`
           : "newest = (none yet)";
         console.log(`• ${key.padEnd(9)} ${line}`);
+        if (newest && newest.name !== newest.normalizedName) {
+          console.log(`    ⚠ doubled extension "${newest.name}" -> will save as ${newest.normalizedName}`);
+        }
         if (skipped.length) console.log(`    ⚠ skipped (bad name): ${skipped.join(", ")}`);
       } catch (e) {
         console.log(`• ${key.padEnd(9)} ERROR: ${e.message}`);
