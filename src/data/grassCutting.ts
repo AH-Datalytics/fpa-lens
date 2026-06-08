@@ -519,6 +519,18 @@ interface TurfCyclesFile {
 const normTurf = (s: string) =>
   s.toLowerCase().replace(/[‐-―]/g, "-").replace(/\s+/g, " ").trim();
 
+// The maintenance workbook groups a few reaches under different zones than our
+// curated map (e.g. MRL and IHNC East are their own zones in the workbook), so
+// normalized names alone don't line up. Map workbook "zone::reach" -> curated
+// "zone::reach" for those. Verified by matching reach acreages.
+const TURF_ALIASES: Record<string, string> = {
+  "mrl::mrl (jefferson parish line to eb-00)": "upper protection::mrl (jefferson parish line to eb-00)",
+  "ihnc east::ihnc east (e-01 to mrl)": "florida ave::ihnc east (e-01 to mrl)",
+  "mrl::ihnc east to the st. bernard parish line": "florida ave::mrl (ihnc east to st. bernard parish line)",
+  "non-federal back levee/nfl::40 arpent - orleans parish line to hwy 46 reggion in lower st bernard":
+    "non-federal back levee/nfl::40 arpent levee - orleans parish line to hwy 46 reggio in lower st. bernard",
+};
+
 function applyTurfCycles(
   base: typeof rawGrassCuttingData,
   turf: TurfCyclesFile,
@@ -530,7 +542,10 @@ function applyTurfCycles(
 
   // Flat lookup by normalized "zone::reach" (zone names are unique across districts).
   const lookup = new Map<string, { cycle1Pct: number | null; cycle2Pct: number | null }>();
-  for (const r of turf.reaches) lookup.set(`${normTurf(r.zone)}::${normTurf(r.reach)}`, r);
+  for (const r of turf.reaches) {
+    const wbKey = `${normTurf(r.zone)}::${normTurf(r.reach)}`;
+    lookup.set(TURF_ALIASES[wbKey] ?? wbKey, r);
+  }
 
   const clone = JSON.parse(JSON.stringify(base)) as typeof rawGrassCuttingData;
   clone.reportingMonth = { label: rm.label, year: rm.year, month: rm.month, isComplete: false };
