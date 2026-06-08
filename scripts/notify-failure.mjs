@@ -10,8 +10,8 @@ import { readFileSync, existsSync } from "node:fs";
 const KEY = process.env.RESEND_API_KEY;
 const RUN_URL = process.env.RUN_URL || "(local run)";
 
-// Internal data-ops recipients (NOT the public/ops alert list).
-const RECIPIENTS = ["oboochever@ahdatalytics.com", "lwilliams@slfpae.gov"];
+// Failure alerts go to Oscar only (per direction). Add others here if needed.
+const RECIPIENTS = ["oboochever@ahdatalytics.com"];
 
 const summary = existsSync("refresh-summary.txt")
   ? readFileSync("refresh-summary.txt", "utf8").trim()
