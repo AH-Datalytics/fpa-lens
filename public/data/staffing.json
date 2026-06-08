@@ -1,0 +1,51 @@
+{
+  "asOf": "June 2026",
+  "source": "staffing_2026-06.xlsx",
+  "headcount": {
+    "total": 300,
+    "filled": 250,
+    "vacancies": 50
+  },
+  "departments": {
+    "Maintenance": {
+      "filled": 126,
+      "vacant": 21,
+      "total": 147
+    },
+    "Operations": {
+      "filled": 27,
+      "vacant": 3,
+      "total": 30
+    },
+    "Engineering": {
+      "filled": 14,
+      "vacant": 4,
+      "total": 18
+    },
+    "Police": {
+      "filled": 48,
+      "vacant": 15,
+      "total": 63
+    },
+    "Executive": {
+      "filled": 9,
+      "vacant": 2,
+      "total": 11
+    },
+    "Finance": {
+      "filled": 15,
+      "vacant": 2,
+      "total": 17
+    },
+    "Human Resources": {
+      "filled": 6,
+      "vacant": 2,
+      "total": 8
+    },
+    "Information Technology": {
+      "filled": 5,
+      "vacant": 1,
+      "total": 6
+    }
+  }
+}

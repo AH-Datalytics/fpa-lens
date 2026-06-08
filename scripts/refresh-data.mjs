@@ -30,7 +30,8 @@ const WIRED = {
   idiq: { script: "scripts/extractIdiqData.py" },
   safety: { script: "scripts/extractSafetyData.py" },
   sitrep: { runner: "node", script: "scripts/extractSitrep.mjs" },
-  // staffing / turf added as their extractors land.
+  staffing: { script: "scripts/extractStaffingData.py" },
+  // turf added as its extractor lands.
 };
 
 loadLocalEnv(); // no-op in CI where SHAREPOINT_* come from secrets

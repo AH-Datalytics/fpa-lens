@@ -1,17 +1,28 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { ChevronDown, ChevronRight } from "lucide-react";
 import SectionHeader, { SectionSubheader } from "@/components/SectionHeader";
 import StaffingZoneBar from "@/components/StaffingZoneBar";
 import ZoneLegend from "@/components/ZoneLegend";
 import { staffingData } from "@/data/siteData";
+import { applyStaffingOverlay, type StaffingJson } from "@/lib/staffingOverlay";
 import { assertAggregateMatchesSum } from "@/lib/staffingZones";
 
 type ZoneViewMode = "percent" | "raw";
 
 export default function OurTeamPage() {
-  const { coreFPU, adminFunctions } = staffingData;
+  // Current filled counts auto-refresh from the monthly staffing workbook
+  // (public/data/staffing.json); capacity + thresholds stay curated in code.
+  const [staffingJson, setStaffingJson] = useState<StaffingJson | null>(null);
+  useEffect(() => {
+    fetch("/data/staffing.json")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => d && setStaffingJson(d))
+      .catch(() => {});
+  }, []);
+  const data = useMemo(() => applyStaffingOverlay(staffingData, staffingJson), [staffingJson]);
+  const { coreFPU, adminFunctions } = data;
   const [viewMode, setViewMode] = useState<ZoneViewMode>("percent");
   const [showDepts, setShowDepts] = useState(false);
   const [showAdminDepts, setShowAdminDepts] = useState(false);
@@ -34,7 +45,7 @@ export default function OurTeamPage() {
         <SectionHeader
           title="Staffing"
           subtitle="The dedicated professionals protecting Greater New Orleans"
-          source={staffingData.source}
+          source={data.source}
         />
 
         {/* Summary line */}
@@ -42,18 +53,18 @@ export default function OurTeamPage() {
           <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-4 flex flex-wrap items-baseline gap-x-6 gap-y-2">
             <div>
               <span className="text-2xl font-bold text-[#21355a]">
-                {staffingData.headcount.total}
+                {data.headcount.total}
               </span>
               <span className="ml-2 text-sm text-gray-600">total positions</span>
             </div>
             <div>
               <span className="text-2xl font-bold text-amber-500">
-                {staffingData.headcount.vacancies}
+                {data.headcount.vacancies}
               </span>
               <span className="ml-2 text-sm text-gray-600">vacancies agency-wide</span>
             </div>
             <div className="text-xs text-gray-500 ml-auto">
-              As of {staffingData.asOfDate}
+              As of {data.asOfDate}
             </div>
           </div>
         </section>
