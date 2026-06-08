@@ -46,14 +46,14 @@
     },
     {
       "year": 2026,
-      "totalEvents": 27,
+      "totalEvents": 36,
       "accidents": 3,
-      "incidents": 18,
-      "noFault": 6,
+      "incidents": 24,
+      "noFault": 9,
       "lostTime": 0,
       "injuries": 7,
-      "propertyDamageFpa": 21,
-      "propertyDamagePrivate": 11
+      "propertyDamageFpa": 29,
+      "propertyDamagePrivate": 16
     }
   ],
   "monthlyData": [
@@ -411,8 +411,15 @@
       "year": 2026,
       "month": 4,
       "accidents": 2,
-      "incidents": 3,
+      "incidents": 6,
       "noFault": 0
+    },
+    {
+      "year": 2026,
+      "month": 5,
+      "accidents": 0,
+      "incidents": 3,
+      "noFault": 3
     }
   ],
   "eventTypes": [
@@ -460,9 +467,9 @@
     },
     {
       "type": "Mobile Equipment",
-      "count": 39,
+      "count": 46,
       "accidents": 1,
-      "incidents": 31,
+      "incidents": 38,
       "noFault": 7
     },
     {
@@ -481,13 +488,109 @@
     },
     {
       "type": "Vehicle",
-      "count": 119,
+      "count": 121,
       "accidents": 3,
-      "incidents": 74,
-      "noFault": 42
+      "incidents": 73,
+      "noFault": 45
     }
   ],
   "recentEvents": [
+    {
+      "date": "2026-05-18",
+      "month": "May",
+      "year": 2026,
+      "eventType": "Mobile Equipment",
+      "classification": "damage",
+      "isAtFault": true,
+      "isLostTime": false,
+      "hasInjury": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2026-05-14",
+      "month": "May",
+      "year": 2026,
+      "eventType": "Mobile Equipment",
+      "classification": "damage",
+      "isAtFault": true,
+      "isLostTime": false,
+      "hasInjury": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": true
+    },
+    {
+      "date": "2026-05-11",
+      "month": "May",
+      "year": 2026,
+      "eventType": "Vehicle",
+      "classification": "no-fault",
+      "isAtFault": false,
+      "isLostTime": false,
+      "hasInjury": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": true
+    },
+    {
+      "date": "2026-05-06",
+      "month": "May",
+      "year": 2026,
+      "eventType": "Vehicle",
+      "classification": "no-fault",
+      "isAtFault": false,
+      "isLostTime": false,
+      "hasInjury": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": true
+    },
+    {
+      "date": "2026-05-06",
+      "month": "May",
+      "year": 2026,
+      "eventType": "Mobile Equipment",
+      "classification": "damage",
+      "isAtFault": true,
+      "isLostTime": false,
+      "hasInjury": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2026-05-05",
+      "month": "May",
+      "year": 2026,
+      "eventType": "Vehicle",
+      "classification": "no-fault",
+      "isAtFault": false,
+      "isLostTime": false,
+      "hasInjury": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": true
+    },
+    {
+      "date": "2026-04-29",
+      "month": "April",
+      "year": 2026,
+      "eventType": "Mobile Equipment",
+      "classification": "damage",
+      "isAtFault": true,
+      "isLostTime": false,
+      "hasInjury": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2026-04-21",
+      "month": "April",
+      "year": 2026,
+      "eventType": "Mobile Equipment",
+      "classification": "damage",
+      "isAtFault": true,
+      "isLostTime": false,
+      "hasInjury": false,
+      "hasDamage": false,
+      "hasPrivatePropertyDamage": true
+    },
     {
       "date": "2026-04-16",
       "month": "April",
@@ -510,6 +613,18 @@
       "isLostTime": false,
       "hasInjury": true,
       "hasDamage": false,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2026-04-16",
+      "month": "April",
+      "year": 2026,
+      "eventType": "Mobile Equipment",
+      "classification": "damage",
+      "isAtFault": true,
+      "isLostTime": false,
+      "hasInjury": false,
+      "hasDamage": true,
       "hasPrivatePropertyDamage": false
     },
     {
@@ -720,7 +835,7 @@
       "date": "2026-01-13",
       "month": "January",
       "year": 2026,
-      "eventType": "Vehicle",
+      "eventType": "Mobile Equipment",
       "classification": "damage",
       "isAtFault": true,
       "isLostTime": false,
