@@ -1,0 +1,72 @@
+{
+  "reportMonth": "June 2026",
+  "executiveSummary": "System conditions remain stable and overall operational readiness across the hurricane protection system remains Green, with all major flood protection assets operational and second-quarter inspections nearing completion. Project execution is a major focus, with construction underway on the LPV Access Bridge and Orpheum Slope Paving projects, and engineering advancing several critical flood protection initiatives. While staffing shortages remain the agency's primary readiness challenge, the organization remains focused on hurricane season operations, project execution, workforce development, and infrastructure reliability.",
+  "readiness": {
+    "infrastructure": "Green",
+    "staffing": "Amber",
+    "financial": "Green",
+    "media": "Green"
+  },
+  "permits": {
+    "issued": 19,
+    "period": "May 2026",
+    "type": "Levee Safety"
+  },
+  "safety": {
+    "accidents": 0,
+    "incidents": 6
+  },
+  "staffing": {
+    "vacancies": 45,
+    "classifiedHeadcount": null,
+    "unclassifiedHeadcount": null
+  },
+  "maintenanceActivities": [
+    "Floodwalls, levees, gates, and valves continue routine inspection and maintenance activities with no impacts to system readiness.",
+    "Seasonal storm readiness measures, including sandbag staging and facility preparation, are underway.",
+    "Critical facilities, generators, and support infrastructure remain operational.",
+    "Routine equipment maintenance and repairs ongoing.",
+    "84 of 105 valves inspected in Q2 rotational valve testing.",
+    "All levee turf maintenance targets met."
+  ],
+  "projects": [
+    {
+      "name": "Foreshore Erosion Repair",
+      "status": "USACE has determined a revised path forward; award date pending revised path."
+    },
+    {
+      "name": "West Return Wall Splash Pad",
+      "status": "Construction substantially complete; transitioning into closeout phase."
+    },
+    {
+      "name": "LPV Access Bridge",
+      "status": "Construction has begun; contractor mobilizing; RFI/shop drawing submittals underway."
+    },
+    {
+      "name": "Orpheum Slope Paving",
+      "status": "Construction has begun; contractor mobilized."
+    },
+    {
+      "name": "Franklin Ave. Vault 4 Generator Replacement",
+      "status": "Bid opened May 26, 2026; Board to approve June 17, 2026."
+    },
+    {
+      "name": "London Avenue Canal Erosion Mitigation (Phase 1)",
+      "status": "95% Plans and Specifications submitted; CEA negotiations ongoing; ready to advertise and award for construction to start at end of hurricane season."
+    },
+    {
+      "name": "40 Arpent Sheet Pile Rehabilitation (Phase 2)",
+      "status": "Task order negotiation/execution ongoing; approx. 1 mile of sheet pile repair, sandblasting, and coating."
+    },
+    {
+      "name": "Franklin Herbicide Vehicle Containment",
+      "status": "Informal bid request issued; bid opening June 4, 2026."
+    },
+    {
+      "name": "Lakeshore Drive Flooding Warning Signs",
+      "status": "Warning sign systems reviewed, selected, and ordered; exploring exact locations and coordinating design for installation."
+    }
+  ],
+  "source": "sitrep_2026-06.docx",
+  "generatedFrom": "Claude claude-sonnet-4-6"
+}
