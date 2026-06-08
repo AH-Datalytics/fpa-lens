@@ -1,0 +1,134 @@
+{
+  "reportingMonth": {
+    "label": "April 2026",
+    "year": 2026,
+    "month": 4
+  },
+  "source": "turf-maintenance_2026-05-07.xlsx",
+  "districts": {
+    "OLD": {
+      "New Orleans East": {
+        "LPV-108": {
+          "cycle1Pct": 1.0,
+          "cycle2Pct": 1.0
+        },
+        "LPV-109": {
+          "cycle1Pct": 1.0,
+          "cycle2Pct": 1.0
+        },
+        "LPV-111": {
+          "cycle1Pct": 1.0,
+          "cycle2Pct": 1.0
+        }
+      },
+      "Southside MRGO & Citrus Back": {
+        "Southside MRGO (LPV-142/LPV-143)": {
+          "cycle1Pct": 1.0,
+          "cycle2Pct": 1.0
+        },
+        "Citrus Back Levee - LPV-115 (Paris Rd. Bridge to Jourdan Rd)": {
+          "cycle1Pct": 1.0,
+          "cycle2Pct": 0.75
+        }
+      },
+      "Lakefront & Outfall Canals": {
+        "Lakefront": {
+          "cycle1Pct": 1.0,
+          "cycle2Pct": 1.0
+        },
+        "Outfall Canals (17th Street, Orleans, Bayou St. John, London)": {
+          "cycle1Pct": 1.0,
+          "cycle2Pct": null
+        },
+        "IHNC West": {
+          "cycle1Pct": 1.0,
+          "cycle2Pct": 1.0
+        },
+        "IHNC East (E-13 to N-01)": {
+          "cycle1Pct": null,
+          "cycle2Pct": 1.0
+        }
+      },
+      "Citrus Lakefront & Eastern Interior": {
+        "Citrus Lakefront": {
+          "cycle1Pct": 1.0,
+          "cycle2Pct": 1.0
+        },
+        "Paris Rd": {
+          "cycle1Pct": 1.0,
+          "cycle2Pct": 1.0
+        },
+        "Maxent": {
+          "cycle1Pct": 1.0,
+          "cycle2Pct": 1.0
+        },
+        "Michoud Canal Floodwall": {
+          "cycle1Pct": 1.0,
+          "cycle2Pct": 1.0
+        },
+        "NASA": {
+          "cycle1Pct": 1.0,
+          "cycle2Pct": 1.0
+        },
+        "Entergy": {
+          "cycle1Pct": 1.0,
+          "cycle2Pct": 1.0
+        }
+      },
+      "Upper Protection": {
+        "Upper Protection (Earhart Blvd to the MRL)": {
+          "cycle1Pct": 1.0,
+          "cycle2Pct": 1.0
+        }
+      },
+      "MRL": {
+        "MRL (Jefferson Parish line to EB-00)": {
+          "cycle1Pct": 1.0,
+          "cycle2Pct": 1.0
+        },
+        "IHNC East to the St. Bernard Parish Line": {
+          "cycle1Pct": 1.0,
+          "cycle2Pct": 1.0
+        }
+      },
+      "Florida Ave": {
+        "Florida Ave": {
+          "cycle1Pct": 1.0,
+          "cycle2Pct": 1.0
+        }
+      },
+      "IHNC East": {
+        "IHNC East (E-01 to MRL)": {
+          "cycle1Pct": 1.0,
+          "cycle2Pct": 1.0
+        }
+      }
+    },
+    "LBBLD": {
+      "LPV-144 through LPV-149": {
+        "Bayou Dupre Structure (St. Bernard side) to HWY 39 at MRL": {
+          "cycle1Pct": 1.0,
+          "cycle2Pct": null
+        }
+      },
+      "Non-Federal Back Levee/NFL": {
+        "40 Arpent - Orleans Parish line to Hwy 46 Reggion in Lower St Bernard": {
+          "cycle1Pct": 1.0,
+          "cycle2Pct": null
+        }
+      },
+      "LPV-145": {
+        "\"The Island\" (Bayou Bienvenue Structure to Bayou Dupre Structure)": {
+          "cycle1Pct": 1.0,
+          "cycle2Pct": null
+        }
+      },
+      "MRL": {
+        "Mississippi River Levee at HWY 39 to Arabi (Orleans Parish line)": {
+          "cycle1Pct": 1.0,
+          "cycle2Pct": null
+        }
+      }
+    }
+  }
+}

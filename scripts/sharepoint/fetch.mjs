@@ -65,7 +65,7 @@ export const CATEGORIES = {
     folder: `${ROOT}/Turf`,
     descriptor: "turf-maintenance",
     ext: "xlsx",
-    cadence: "weekly",
+    cadence: "monthly", // one workbook per month, updated weekly in place
     dest: "data/sources/turf/{name}",
   },
 };

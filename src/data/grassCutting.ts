@@ -18,6 +18,8 @@
  * working-day count (4-day work week).
  */
 
+import turfCyclesData from "./turfCycles.json";
+
 export interface ZoneCycleResult {
   startDate: string;
   completionDate: string;
@@ -101,7 +103,7 @@ export interface OtherDistrictZone {
   lastCycle: ZoneCycleResult;
 }
 
-export const grassCuttingData = {
+const rawGrassCuttingData = {
   asOfDate: "May 1, 2026",
   source: "Maintenance team cutting plan (Carlos Metoyer, March-May 2026)",
 
@@ -501,3 +503,63 @@ export const grassCuttingData = {
     "Cycle 2 reporting cadence and timing across all three districts.",
   ],
 };
+
+// ---------------------------------------------------------------------------
+// Turf-cycle overlay. Refreshes per-reach percentages from src/data/turfCycles.json
+// (produced weekly by the data pipeline) ONLY when its reporting month is newer
+// than the curated baseline above, so an incomplete current-month template never
+// regresses confirmed values. Reaches that don't match by name keep their curated
+// value; 1x/mo zones (cycle2Pct === null) stay single-cycle.
+// ---------------------------------------------------------------------------
+interface TurfCyclesFile {
+  reportingMonth: { label: string; year: number; month: number } | null;
+  districts: Record<string, Record<string, Record<string, { cycle1Pct: number | null; cycle2Pct: number | null }>>>;
+}
+
+const normTurf = (s: string) =>
+  s.toLowerCase().replace(/[‐-―]/g, "-").replace(/\s+/g, " ").trim();
+
+function applyTurfCycles(
+  base: typeof rawGrassCuttingData,
+  turf: TurfCyclesFile,
+): typeof rawGrassCuttingData {
+  const rm = turf.reportingMonth;
+  if (!rm) return base;
+  const baseRank = base.reportingMonth.year * 12 + base.reportingMonth.month;
+  if (rm.year * 12 + rm.month <= baseRank) return base; // not newer -> keep curated baseline
+
+  const clone = JSON.parse(JSON.stringify(base)) as typeof rawGrassCuttingData;
+  clone.reportingMonth = { label: rm.label, year: rm.year, month: rm.month, isComplete: false };
+
+  const overlay = (districtKey: string, zones: { name: string; reaches: Reach[] }[]) => {
+    const dist = turf.districts[districtKey];
+    if (!dist) return;
+    const zoneKeys = Object.keys(dist);
+    for (const zone of zones) {
+      const zk =
+        zoneKeys.find((z) => normTurf(z) === normTurf(zone.name)) ??
+        zoneKeys.find((z) => normTurf(z).startsWith(normTurf(zone.name)) || normTurf(zone.name).startsWith(normTurf(z)));
+      if (!zk) continue;
+      const reaches = dist[zk];
+      const reachKeys = Object.keys(reaches);
+      for (const reach of zone.reaches) {
+        const rk = reachKeys.find((r) => normTurf(r) === normTurf(reach.name));
+        if (!rk) continue;
+        const v = reaches[rk];
+        if (v.cycle1Pct != null) reach.cycle1Pct = v.cycle1Pct;
+        // Keep 1x/mo zones single-cycle (baseline cycle2Pct === null).
+        if (reach.cycle2Pct !== null && v.cycle2Pct != null) reach.cycle2Pct = v.cycle2Pct;
+      }
+    }
+  };
+
+  overlay("OLD", clone.zones);
+  overlay("EJLD", clone.ejldZones);
+  overlay("LBBLD", clone.lbbldZones);
+  return clone;
+}
+
+export const grassCuttingData = applyTurfCycles(
+  rawGrassCuttingData,
+  turfCyclesData as unknown as TurfCyclesFile,
+);
