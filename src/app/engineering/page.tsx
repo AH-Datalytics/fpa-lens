@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { FileText, Wrench, CheckCircle, Clock, ArrowRight, ClipboardCheck, CalendarDays } from "lucide-react";
 import {
@@ -117,6 +117,24 @@ function ReadinessCard({
 
 export default function OperationsPage() {
   const [showFullPipeline, setShowFullPipeline] = useState(false);
+
+  // Routine maintenance activities auto-refresh from the latest SITREP digest
+  // (public/data/sitrep.json), falling back to the curated list if absent.
+  // Readiness, financial, and safety figures intentionally come from their own
+  // authoritative data sources, not the SITREP.
+  const [sitrepActivities, setSitrepActivities] = useState<string[] | null>(null);
+  const [sitrepMonth, setSitrepMonth] = useState<string | null>(null);
+  useEffect(() => {
+    fetch("/data/sitrep.json")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => {
+        if (d?.maintenanceActivities?.length) {
+          setSitrepActivities(d.maintenanceActivities);
+          if (d.reportMonth) setSitrepMonth(d.reportMonth);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   const asOf = new Date(readinessMetrics.dataAsOf + "T00:00:00");
 
@@ -401,9 +419,9 @@ export default function OperationsPage() {
         {/* Maintenance Activities */}
         <section>
           <p className="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-4">Routine Maintenance Activities</p>
-          <DataCard title="Current Maintenance Work" source={operationsData.maintenanceSource}>
+          <DataCard title="Current Maintenance Work" source={sitrepMonth ? `${sitrepMonth} SITREP` : operationsData.maintenanceSource}>
             <ul className="space-y-3">
-              {operationsData.maintenanceActivities.map((activity, index) => (
+              {(sitrepActivities ?? operationsData.maintenanceActivities).map((activity, index) => (
                 <li key={index} className="flex items-start gap-3">
                   <div className="w-6 h-6 bg-[#65bc7b]/10 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
                     <Wrench className="h-3 w-3 text-[#65bc7b]" />
