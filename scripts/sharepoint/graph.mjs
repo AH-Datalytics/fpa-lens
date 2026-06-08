@@ -24,7 +24,9 @@ export function loadLocalEnv(path = ".env.vercel-prod") {
     const m = line.match(/^([A-Z0-9_]+)=(.*)$/);
     if (!m) continue;
     if (process.env[m[1]] !== undefined) continue;
-    process.env[m[1]] = m[2];
+    // Strip surrounding quotes and any stray trailing \n so values are usable
+    // directly (e.g. ANTHROPIC_API_KEY read without further processing).
+    process.env[m[1]] = m[2].replace(/^"|"$/g, "").replace(/\\n$/g, "");
   }
 }
 

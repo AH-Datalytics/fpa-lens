@@ -29,7 +29,8 @@ const WIRED = {
   finance: { script: "scripts/extractActualsData.py" },
   idiq: { script: "scripts/extractIdiqData.py" },
   safety: { script: "scripts/extractSafetyData.py" },
-  // sitrep / staffing / turf added as their extractors land.
+  sitrep: { runner: "node", script: "scripts/extractSitrep.mjs" },
+  // staffing / turf added as their extractors land.
 };
 
 loadLocalEnv(); // no-op in CI where SHAREPOINT_* come from secrets
@@ -56,7 +57,8 @@ for (const key of keys) {
     }
     const fetched = await fetchCategory(key);
     console.log(`  fetched ${fetched.name}`);
-    execFileSync("python3", [WIRED[key].script, fetched.dest], { stdio: "inherit" });
+    const runner = WIRED[key].runner || "python3";
+    execFileSync(runner, [WIRED[key].script, fetched.dest], { stdio: "inherit" });
     results.push({ key, status: "refreshed", detail: fetched.name });
   } catch (e) {
     console.error(`  FAILED: ${e.message}`);
