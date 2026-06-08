@@ -4,7 +4,28 @@
 SharePoint `LensRepository`, regenerates the dashboard JSON, commits the changes, and lets
 Vercel auto-deploy. Full-auto for every recurring category, including SITREP via Claude.
 
-**Status:** Plan / not yet built. This is `main`-branch work (separate from the permitting branch).
+**Status (Jun 8 2026): BUILT on `feature/data-automation`, awaiting merge to `main`.**
+
+All six categories are wired, tested, and committed. Merging to `main` activates the
+Friday cron; the first manual run publishes the SharePoint data.
+
+| Category | Mechanism | Has data in SharePoint? |
+|---|---|---|
+| IDIQ | newest `idiq-contracts_*.xlsx` (in `Finance/IDIQ/`), merge-by-cycle | yes |
+| Finance | newest `budget-actuals_*.xlsm`, period auto-derived | yes |
+| Safety | frozen anonymized history + current-year upload | yes |
+| Staffing | current-counts overlay; capacity/thresholds stay policy | yes |
+| SITREP | PDF → Claude digest → engineering maintenance list (narrative only) | folder empty — activates on first upload |
+| Turf | newer-month overlay onto `grassCutting` (no regression) | folder empty — activates on first upload |
+
+- Friday cron `0 13 * * 5`, `workflow_dispatch`, commit-only-what-changed, **failure email to Oscar**.
+- SITREP feeds narrative only; readiness/financial/safety come from their own pipelines.
+- Turf/SITREP overlay safely: unmatched/older data falls back to curated values.
+- `Engineering/` SharePoint folder is empty/unused (IDIQ lives in `Finance/IDIQ/`).
+
+---
+
+_Original plan below (kept for reference)._
 
 ---
 
