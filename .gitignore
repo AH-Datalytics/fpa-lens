@@ -39,6 +39,9 @@ yarn-error.log*
 # converter temp files
 .kmz-tmp
 
+# data-refresh run artifact (per-run summary used by the failure email)
+refresh-summary.txt
+
 # data directory (source files from FPA, backtest results, runtime forecast store)
 /data/
 

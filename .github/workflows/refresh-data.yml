@@ -1,11 +1,9 @@
 name: Weekly data refresh
 
 # Pulls the newest source files from the SharePoint LensRepository, regenerates
-# the dashboard JSON in public/data/, and commits any changes (which triggers a
-# Vercel deploy). Runs Fridays; can also be triggered manually.
-#
-# A failed scheduled run emails the user who last edited this cron (GitHub's
-# built-in notification), so silent staleness is avoided.
+# the dashboard JSON in public/data/, commits whatever changed (which triggers a
+# Vercel deploy), and emails the data-ops contact if any category fails. Runs
+# Fridays; can also be triggered manually. Fully hands-off otherwise.
 
 on:
   schedule:
@@ -47,7 +45,9 @@ jobs:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: node scripts/refresh-data.mjs
 
+      # Commit even on partial failure so categories that DID update still publish.
       - name: Commit refreshed data
+        if: always()
         run: |
           git config user.name "fpa-lens-bot"
           git config user.email "actions@users.noreply.github.com"
@@ -58,3 +58,11 @@ jobs:
             git commit -m "chore: weekly data refresh [skip ci]"
             git push
           fi
+
+      # Email the data-ops contact if anything failed.
+      - name: Notify on failure
+        if: failure()
+        env:
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: node scripts/notify-failure.mjs
