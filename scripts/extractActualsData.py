@@ -10,8 +10,11 @@ Separates Projects from O&M expenses per Jeff Williams' directive:
 at present, the lack of execution for projects really distorts the story"
 """
 
+import calendar
 import json
 import os
+import re
+import sys
 
 import openpyxl
 
@@ -19,6 +22,37 @@ BASE_DIR = os.path.expanduser("~/Development/fpa/data/sources/budget")
 OUTPUT_PATH = os.path.expanduser("~/Development/fpa/public/data/actuals-fy26.json")
 
 FILENAME = "Dashboard_Reports through 03.31.26.xlsm"
+
+
+def resolve_input():
+    """Input workbook path: CLI arg > ACTUALS_INPUT env > legacy default."""
+    if len(sys.argv) > 1:
+        return os.path.expanduser(sys.argv[1])
+    if os.environ.get("ACTUALS_INPUT"):
+        return os.path.expanduser(os.environ["ACTUALS_INPUT"])
+    return os.path.join(BASE_DIR, FILENAME)
+
+
+def derive_period(path):
+    """Derive the reporting period from a budget-actuals_YYYY-MM filename.
+    Falls back to the legacy March 2026 labels if the name has no YYYY-MM."""
+    m = re.search(r"(\d{4})-(\d{2})", os.path.basename(path))
+    if not m:
+        return {
+            "period": "FY26 YTD through March 31, 2026",
+            "periodLabel": "Jul 2025 - Mar 2026",
+            "lastUpdated": "2026-03-31",
+            "fiscalYear": 2026,
+        }
+    year, month = int(m.group(1)), int(m.group(2))
+    last_day = calendar.monthrange(year, month)[1]
+    fy = year if month <= 6 else year + 1   # fiscal year runs Jul-Jun
+    return {
+        "period": f"FY{fy % 100} YTD through {calendar.month_name[month]} {last_day}, {year}",
+        "periodLabel": f"Jul {fy - 1} - {calendar.month_abbr[month]} {year}",
+        "lastUpdated": f"{year}-{month:02d}-{last_day:02d}",
+        "fiscalYear": fy,
+    }
 
 # Sheet name mappings: key = our entity ID, value = (category sheet, dept sheet)
 ENTITY_SHEETS = {
@@ -211,12 +245,12 @@ def extract_dept_sheet(ws):
 
 
 def main():
-    filepath = os.path.join(BASE_DIR, FILENAME)
+    filepath = resolve_input()
     if not os.path.exists(filepath):
         print(f"ERROR: File not found: {filepath}")
         return
 
-    print(f"Reading {FILENAME}...")
+    print(f"Reading {filepath}...")
     wb = openpyxl.load_workbook(filepath, read_only=True, data_only=True)
 
     entities = {}
@@ -235,10 +269,7 @@ def main():
     wb.close()
 
     output = {
-        "period": "FY26 YTD through March 31, 2026",
-        "periodLabel": "Jul 2025 - Mar 2026",
-        "lastUpdated": "2026-03-31",
-        "fiscalYear": 2026,
+        **derive_period(filepath),
         "entities": entities,
     }
 
