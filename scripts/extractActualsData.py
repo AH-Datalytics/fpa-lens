@@ -18,8 +18,10 @@ import sys
 
 import openpyxl
 
-BASE_DIR = os.path.expanduser("~/Development/fpa/data/sources/budget")
-OUTPUT_PATH = os.path.expanduser("~/Development/fpa/public/data/actuals-fy26.json")
+# Paths relative to the repo root (scripts/ -> repo) for local + CI parity.
+REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+BASE_DIR = os.path.join(REPO_ROOT, "data/sources/budget")
+OUTPUT_PATH = os.path.join(REPO_ROOT, "public/data/actuals-fy26.json")
 
 FILENAME = "Dashboard_Reports through 03.31.26.xlsm"
 

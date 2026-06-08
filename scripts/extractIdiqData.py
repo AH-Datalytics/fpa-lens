@@ -18,8 +18,11 @@ from datetime import datetime
 
 import openpyxl
 
-BASE_DIR = os.path.expanduser("~/Development/fpa/data/sources/idiq")
-OUTPUT_PATH = os.path.expanduser("~/Development/fpa/public/data/idiq-contracts.json")
+# Paths are resolved relative to the repo root (scripts/ -> repo) so this works
+# both locally and in CI where the checkout lives elsewhere.
+REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+BASE_DIR = os.path.join(REPO_ROOT, "data/sources/idiq")
+OUTPUT_PATH = os.path.join(REPO_ROOT, "public/data/idiq-contracts.json")
 
 SHEETS = [
     ("2022 IDIQ ", "2022", "2022 IDIQ Contracts"),

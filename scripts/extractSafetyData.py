@@ -23,13 +23,29 @@ and boolean flags (lost time, injury, damage, private-property damage).
 
 import json
 import os
+import sys
 from collections import defaultdict
 from datetime import datetime
 
 import openpyxl
 
-BASE_DIR = os.path.expanduser("~/Development/fpa/data/sources/safety-event-logs")
-OUTPUT_PATH = os.path.expanduser("~/Development/fpa/public/data/safety-events.json")
+# Paths relative to the repo root (scripts/ -> repo) for local + CI parity.
+REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+BASE_DIR = os.path.join(REPO_ROOT, "data/sources/safety-event-logs")
+OUTPUT_PATH = os.path.join(REPO_ROOT, "public/data/safety-events.json")
+
+# Frozen, already-anonymized history of the years that no longer change. The
+# weekly pipeline reads this as its base and only refreshes the current year
+# from the SharePoint upload, so the raw logs (which contain employee PII) never
+# need to live in the repo / CI.
+HISTORY_PATH = os.path.join(REPO_ROOT, "scripts/safety-history.json")
+HISTORY_THROUGH_YEAR = 2025
+HISTORICAL_FILES = [
+    ("Event Log 2022.xlsx", "Events"),
+    ("2023 Event Log.xlsx", "Sheet2"),
+    ("2024 Event Log.xlsx", "Sheet1"),
+    ("2025 Event Log.xlsx", "Sheet1"),
+]
 
 # File configurations: (filename, sheet_name)
 # As of the Apr 2026 reclassified workbooks, all years share the same layout:
@@ -119,87 +135,89 @@ def classify_row(recordable_fill):
     return "at-fault"
 
 
-def extract_events():
-    all_events = []
-    classification_counts = defaultdict(int)
+def find_data_sheet(wb):
+    """Pick the sheet whose A1 header is 'Date' (the event-log layout)."""
+    for s in wb.sheetnames:
+        a1 = wb[s].cell(row=1, column=1).value
+        if a1 and str(a1).strip().lower() == "date":
+            return wb[s]
+    return wb[wb.sheetnames[0]]
 
-    for filename, sheet_name in FILES:
-        filepath = os.path.join(BASE_DIR, filename)
-        if not os.path.exists(filepath):
-            print(f"WARNING: File not found: {filepath}")
+
+def events_from_file(filepath, sheet_name=None):
+    """Return the anonymized event list from one workbook. Sheet is auto-detected
+    when not given, since uploads vary ('Sheet1', 'Events', ...)."""
+    if not os.path.exists(filepath):
+        print(f"WARNING: File not found: {filepath}")
+        return []
+
+    # Need fill-color formatting, so don't use read_only mode.
+    wb = openpyxl.load_workbook(filepath, data_only=True)
+    ws = wb[sheet_name] if (sheet_name and sheet_name in wb.sheetnames) else find_data_sheet(wb)
+
+    events = []
+    for r in range(2, ws.max_row + 1):
+        date_cell = ws.cell(row=r, column=COL_DATE)
+        date_val = parse_date(date_cell.value)
+        if date_val is None:
             continue
 
-        # Need formatting info, so don't use read_only mode.
-        wb = openpyxl.load_workbook(filepath, data_only=True)
-        ws = wb[sheet_name]
+        recordable_cell = ws.cell(row=r, column=COL_RECORDABLE)
+        classification = classify_row(cell_fill_color(recordable_cell))
+        if classification == "excluded":
+            continue
 
-        row_count = 0
-        for r in range(2, ws.max_row + 1):
-            date_cell = ws.cell(row=r, column=COL_DATE)
-            date_val = parse_date(date_cell.value)
-            if date_val is None:
-                continue
+        event_type = "Not categorized"
+        v = ws.cell(row=r, column=COL_EVENT_TYPE).value
+        if v is not None and str(v).strip():
+            event_type = str(v).strip()
 
-            recordable_cell = ws.cell(row=r, column=COL_RECORDABLE)
-            classification = classify_row(cell_fill_color(recordable_cell))
+        is_recordable = parse_yes(recordable_cell.value)
+        is_lost_time = parse_yes(ws.cell(row=r, column=COL_LOST_TIME).value)
+        has_damage = parse_yes(ws.cell(row=r, column=COL_DAMAGE).value)
+        has_private_property_damage = parse_yes(ws.cell(row=r, column=COL_PRIVATE_PROP).value)
+        has_injury = parse_injury(ws.cell(row=r, column=COL_INJURY).value)
 
-            if classification == "excluded":
-                classification_counts["excluded"] += 1
-                continue
-
-            event_type = "Not categorized"
-            v = ws.cell(row=r, column=COL_EVENT_TYPE).value
-            if v is not None and str(v).strip():
-                event_type = str(v).strip()
-
-            injury_val = ws.cell(row=r, column=COL_INJURY).value
-            recordable_val = recordable_cell.value
-            lost_time_val = ws.cell(row=r, column=COL_LOST_TIME).value
-            damage_val = ws.cell(row=r, column=COL_DAMAGE).value
-            private_prop_val = ws.cell(row=r, column=COL_PRIVATE_PROP).value
-
-            is_recordable = parse_yes(recordable_val)
-            is_lost_time = parse_yes(lost_time_val)
-            has_damage = parse_yes(damage_val)
-            has_private_property_damage = parse_yes(private_prop_val)
-            has_injury = parse_injury(injury_val)
-
-            # Sub-classification for at-fault rows: an at-fault row is either
-            # an OSHA-recordable accident (Recordable=Yes) or a Damage-only
-            # event (Recordable=No but Damage=Yes). No-fault rows always carry
-            # property damage, by Safety Officer convention.
-            if classification == "at-fault":
-                if is_recordable:
-                    sub = "osha-recordable"
-                elif has_damage or has_private_property_damage:
-                    sub = "damage"
-                else:
-                    sub = "other"
+        # Sub-classification for at-fault rows: OSHA-recordable accident
+        # (Recordable=Yes), a damage-only event, or other. No-fault rows always
+        # carry property damage, by Safety Officer convention.
+        if classification == "at-fault":
+            if is_recordable:
+                sub = "osha-recordable"
+            elif has_damage or has_private_property_damage:
+                sub = "damage"
             else:
-                sub = "no-fault"
+                sub = "other"
+        else:
+            sub = "no-fault"
 
-            classification_counts[sub] += 1
+        events.append({
+            "date": date_val.strftime("%Y-%m-%d"),
+            "month": date_val.month,
+            "year": date_val.year,
+            "monthName": date_val.strftime("%B"),
+            "eventType": event_type,
+            "classification": sub,         # osha-recordable | damage | other | no-fault
+            "isAtFault": classification == "at-fault",
+            "isRecordable": is_recordable,
+            "isLostTime": is_lost_time,
+            "hasInjury": has_injury,
+            "hasDamage": has_damage,
+            "hasPrivatePropertyDamage": has_private_property_damage,
+        })
 
-            all_events.append({
-                "date": date_val.strftime("%Y-%m-%d"),
-                "month": date_val.month,
-                "year": date_val.year,
-                "monthName": date_val.strftime("%B"),
-                "eventType": event_type,
-                "classification": sub,         # osha-recordable | damage | other | no-fault
-                "isAtFault": classification == "at-fault",
-                "isRecordable": is_recordable,
-                "isLostTime": is_lost_time,
-                "hasInjury": has_injury,
-                "hasDamage": has_damage,
-                "hasPrivatePropertyDamage": has_private_property_damage,
-            })
-            row_count += 1
+    wb.close()
+    print(f"  {os.path.basename(filepath)} [{ws.title}]: {len(events)} events")
+    return events
 
-        wb.close()
-        print(f"Extracted {row_count} events from {filename}")
 
-    print(f"\nClassification counts: {dict(classification_counts)}")
+def extract_events(files=None):
+    """Aggregate anonymized events across (filename, sheet) pairs in BASE_DIR,
+    defaulting to all logs (legacy full rebuild)."""
+    files = files if files is not None else FILES
+    all_events = []
+    for filename, sheet_name in files:
+        all_events.extend(events_from_file(os.path.join(BASE_DIR, filename), sheet_name))
     return all_events
 
 
@@ -320,28 +338,61 @@ def build_output(events):
     }
 
 
-def main():
-    print("Extracting safety event data...")
-    events = extract_events()
-    print(f"\nTotal events extracted (excluding N/A): {len(events)}")
+def build_history():
+    """Freeze the static historical years to an anonymized JSON (no PII). Run
+    this once a year after the prior year's log is final."""
+    events = extract_events(HISTORICAL_FILES)
+    with open(HISTORY_PATH, "w") as f:
+        json.dump({"throughYear": HISTORY_THROUGH_YEAR, "events": events}, f, indent=2)
+    print(f"Wrote {len(events)} historical events (through {HISTORY_THROUGH_YEAR}) to {HISTORY_PATH}")
 
+
+def load_history():
+    if not os.path.exists(HISTORY_PATH):
+        return HISTORY_THROUGH_YEAR, []
+    with open(HISTORY_PATH) as f:
+        h = json.load(f)
+    return h.get("throughYear", HISTORY_THROUGH_YEAR), h.get("events", [])
+
+
+def write_output(events):
     output = build_output(events)
-
     print("\nYearly totals:")
     for yt in output["yearlyTotals"]:
         print(f"  {yt['year']}: total={yt['totalEvents']} "
-              f"accidents={yt['accidents']} "
-              f"incidents={yt['incidents']} "
-              f"no-fault={yt['noFault']} "
-              f"lost-time={yt['lostTime']} injuries={yt['injuries']} "
-              f"FPA damage={yt['propertyDamageFpa']} "
+              f"accidents={yt['accidents']} incidents={yt['incidents']} "
+              f"no-fault={yt['noFault']} lost-time={yt['lostTime']} "
+              f"injuries={yt['injuries']} FPA damage={yt['propertyDamageFpa']} "
               f"private damage={yt['propertyDamagePrivate']}")
-
     os.makedirs(os.path.dirname(OUTPUT_PATH), exist_ok=True)
     with open(OUTPUT_PATH, "w") as f:
         json.dump(output, f, indent=2)
-
     print(f"\nOutput written to {OUTPUT_PATH}")
+
+
+def main():
+    args = sys.argv[1:]
+
+    # Mode 1: rebuild the frozen anonymized history (run after a year closes).
+    if "--build-history" in args:
+        build_history()
+        return
+
+    # Mode 2: pipeline -- a current-year upload path was passed. Combine the
+    # frozen history with the upload's newer-year events (no double counting).
+    upload = next((a for a in args if not a.startswith("-")), None)
+    if upload:
+        through_year, hist_events = load_history()
+        print(f"Loaded {len(hist_events)} historical events (through {through_year})")
+        upload_events = events_from_file(upload)
+        current = [e for e in upload_events if e["year"] > through_year]
+        print(f"Using {len(current)} of {len(upload_events)} upload events (year > {through_year})")
+        write_output(hist_events + current)
+        return
+
+    # Mode 3: legacy full rebuild from all local logs in BASE_DIR.
+    print("Extracting safety event data (full rebuild)...")
+    write_output(extract_events())
 
 
 if __name__ == "__main__":

@@ -28,7 +28,8 @@ import { loadLocalEnv } from "./sharepoint/graph.mjs";
 const WIRED = {
   finance: { script: "scripts/extractActualsData.py" },
   idiq: { script: "scripts/extractIdiqData.py" },
-  // safety / sitrep / staffing / turf added as their extractors land.
+  safety: { script: "scripts/extractSafetyData.py" },
+  // sitrep / staffing / turf added as their extractors land.
 };
 
 loadLocalEnv(); // no-op in CI where SHAREPOINT_* come from secrets
