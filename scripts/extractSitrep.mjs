@@ -13,6 +13,7 @@
  * Requires ANTHROPIC_API_KEY (from env / .env.vercel-prod locally).
  */
 import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
+import { execFileSync } from "node:child_process";
 import { dirname, basename } from "node:path";
 import { fileURLToPath } from "node:url";
 import { loadLocalEnv } from "./sharepoint/graph.mjs";
@@ -96,6 +97,39 @@ function resolveInput() {
   return p;
 }
 
+// .docx is a zip; word/document.xml holds the text. Extract via Python stdlib
+// (already available in CI) so we don't add a Node dependency. Claude's document
+// block only accepts PDF, so Word files are sent as plain text instead.
+function docxToText(path) {
+  const py = [
+    "import sys, zipfile, re, html",
+    "x = zipfile.ZipFile(sys.argv[1]).read('word/document.xml').decode('utf-8','ignore')",
+    "x = re.sub(r'</w:p>', chr(10), x)",
+    "x = re.sub(r'<[^>]+>', '', x)",
+    "print(html.unescape(x))",
+  ].join("\n");
+  return execFileSync("python3", ["-c", py, path], { encoding: "utf8", maxBuffer: 10 * 1024 * 1024 });
+}
+
+/** Build the Claude message content for a SITREP file (PDF or Word). */
+function buildContent(path) {
+  const ext = path.toLowerCase().split(".").pop();
+  if (ext === "pdf") {
+    const pdf = readFileSync(path).toString("base64");
+    return [
+      { type: "document", source: { type: "base64", media_type: "application/pdf", data: pdf } },
+      { type: "text", text: "Extract the SITREP digest from this document using the sitrep_digest tool." },
+    ];
+  }
+  if (ext === "docx") {
+    const text = docxToText(path);
+    return [
+      { type: "text", text: `SITREP document text:\n\n${text}\n\nExtract the SITREP digest using the sitrep_digest tool.` },
+    ];
+  }
+  throw new Error(`Unsupported SITREP format: .${ext} (expected pdf or docx)`);
+}
+
 async function main() {
   loadLocalEnv();
   const KEY = process.env.ANTHROPIC_API_KEY;
@@ -103,7 +137,7 @@ async function main() {
 
   const path = resolveInput();
   console.log(`Parsing ${basename(path)} with ${MODEL}...`);
-  const pdf = readFileSync(path).toString("base64");
+  const content = buildContent(path);
 
   const res = await fetch("https://api.anthropic.com/v1/messages", {
     method: "POST",
@@ -118,15 +152,7 @@ async function main() {
       system: [{ type: "text", text: SYSTEM, cache_control: { type: "ephemeral" } }],
       tools: [{ name: "sitrep_digest", description: "Return the SITREP digest.", input_schema: SCHEMA }],
       tool_choice: { type: "tool", name: "sitrep_digest" },
-      messages: [
-        {
-          role: "user",
-          content: [
-            { type: "document", source: { type: "base64", media_type: "application/pdf", data: pdf } },
-            { type: "text", text: "Extract the SITREP digest from this document using the sitrep_digest tool." },
-          ],
-        },
-      ],
+      messages: [{ role: "user", content }],
     }),
   });
 

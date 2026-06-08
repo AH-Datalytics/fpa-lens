@@ -58,6 +58,7 @@ export const CATEGORIES = {
     folder: `${ROOT}/SITREP`,
     descriptor: "sitrep",
     ext: "pdf",
+    exts: ["pdf", "docx"], // SITREPs arrive as either PDF or Word
     cadence: "monthly",
     dest: "data/sources/sitreps/{name}",
   },
@@ -71,6 +72,12 @@ export const CATEGORIES = {
   },
 };
 
+/** Escaped, alternation-grouped extension pattern (supports cat.exts). */
+function extPat(cat) {
+  const es = (cat.exts ?? [cat.ext]).map((e) => e.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
+  return es.length > 1 ? `(?:${es.join("|")})` : es[0];
+}
+
 /** Build the filename regex for a category. */
 function nameRegex(cat) {
   const date =
@@ -78,7 +85,7 @@ function nameRegex(cat) {
     : cat.monthOptional ? "(\\d{4})(?:-(\\d{2}))?"
     : "(\\d{4})-(\\d{2})";
   const esc = cat.descriptor.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-  const ext = cat.ext.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const ext = extPat(cat);
   // Tolerate an accidentally doubled extension (e.g. "...xlsm.xlsm"); we can't
   // rely on uploaders fixing typos. The saved name is normalized on download.
   return new RegExp(`^${esc}_${date}\\.${ext}(?:\\.${ext})?$`, "i");
@@ -86,7 +93,7 @@ function nameRegex(cat) {
 
 /** Collapse a doubled extension, e.g. foo.xlsm.xlsm -> foo.xlsm. */
 function normalizeName(name, cat) {
-  const ext = cat.ext.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const ext = extPat(cat);
   return name.replace(new RegExp(`(\\.${ext})\\.${ext}$`, "i"), "$1");
 }
 
