@@ -65,14 +65,18 @@ export const CATEGORIES = {
     folder: `${ROOT}/Turf`,
     descriptor: "turf-maintenance",
     ext: "xlsx",
-    cadence: "monthly", // one workbook per month, updated weekly in place
+    cadence: "monthly",
+    monthOptional: true, // one workbook with monthly tabs: turf-maintenance_YYYY[-MM].xlsx
     dest: "data/sources/turf/{name}",
   },
 };
 
 /** Build the filename regex for a category. */
 function nameRegex(cat) {
-  const date = cat.cadence === "weekly" ? "(\\d{4})-(\\d{2})-(\\d{2})" : "(\\d{4})-(\\d{2})";
+  const date =
+    cat.cadence === "weekly" ? "(\\d{4})-(\\d{2})-(\\d{2})"
+    : cat.monthOptional ? "(\\d{4})(?:-(\\d{2}))?"
+    : "(\\d{4})-(\\d{2})";
   const esc = cat.descriptor.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   const ext = cat.ext.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   // Tolerate an accidentally doubled extension (e.g. "...xlsm.xlsm"); we can't
@@ -90,7 +94,9 @@ function normalizeName(name, cat) {
 function dateKey(name, cat) {
   const m = name.match(nameRegex(cat));
   if (!m) return null;
-  const y = m[1], mo = m[2], d = cat.cadence === "weekly" ? m[3] : "01";
+  const y = m[1];
+  const mo = m[2] ?? "00";
+  const d = cat.cadence === "weekly" ? m[3] : "01";
   return Number(`${y}${mo}${d}`);
 }
 

@@ -513,7 +513,7 @@ const rawGrassCuttingData = {
 // ---------------------------------------------------------------------------
 interface TurfCyclesFile {
   reportingMonth: { label: string; year: number; month: number } | null;
-  districts: Record<string, Record<string, Record<string, { cycle1Pct: number | null; cycle2Pct: number | null }>>>;
+  reaches: { zone: string; reach: string; cycle1Pct: number | null; cycle2Pct: number | null }[];
 }
 
 const normTurf = (s: string) =>
@@ -524,38 +524,34 @@ function applyTurfCycles(
   turf: TurfCyclesFile,
 ): typeof rawGrassCuttingData {
   const rm = turf.reportingMonth;
-  if (!rm) return base;
+  if (!rm || !turf.reaches?.length) return base;
   const baseRank = base.reportingMonth.year * 12 + base.reportingMonth.month;
   if (rm.year * 12 + rm.month <= baseRank) return base; // not newer -> keep curated baseline
+
+  // Flat lookup by normalized "zone::reach" (zone names are unique across districts).
+  const lookup = new Map<string, { cycle1Pct: number | null; cycle2Pct: number | null }>();
+  for (const r of turf.reaches) lookup.set(`${normTurf(r.zone)}::${normTurf(r.reach)}`, r);
 
   const clone = JSON.parse(JSON.stringify(base)) as typeof rawGrassCuttingData;
   clone.reportingMonth = { label: rm.label, year: rm.year, month: rm.month, isComplete: false };
 
-  const overlay = (districtKey: string, zones: { name: string; reaches: Reach[] }[]) => {
-    const dist = turf.districts[districtKey];
-    if (!dist) return;
-    const zoneKeys = Object.keys(dist);
+  // A newer reporting month is a fresh slate: matched reaches take the workbook's
+  // values (absent = 0, i.e. not yet cut this month); 1x/mo zones stay single-cycle.
+  // Unmatched reaches keep their curated value so a name miss never zeroes real work.
+  const overlay = (zones: { name: string; reaches: Reach[] }[]) => {
     for (const zone of zones) {
-      const zk =
-        zoneKeys.find((z) => normTurf(z) === normTurf(zone.name)) ??
-        zoneKeys.find((z) => normTurf(z).startsWith(normTurf(zone.name)) || normTurf(zone.name).startsWith(normTurf(z)));
-      if (!zk) continue;
-      const reaches = dist[zk];
-      const reachKeys = Object.keys(reaches);
       for (const reach of zone.reaches) {
-        const rk = reachKeys.find((r) => normTurf(r) === normTurf(reach.name));
-        if (!rk) continue;
-        const v = reaches[rk];
-        if (v.cycle1Pct != null) reach.cycle1Pct = v.cycle1Pct;
-        // Keep 1x/mo zones single-cycle (baseline cycle2Pct === null).
-        if (reach.cycle2Pct !== null && v.cycle2Pct != null) reach.cycle2Pct = v.cycle2Pct;
+        const v = lookup.get(`${normTurf(zone.name)}::${normTurf(reach.name)}`);
+        if (!v) continue;
+        reach.cycle1Pct = v.cycle1Pct ?? 0;
+        if (reach.cycle2Pct !== null) reach.cycle2Pct = v.cycle2Pct ?? 0;
       }
     }
   };
 
-  overlay("OLD", clone.zones);
-  overlay("EJLD", clone.ejldZones);
-  overlay("LBBLD", clone.lbbldZones);
+  overlay(clone.zones);
+  overlay(clone.ejldZones);
+  overlay(clone.lbbldZones);
   return clone;
 }
 
