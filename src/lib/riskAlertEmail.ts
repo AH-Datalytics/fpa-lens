@@ -7,11 +7,17 @@ import type { RiskLevel } from "./lakefrontRisk";
 
 type Trend = "improving" | "stable" | "worsening";
 
-const LEVEL_META: Record<RiskLevel, { word: string; tag: string; color: string; bg: string }> = {
-  GREEN: { word: "GREEN", tag: "Normal", color: "#16a34a", bg: "#f0fdf4" },
-  YELLOW: { word: "YELLOW", tag: "Risk developing", color: "#d97706", bg: "#fffbeb" },
-  ORANGE: { word: "ORANGE", tag: "Elevated risk", color: "#ea580c", bg: "#fff7ed" },
-  RED: { word: "RED", tag: "High risk", color: "#dc2626", bg: "#fef2f2" },
+// headerBg/headerText: the colored band (yellow needs dark text to read + look
+// truly yellow, not orange). accent: a darker shade for text/borders on the
+// light bg tints. tag: severity only (direction is shown separately as trend).
+const LEVEL_META: Record<
+  RiskLevel,
+  { word: string; tag: string; headerBg: string; headerText: string; headerMuted: string; accent: string; bg: string }
+> = {
+  GREEN: { word: "GREEN", tag: "Normal", headerBg: "#16a34a", headerText: "#ffffff", headerMuted: "rgba(255,255,255,.85)", accent: "#15803d", bg: "#f0fdf4" },
+  YELLOW: { word: "YELLOW", tag: "Moderate", headerBg: "#facc15", headerText: "#422006", headerMuted: "rgba(66,32,6,.72)", accent: "#a16207", bg: "#fefce8" },
+  ORANGE: { word: "ORANGE", tag: "Elevated", headerBg: "#ea580c", headerText: "#ffffff", headerMuted: "rgba(255,255,255,.85)", accent: "#c2410c", bg: "#fff7ed" },
+  RED: { word: "RED", tag: "High", headerBg: "#dc2626", headerText: "#ffffff", headerMuted: "rgba(255,255,255,.9)", accent: "#b91c1c", bg: "#fef2f2" },
 };
 
 const TREND_META: Record<Trend, { word: string; arrow: string; color: string }> = {
@@ -92,16 +98,16 @@ export function buildRiskAlertEmail(input: RiskAlertEmailInput): RiskAlertEmail 
     <tr><td align="center">
       <table role="presentation" width="560" cellpadding="0" cellspacing="0" style="width:560px;max-width:92%;background:#ffffff;border-radius:14px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.08);">
 
-        <tr><td style="background:${lvl.color};padding:22px 24px;">
-          <div style="color:rgba(255,255,255,.85);font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;">Lakeshore Drive Flood Risk</div>
-          <div style="color:#ffffff;font-size:30px;font-weight:800;line-height:1.1;margin-top:6px;">
+        <tr><td style="background:${lvl.headerBg};padding:22px 24px;">
+          <div style="color:${lvl.headerMuted};font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;">Lakeshore Drive Flood Risk</div>
+          <div style="color:${lvl.headerText};font-size:30px;font-weight:800;line-height:1.1;margin-top:6px;">
             ${isAllClear ? "All Clear" : lvl.word}
           </div>
-          <div style="color:#ffffff;font-size:14px;margin-top:4px;opacity:.95;">${lvl.tag}</div>
+          <div style="color:${lvl.headerMuted};font-size:14px;margin-top:4px;">${lvl.tag}</div>
         </td></tr>
 
         <tr><td style="padding:20px 24px 4px;">
-          <span style="display:inline-block;background:${lvl.bg};color:${lvl.color};font-size:13px;font-weight:700;padding:5px 12px;border-radius:999px;">
+          <span style="display:inline-block;background:${lvl.bg};color:${lvl.accent};font-size:13px;font-weight:700;padding:5px 12px;border-radius:999px;">
             Level: ${lvl.word}
           </span>
           <span style="display:inline-block;background:#f9fafb;color:${trend.color};font-size:13px;font-weight:700;padding:5px 12px;border-radius:999px;margin-left:6px;">
@@ -112,8 +118,8 @@ export function buildRiskAlertEmail(input: RiskAlertEmailInput): RiskAlertEmail 
         <tr><td style="padding:14px 24px 0;color:#374151;font-size:14px;line-height:1.6;">${escapeHtml(description)}</td></tr>
 
         <tr><td style="padding:16px 24px 0;">
-          <div style="background:${lvl.bg};border:1px solid ${lvl.color}33;border-radius:10px;padding:14px 16px;">
-            <div style="font-size:12px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:${lvl.color};margin-bottom:4px;">Recommended action</div>
+          <div style="background:${lvl.bg};border:1px solid ${lvl.accent}33;border-radius:10px;padding:14px 16px;">
+            <div style="font-size:12px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:${lvl.accent};margin-bottom:4px;">Recommended action</div>
             <div style="color:#1f2937;font-size:14px;line-height:1.5;">${escapeHtml(action)}</div>
           </div>
         </td></tr>
