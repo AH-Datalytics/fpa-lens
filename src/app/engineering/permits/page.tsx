@@ -8,7 +8,7 @@ import {
 } from "recharts";
 import KPICard from "@/components/KPICard";
 import {
-  STAGES, DISTRICTS, PERMIT_TYPES, STAGE_CONTROL, monthLabel,
+  STAGES, DISTRICTS, PERMIT_TYPES, OUTCOMES, STAGE_CONTROL, monthLabel,
   type Stage, type District, type PermitType,
   type NormalizedPermit, type PermitsResponse,
 } from "@/lib/permits";
@@ -147,11 +147,14 @@ export default function PermitsPage() {
   const fpaReviewDays = avgProcessingDays != null ? Math.round(avgProcessingDays * fpaShare) : null;
   const fpaBarWidth   = Math.round(fpaShare * 100);
 
-  const approvalRate = useMemo(() => {
-    const decided = filtered.filter(p => p.isApproved || p.isDenied).length;
-    if (!decided) return null;
-    const approved = filtered.filter(p => p.isApproved).length;
-    return Math.round((approved / decided) * 100);
+  // Outcome mix of closed permits (Issued/Expired/Withdrawn/Denied). A single
+  // "approval rate" is misleading here: FPA denies almost nothing, so unissued
+  // permits expire or are withdrawn rather than being rejected.
+  const outcomeStats = useMemo(() => {
+    const closed = filtered.filter(p => p.isClosed);
+    const counts: Record<string, number> = {};
+    for (const p of closed) if (p.outcome) counts[p.outcome] = (counts[p.outcome] ?? 0) + 1;
+    return { total: closed.length, counts };
   }, [filtered]);
 
   const stageCounts = useMemo(() => {
@@ -276,13 +279,36 @@ export default function PermitsPage() {
             )}
           </div>
 
-          <KPICard
-            label="Approval Rate"
-            value={approvalRate != null ? approvalRate : "—"}
-            unit={approvalRate != null ? "%" : ""}
-            icon={<CheckCircle className="h-5 w-5" />}
-            subtitle="of permits decided (approved or denied)"
-          />
+          {/* Permit outcomes -- breakdown instead of a single, misleading rate */}
+          <div className="bg-white rounded-xl shadow-md border border-gray-100 p-6 hover:shadow-lg transition-shadow">
+            <div className="flex items-start justify-between mb-3">
+              <span className="text-sm font-medium text-gray-500 uppercase tracking-wide">Permit Outcomes</span>
+              <span className="text-[#21355a]"><CheckCircle className="h-5 w-5" /></span>
+            </div>
+            {outcomeStats.total > 0 ? (
+              <div className="space-y-1">
+                {OUTCOMES.filter(o => (outcomeStats.counts[o] ?? 0) > 0).map(o => {
+                  const n = outcomeStats.counts[o] ?? 0;
+                  const pct = (n / outcomeStats.total) * 100;
+                  const pctLabel = pct < 1 ? "<1%" : `${Math.round(pct)}%`;
+                  const emph = o === "Issued";
+                  return (
+                    <div key={o} className="flex items-baseline justify-between text-sm">
+                      <span className={emph ? "font-semibold text-[#21355a]" : "text-gray-600"}>{o}</span>
+                      <span className={emph ? "font-semibold text-[#21355a]" : "text-gray-700"}>
+                        {n.toLocaleString()} <span className="text-gray-400 text-xs">({pctLabel})</span>
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <p className="text-sm text-gray-400">No closed permits in this selection.</p>
+            )}
+            <p className="mt-3 text-xs text-gray-400 border-t border-gray-100 pt-2">
+              {outcomeStats.total.toLocaleString()} closed permits · FPA rarely denies; unissued permits expire or are withdrawn
+            </p>
+          </div>
         </div>
 
         {/* Current pipeline snapshot */}

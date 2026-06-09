@@ -32,6 +32,10 @@ export type District = (typeof DISTRICTS)[number];
 export const PERMIT_TYPES = ["Governmental", "Commercial", "Residential", "Other"] as const;
 export type PermitType = (typeof PERMIT_TYPES)[number];
 
+/** Terminal outcome of a closed permit (null while still active). */
+export const OUTCOMES = ["Issued", "Expired", "Withdrawn", "Denied", "Not needed"] as const;
+export type PermitOutcome = (typeof OUTCOMES)[number];
+
 /** Which stages FPA controls vs. which wait on an outside party. */
 export const STAGE_CONTROL: Record<Stage, "fpa" | "external"> = {
   Submitted: "fpa",
@@ -94,6 +98,16 @@ const ACTIVE_STATUSES = new Set(["UnderReview", "Submitted"]);
 /** A permit that reached a positive outcome (issued / completed). */
 const APPROVED_STATUSES = new Set(["Approved", "Complete"]);
 
+/** permitStatus -> public outcome label for closed permits. */
+const OUTCOME_MAP: Record<string, PermitOutcome> = {
+  Approved: "Issued",
+  Complete: "Issued",
+  Expired: "Expired",
+  Cancelled: "Withdrawn",
+  Denied: "Denied",
+  NotNeeded: "Not needed",
+};
+
 // ---------------------------------------------------------------------------
 // Types
 // ---------------------------------------------------------------------------
@@ -129,6 +143,8 @@ export interface NormalizedPermit {
   isClosed: boolean;
   isApproved: boolean;
   isDenied: boolean;
+  /** Terminal outcome for closed permits; null while active. */
+  outcome: PermitOutcome | null;
   /** ISO submit date (falls back to created date), or null. */
   submitDate: string | null;
   /** "YYYY-MM" of the submit date, or null. */
@@ -245,6 +261,7 @@ export function normalizePermit(raw: RawPermit): NormalizedPermit | null {
     isClosed,
     isApproved,
     isDenied,
+    outcome: isClosed ? OUTCOME_MAP[status] ?? null : null,
     submitDate: submitIso,
     submitMonthKey,
     processingDays,
