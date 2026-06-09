@@ -11,7 +11,9 @@
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
 import { getLastRiskLevel, saveRiskLevel } from "@/lib/riskAlertStore";
+import { getRiskAction, getRiskDescription } from "@/lib/lakefrontRisk";
 import type { RiskLevel } from "@/lib/lakefrontRisk";
+import { buildRiskAlertEmail } from "@/lib/riskAlertEmail";
 
 export const dynamic = "force-dynamic";
 
@@ -26,52 +28,40 @@ function getResend() {
   return resend;
 }
 
-const LEVEL_LABELS: Record<RiskLevel, string> = {
-  GREEN: "GREEN — Normal",
-  YELLOW: "YELLOW — Risk Developing",
-  ORANGE: "ORANGE — Elevated Risk",
-  RED: "RED — High Risk",
+const PREVIEW_TO = "oboochever@ahdatalytics.com";
+
+type RiskInfo = {
+  trending: "improving" | "stable" | "worsening";
+  action: string;
+  description: string;
+  factors: string[];
 };
 
-const LEVEL_ACTIONS: Record<RiskLevel, string> = {
-  GREEN: "No action required.",
-  YELLOW: "Monitor conditions. Risk is developing.",
-  ORANGE: "Consider staging barricades and preparing for potential roadway closures.",
-  RED: "Conditions indicate active or imminent Lakeshore Drive flooding. Implement roadway closures.",
-};
-
-async function sendRiskAlert(current: RiskLevel, previous: RiskLevel | null) {
-  const isAllClear = current === "GREEN";
-  const subject = isAllClear
-    ? "[FPA Lens] All Clear — Lakeshore Drive Flood Risk"
-    : `[FPA Lens] Flood Risk Alert: ${current} — Lakeshore Drive`;
-
-  const previousLine = previous
-    ? `Previous level: ${LEVEL_LABELS[previous]}\n`
-    : "";
-
-  const text = [
-    isAllClear
-      ? "The Lakeshore Drive flood risk has returned to normal."
-      : "The Lakeshore Drive flood risk level has changed.",
-    "",
-    `Current level: ${LEVEL_LABELS[current]}`,
-    previousLine,
-    `Recommended action: ${LEVEL_ACTIONS[current]}`,
-    "",
-    `View live conditions: ${DASHBOARD_URL}`,
-    "",
-    `---`,
-    `Sent: ${new Date().toISOString()}`,
-    `This alert is generated automatically by FPA Lens.`,
-  ].join("\n");
-
+async function sendRiskAlert(
+  current: RiskLevel,
+  previous: RiskLevel | null,
+  risk: RiskInfo,
+  to: string,
+  bcc?: string,
+  subjectPrefix = "",
+) {
+  const email = buildRiskAlertEmail({
+    current,
+    previous,
+    trending: risk.trending,
+    action: risk.action,
+    description: risk.description,
+    factors: risk.factors ?? [],
+    dashboardUrl: DASHBOARD_URL,
+    sentAt: new Date().toISOString(),
+  });
   await getResend().emails.send({
     from: ALERT_FROM,
-    to: ALERT_TO,
-    bcc: ALERT_BCC,
-    subject,
-    text,
+    to,
+    bcc,
+    subject: subjectPrefix + email.subject,
+    text: email.text,
+    html: email.html,
   });
 }
 
@@ -98,6 +88,26 @@ export async function GET(request: Request) {
     const snapshotCount = Object.keys(data.storedForecasts || {}).length;
     const currentLevel = data.risk?.level as RiskLevel | undefined;
 
+    // Preview/test mode: emails a styled sample to the data-ops contact ONLY,
+    // without saving state or notifying ops. Auth-gated by CRON_SECRET above.
+    //   ?preview=1                      -> current real conditions
+    //   ?preview=1&level=ORANGE&trend=worsening -> sample of any level
+    const { searchParams } = new URL(request.url);
+    if (searchParams.get("preview")) {
+      const lvl = ((searchParams.get("level")?.toUpperCase() as RiskLevel) || currentLevel || "YELLOW");
+      const risk: RiskInfo =
+        lvl === currentLevel && data.risk
+          ? { trending: data.risk.trending, action: data.risk.action, description: data.risk.description, factors: data.risk.factors }
+          : {
+              trending: (searchParams.get("trend") as RiskInfo["trending"]) || "improving",
+              action: getRiskAction(lvl),
+              description: getRiskDescription(lvl),
+              factors: [],
+            };
+      await sendRiskAlert(lvl, null, risk, PREVIEW_TO, undefined, "[TEST] ");
+      return NextResponse.json({ ok: true, preview: lvl, sentTo: PREVIEW_TO });
+    }
+
     let alertSent = false;
 
     if (currentLevel) {
@@ -115,7 +125,7 @@ export async function GET(request: Request) {
 
       if (shouldAlert) {
         try {
-          await sendRiskAlert(currentLevel, lastLevel);
+          await sendRiskAlert(currentLevel, lastLevel, data.risk, ALERT_TO, ALERT_BCC);
           alertSent = true;
         } catch (err) {
           console.error("Risk alert email failed:", err);
