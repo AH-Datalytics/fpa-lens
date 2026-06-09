@@ -32,7 +32,13 @@ export async function GET(request: NextRequest) {
     });
 
     if (!res.ok) {
-      return NextResponse.json({ error: "Upstream API error" }, { status: 502 });
+      // Surface the upstream status so failures (401 auth vs 403 IP-block vs 5xx)
+      // are diagnosable without leaking credentials.
+      console.error(`Permit upstream returned ${res.status} ${res.statusText}`);
+      return NextResponse.json(
+        { error: "Upstream API error", upstreamStatus: res.status },
+        { status: 502 },
+      );
     }
 
     const raw = (await res.json()) as RawPermit[];
