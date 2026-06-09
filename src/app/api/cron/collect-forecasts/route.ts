@@ -112,16 +112,24 @@ export async function GET(request: Request) {
 
     if (currentLevel) {
       const lastLevel = await getLastRiskLevel();
-      const levelChanged = lastLevel !== currentLevel;
 
       const LEVEL_ORDER: Record<RiskLevel, number> = { GREEN: 0, YELLOW: 1, ORANGE: 2, RED: 3 };
       const prevOrder = lastLevel ? LEVEL_ORDER[lastLevel] : -1;
       const currOrder = LEVEL_ORDER[currentLevel];
 
-      // Alert on any level change except first-run GREEN (no news is no news).
-      // All changes between elevated tiers (up or down) and all-clear are notified.
-      const isFirstRunGreen = lastLevel === null && currentLevel === "GREEN";
-      const shouldAlert = levelChanged && !isFirstRunGreen;
+      // Only alert when the level changes AND the forecast trend agrees with the
+      // direction of the change. This filters out against-trend blips that
+      // generate alert noise:
+      //   - an escalation that is already improving (a temporary spike), and
+      //   - a de-escalation that is worsening (a temporary dip about to rise again).
+      // A "stable" trend still alerts in either direction (a real, holding change).
+      // First run (no stored level yet) stays silent until a baseline exists.
+      const trend = data.risk?.trending as "improving" | "stable" | "worsening" | undefined;
+      const goingUp   = lastLevel !== null && currOrder > prevOrder;
+      const goingDown = lastLevel !== null && currOrder < prevOrder;
+      const shouldAlert =
+        (goingUp   && trend !== "improving") ||
+        (goingDown && trend !== "worsening");
 
       if (shouldAlert) {
         try {
