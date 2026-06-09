@@ -1,109 +1,29 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
-import { ArrowLeft, FileText, CheckCircle, ArrowRight, FlaskConical, X, AlertCircle } from "lucide-react";
+import { ArrowLeft, FileText, CheckCircle, ArrowRight, X, AlertCircle, Loader2 } from "lucide-react";
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
 } from "recharts";
 import KPICard from "@/components/KPICard";
+import {
+  STAGES, DISTRICTS, PERMIT_TYPES, STAGE_CONTROL, monthLabel,
+  type Stage, type District, type PermitType,
+  type NormalizedPermit, type PermitsResponse,
+} from "@/lib/permits";
 
 // ---------------------------------------------------------------------------
-// SAMPLE DATA -- illustrative only. Real data from Vinformatix once schema confirmed.
+// UI metadata for the pipeline stages (colors carry FPA vs. external meaning).
 // ---------------------------------------------------------------------------
-
-const MONTHS = [
-  "May '25","Jun '25","Jul '25","Aug '25","Sep '25","Oct '25",
-  "Nov '25","Dec '25","Jan '26","Feb '26","Mar '26","Apr '26",
-];
-
-const STAGES       = ["Submitted","FPA Review","External Agency Review","Awaiting Applicant","Issued"] as const;
-const DISTRICTS    = ["OLD","EJLD","LBBLD"] as const;
-const PERMIT_TYPES = ["Governmental","Commercial","Residential"] as const;
-
-type Stage      = typeof STAGES[number];
-type District   = typeof DISTRICTS[number];
-type PermitType = typeof PERMIT_TYPES[number];
-
-interface FakePermit {
-  id: string;
-  stage: Stage | "Closed";
-  district: District;
-  permitType: PermitType;
-  submitMonth: string;
-  daysOpen: number;
-  processingDays: number;
-  isApproved: boolean | null;
-}
-
-function makeSeedRand(seed: number) {
-  let s = seed >>> 0;
-  return () => { s = (Math.imul(s, 1664525) + 1013904223) >>> 0; return s / 0x100000000; };
-}
-
-const FAKE_PERMITS: FakePermit[] = (() => {
-  const rand = makeSeedRand(42);
-  const pick = <T,>(items: readonly T[], weights: number[], r: number): T => {
-    let cum = 0;
-    for (let i = 0; i < items.length; i++) { cum += weights[i]; if (r < cum) return items[i]; }
-    return items[items.length - 1];
-  };
-
-  const stageW   = [95, 285, 312, 118, 37].map(n => n / 847);
-  const districtW= [385, 295, 167].map(n => n / 847);
-  const typeW    = [0.35, 0.42, 0.23];
-  const monthW   = [0.06,0.08,0.07,0.09,0.07,0.12,0.11,0.05,0.10,0.07,0.09,0.09];
-
-  const active: FakePermit[] = Array.from({ length: 847 }, (_, i) => ({
-    id: `P-A-${i + 1001}`,
-    stage:         pick(STAGES,        stageW,    rand()) as Stage,
-    district:      pick(DISTRICTS,     districtW, rand()),
-    permitType:    pick(PERMIT_TYPES,  typeW,     rand()),
-    submitMonth:   pick(MONTHS,        monthW,    rand()),
-    daysOpen:      Math.floor(rand() * 290 + 10),
-    processingDays:0,
-    isApproved:    null,
-  }));
-
-  const closed: FakePermit[] = Array.from({ length: 350 }, (_, i) => ({
-    id: `P-C-${i + 2001}`,
-    stage:          "Closed" as const,
-    district:       pick(DISTRICTS,    districtW, rand()),
-    permitType:     pick(PERMIT_TYPES, typeW,     rand()),
-    submitMonth:    pick(MONTHS,       monthW,    rand()),
-    daysOpen:       0,
-    processingDays: Math.floor(rand() * 180 + 30),
-    isApproved:     rand() < 0.84,
-  }));
-
-  return [...active, ...closed];
-})();
-
-// ---------------------------------------------------------------------------
-
-const STAGE_CONTROL: Record<Stage, "fpa" | "external"> = {
-  "Submitted":          "fpa",
-  "FPA Review":         "fpa",
-  "External Agency Review":    "external",
-  "Awaiting Applicant": "external",
-  "Issued":       "fpa",
-};
 
 const STAGE_META: Record<Stage, { label: string; color: string; labelColor: string; border: string }> = {
-  "Submitted":          { label:"Submitted",            color:"text-[#21355a]", labelColor:"text-[#21355a]", border:"border-gray-200" },
-  "FPA Review":         { label:"FPA Review",           color:"text-[#21355a]", labelColor:"text-[#21355a]", border:"border-gray-200" },
-  "External Agency Review":    { label:"External Agency Review",      color:"text-gray-400",  labelColor:"text-gray-400",  border:"border-gray-200" },
-  "Awaiting Applicant": { label:"Awaiting Applicant",   color:"text-gray-400",  labelColor:"text-gray-400",  border:"border-gray-200" },
-  "Issued":       { label:"Issued",               color:"text-[#21355a]", labelColor:"text-[#21355a]", border:"border-gray-200" },
+  "Submitted":             { label:"Submitted",             color:"text-[#21355a]", labelColor:"text-[#21355a]", border:"border-gray-200" },
+  "FPA Review":            { label:"FPA Review",            color:"text-[#21355a]", labelColor:"text-[#21355a]", border:"border-gray-200" },
+  "External Agency Review":{ label:"External Agency Review", color:"text-gray-400",  labelColor:"text-gray-400",  border:"border-gray-200" },
+  "Awaiting Applicant":    { label:"Awaiting Applicant",    color:"text-gray-400",  labelColor:"text-gray-400",  border:"border-gray-200" },
+  "Issued":                { label:"Issued",                color:"text-[#21355a]", labelColor:"text-[#21355a]", border:"border-gray-200" },
 };
-
-const STAGE_TIMING: Record<Stage, number> = {
-  "Submitted": 8, "FPA Review": 32, "External Agency Review": 45, "Awaiting Applicant": 16, "Issued": 6,
-};
-
-const FPA_DAYS      = STAGES.filter(s => STAGE_CONTROL[s] === "fpa").reduce((sum, s) => sum + STAGE_TIMING[s], 0);
-const EXTERNAL_DAYS = STAGES.filter(s => STAGE_CONTROL[s] !== "fpa").reduce((sum, s) => sum + STAGE_TIMING[s], 0);
-const TOTAL_DAYS    = FPA_DAYS + EXTERNAL_DAYS;
 
 // Bars are a single brand color -- the hue carries no meaning, it just shows magnitude.
 const BAR_COLOR = "#21355a";
@@ -130,63 +50,116 @@ function FilterPills<T extends string>({
   );
 }
 
-const YTD_MONTHS = MONTHS.filter(m => m.includes("'26")); // Jan '26 – Apr '26
-
 const DATE_OPTIONS = ["This year (YTD)","Last 3 months","Last 6 months","Last 12 months"] as const;
 type DateRange = typeof DATE_OPTIONS[number];
+
+// ---- month-key helpers (relative to "now", so the page stays current) ------
+
+function keyOf(d: Date): string {
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+}
+function trailingMonthKeys(now: Date, n: number): string[] {
+  const keys: string[] = [];
+  for (let i = n - 1; i >= 0; i--) keys.push(keyOf(new Date(now.getFullYear(), now.getMonth() - i, 1)));
+  return keys;
+}
+function ytdMonthKeys(now: Date): string[] {
+  const keys: string[] = [];
+  for (let m = 0; m <= now.getMonth(); m++) keys.push(`${now.getFullYear()}-${String(m + 1).padStart(2, "0")}`);
+  return keys;
+}
 
 // ---------------------------------------------------------------------------
 
 export default function PermitsPage() {
+  const [data, setData]       = useState<PermitsResponse | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError]     = useState(false);
+
   const [districtFilter, setDistrictFilter] = useState<District   | "All">("All");
   const [stageFilter,    setStageFilter]    = useState<Stage      | "All">("All");
   const [typeFilter,     setTypeFilter]     = useState<PermitType | "All">("All");
   const [dateFilter,     setDateFilter]     = useState<DateRange  | "All">("This year (YTD)");
 
+  useEffect(() => {
+    const end = new Date().toISOString().slice(0, 10);
+    fetch(`/api/permits?startDate=2024-01-01&endDate=${end}`)
+      .then(r => (r.ok ? r.json() : Promise.reject()))
+      .then((d: PermitsResponse) => setData(d))
+      .catch(() => setError(true))
+      .finally(() => setLoading(false));
+  }, []);
+
+  const permits = useMemo<NormalizedPermit[]>(() => data?.permits ?? [], [data]);
+  const stageTiming = data?.stageTiming;
+
   const filtersActive = districtFilter !== "All" || stageFilter !== "All" || typeFilter !== "All" || dateFilter !== "All";
   const clearFilters  = () => { setDistrictFilter("All"); setStageFilter("All"); setTypeFilter("All"); setDateFilter("All"); };
 
-  const allowedMonths = useMemo(() => {
-    if (dateFilter === "All")                return MONTHS;
-    if (dateFilter === "This year (YTD)")   return YTD_MONTHS;
+  const now = useMemo(() => new Date(), []);
+  const allowedMonths = useMemo<string[] | null>(() => {
+    if (dateFilter === "All")              return null;
+    if (dateFilter === "This year (YTD)")  return ytdMonthKeys(now);
     const n = dateFilter === "Last 3 months" ? 3 : dateFilter === "Last 6 months" ? 6 : 12;
-    return MONTHS.slice(-n);
-  }, [dateFilter]);
+    return trailingMonthKeys(now, n);
+  }, [dateFilter, now]);
 
-  const filtered = useMemo(() => FAKE_PERMITS.filter(p =>
+  // Selecting a stage pill scopes to active permits at that stage, except
+  // "Issued" which means the permit reached a positive outcome.
+  const matchStage = (p: NormalizedPermit) => {
+    if (stageFilter === "All") return true;
+    if (stageFilter === "Issued") return p.isApproved;
+    return p.isActive && p.stage === stageFilter;
+  };
+  const matchDate = (p: NormalizedPermit) =>
+    allowedMonths === null || (p.submitMonthKey !== null && allowedMonths.includes(p.submitMonthKey));
+
+  const filtered = useMemo(() => permits.filter(p =>
     (districtFilter === "All" || p.district   === districtFilter) &&
-    (stageFilter    === "All" || p.stage      === stageFilter)    &&
     (typeFilter     === "All" || p.permitType === typeFilter)     &&
-    allowedMonths.includes(p.submitMonth)
-  ), [districtFilter, stageFilter, typeFilter, allowedMonths]);
+    matchStage(p) &&
+    matchDate(p)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  ), [permits, districtFilter, typeFilter, stageFilter, allowedMonths]);
 
-  const activePermits = useMemo(() => filtered.filter(p => p.stage !== "Closed"), [filtered]);
-  const closedPermits = useMemo(() => filtered.filter(p => p.stage === "Closed"),  [filtered]);
+  const activePermits = useMemo(() => filtered.filter(p => p.isActive), [filtered]);
+  const issuedPermits = useMemo(() => filtered.filter(p => p.isApproved), [filtered]);
 
-  const avgProcessingDays = useMemo(() =>
-    closedPermits.length ? Math.round(closedPermits.reduce((s,p) => s + p.processingDays, 0) / closedPermits.length) : null
-  , [closedPermits]);
+  const avgProcessingDays = useMemo(() => {
+    const withDays = filtered.filter(p => p.processingDays != null);
+    return withDays.length
+      ? Math.round(withDays.reduce((s, p) => s + (p.processingDays ?? 0), 0) / withDays.length)
+      : null;
+  }, [filtered]);
 
-  const fpaReviewDays = useMemo(() =>
-    avgProcessingDays != null ? Math.round(avgProcessingDays * FPA_DAYS / TOTAL_DAYS) : null
-  , [avgProcessingDays]);
+  // FPA-controlled share of review time, from system-wide stage timing.
+  const fpaShare = useMemo(() => {
+    if (!stageTiming) return 0.5;
+    const fpa = stageTiming["Submitted"] + stageTiming["FPA Review"];
+    const ext = stageTiming["External Agency Review"] + stageTiming["Awaiting Applicant"];
+    return fpa + ext > 0 ? fpa / (fpa + ext) : 0.5;
+  }, [stageTiming]);
+
+  const fpaReviewDays = avgProcessingDays != null ? Math.round(avgProcessingDays * fpaShare) : null;
+  const fpaBarWidth   = Math.round(fpaShare * 100);
 
   const approvalRate = useMemo(() => {
-    if (!closedPermits.length) return null;
-    return Math.round((closedPermits.filter(p => p.isApproved).length / closedPermits.length) * 100);
-  }, [closedPermits]);
+    const decided = filtered.filter(p => p.isApproved || p.isDenied).length;
+    if (!decided) return null;
+    const approved = filtered.filter(p => p.isApproved).length;
+    return Math.round((approved / decided) * 100);
+  }, [filtered]);
 
   const stageCounts = useMemo(() => {
-    const c: Partial<Record<Stage, number>> = {};
-    for (const p of activePermits) c[p.stage as Stage] = (c[p.stage as Stage] ?? 0) + 1;
+    const c: Record<Stage, number> = {
+      "Submitted": 0, "FPA Review": 0, "External Agency Review": 0, "Awaiting Applicant": 0, "Issued": 0,
+    };
+    for (const p of activePermits) if (p.stage !== "Closed") c[p.stage] += 1;
+    c["Issued"] = issuedPermits.length;
     return c;
-  }, [activePermits]);
+  }, [activePermits, issuedPermits]);
 
-  const outsideCount = useMemo(() =>
-    (stageCounts["External Agency Review"] ?? 0) + (stageCounts["Awaiting Applicant"] ?? 0)
-  , [stageCounts]);
-
-  const dateRangeLabel = `${allowedMonths[0]} – ${allowedMonths[allowedMonths.length - 1]}`;
+  const outsideCount = (stageCounts["External Agency Review"] ?? 0) + (stageCounts["Awaiting Applicant"] ?? 0);
 
   const districtData = useMemo(() =>
     DISTRICTS.map(d => ({ name: d, count: filtered.filter(p => p.district === d).length }))
@@ -194,13 +167,22 @@ export default function PermitsPage() {
 
   const typeData = useMemo(() =>
     PERMIT_TYPES.map(t => ({ name: t, count: filtered.filter(p => p.permitType === t).length }))
+      .filter(d => d.count > 0)
       .sort((a, b) => b.count - a.count)
   , [filtered]);
 
+  // Date-range label: explicit window, or the data's own span when unfiltered.
+  const dateRangeLabel = useMemo(() => {
+    if (allowedMonths && allowedMonths.length) {
+      return `${monthLabel(allowedMonths[0])} – ${monthLabel(allowedMonths[allowedMonths.length - 1])}`;
+    }
+    const keys = permits.map(p => p.submitMonthKey).filter((k): k is string => k !== null).sort();
+    return keys.length ? `${monthLabel(keys[0])} – ${monthLabel(keys[keys.length - 1])}` : "All time";
+  }, [allowedMonths, permits]);
 
-  const fpaBarWidth = fpaReviewDays != null && avgProcessingDays
-    ? Math.round((fpaReviewDays / avgProcessingDays) * 100)
-    : Math.round((FPA_DAYS / TOTAL_DAYS) * 100);
+  const asOfLabel = data
+    ? new Date(data.asOf).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })
+    : "";
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -220,15 +202,27 @@ export default function PermitsPage() {
           </p>
         </div>
 
-        {/* Sample data banner */}
-        <div className="flex items-start gap-3 bg-amber-50 border border-amber-300 rounded-xl px-4 py-3 text-sm text-amber-900">
-          <FlaskConical className="h-4 w-4 mt-0.5 flex-shrink-0 text-amber-600" />
+        {/* Live-data banner */}
+        <div className="flex items-start gap-3 bg-sky-50 border border-sky-200 rounded-xl px-4 py-3 text-sm text-sky-900">
+          <CheckCircle className="h-4 w-4 mt-0.5 flex-shrink-0 text-sky-600" />
           <div>
-            <span className="font-semibold">Sample data only.</span>{" "}
-            All figures on this page are illustrative. This layout is pending approval from FPA leadership before Vinformatix connects the live database.
+            <span className="font-semibold">Live data.</span>{" "}
+            Figures come directly from the Vinformatix Permitting System{asOfLabel ? `, refreshed ${asOfLabel}` : ""}.
+            This layout is pending final approval from FPA leadership.
           </div>
         </div>
 
+        {loading ? (
+          <div className="flex items-center justify-center gap-2 py-24 text-gray-500">
+            <Loader2 className="h-5 w-5 animate-spin" /> Loading live permit data…
+          </div>
+        ) : error || !data ? (
+          <div className="flex items-start gap-3 bg-red-50 border border-red-200 rounded-xl px-4 py-3 text-sm text-red-800">
+            <AlertCircle className="h-4 w-4 mt-0.5 flex-shrink-0 text-red-500" />
+            <div>Could not load permit data from the Vinformatix API. Please refresh, or check back shortly.</div>
+          </div>
+        ) : (
+        <>
 
         {/* Filter bar */}
         <div className="bg-white rounded-xl border border-gray-200 px-4 py-3 space-y-2.5">
@@ -277,13 +271,15 @@ export default function PermitsPage() {
                 </div>
               </div>
             </div>
-            {avgProcessingDays != null && (
+            {avgProcessingDays != null ? (
               <div className="mt-3">
                 <div className="w-full bg-gray-100 rounded-full h-1.5">
                   <div className="bg-[#21355a] h-1.5 rounded-full" style={{ width: `${fpaBarWidth}%` }} />
                 </div>
                 <p className="text-[10px] text-gray-400 mt-1">{fpaBarWidth}% FPA-controlled · {100 - fpaBarWidth}% external/applicant</p>
               </div>
+            ) : (
+              <p className="text-[10px] text-gray-400 mt-3">No permits issued in this selection yet.</p>
             )}
           </div>
 
@@ -292,13 +288,13 @@ export default function PermitsPage() {
             value={approvalRate != null ? approvalRate : "—"}
             unit={approvalRate != null ? "%" : ""}
             icon={<CheckCircle className="h-5 w-5" />}
-            subtitle="closed permits, filtered"
+            subtitle="of permits decided (approved or denied)"
           />
         </div>
 
         {/* Pipeline flow */}
         <div className="bg-white rounded-xl border border-gray-200 p-5">
-          <h3 className="text-sm font-semibold text-[#21355a] mb-1">Active Pipeline: Where Permits Stand Today</h3>
+          <h3 className="text-sm font-semibold text-[#21355a] mb-1">Permit Pipeline: Where Things Stand</h3>
 
           {outsideCount > 0 && (
             <div className="flex items-start gap-2 mb-4 text-xs text-amber-800 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">
@@ -318,14 +314,15 @@ export default function PermitsPage() {
               const count  = stageCounts[stage] ?? 0;
               const isFpa  = STAGE_CONTROL[stage] === "fpa";
               const isLast = i === STAGES.length - 1;
+              const timing = stageTiming?.[stage];
               return (
                 <div key={stage} className="flex flex-col sm:flex-row items-stretch sm:items-center flex-1">
                   <div className={`flex flex-col items-center justify-start px-3 py-4 rounded-lg border w-full text-center min-h-[104px] bg-white ${meta.border}`}>
                     <span className={`text-2xl font-bold ${meta.color}`}>{count.toLocaleString()}</span>
                     <span className={`text-xs font-medium mt-1 ${meta.labelColor}`}>{meta.label}</span>
-                    {!isLast && (
+                    {!isLast && timing != null && timing > 0 && (
                       <span className={`text-[10px] mt-2 ${isFpa ? "text-[#21355a]" : "text-gray-400"}`}>
-                        ~{STAGE_TIMING[stage]}d avg in review
+                        ~{timing}d avg in review
                       </span>
                     )}
                   </div>
@@ -340,7 +337,8 @@ export default function PermitsPage() {
             })}
           </div>
           <p className="text-[10px] text-gray-400 mt-3">
-            ~Nd avg in review = typical days a permit spends in that stage · navy = FPA-controlled · gray = outside FPA&rsquo;s queue · Source: sample data
+            First four boxes show permits currently at that stage; Issued shows permits issued in the selection.
+            ~Nd avg in review = typical days in that stage across all permits · navy = FPA-controlled · gray = outside FPA&rsquo;s queue
           </p>
         </div>
 
@@ -373,7 +371,13 @@ export default function PermitsPage() {
           </div>
         </div>
 
-        <p className="text-xs text-gray-400">Sample data only. Vinformatix Permitting System will supply live data once schema is confirmed.</p>
+        <p className="text-xs text-gray-400">
+          Source: Vinformatix Permitting System{asOfLabel ? `, as of ${asOfLabel}` : ""}.
+          Unsubmitted draft applications are excluded.
+        </p>
+
+        </>
+        )}
       </div>
     </div>
   );
