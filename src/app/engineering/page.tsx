@@ -262,7 +262,6 @@ export default function OperationsPage() {
               </div>
             }
             source={operationsData.permitProcessing.source}
-            note={`Avg 69 days submittal to LNO (Letter of No Objection), 38 days LNO to approval (${operationsData.permitProcessing.period.toLowerCase()})`}
           >
             <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-0 py-4 flex-wrap">
               {[

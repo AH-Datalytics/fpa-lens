@@ -8,30 +8,59 @@ import {
 } from "recharts";
 import KPICard from "@/components/KPICard";
 import {
-  STAGES, DISTRICTS, PERMIT_TYPES, OUTCOMES, STAGE_CONTROL, monthLabel,
-  type Stage, type District, type PermitType,
+  DISTRICTS, PERMIT_TYPES, OUTCOMES, STAGE_CONTROL, monthLabel,
+  type Stage, type District, type PermitType, type PermitOutcome,
   type NormalizedPermit, type PermitsResponse,
 } from "@/lib/permits";
 
 // ---------------------------------------------------------------------------
-// UI metadata for the pipeline stages (colors carry FPA vs. external meaning).
+// Lifecycle model for the UI.
+//   A permit sits at exactly one point on a single lifecycle: either one of the
+//   four ACTIVE stages, or one of the terminal OUTCOMES. They are mutually
+//   exclusive, so the Status filter is one control spanning both.
 // ---------------------------------------------------------------------------
 
-const STAGE_META: Record<Stage, { label: string; color: string; labelColor: string; border: string }> = {
-  "Submitted":             { label:"Submitted",             color:"text-[#21355a]", labelColor:"text-[#21355a]", border:"border-gray-200" },
-  "FPA Review":            { label:"FPA Review",            color:"text-[#21355a]", labelColor:"text-[#21355a]", border:"border-gray-200" },
-  "External Agency Review":{ label:"External Agency Review", color:"text-gray-400",  labelColor:"text-gray-400",  border:"border-gray-200" },
-  "Awaiting Applicant":    { label:"Awaiting Applicant",    color:"text-gray-400",  labelColor:"text-gray-400",  border:"border-gray-200" },
-  "Issued":                { label:"Issued",                color:"text-[#21355a]", labelColor:"text-[#21355a]", border:"border-gray-200" },
+const ACTIVE_STAGES: Stage[] = ["Submitted", "FPA Review", "External Agency Review", "Awaiting Applicant"];
+
+type StatusValue = Stage | PermitOutcome;
+const isOutcome = (s: StatusValue | "All"): s is PermitOutcome => (OUTCOMES as readonly string[]).includes(s);
+
+const STAGE_META: Record<string, { color: string; labelColor: string }> = {
+  "Submitted":              { color: "text-[#21355a]", labelColor: "text-[#21355a]" },
+  "FPA Review":             { color: "text-[#21355a]", labelColor: "text-[#21355a]" },
+  "External Agency Review": { color: "text-gray-400",  labelColor: "text-gray-400" },
+  "Awaiting Applicant":     { color: "text-gray-400",  labelColor: "text-gray-400" },
 };
 
-// The pipeline visual shows only the four active stages. Every active permit
-// sits in exactly one of these, so their counts add up to "Active in Pipeline".
-// Issued permits have left the pipeline and aren't shown as a stage.
-const PIPELINE_STAGES: Stage[] = ["Submitted", "FPA Review", "External Agency Review", "Awaiting Applicant"];
+// Number color for the terminal outcome box (sentiment, not stage control).
+const OUTCOME_COLOR: Record<PermitOutcome, string> = {
+  "Issued":     "text-[#15803d]", // green
+  "Expired":    "text-gray-500",
+  "Withdrawn":  "text-gray-500",
+  "Denied":     "text-[#b91c1c]", // red
+  "Not needed": "text-gray-500",
+};
+
+// Dynamic card-title fragment for each lifecycle state.
+const STATUS_TITLE: Record<string, string> = {
+  "Submitted":              "Permits in Submitted",
+  "FPA Review":             "Permits in FPA Review",
+  "External Agency Review": "Permits in External Agency Review",
+  "Awaiting Applicant":     "Permits Awaiting Applicant",
+  "Issued":                 "Permits Issued",
+  "Expired":                "Permits Expired",
+  "Withdrawn":              "Permits Withdrawn",
+  "Denied":                 "Permits Denied",
+  "Not needed":             "Permits (No Permit Needed)",
+};
 
 // Bars are a single brand color -- the hue carries no meaning, it just shows magnitude.
 const BAR_COLOR = "#21355a";
+
+const pillCls = (active: boolean) =>
+  `px-2.5 py-1 rounded-full text-xs font-medium border transition-colors ${
+    active ? "bg-[#21355a] text-white border-[#21355a]" : "bg-white text-gray-600 border-gray-300 hover:border-[#21355a]/50"
+  }`;
 
 // ---------------------------------------------------------------------------
 
@@ -41,16 +70,31 @@ function FilterPills<T extends string>({
   return (
     <div className="flex flex-wrap items-center gap-1.5">
       <span className="text-xs font-medium text-gray-500 w-24 shrink-0">{label}</span>
-      <button onClick={() => onChange("All")}
-        className={`px-2.5 py-1 rounded-full text-xs font-medium border transition-colors ${value === "All" ? "bg-[#21355a] text-white border-[#21355a]" : "bg-white text-gray-600 border-gray-300 hover:border-[#21355a]/50"}`}>
-        All
-      </button>
+      <button onClick={() => onChange("All")} className={pillCls(value === "All")}>All</button>
       {options.map(opt => (
-        <button key={opt} onClick={() => onChange(opt === value ? "All" : opt)}
-          className={`px-2.5 py-1 rounded-full text-xs font-medium border transition-colors ${value === opt ? "bg-[#21355a] text-white border-[#21355a]" : "bg-white text-gray-600 border-gray-300 hover:border-[#21355a]/50"}`}>
+        <button key={opt} onClick={() => onChange(opt === value ? "All" : opt)} className={pillCls(value === opt)}>
           {opt}
         </button>
       ))}
+    </div>
+  );
+}
+
+// Single lifecycle filter: All, the four active stages, a divider, then the
+// terminal outcomes. Selecting any one scopes the whole page.
+function StatusFilter({ value, onChange }: { value: StatusValue | "All"; onChange: (v: StatusValue | "All") => void }) {
+  const pill = (label: string, key: StatusValue | "All") => (
+    <button key={key} onClick={() => onChange(key === value ? "All" : key)} className={pillCls(value === key)}>
+      {label}
+    </button>
+  );
+  return (
+    <div className="flex flex-wrap items-center gap-1.5">
+      <span className="text-xs font-medium text-gray-500 w-24 shrink-0">Status</span>
+      {pill("All", "All")}
+      {ACTIVE_STAGES.map(s => pill(s, s))}
+      <span className="text-gray-300 px-1 select-none">|</span>
+      {OUTCOMES.map(o => pill(o, o))}
     </div>
   );
 }
@@ -81,10 +125,10 @@ export default function PermitsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError]     = useState(false);
 
-  const [districtFilter, setDistrictFilter] = useState<District   | "All">("All");
-  const [stageFilter,    setStageFilter]    = useState<Stage      | "All">("All");
-  const [typeFilter,     setTypeFilter]     = useState<PermitType | "All">("All");
-  const [dateFilter,     setDateFilter]     = useState<DateRange  | "All">("This year (YTD)");
+  const [districtFilter, setDistrictFilter] = useState<District    | "All">("All");
+  const [statusFilter,   setStatusFilter]   = useState<StatusValue | "All">("All");
+  const [typeFilter,     setTypeFilter]     = useState<PermitType  | "All">("All");
+  const [dateFilter,     setDateFilter]     = useState<DateRange   | "All">("This year (YTD)");
 
   useEffect(() => {
     const end = new Date().toISOString().slice(0, 10);
@@ -98,8 +142,8 @@ export default function PermitsPage() {
   const permits = useMemo<NormalizedPermit[]>(() => data?.permits ?? [], [data]);
   const stageTiming = data?.stageTiming;
 
-  const filtersActive = districtFilter !== "All" || stageFilter !== "All" || typeFilter !== "All" || dateFilter !== "All";
-  const clearFilters  = () => { setDistrictFilter("All"); setStageFilter("All"); setTypeFilter("All"); setDateFilter("All"); };
+  const filtersActive = districtFilter !== "All" || statusFilter !== "All" || typeFilter !== "All" || dateFilter !== "All";
+  const clearFilters  = () => { setDistrictFilter("All"); setStatusFilter("All"); setTypeFilter("All"); setDateFilter("All"); };
 
   const now = useMemo(() => new Date(), []);
   const allowedMonths = useMemo<string[] | null>(() => {
@@ -109,12 +153,12 @@ export default function PermitsPage() {
     return trailingMonthKeys(now, n);
   }, [dateFilter, now]);
 
-  // Selecting a stage pill scopes to active permits at that stage, except
-  // "Issued" which means the permit reached a positive outcome.
-  const matchStage = (p: NormalizedPermit) => {
-    if (stageFilter === "All") return true;
-    if (stageFilter === "Issued") return p.isApproved;
-    return p.isActive && p.stage === stageFilter;
+  // One mutually-exclusive lifecycle filter: an active stage matches active
+  // permits at that stage; an outcome matches closed permits with that outcome.
+  const matchStatus = (p: NormalizedPermit) => {
+    if (statusFilter === "All") return true;
+    if (isOutcome(statusFilter)) return p.outcome === statusFilter;
+    return p.isActive && p.stage === statusFilter;
   };
   const matchDate = (p: NormalizedPermit) =>
     allowedMonths === null || (p.submitMonthKey !== null && allowedMonths.includes(p.submitMonthKey));
@@ -122,10 +166,10 @@ export default function PermitsPage() {
   const filtered = useMemo(() => permits.filter(p =>
     (districtFilter === "All" || p.district   === districtFilter) &&
     (typeFilter     === "All" || p.permitType === typeFilter)     &&
-    matchStage(p) &&
+    matchStatus(p) &&
     matchDate(p)
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  ), [permits, districtFilter, typeFilter, stageFilter, allowedMonths]);
+  ), [permits, districtFilter, typeFilter, statusFilter, allowedMonths]);
 
   const activePermits = useMemo(() => filtered.filter(p => p.isActive), [filtered]);
 
@@ -147,9 +191,7 @@ export default function PermitsPage() {
   const fpaReviewDays = avgProcessingDays != null ? Math.round(avgProcessingDays * fpaShare) : null;
   const fpaBarWidth   = Math.round(fpaShare * 100);
 
-  // Outcome mix of closed permits (Issued/Expired/Withdrawn/Denied). A single
-  // "approval rate" is misleading here: FPA denies almost nothing, so unissued
-  // permits expire or are withdrawn rather than being rejected.
+  // Outcome mix of closed permits (Issued/Expired/Withdrawn/Denied/Not needed).
   const outcomeStats = useMemo(() => {
     const closed = filtered.filter(p => p.isClosed);
     const counts: Record<string, number> = {};
@@ -167,6 +209,13 @@ export default function PermitsPage() {
 
   const outsideCount = (stageCounts["External Agency Review"] ?? 0) + (stageCounts["Awaiting Applicant"] ?? 0);
 
+  // Terminal outcome box: shows the selected outcome, or Issued by default.
+  const terminalOutcome: PermitOutcome = isOutcome(statusFilter) ? statusFilter : "Issued";
+  const terminalCount = useMemo(
+    () => filtered.filter(p => p.outcome === terminalOutcome).length,
+    [filtered, terminalOutcome],
+  );
+
   const districtData = useMemo(() =>
     DISTRICTS.map(d => ({ name: d, count: filtered.filter(p => p.district === d).length }))
   , [filtered]);
@@ -177,7 +226,6 @@ export default function PermitsPage() {
       .sort((a, b) => b.count - a.count)
   , [filtered]);
 
-  // Date-range label: explicit window, or the data's own span when unfiltered.
   const dateRangeLabel = useMemo(() => {
     if (allowedMonths && allowedMonths.length) {
       return `${monthLabel(allowedMonths[0])} – ${monthLabel(allowedMonths[allowedMonths.length - 1])}`;
@@ -189,6 +237,23 @@ export default function PermitsPage() {
   const asOfLabel = data
     ? new Date(data.asOf).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })
     : "";
+
+  // ---- dynamic card titles, driven by the active filters ----
+  const dtPhrase = [
+    districtFilter !== "All" ? districtFilter : null,
+    typeFilter     !== "All" ? typeFilter     : null,
+  ].filter(Boolean).join(" ");
+  const squish = (s: string) => s.replace(/\s+/g, " ").trim();
+
+  const totalLabel = statusFilter === "All"
+    ? squish(`Total ${dtPhrase} Permits`)
+    : squish(`${dtPhrase} ${STATUS_TITLE[statusFilter]}`);
+  const totalSubtitle = statusFilter === "All"
+    ? "active + closed"
+    : isOutcome(statusFilter) ? "closed permits" : "currently under review";
+  const activeLabel   = dtPhrase ? squish(`Active ${dtPhrase} Permits`) : "Active in Pipeline";
+  const procLabel     = dtPhrase ? `Avg Processing Time (${dtPhrase})` : "Avg Processing Time";
+  const outcomesLabel = dtPhrase ? squish(`${dtPhrase} Permit Outcomes`) : "Permit Outcomes";
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -224,7 +289,7 @@ export default function PermitsPage() {
         <div className="bg-white rounded-xl border border-gray-200 px-4 py-3 space-y-2.5">
           <FilterPills label="District"     options={DISTRICTS}    value={districtFilter} onChange={setDistrictFilter} />
           <FilterPills label="Permit type"  options={PERMIT_TYPES} value={typeFilter}     onChange={setTypeFilter} />
-          <FilterPills label="Stage"        options={STAGES}       value={stageFilter}    onChange={setStageFilter} />
+          <StatusFilter value={statusFilter} onChange={setStatusFilter} />
           <FilterPills label="Date range"   options={DATE_OPTIONS} value={dateFilter}     onChange={setDateFilter} />
           {filtersActive && (
             <button onClick={clearFilters} className="flex items-center gap-1 text-xs text-gray-500 hover:text-gray-700 pt-0.5">
@@ -236,15 +301,15 @@ export default function PermitsPage() {
         {/* KPI strip */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <KPICard
-            label={dateFilter === "This year (YTD)" ? "Total Permits (YTD)" : "Total Permits"}
+            label={totalLabel}
             value={filtered.length.toLocaleString()}
             icon={<FileText className="h-5 w-5" />}
-            subtitle="active + closed"
+            subtitle={totalSubtitle}
             footer={`Date Range: ${dateRangeLabel}`}
           />
 
           <KPICard
-            label="Active in Pipeline"
+            label={activeLabel}
             value={activePermits.length.toLocaleString()}
             icon={<FileText className="h-5 w-5" />}
             subtitle="currently under review"
@@ -253,7 +318,7 @@ export default function PermitsPage() {
           {/* Processing time -- two numbers in one card */}
           <div className="bg-white rounded-xl shadow-md border border-gray-100 p-6 hover:shadow-lg transition-shadow col-span-2 md:col-span-1">
             <div className="flex items-start justify-between mb-3">
-              <span className="text-sm font-medium text-gray-500 uppercase tracking-wide">Avg Processing Time</span>
+              <span className="text-sm font-medium text-gray-500 uppercase tracking-wide">{procLabel}</span>
             </div>
             <div className="flex items-end gap-4">
               <div>
@@ -282,7 +347,7 @@ export default function PermitsPage() {
           {/* Permit outcomes -- breakdown instead of a single, misleading rate */}
           <div className="bg-white rounded-xl shadow-md border border-gray-100 p-6 hover:shadow-lg transition-shadow">
             <div className="flex items-start justify-between mb-3">
-              <span className="text-sm font-medium text-gray-500 uppercase tracking-wide">Permit Outcomes</span>
+              <span className="text-sm font-medium text-gray-500 uppercase tracking-wide">{outcomesLabel}</span>
               <span className="text-[#21355a]"><CheckCircle className="h-5 w-5" /></span>
             </div>
             {outcomeStats.total > 0 ? (
@@ -311,15 +376,14 @@ export default function PermitsPage() {
           </div>
         </div>
 
-        {/* Current pipeline snapshot */}
+        {/* Permit lifecycle: active-stage snapshot + terminal outcome box */}
         <div className="bg-white rounded-xl border border-gray-200 p-5">
-          <h3 className="text-sm font-semibold text-[#21355a] mb-1">Current Pipeline Status</h3>
+          <h3 className="text-sm font-semibold text-[#21355a] mb-1">Permit Lifecycle</h3>
           <p className="text-xs text-gray-500 mb-4 max-w-3xl">
-            A live snapshot of the <span className="font-semibold text-gray-700">{activePermits.length.toLocaleString()} permits currently under review</span>,
-            grouped by the stage each one is waiting at right now. These boxes add up to the
-            &ldquo;Active in Pipeline&rdquo; total above. It is a snapshot of where work sits today, not a running total,
-            so a small Submitted count just means few applications are freshly in the door, while most permits spend the
-            longest stretch in External Agency Review.
+            The first four boxes are a live snapshot of active permits, grouped by the stage each is waiting at right now
+            (they add up to the &ldquo;Active in Pipeline&rdquo; total above). The final box, set apart on the right, is the
+            destination: it shows <span className="font-semibold text-gray-700">{terminalOutcome}</span> permits by default, and
+            updates when you pick a different outcome in the Status filter.
           </p>
 
           {outsideCount > 0 && (
@@ -335,32 +399,38 @@ export default function PermitsPage() {
           )}
 
           <div className="flex flex-col sm:flex-row items-stretch gap-2 sm:gap-0">
-            {PIPELINE_STAGES.map((stage, i) => {
-              const meta   = STAGE_META[stage];
-              const count  = stageCounts[stage] ?? 0;
-              const isFpa  = STAGE_CONTROL[stage] === "fpa";
-              const isLast = i === PIPELINE_STAGES.length - 1;
-              const timing = stageTiming?.[stage];
+            {ACTIVE_STAGES.map((stage, i) => {
+              const meta     = STAGE_META[stage];
+              const count    = stageCounts[stage] ?? 0;
+              const isFpa    = STAGE_CONTROL[stage] === "fpa";
+              const selected = statusFilter === stage;
+              const dim      = count === 0 && !selected;
+              const timing   = stageTiming?.[stage];
               return (
                 <div key={stage} className="flex flex-col sm:flex-row items-stretch sm:items-center flex-1">
-                  <div className={`flex flex-col items-center justify-start px-3 py-4 rounded-lg border w-full text-center min-h-[104px] bg-white ${meta.border}`}>
+                  <div className={`flex flex-col items-center justify-start px-3 py-4 rounded-lg border w-full text-center min-h-[104px] bg-white border-gray-200 transition-opacity ${dim ? "opacity-40" : ""} ${selected ? "ring-2 ring-[#21355a] ring-offset-1" : ""}`}>
                     <span className={`text-2xl font-bold ${meta.color}`}>{count.toLocaleString()}</span>
-                    <span className={`text-xs font-medium mt-1 ${meta.labelColor}`}>{meta.label}</span>
+                    <span className={`text-xs font-medium mt-1 ${meta.labelColor}`}>{stage}</span>
                     {timing != null && timing > 0 && (
                       <span className={`text-[10px] mt-2 ${isFpa ? "text-[#21355a]" : "text-gray-400"}`}>
                         ~{timing}d avg in stage
                       </span>
                     )}
                   </div>
-                  {!isLast && (
-                    <>
-                      <ArrowRight className="hidden sm:block h-4 w-4 mx-1 flex-shrink-0 text-gray-300" />
-                      <ArrowRight className="sm:hidden h-4 w-4 text-gray-300 rotate-90 my-1 self-center" />
-                    </>
-                  )}
+                  <ArrowRight className="hidden sm:block h-4 w-4 mx-1 flex-shrink-0 text-gray-300" />
+                  <ArrowRight className="sm:hidden h-4 w-4 text-gray-300 rotate-90 my-1 self-center" />
                 </div>
               );
             })}
+
+            {/* terminal outcome box -- set apart with extra gap + tinted bg */}
+            <div className="flex items-stretch flex-1 sm:pl-2">
+              <div className={`flex flex-col items-center justify-center px-3 py-4 rounded-lg border w-full text-center min-h-[104px] bg-gray-50 border-gray-300 transition-opacity ${terminalCount === 0 && !isOutcome(statusFilter) ? "opacity-40" : ""} ${isOutcome(statusFilter) ? "ring-2 ring-[#21355a] ring-offset-1" : ""}`}>
+                <span className="text-[10px] uppercase tracking-wide text-gray-400 mb-0.5">Outcome</span>
+                <span className={`text-2xl font-bold ${OUTCOME_COLOR[terminalOutcome]}`}>{terminalCount.toLocaleString()}</span>
+                <span className="text-xs font-medium mt-1 text-gray-600">{terminalOutcome}</span>
+              </div>
+            </div>
           </div>
           <p className="text-[10px] text-gray-400 mt-3">
             ~Nd avg in stage = typical days a permit spends in that stage across all permits · navy = FPA-controlled · gray = outside FPA&rsquo;s queue
