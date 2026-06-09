@@ -68,14 +68,18 @@ function FilterPills<T extends string>({
   label, options, value, onChange,
 }: { label: string; options: readonly T[]; value: T | "All"; onChange: (v: T | "All") => void }) {
   return (
-    <div className="flex flex-wrap items-center gap-1.5">
-      <span className="text-xs font-medium text-gray-500 w-24 shrink-0">{label}</span>
-      <button onClick={() => onChange("All")} className={pillCls(value === "All")}>All</button>
-      {options.map(opt => (
-        <button key={opt} onClick={() => onChange(opt === value ? "All" : opt)} className={pillCls(value === opt)}>
-          {opt}
-        </button>
-      ))}
+    // On phones the label sits on its own line above its pills so it is clear
+    // which pills belong to which filter; inline label + pills on sm and up.
+    <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:gap-1.5">
+      <span className="text-xs font-medium text-gray-500 sm:w-24 sm:shrink-0">{label}</span>
+      <div className="flex flex-wrap items-center gap-1.5">
+        <button onClick={() => onChange("All")} className={pillCls(value === "All")}>All</button>
+        {options.map(opt => (
+          <button key={opt} onClick={() => onChange(opt === value ? "All" : opt)} className={pillCls(value === opt)}>
+            {opt}
+          </button>
+        ))}
+      </div>
     </div>
   );
 }
@@ -89,12 +93,14 @@ function StatusFilter({ value, onChange }: { value: StatusValue | "All"; onChang
     </button>
   );
   return (
-    <div className="flex flex-wrap items-center gap-1.5">
-      <span className="text-xs font-medium text-gray-500 w-24 shrink-0">Status</span>
-      {pill("All", "All")}
-      {ACTIVE_STAGES.map(s => pill(s, s))}
-      <span className="text-gray-300 px-1 select-none">|</span>
-      {OUTCOMES.map(o => pill(o, o))}
+    <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:gap-1.5">
+      <span className="text-xs font-medium text-gray-500 sm:w-24 sm:shrink-0">Status</span>
+      <div className="flex flex-wrap items-center gap-1.5">
+        {pill("All", "All")}
+        {ACTIVE_STAGES.map(s => pill(s, s))}
+        <span className="text-gray-300 px-1 select-none">|</span>
+        {OUTCOMES.map(o => pill(o, o))}
+      </div>
     </div>
   );
 }
@@ -344,8 +350,10 @@ export default function PermitsPage() {
             )}
           </div>
 
-          {/* Permit outcomes -- breakdown instead of a single, misleading rate */}
-          <div className="bg-white rounded-xl shadow-md border border-gray-100 p-6 hover:shadow-lg transition-shadow">
+          {/* Permit outcomes -- breakdown instead of a single, misleading rate.
+              Full width on phones (like the processing card) so it is not
+              squeezed into a half column with wrapping text. */}
+          <div className="bg-white rounded-xl shadow-md border border-gray-100 p-6 hover:shadow-lg transition-shadow col-span-2 md:col-span-1">
             <div className="flex items-start justify-between mb-3">
               <span className="text-sm font-medium text-gray-500 uppercase tracking-wide">{outcomesLabel}</span>
               <span className="text-[#21355a]"><CheckCircle className="h-5 w-5" /></span>
@@ -381,7 +389,7 @@ export default function PermitsPage() {
           <h3 className="text-sm font-semibold text-[#21355a] mb-1">Permit Lifecycle</h3>
           <p className="text-xs text-gray-500 mb-4 max-w-3xl">
             The first four boxes are a live snapshot of active permits, grouped by the stage each is waiting at right now
-            (they add up to the &ldquo;Active in Pipeline&rdquo; total above). The final box, set apart on the right, is the
+            (they add up to the &ldquo;Active in Pipeline&rdquo; total above). The final box, set apart at the end, is the
             destination: it shows <span className="font-semibold text-gray-700">{terminalOutcome}</span> permits by default, and
             updates when you pick a different outcome in the Status filter.
           </p>
