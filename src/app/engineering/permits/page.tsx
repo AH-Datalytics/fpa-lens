@@ -25,6 +25,11 @@ const STAGE_META: Record<Stage, { label: string; color: string; labelColor: stri
   "Issued":                { label:"Issued",                color:"text-[#21355a]", labelColor:"text-[#21355a]", border:"border-gray-200" },
 };
 
+// The pipeline visual shows only the four active stages. Every active permit
+// sits in exactly one of these, so their counts add up to "Active in Pipeline".
+// Issued permits have left the pipeline and aren't shown as a stage.
+const PIPELINE_STAGES: Stage[] = ["Submitted", "FPA Review", "External Agency Review", "Awaiting Applicant"];
+
 // Bars are a single brand color -- the hue carries no meaning, it just shows magnitude.
 const BAR_COLOR = "#21355a";
 
@@ -123,7 +128,6 @@ export default function PermitsPage() {
   ), [permits, districtFilter, typeFilter, stageFilter, allowedMonths]);
 
   const activePermits = useMemo(() => filtered.filter(p => p.isActive), [filtered]);
-  const issuedPermits = useMemo(() => filtered.filter(p => p.isApproved), [filtered]);
 
   const avgProcessingDays = useMemo(() => {
     const withDays = filtered.filter(p => p.processingDays != null);
@@ -151,13 +155,12 @@ export default function PermitsPage() {
   }, [filtered]);
 
   const stageCounts = useMemo(() => {
-    const c: Record<Stage, number> = {
-      "Submitted": 0, "FPA Review": 0, "External Agency Review": 0, "Awaiting Applicant": 0, "Issued": 0,
+    const c: Record<string, number> = {
+      "Submitted": 0, "FPA Review": 0, "External Agency Review": 0, "Awaiting Applicant": 0,
     };
-    for (const p of activePermits) if (p.stage !== "Closed") c[p.stage] += 1;
-    c["Issued"] = issuedPermits.length;
+    for (const p of activePermits) if (p.stage !== "Closed") c[p.stage] = (c[p.stage] ?? 0) + 1;
     return c;
-  }, [activePermits, issuedPermits]);
+  }, [activePermits]);
 
   const outsideCount = (stageCounts["External Agency Review"] ?? 0) + (stageCounts["Awaiting Applicant"] ?? 0);
 
@@ -200,16 +203,6 @@ export default function PermitsPage() {
             or a response from the applicant.
             Processing time reflects the full timeline from submission to decision, including any periods outside FPA&rsquo;s control.
           </p>
-        </div>
-
-        {/* Live-data banner */}
-        <div className="flex items-start gap-3 bg-sky-50 border border-sky-200 rounded-xl px-4 py-3 text-sm text-sky-900">
-          <CheckCircle className="h-4 w-4 mt-0.5 flex-shrink-0 text-sky-600" />
-          <div>
-            <span className="font-semibold">Live data.</span>{" "}
-            Figures come directly from the Vinformatix Permitting System{asOfLabel ? `, refreshed ${asOfLabel}` : ""}.
-            This layout is pending final approval from FPA leadership.
-          </div>
         </div>
 
         {loading ? (
@@ -292,9 +285,16 @@ export default function PermitsPage() {
           />
         </div>
 
-        {/* Pipeline flow */}
+        {/* Current pipeline snapshot */}
         <div className="bg-white rounded-xl border border-gray-200 p-5">
-          <h3 className="text-sm font-semibold text-[#21355a] mb-1">Permit Pipeline: Where Things Stand</h3>
+          <h3 className="text-sm font-semibold text-[#21355a] mb-1">Current Pipeline Status</h3>
+          <p className="text-xs text-gray-500 mb-4 max-w-3xl">
+            A live snapshot of the <span className="font-semibold text-gray-700">{activePermits.length.toLocaleString()} permits currently under review</span>,
+            grouped by the stage each one is waiting at right now. These boxes add up to the
+            &ldquo;Active in Pipeline&rdquo; total above. It is a snapshot of where work sits today, not a running total,
+            so a small Submitted count just means few applications are freshly in the door, while most permits spend the
+            longest stretch in External Agency Review.
+          </p>
 
           {outsideCount > 0 && (
             <div className="flex items-start gap-2 mb-4 text-xs text-amber-800 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">
@@ -309,20 +309,20 @@ export default function PermitsPage() {
           )}
 
           <div className="flex flex-col sm:flex-row items-stretch gap-2 sm:gap-0">
-            {STAGES.map((stage, i) => {
+            {PIPELINE_STAGES.map((stage, i) => {
               const meta   = STAGE_META[stage];
               const count  = stageCounts[stage] ?? 0;
               const isFpa  = STAGE_CONTROL[stage] === "fpa";
-              const isLast = i === STAGES.length - 1;
+              const isLast = i === PIPELINE_STAGES.length - 1;
               const timing = stageTiming?.[stage];
               return (
                 <div key={stage} className="flex flex-col sm:flex-row items-stretch sm:items-center flex-1">
                   <div className={`flex flex-col items-center justify-start px-3 py-4 rounded-lg border w-full text-center min-h-[104px] bg-white ${meta.border}`}>
                     <span className={`text-2xl font-bold ${meta.color}`}>{count.toLocaleString()}</span>
                     <span className={`text-xs font-medium mt-1 ${meta.labelColor}`}>{meta.label}</span>
-                    {!isLast && timing != null && timing > 0 && (
+                    {timing != null && timing > 0 && (
                       <span className={`text-[10px] mt-2 ${isFpa ? "text-[#21355a]" : "text-gray-400"}`}>
-                        ~{timing}d avg in review
+                        ~{timing}d avg in stage
                       </span>
                     )}
                   </div>
@@ -337,8 +337,7 @@ export default function PermitsPage() {
             })}
           </div>
           <p className="text-[10px] text-gray-400 mt-3">
-            First four boxes show permits currently at that stage; Issued shows permits issued in the selection.
-            ~Nd avg in review = typical days in that stage across all permits · navy = FPA-controlled · gray = outside FPA&rsquo;s queue
+            ~Nd avg in stage = typical days a permit spends in that stage across all permits · navy = FPA-controlled · gray = outside FPA&rsquo;s queue
           </p>
         </div>
 
