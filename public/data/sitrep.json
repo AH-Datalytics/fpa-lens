@@ -1,6 +1,6 @@
 {
   "reportMonth": "June 2026",
-  "executiveSummary": "System conditions remain stable and overall operational readiness across the hurricane protection system remains Green, with all major flood protection assets operational and second-quarter inspections nearing completion. Project execution is a major focus, with construction underway on the LPV Access Bridge and Orpheum Slope Paving projects, and engineering advancing several critical flood protection initiatives. While staffing shortages remain the agency's primary readiness challenge, the organization remains focused on hurricane season operations, project execution, workforce development, and infrastructure reliability.",
+  "executiveSummary": "System conditions remain stable and overall operational readiness across the hurricane protection system remains Green. All major flood protection assets are operational, second-quarter inspections are nearing completion, and no threats to system integrity have been identified. While staffing shortages remain the agency's primary readiness challenge, the organization remains focused on hurricane season operations, project execution, workforce development, infrastructure reliability, and maintaining public confidence in the region's flood protection system.",
   "readiness": {
     "infrastructure": "Green",
     "staffing": "Amber",
@@ -26,7 +26,7 @@
     "Seasonal storm readiness measures, including sandbag staging and facility preparation, are underway.",
     "Critical facilities, generators, and support infrastructure remain operational.",
     "Routine equipment maintenance and repairs ongoing.",
-    "84 of 105 valves inspected in Q2 rotational valve testing.",
+    "Rotational Valve Testing: 84 of 105 valves inspected in Q2.",
     "All levee turf maintenance targets met."
   ],
   "projects": [
@@ -52,7 +52,7 @@
     },
     {
       "name": "London Avenue Canal Erosion Mitigation (Phase 1)",
-      "status": "95% Plans and Specifications submitted; CEA negotiations ongoing; ready to advertise and award for construction to start at end of hurricane season."
+      "status": "95% plans and specifications submitted; CEA negotiations ongoing; ready to advertise/award for construction to start at end of hurricane season."
     },
     {
       "name": "40 Arpent Sheet Pile Rehabilitation (Phase 2)",
@@ -60,11 +60,11 @@
     },
     {
       "name": "Franklin Herbicide Vehicle Containment",
-      "status": "Informal bid request issued; bid opening June 4, 2026."
+      "status": "Informal bid request; bid opening June 4, 2026."
     },
     {
       "name": "Lakeshore Drive Flooding Warning Signs",
-      "status": "Warning sign systems reviewed, selected, and ordered; exploring exact locations and coordinating design for installation."
+      "status": "Warning sign systems reviewed, selected, and ordered; exploring locations and coordinating design for installation."
     }
   ],
   "source": "sitrep_2026-06.docx",

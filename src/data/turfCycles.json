@@ -4,7 +4,7 @@
     "year": 2026,
     "month": 6
   },
-  "source": "turf-maintenance_2026-06.xlsx",
+  "source": "turf-maintenance_2026.xlsx",
   "reaches": [
     {
       "zone": "New Orleans East",
@@ -15,7 +15,7 @@
     {
       "zone": "New Orleans East",
       "reach": "LPV-109",
-      "cycle1Pct": 0.25,
+      "cycle1Pct": 1.0,
       "cycle2Pct": null
     },
     {
@@ -27,13 +27,13 @@
     {
       "zone": "Southside MRGO & Citrus Back",
       "reach": "Southside MRGO (LPV-142/LPV-143)",
-      "cycle1Pct": 0.5,
+      "cycle1Pct": 1.0,
       "cycle2Pct": null
     },
     {
       "zone": "Southside MRGO & Citrus Back",
       "reach": "Citrus Back Levee - LPV-115 (Paris Rd. Bridge to Jourdan Rd)",
-      "cycle1Pct": 0.0,
+      "cycle1Pct": 1.0,
       "cycle2Pct": null
     },
     {
@@ -51,13 +51,13 @@
     {
       "zone": "Lakefront & Outfall Canals",
       "reach": "IHNC West",
-      "cycle1Pct": 0.5,
+      "cycle1Pct": 1.0,
       "cycle2Pct": null
     },
     {
       "zone": "Lakefront & Outfall Canals",
       "reach": "IHNC East (E-13 to N-01)",
-      "cycle1Pct": 0.0,
+      "cycle1Pct": 1.0,
       "cycle2Pct": null
     },
     {
@@ -87,31 +87,31 @@
     {
       "zone": "Citrus Lakefront & Eastern Interior",
       "reach": "NASA",
-      "cycle1Pct": 0.0,
+      "cycle1Pct": 1.0,
       "cycle2Pct": null
     },
     {
       "zone": "Citrus Lakefront & Eastern Interior",
       "reach": "Entergy",
-      "cycle1Pct": 0.0,
+      "cycle1Pct": 1.0,
       "cycle2Pct": null
     },
     {
       "zone": "Upper Protection",
       "reach": "Upper Protection (Earhart Blvd to the MRL)",
-      "cycle1Pct": 0.0,
+      "cycle1Pct": 1.0,
       "cycle2Pct": null
     },
     {
       "zone": "MRL",
       "reach": "MRL (Jefferson Parish line to EB-00)",
-      "cycle1Pct": 0.0,
+      "cycle1Pct": 1.0,
       "cycle2Pct": null
     },
     {
       "zone": "Florida Ave",
       "reach": "Florida Ave",
-      "cycle1Pct": 0.0,
+      "cycle1Pct": 1.0,
       "cycle2Pct": null
     },
     {
@@ -123,49 +123,49 @@
     {
       "zone": "MRL",
       "reach": "IHNC East to the St. Bernard Parish Line",
-      "cycle1Pct": 0.0,
+      "cycle1Pct": 1.0,
       "cycle2Pct": null
     },
     {
       "zone": "EJ Lakefront Reach 1-5",
       "reach": "St. Charles/Jeff Parish line to 17th St. Canal on EJ side",
-      "cycle1Pct": 0.5,
+      "cycle1Pct": 1.0,
       "cycle2Pct": null
     },
     {
       "zone": "EJ MRL",
       "reach": "Monticello to Alliance",
-      "cycle1Pct": 0.25,
+      "cycle1Pct": 1.0,
       "cycle2Pct": null
     },
     {
       "zone": "EJ MRL",
       "reach": "St. Charles/Jeff Parish line",
       "cycle1Pct": 1.0,
-      "cycle2Pct": null
+      "cycle2Pct": 0.25
     },
     {
       "zone": "EJ West Return",
       "reach": "Airline Hwy & Lesan Dr to St. Charles/Jeff Parish line (Reach 1)",
       "cycle1Pct": 1.0,
-      "cycle2Pct": null
+      "cycle2Pct": 1.0
     },
     {
       "zone": "EJ East Return",
       "reach": "Along 17th St. Canal to Pinks St",
-      "cycle1Pct": 0.0,
+      "cycle1Pct": 1.0,
       "cycle2Pct": null
     },
     {
       "zone": "LPV-144 through LPV-149",
       "reach": "Bayou Dupre Structure (St. Bernard side) to HWY 39 at MRL",
-      "cycle1Pct": 0.25,
+      "cycle1Pct": 1.0,
       "cycle2Pct": null
     },
     {
       "zone": "Non-Federal Back Levee/NFL",
       "reach": "40 Arpent - Orleans Parish line to Hwy 46 Reggion in Lower St Bernard",
-      "cycle1Pct": 0.0,
+      "cycle1Pct": 1.0,
       "cycle2Pct": null
     },
     {
