@@ -85,9 +85,11 @@ inspections: {
   "84 of 105 valves"); null otherwise.
 - `note`: short verbatim-ish phrase for display, or null.
 
-Status → color mapping used downstream:
-`complete` → GREEN, `on-track` → GREEN, `behind` → AMBER,
-`not-reported` → keep curated baseline status (no change).
+Status → `percentComplete` mapping used downstream (drives the existing on-pace
+grading; explicit `completed`/`total` counts take precedence over status):
+`complete` → 100%; `on-track` → the report-date expected % (sits on the pace
+line); `behind` → a set fraction below expected; `not-reported` → the
+report-date expected % (on pace, i.e. unmentioned = business as usual).
 
 ### 2. Overlay module (`src/data/sitrepOverlay.ts`, consumed by `siteData.ts`)
 
@@ -113,33 +115,44 @@ Fields overlaid:
 | `kpiMetrics.permitsIssued` (label, value, source) | `permits.{issued,period}` | label → "Permits Issued (<month>)" |
 | `operationsData.permitsIssued[]` | `permits` | append/replace the latest-month entry |
 | `financialData.capitalProjects` | `projects[]` | name + status text → status enum + description |
-| `readinessMetrics.cpraQuarterlyInspection` (status) | `inspections.cpra` | status-driven |
-| `readinessMetrics.usaceSemiAnnualInspection` (status) | `inspections.usace` | status-driven |
-| `readinessMetrics.valveExercises` (status, completed, total) | `inspections.valves` | status-driven; count shown when present |
+| `readinessMetrics.cpraQuarterlyInspection.percentComplete` | `inspections.cpra` | sets percent; on-pace grading unchanged (see §3) |
+| `readinessMetrics.usaceSemiAnnualInspection.percentComplete` | `inspections.usace` | sets percent; on-pace grading unchanged (see §3) |
+| `readinessMetrics.valveExercises` (percent, completed, total) | `inspections.valves` | sets percent; real count shown when present |
 
 Fields **not** overlaid (stay curated): staffing vacancy count, staff headcount
 (`kpiMetrics.staffCount`), PCCP repair detail (`operationsData.pccpRepairStatus`),
 infrastructure asset counts. See Conflict policy.
 
-### 3. Inspection cards become status-first
+### 3. Inspection cards stay on-pace (pace-bar), fed by the SITREP
 
-Today the CPRA / USACE / valve cards grade a curated percentage against a
-straight-line pace anchored on `dataAsOf`. Because `dataAsOf` now auto-bumps,
-grading a stale percentage against a newer date would flip cards inaccurately
-(the exact bug fixed in the manual June roll). To remove the coupling:
+The CPRA / USACE / valve cards keep their current "% on pace" pace-bar grading
+unchanged (actual vs straight-line expected for the report date, Green >= 90 /
+Amber >= 80 / Red < 80). The card UI is untouched. The only change is where each
+inspection's `percentComplete` comes from: instead of a hand-curated number, the
+overlay sets it from the SITREP each month, so it rolls in lockstep with
+`dataAsOf` and is never stale. The flip bug fixed in the manual June roll
+happened only because the percentage and the date moved independently; here they
+are recomputed from the same SITREP, so they cannot drift apart.
 
-- The curated baseline carries an explicit `status` (GREEN/AMBER/RED) per
-  inspection, not a live-graded percentage.
-- The SITREP overlay overrides that status when the program is reported;
-  `not-reported` keeps the baseline status (no auto re-grade).
-- A real count (e.g. valve 84/105) is still displayed as a number/progress;
-  narrative-only items show a status badge instead of a fabricated percentage.
-- Hurricane/River gate seasonality (in-season detection from `periodStart`/
-  `periodEnd` vs `dataAsOf`) is unchanged — those are date-window driven, not
-  percentage-graded, so the `dataAsOf` bump behaves correctly.
+`percentComplete` derivation per inspection:
 
-This is the largest implementation piece: it touches the inspection card props
-on `/infrastructure` and `/engineering` and `src/lib/readinessRollups.ts`.
+| SITREP signal | `percentComplete` used | resulting card |
+| --- | --- | --- |
+| explicit count (e.g. valve 84/105) | the real percent (80%) | graded on pace |
+| status `complete` | 100% | Green |
+| status `on-track` ("nearing completion") | report-date expected % (on the pace line) | Green (on pace) |
+| status `behind` | a set fraction below expected | Amber/Red |
+| status `not-reported` | report-date expected % (on pace) | Green; unmentioned = business as usual |
+
+Anchoring narrative-only items to the report-date expected percentage makes the
+bar read honestly as "on pace" without fabricating an arbitrary number, and it
+cannot go stale relative to `dataAsOf` because both derive from the same SITREP.
+Hurricane/River gate seasonality (date-window driven, not percentage-graded) is
+unchanged.
+
+This touches the overlay plus the percentage inputs to the existing grading in
+`src/lib/readinessRollups.ts` and the infra/engineering pages; the card markup
+is unchanged.
 
 ### 4. Success-summary email (`scripts/refresh-data.mjs` + a small notifier)
 
@@ -190,7 +203,9 @@ Unit tests for the overlay (pure functions, fixture `sitrep.json` inputs):
 - null/missing field → curated value preserved
 - malformed `sitrep.json` → full fallback to curated baseline
 - staffing vacancy count preserved even though staffing color overlays
-- inspection `status` → correct GREEN/AMBER/RED; `not-reported` keeps baseline
+- inspection signal → correct `percentComplete` (explicit count used directly;
+  status anchored to report-date pace); existing on-pace grading then yields the
+  expected GREEN/AMBER/RED
 - capital `projects[]` map to the expected status enum + description
 
 Extractor: schema-mapping test against a saved SITREP-text fixture (mock the
