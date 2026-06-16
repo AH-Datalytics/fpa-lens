@@ -45,6 +45,15 @@ jobs:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: node scripts/refresh-data.mjs
 
+      # Email the data-ops contact when a new SITREP advances the dashboard to a
+      # new report month. Runs before the commit step so HEAD is still the prior
+      # month for the comparison. Self-silences on a same-month re-parse.
+      - name: Notify on SITREP roll
+        if: success()
+        env:
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+        run: node scripts/notify-sitrep-roll.mjs
+
       # Commit even on partial failure so categories that DID update still publish.
       - name: Commit refreshed data
         if: always()
