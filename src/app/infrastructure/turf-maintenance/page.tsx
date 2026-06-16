@@ -383,6 +383,51 @@ export default function GrassCuttingPage() {
                 </div>
               </div>
             </div>
+            {/* Mowing-data freshness. The mowing workbook updates weekly,
+                more often than the monthly SITREP roll, so the period is
+                stated explicitly here. */}
+            <p className="mt-6 pt-4 border-t border-gray-100 text-xs text-gray-500 leading-relaxed">
+              Mowing data reflects the{" "}
+              <strong className="text-gray-700">{reportingMonth.label}</strong>{" "}
+              reporting period and is updated weekly as the maintenance team
+              submits progress.
+            </p>
+          </div>
+        </section>
+
+        {/* OPERATIONAL NOTE — manually maintained, dated context for months
+            where conditions (e.g. June 2026 rainfall) materially affect mowing
+            progress. Neutral/informational by design: it explains conditions
+            without adjusting status colors or excusing the numbers. Update the
+            heading and body, or remove the section, when the reporting period
+            rolls forward and conditions change. */}
+        <section className="mb-12">
+          <div className="rounded-xl border border-gray-200 border-l-4 border-l-[#21355a] bg-white shadow-md p-6">
+            <div className="flex items-start gap-2 mb-3">
+              <Info
+                className="h-4 w-4 text-[#21355a] flex-shrink-0 mt-1"
+                aria-hidden="true"
+              />
+              <h3 className="text-sm font-bold text-[#21355a]">
+                Operational Note — June 2026
+              </h3>
+            </div>
+            <div className="space-y-3 text-sm text-gray-700 leading-relaxed max-w-3xl">
+              <p>
+                Recent rainfall has reduced the number of workable mowing days
+                across portions of the system. For safety and turf protection,
+                mowing may be delayed when levee slopes, access roads, or work
+                areas are saturated. SLFPA-East is using additional crews and
+                overtime, including scheduled off-day work, to recover
+                production where conditions allow.
+              </p>
+              <p>
+                The dashboard will continue to show actual progress against
+                monthly mowing targets. Status colors are not adjusted for
+                weather impacts, but operational notes will be provided when
+                conditions materially affect monthly progress.
+              </p>
+            </div>
           </div>
         </section>
 
@@ -454,6 +499,17 @@ export default function GrassCuttingPage() {
               target (zone acres × cycles per month). The dark tick marks
               where Cycle 1 should land for zones running more than once per
               month.
+            </p>
+            <p className="text-xs text-gray-700 leading-relaxed mb-2">
+              The mowing status reflects progress against the monthly mowing
+              target for each zone. It is an operational production indicator
+              and does not, by itself, indicate a deficiency in the flood
+              protection system. Weather, saturated ground conditions, site
+              access, safety considerations, equipment availability, and other
+              operating conditions may affect daily mowing production. When
+              those conditions materially affect monthly progress, SLFPA-East
+              may provide an operational note explaining the cause and recovery
+              actions.
             </p>
             <ul className="text-xs text-gray-700 space-y-0.5">
               <li className="flex items-center gap-1.5">
