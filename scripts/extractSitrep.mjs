@@ -72,15 +72,67 @@ const SCHEMA = {
     },
     projects: {
       type: "array",
-      description: "Capital projects with a short status",
+      description: "Capital projects with a short status and lifecycle phase",
       items: {
         type: "object",
-        properties: { name: { type: "string" }, status: { type: "string" } },
-        required: ["name", "status"],
+        properties: {
+          name: { type: "string" },
+          status: { type: "string", description: "Short status sentence as stated in the SITREP" },
+          phase: {
+            type: "string",
+            enum: ["Pre-Award", "In Bidding", "In Design", "Awarded", "In Progress", "Complete"],
+            description:
+              "Lifecycle phase implied by the status: 'Pre-Award' (path/award pending), 'In Bidding' " +
+              "(bid issued/opened, award pending), 'In Design' (plans & specs underway), 'Awarded' " +
+              "(contract executed, not yet mobilized), 'In Progress' (construction underway/closeout), " +
+              "'Complete' (finished).",
+          },
+        },
+        required: ["name", "status", "phase"],
       },
     },
+    inspections: {
+      type: "object",
+      description:
+        "Status of recurring inspection programs (from Readiness / Department Execution / Maintenance). " +
+        "For each, set status to one of: 'complete' (finished, e.g. 'complete with no significant findings'), " +
+        "'on-track' (underway or nearing completion, on pace), 'behind' (delayed or off pace), or " +
+        "'not-reported' (not mentioned in this SITREP). Use the status enum only; never invent a percentage.",
+      properties: {
+        cpra: {
+          type: "object",
+          description: "CPRA state quarterly levee inspection",
+          properties: {
+            status: { type: ["string", "null"], enum: ["complete", "on-track", "behind", "not-reported", null] },
+            note: { type: ["string", "null"], description: "Short phrase as stated, or null" },
+          },
+          required: ["status", "note"],
+        },
+        usace: {
+          type: "object",
+          description: "USACE federal semi-annual inspection (levees, floodwalls, PCCPs, complex structures)",
+          properties: {
+            status: { type: ["string", "null"], enum: ["complete", "on-track", "behind", "not-reported", null] },
+            note: { type: ["string", "null"], description: "Short phrase as stated, or null" },
+          },
+          required: ["status", "note"],
+        },
+        valves: {
+          type: "object",
+          description: "Rotational valve testing / quarterly valve exercises",
+          properties: {
+            status: { type: ["string", "null"], enum: ["complete", "on-track", "behind", "not-reported", null] },
+            completed: { type: ["integer", "null"], description: "Valves inspected this cycle, if a count is stated (e.g. 84 of 105 -> 84)" },
+            total: { type: ["integer", "null"], description: "Total valves in the cycle, if stated (e.g. 84 of 105 -> 105)" },
+            note: { type: ["string", "null"], description: "Short phrase as stated, or null" },
+          },
+          required: ["status", "completed", "total", "note"],
+        },
+      },
+      required: ["cpra", "usace", "valves"],
+    },
   },
-  required: ["reportMonth", "executiveSummary", "readiness", "permits", "safety", "staffing", "maintenanceActivities", "projects"],
+  required: ["reportMonth", "executiveSummary", "readiness", "permits", "safety", "staffing", "maintenanceActivities", "projects", "inspections"],
 };
 
 const SYSTEM = [
@@ -88,6 +140,8 @@ const SYSTEM = [
   "monthly Regional Director SITREP. Extract ONLY facts explicitly stated in the document.",
   "If a value is not present, use null (or an empty array). Never infer or estimate numbers.",
   "Readiness colors must be exactly Green, Amber, or Red as written.",
+  "For inspections, map the narrative to the status enum (complete/on-track/behind/not-reported);",
+  "only fill valve completed/total when an explicit count like '84 of 105' is stated.",
 ].join(" ");
 
 function resolveInput() {

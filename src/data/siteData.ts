@@ -10,7 +10,18 @@
  * 1. Replace placeholder values with actual data
  * 2. Update the source comment
  * 3. Update lastUpdated date
+ *
+ * The SITREP-derived fields below (dataAsOf, readiness colors, KPIs, permits,
+ * capital projects, inspection percentages) are the curated BASELINE. At the
+ * bottom of this file, applySitrep() overlays the latest monthly SITREP
+ * (public/data/sitrep.json, produced weekly by the SharePoint pipeline) on top
+ * of them, advancing the site to the newest report month automatically. The
+ * overlay is a no-op unless the SITREP month is newer than `readinessMetrics.
+ * dataAsOf`, so this file always renders correctly on its own as the fallback.
  */
+
+import sitrepDigest from "../../public/data/sitrep.json";
+import { applySitrep } from "./sitrepOverlay";
 
 // ============================================================================
 // SITE METADATA
@@ -919,3 +930,18 @@ export function formatCurrency(amount: number): string {
 export function formatNumber(num: number): string {
   return new Intl.NumberFormat('en-US').format(num);
 }
+
+// ============================================================================
+// SITREP OVERLAY
+// ============================================================================
+// Overlay the latest monthly SITREP onto the curated baselines above. Mutates
+// the exported objects in place (preserving their getters) only when the SITREP
+// month is newer than the baseline `readinessMetrics.dataAsOf`; otherwise this
+// is a no-op and the curated values stand. See sitrepOverlay.ts.
+applySitrep(sitrepDigest, {
+  readinessMetrics,
+  systemReadiness,
+  kpiMetrics,
+  operationsData,
+  financialData,
+});
