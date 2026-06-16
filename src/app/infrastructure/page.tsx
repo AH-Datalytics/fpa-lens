@@ -260,9 +260,16 @@ export default function OurSystemPage() {
       ? "GREEN"
       : "NEUTRAL";
 
-  // Valve exercises (quarterly — use SITREP percent complete directly)
+  // Valve exercises (quarterly — graded time-relative like CPRA/USACE)
   const ve = readinessMetrics.valveExercises;
-  const veStatus = statusFromRatio(ve.percentComplete);
+  const veExpected = expectedFromRate(
+    ve.monthlyRate,
+    new Date(ve.periodStart + "T00:00:00"),
+    asOf,
+    100,
+  );
+  const veRatio = veExpected > 0 ? (ve.percentComplete / veExpected) * 100 : 100;
+  const veStatus = statusFromRatio(veRatio);
 
   // Turf maintenance rollup. Each zone produces a Green/Amber/Red KPI
   // from its monthly progress; "on pace" = Green. Zones without
@@ -525,9 +532,9 @@ export default function OurSystemPage() {
                   actual={ve.currentQuarterStatus}
                   status={veStatus}
                   progress={{
-                    actual: Math.round((ve.percentComplete / 100) * 104),
-                    expected: 104,
-                    total: 104,
+                    actual: ve.completed,
+                    expected: Math.round((veExpected / 100) * ve.total),
+                    total: ve.total,
                     unit: "valves",
                   }}
                 />

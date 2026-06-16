@@ -89,8 +89,8 @@ export const systemReadiness = {
     {
       name: "Infrastructure Readiness",
       status: "GREEN" as StatusLevel,
-      description: "Q1 field inspections submitted to CPRA; Q2 field inspections underway; all LPV levee and floodwall USACE inspections complete with no significant findings",
-      source: "May 2026 SITREP",
+      description: "Q1 field inspections submitted to CPRA; Q2 field inspections nearing completion; all LPV, PCCP, and Complex Structures USACE inspections complete with no significant findings",
+      source: "June 2026 SITREP",
     },
     {
       name: "Staffing Readiness",
@@ -107,13 +107,13 @@ export const systemReadiness = {
       name: "Financial Readiness",
       status: "GREEN" as StatusLevel,
       description: "Nothing significant to report",
-      source: "May 2026 SITREP",
+      source: "June 2026 SITREP",
     },
     {
       name: "Media Coverage",
       status: "GREEN" as StatusLevel,
       description: "Nothing significant to report",
-      source: "May 2026 SITREP",
+      source: "June 2026 SITREP",
     },
   ],
   alerts: [] as { title: string; description: string; severity: string; source: string }[],
@@ -141,19 +141,20 @@ export const systemReadiness = {
 // ============================================================================
 
 export const kpiMetrics = {
-  // All from May 2026 SITREP unless noted
+  // All from June 2026 SITREP unless noted (staffCount headcount is still as of
+  // May 1; the June SITREP did not restate a total headcount).
   systemReadiness: {
     label: "System Readiness",
     value: "GREEN",
     type: "status" as const,
-    source: "May 2026 SITREP",
+    source: "June 2026 SITREP",
   },
   pccpPumps: {
     label: "PCCP Pumps Available",
     value: 17,
     total: 17,
     unit: "pumps",
-    source: "May 2026 SITREP",
+    source: "June 2026 SITREP",
   },
   ytdAccidents: {
     label: "YTD Recordable Accidents",
@@ -167,7 +168,7 @@ export const kpiMetrics = {
     value: 100,
     total: 100,
     unit: "% complete",
-    source: "May 2026 SITREP",
+    source: "June 2026 SITREP",
   },
   staffCount: {
     label: "Total Staff",
@@ -177,9 +178,9 @@ export const kpiMetrics = {
     source: "May 2026 SITREP",
   },
   permitsIssued: {
-    label: "Permits Issued (Apr)",
-    value: 27,
-    source: "May 2026 SITREP",
+    label: "Permits Issued (May)",
+    value: 19,
+    source: "June 2026 SITREP",
   },
 };
 
@@ -236,8 +237,13 @@ export const infrastructureAssets = {
 // Amber / <80 Red against expected progress for the current date.
 // ============================================================================
 export const readinessMetrics = {
-  // Source: May 2026 SITREP (data reported as of report generation)
-  dataAsOf: "2026-05-01",
+  // Source: June 2026 SITREP (data reported as of report generation).
+  // Rolled May -> June 2026 off the June SITREP (sitrep_2026-06.docx in
+  // SharePoint, parsed to public/data/sitrep.json). NOTE: this date is also the
+  // "as of" reference for the inspection pace grading below, so the CPRA and
+  // USACE percentages were advanced to their June status in the same roll to
+  // keep the cards truthful (see those entries).
+  dataAsOf: "2026-06-01",
   // Hurricane gate annual inspections: 161 gates, tested Jan 1 to Jun 1
   // (5-month window), 32.2/month. Per Jeff's "FPA Lens Gate and Valve Testing"
   // workbook, Apr 2026 update. Director update Apr 2026: progress now reflects
@@ -270,15 +276,22 @@ export const readinessMetrics = {
     mandate: "USACE O&M Manual",
     source: "FY26 schedule; last cycle (Oct-Dec 2025) completed",
   },
-  // Quarterly valve exercises: 104 valves total, 34.67/month (104/3) expected.
-  // Per Jeff's "FPA Lens Gate and Valve Testing" workbook, Apr 2026 update
-  // (corrected from earlier 103 valves / 34.33/month).
+  // Quarterly valve exercises, graded time-relative like CPRA/USACE (percent
+  // vs straight-line pace for the report date), not raw percent. June 2026
+  // SITREP: 84 of 105 valves inspected in Q2 rotational testing (~80%). ~80%
+  // about two months into the Apr-Jun quarter is ahead of the ~67% expected
+  // pace, so this reads on pace / Green. monthlyRate is 100%/3mo.
   valveExercises: {
-    percentComplete: 92,
-    monthlyRate: 34.67,
+    percentComplete: 80,
+    completed: 84,
+    total: 105,
+    currentQuarter: "Q2 2026",
+    periodStart: "2026-04-01",
+    periodEnd: "2026-06-30",
+    monthlyRate: 33.33,
     mandate: "USACE O&M Manual",
-    currentQuarterStatus: "Q1 2026 inspections and exercises complete",
-    source: "Apr 2026 SITREP",
+    currentQuarterStatus: "84 of 105 valves inspected in Q2 rotational testing",
+    source: "June 2026 SITREP",
   },
   // Monthly turf maintenance: 7,060 acres/month target (3,530 acres cut twice)
   turfMaintenance: {
@@ -293,32 +306,34 @@ export const readinessMetrics = {
   // point in time (not against 100% complete).
   cpraQuarterlyInspection: {
     currentQuarter: "Q2 2026",
-    // Q2 just started Apr 1; straight-line for May 8 = ~40% (1.25 months of
-    // 33.33%/mo rate). SITREP confirms "2nd quarter field inspections
-    // underway" without a specific percent — bump to actual % when the next
-    // SITREP gives one.
-    currentQuarterPercent: 40,
+    // June 2026 SITREP: "second-quarter field inspections nearing completion."
+    // The SITREP is narrative (no exact percent), so this reflects "nearing
+    // completion" against ~67% straight-line expected for the June-1 as-of date
+    // (ahead of pace -> Green). Replace with an exact figure if a future SITREP
+    // states one. (Was 40% / "Q2 underway" on the May SITREP.)
+    currentQuarterPercent: 90,
     periodStart: "2026-04-01",
     periodEnd: "2026-06-30",
     monthlyRate: 33.33,
     mandate: "CPRA",
     reportSubmittedDate: null,
-    source: "May 2026 SITREP (Q1 submitted to CPRA; Q2 field inspections underway)",
+    source: "June 2026 SITREP (Q1 submitted to CPRA; Q2 field inspections nearing completion)",
   },
   // USACE semi-annual inspection: 16.67%/month over the current half (Jan-Jun
   // or Jul-Dec). Status is graded against straight-line expected progress for
   // the report date, not raw percent complete (so 50% mid-half reads as on-pace).
   usaceSemiAnnualInspection: {
-    // May SITREP confirms LPV complete with no significant findings; PCCP/Complex
-    // were in progress in April. Tracking on-pace (~70% for day 128 of 181).
-    currentHalfPercent: 70,
+    // June 2026 SITREP: LPV, PCCP, and Complex Structures USACE inspections all
+    // complete with no significant findings (PCCP/Complex were still in progress
+    // at ~70% on the May SITREP). Near-complete for the Jan-Jun half -> Green.
+    currentHalfPercent: 92,
     periodStart: "2026-01-01",
     periodEnd: "2026-06-30",
     monthlyRate: 16.67,
     mandate: "USACE",
     reportSubmittedDate: null,
-    status: "All LPV levee and floodwall USACE inspections complete with no significant findings",
-    source: "May 2026 SITREP",
+    status: "All LPV, PCCP, and Complex Structures USACE inspections complete with no significant findings",
+    source: "June 2026 SITREP",
   },
   // Navigable floodgates operability
   navigableFloodgatesOperable: {
@@ -422,43 +437,63 @@ export const financialData = {
     },
   ],
 
-  // Source: Apr 2026 SITREP
+  // Source: June 2026 SITREP. Completed projects roll off this list; the
+  // Lakeside Drive (Elysian Fields to Franklin Ave) safety project closed out
+  // and is no longer reported as active.
   capitalProjects: [
     {
       name: "Foreshore Erosion Repair",
-      status: "In Progress",
-      description: "USACE has determined path forward; target award June 2026",
-      source: "Apr 2026 SITREP",
+      status: "Pre-Award",
+      description: "USACE has determined a revised path forward; award date pending the revised path.",
+      source: "June 2026 SITREP",
     },
     {
       name: "West Return Wall Splash Pad",
       status: "In Progress",
-      description: "Construction ongoing, approximately 95% complete",
-      source: "Apr 2026 SITREP",
+      description: "Construction substantially complete; transitioning into closeout phase.",
+      source: "June 2026 SITREP",
     },
     {
       name: "LPV Access Bridge",
-      status: "Awarded",
-      description: "Contract executed; preconstruction meeting scheduled",
-      source: "Apr 2026 SITREP",
+      status: "In Progress",
+      description: "Construction has begun; contractor mobilizing; RFI and shop drawing submittals underway.",
+      source: "June 2026 SITREP",
     },
     {
       name: "Orpheum Slope Paving",
-      status: "Awarded",
-      description: "Awarded during February Board Meeting; contract execution ongoing",
-      source: "Apr 2026 SITREP",
+      status: "In Progress",
+      description: "Construction has begun; contractor mobilized.",
+      source: "June 2026 SITREP",
     },
     {
-      name: "Lakeside Drive (Elysian Fields to Franklin Ave)",
-      status: "Complete",
-      description: "Safety improvement project completed on schedule",
-      source: "Apr 2026 SITREP",
-    },
-    {
-      name: "Franklin Ave Vault 4",
+      name: "Franklin Ave. Vault 4 Generator Replacement",
       status: "In Bidding",
-      description: "Final bid documents under review; advertisement to follow",
-      source: "Apr 2026 SITREP",
+      description: "Bid opened May 26, 2026; Board approval scheduled June 17, 2026.",
+      source: "June 2026 SITREP",
+    },
+    {
+      name: "London Avenue Canal Erosion Mitigation (Phase 1)",
+      status: "In Design",
+      description: "95% of plans and specifications submitted; CEA negotiations ongoing; ready to advertise and award for construction to start at the end of hurricane season.",
+      source: "June 2026 SITREP",
+    },
+    {
+      name: "40 Arpent Sheet Pile Rehabilitation (Phase 2)",
+      status: "In Progress",
+      description: "Task order negotiation and execution ongoing; approximately one mile of sheet pile repair, sandblasting, and coating.",
+      source: "June 2026 SITREP",
+    },
+    {
+      name: "Franklin Herbicide Vehicle Containment",
+      status: "In Bidding",
+      description: "Informal bid request issued; bid opening June 4, 2026.",
+      source: "June 2026 SITREP",
+    },
+    {
+      name: "Lakeshore Drive Flooding Warning Signs",
+      status: "In Progress",
+      description: "Warning sign systems reviewed, selected, and ordered; finalizing exact locations and installation design.",
+      source: "June 2026 SITREP",
     },
   ],
 };
@@ -478,6 +513,7 @@ export const operationsData = {
     { month: "February 2026", count: 25, source: "Mar 2026 SITREP" },
     { month: "March 2026", count: 27, source: "Apr 2026 SITREP" },
     { month: "April 2026", count: 27, source: "May 2026 SITREP" },
+    { month: "May 2026", count: 19, source: "June 2026 SITREP" },
   ],
 
   floodgateInspections: {

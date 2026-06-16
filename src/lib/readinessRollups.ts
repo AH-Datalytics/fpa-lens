@@ -101,14 +101,20 @@ export function computeReadinessRollups(asOfDate?: string): ReadinessRollups {
     active: rgInSeason || rgPriorCycleComplete,
   });
 
-  // Valve exercises: ongoing quarterly. Currently graded against raw percent
-  // since there's no period in data; treat as on-pace until that gets the
-  // same time-relative refit as CPRA/USACE.
+  // Valve exercises: ongoing quarterly, graded time-relative like CPRA/USACE
+  // (percent vs straight-line expected for the report date).
   const ve = readinessMetrics.valveExercises;
+  const veExpected = expectedFromRate(
+    ve.monthlyRate,
+    new Date(ve.periodStart + "T00:00:00"),
+    asOf,
+    100,
+  );
+  const veRatio = veExpected > 0 ? (ve.percentComplete / veExpected) * 100 : 100;
   inspections.push({
     key: "valve-exercises",
     label: "Quarterly Valve Exercises",
-    status: statusFromRatio(ve.percentComplete),
+    status: statusFromRatio(veRatio),
     active: true,
   });
 
