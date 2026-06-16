@@ -14,6 +14,7 @@ import { getLastRiskLevel, saveRiskLevel } from "@/lib/riskAlertStore";
 import { getRiskAction, getRiskDescription } from "@/lib/lakefrontRisk";
 import type { RiskLevel } from "@/lib/lakefrontRisk";
 import { buildRiskAlertEmail } from "@/lib/riskAlertEmail";
+import { decideRiskAlert } from "@/lib/riskAlertDecision";
 
 export const dynamic = "force-dynamic";
 
@@ -111,36 +112,34 @@ export async function GET(request: Request) {
     let alertSent = false;
 
     if (currentLevel) {
+      // `lastLevel` is the level we last NOTIFIED about, not merely the last
+      // observed level: it is persisted only when an alert is actually sent
+      // (below). That makes an "all clear" fire solely to clear an alert we
+      // really sent, which stops the repeated all-clear emails caused by
+      // transient YELLOW spikes that are suppressed on the way up but used to
+      // fire an alert on the way back down to GREEN. See riskAlertDecision.ts.
       const lastLevel = await getLastRiskLevel();
-
-      const LEVEL_ORDER: Record<RiskLevel, number> = { GREEN: 0, YELLOW: 1, ORANGE: 2, RED: 3 };
-      const prevOrder = lastLevel ? LEVEL_ORDER[lastLevel] : -1;
-      const currOrder = LEVEL_ORDER[currentLevel];
-
-      // Only alert when the level changes AND the forecast trend agrees with the
-      // direction of the change. This filters out against-trend blips that
-      // generate alert noise:
-      //   - an escalation that is already improving (a temporary spike), and
-      //   - a de-escalation that is worsening (a temporary dip about to rise again).
-      // A "stable" trend still alerts in either direction (a real, holding change).
-      // First run (no stored level yet) stays silent until a baseline exists.
       const trend = data.risk?.trending as "improving" | "stable" | "worsening" | undefined;
-      const goingUp   = lastLevel !== null && currOrder > prevOrder;
-      const goingDown = lastLevel !== null && currOrder < prevOrder;
-      const shouldAlert =
-        (goingUp   && trend !== "improving") ||
-        (goingDown && trend !== "worsening");
 
-      if (shouldAlert) {
+      const { send, nextNotified } = decideRiskAlert(lastLevel, currentLevel, trend);
+
+      let baselineToSave: RiskLevel | null = null;
+      if (send) {
         try {
           await sendRiskAlert(currentLevel, lastLevel, data.risk, ALERT_TO, ALERT_BCC);
           alertSent = true;
+          baselineToSave = nextNotified; // advance the baseline only after a successful send
         } catch (err) {
           console.error("Risk alert email failed:", err);
+          // Leave the baseline unchanged so the alert retries on the next run.
         }
+      } else if (lastLevel === null) {
+        baselineToSave = nextNotified; // seed the very first baseline silently
       }
 
-      await saveRiskLevel(currentLevel);
+      if (baselineToSave !== null && baselineToSave !== lastLevel) {
+        await saveRiskLevel(baselineToSave);
+      }
     }
 
     return NextResponse.json({
