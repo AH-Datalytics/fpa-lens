@@ -221,6 +221,20 @@ def extract_events(files=None):
     return all_events
 
 
+# Safety Officer's official annual summary for the closed years. These
+# authoritative totals (revised by Jamal Dortch, June 2026) supersede the
+# event-log-derived classification for 2022-2025, which differs slightly because
+# of how individual rows were tagged. Only the closed years are overridden; the
+# live year (2026) stays fully event-log-derived. Fields not listed here
+# (no-fault, lost time, property damage) keep their derived values.
+OFFICIAL_YEARLY_OVERRIDES = {
+    2022: {"accidents": 12, "incidents": 32, "injuries": 20},
+    2023: {"accidents": 9, "incidents": 19, "injuries": 12},
+    2024: {"accidents": 6, "incidents": 37, "injuries": 11},
+    2025: {"accidents": 6, "incidents": 24, "injuries": 11},
+}
+
+
 def build_output(events):
     # ---- yearlyTotals (excluding N/A by construction; further breakdowns) ----
     # Reporting framing: each event is an Accident, Incident, or No-Fault Event.
@@ -259,6 +273,14 @@ def build_output(events):
     for year in sorted(yearly.keys()):
         entry = {"year": year}
         entry.update(yearly[year])
+        # Overlay the Safety Officer's official totals for closed years. The
+        # public page derives "Total Events" as accidents + incidents, so
+        # overriding those two (plus injuries) is enough to show his numbers;
+        # we also keep the stored totalEvents field consistent.
+        override = OFFICIAL_YEARLY_OVERRIDES.get(year)
+        if override:
+            entry.update(override)
+            entry["totalEvents"] = entry["accidents"] + entry["incidents"] + entry["noFault"]
         yearly_totals.append(entry)
 
     # ---- monthlyData ----
