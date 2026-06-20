@@ -12,11 +12,9 @@
  *  - Only ORANGE and RED are alert-worthy. GREEN and YELLOW are the "normal"
  *    band (YELLOW is routine and must not email). Alerts fire when crossing INTO
  *    the ORANGE/RED band, and an "all clear" fires when crossing back OUT of it.
- *  - RED always alerts on the way up, regardless of trend (genuine danger must
- *    never be filtered out as a "receding spike").
- *  - Otherwise trend-gated: an escalation already `improving` is a receding
- *    spike (skip); a de-escalation already `worsening` is a dip about to rise
- *    (skip). `stable` alerts in either direction.
+ *  - Trend-gated in both directions, RED included: an escalation already
+ *    `improving` is a receding spike (skip); a de-escalation already `worsening`
+ *    is a dip about to rise (skip). `stable` alerts in either direction.
  */
 import type { RiskLevel } from "./lakefrontRisk";
 
@@ -43,11 +41,6 @@ export function decideRiskAlert(
 
   const cur = ORDER[current];
   const prev = ORDER[lastNotified];
-
-  // RED always alerts on the way up, regardless of trend.
-  if (current === "RED" && cur > prev) {
-    return { send: true, nextNotified: "RED" };
-  }
 
   // Collapse the normal band (GREEN/YELLOW -> 0) so YELLOW never initiates an
   // alert, and a drop back to YELLOW or GREEN clears an ORANGE/RED alert.

@@ -27,10 +27,16 @@ describe("decideRiskAlert", () => {
     expect(decideRiskAlert("GREEN", "ORANGE", "improving")).toEqual({ send: false, nextNotified: "GREEN" });
   });
 
-  it("RED always alerts on the way up, even when improving", () => {
-    expect(decideRiskAlert("GREEN", "RED", "improving")).toEqual({ send: true, nextNotified: "RED" });
-    expect(decideRiskAlert("ORANGE", "RED", "improving")).toEqual({ send: true, nextNotified: "RED" });
-    expect(decideRiskAlert("YELLOW", "RED", "improving")).toEqual({ send: true, nextNotified: "RED" });
+  it("alerts on a holding escalation into RED (stable or worsening)", () => {
+    expect(decideRiskAlert("GREEN", "RED", "stable")).toEqual({ send: true, nextNotified: "RED" });
+    expect(decideRiskAlert("GREEN", "RED", "worsening")).toEqual({ send: true, nextNotified: "RED" });
+    expect(decideRiskAlert("ORANGE", "RED", "stable")).toEqual({ send: true, nextNotified: "RED" });
+  });
+
+  it("suppresses a RED escalation that is already improving (receding spike)", () => {
+    expect(decideRiskAlert("GREEN", "RED", "improving")).toEqual({ send: false, nextNotified: "GREEN" });
+    expect(decideRiskAlert("ORANGE", "RED", "improving")).toEqual({ send: false, nextNotified: "ORANGE" });
+    expect(decideRiskAlert("YELLOW", "RED", "improving")).toEqual({ send: false, nextNotified: "YELLOW" });
   });
 
   it("sends an all-clear only to clear a real ORANGE/RED alert", () => {
