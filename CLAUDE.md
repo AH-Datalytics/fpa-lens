@@ -3,6 +3,10 @@
 ## Project Overview
 Dashboard for the Southeast Louisiana Flood Protection Authority (FPA). Built for AH Datalytics (AHD) with Regional Director Jeff Williams as the primary stakeholder.
 
+## Dependencies & Security
+- `next` and `eslint-config-next` are exact-pinned (no caret) to match the house style of `react`/`react-dom`. Bump them together.
+- Known accepted residual (June 2026): `npm audit` reports 2 moderate `postcss@8.4.31` alerts (GHSA-qx2v-qp2m-jg93). That postcss is hard-pinned *inside* Next.js for its build-time CSS internals -- not attacker-reachable, and npm's only offered "fix" is an absurd downgrade to `next@9`. Leave it; it clears when Next bumps its own pin. The top-level `postcss` (8.5.x via Tailwind/Vite) is already patched. Do not run `npm audit fix --force`.
+
 ## Dashboard Pages
 
 ### Home (/)
