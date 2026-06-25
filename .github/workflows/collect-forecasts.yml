@@ -1,13 +1,17 @@
 name: Collect Forecast Snapshots
 
-# Runs every 5 minutes to accumulate forecast data for accuracy comparison.
+# Runs every 3 hours to accumulate forecast data for accuracy comparison.
 # Fetches directly from NOAA/NWS and writes to Vercel Blob store.
 # Independent of app deployment — works while laptop is closed.
 
 on:
   schedule:
-    - cron: '*/5 * * * *'
+    - cron: '17 */3 * * *'
   workflow_dispatch: # Allow manual trigger for testing
+
+concurrency:
+  group: forecast-snapshots
+  cancel-in-progress: false
 
 jobs:
   collect:
