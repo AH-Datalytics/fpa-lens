@@ -782,7 +782,6 @@ export const staffingData = {
         { heading: "Commitment to the Mission", text: "He is committed to providing effective legal counsel to support the mission of the Authority's regional flood risk management system." },
       ],
     },
-    { name: "Joshua T. Rondeno", title: "Superintendent of Police", image: "/headshots/josh-rondeno.png", bio: "Bio pending." },
     {
       name: "Ryan Foster, P.E.",
       title: "Director of Engineering",
