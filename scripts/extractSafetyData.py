@@ -221,17 +221,21 @@ def extract_events(files=None):
     return all_events
 
 
-# Safety Officer's official annual summary for the closed years. These
-# authoritative totals (revised by Jamal Dortch, June 2026) supersede the
-# event-log-derived classification for 2022-2025, which differs slightly because
-# of how individual rows were tagged. Only the closed years are overridden; the
-# live year (2026) stays fully event-log-derived. Fields not listed here
-# (no-fault, lost time, property damage) keep their derived values.
+# Safety Officer's official accident/incident/injury totals (Jamal Dortch's
+# June 2026 "Lens Monthly Safety Numbers" workbook). These authoritative counts
+# supersede the event-log-derived classification, which differs slightly because
+# of how individual rows were tagged. 2022-2025 are full closed years; 2026 is
+# year-to-date through June, the latest month Jamal has reconciled (its accident/
+# incident counts match the event log for Jan-May, with June added from his
+# breakdown since no June event-log upload exists yet). Fields not listed here
+# (no-fault, lost time, property damage) keep their event-log-derived values, so
+# for 2026 those remain YTD through the latest event-log upload.
 OFFICIAL_YEARLY_OVERRIDES = {
     2022: {"accidents": 12, "incidents": 32, "injuries": 20},
     2023: {"accidents": 9, "incidents": 19, "injuries": 12},
     2024: {"accidents": 6, "incidents": 37, "injuries": 11},
     2025: {"accidents": 6, "incidents": 24, "injuries": 11},
+    2026: {"accidents": 3, "incidents": 27, "injuries": 7},  # YTD through June
 }
 
 # Safety Officer's official MONTHLY accident/incident split for the closed years,
@@ -243,14 +247,16 @@ OFFICIAL_YEARLY_OVERRIDES = {
 # (accidents, incidents) per month (1=Jan ... 12=Dec); every year sums to its
 # OFFICIAL_YEARLY_OVERRIDES accidents/incidents. No-fault counts are not part of
 # his breakdown and keep their event-log-derived monthly values; injuries are
-# tracked only at the year level, so they are not carried here. The live year
-# (2026) is intentionally absent -- it stays fully event-log-derived so weekly
-# refreshes keep updating it.
+# tracked only at the year level, so they are not carried here. 2026 is partial
+# (Jan-June, the months in his workbook): Jan-May match the event log, June is
+# added from his breakdown (no June event-log upload yet), so its noFault stays 0
+# until the June log arrives.
 OFFICIAL_MONTHLY_OVERRIDES = {
     2022: {1: (1, 2), 2: (0, 2), 3: (1, 3), 4: (1, 5), 5: (2, 3), 6: (1, 8), 7: (1, 0), 8: (2, 1), 9: (0, 3), 10: (3, 2), 11: (0, 1), 12: (0, 2)},
     2023: {1: (0, 1), 2: (1, 1), 3: (1, 3), 4: (0, 1), 5: (2, 2), 6: (1, 2), 7: (1, 2), 8: (1, 3), 9: (1, 1), 10: (1, 0), 11: (0, 3), 12: (0, 0)},
     2024: {1: (0, 3), 2: (0, 1), 3: (0, 6), 4: (0, 1), 5: (0, 4), 6: (0, 3), 7: (2, 6), 8: (0, 3), 9: (1, 1), 10: (0, 5), 11: (2, 1), 12: (1, 3)},
     2025: {1: (1, 0), 2: (0, 2), 3: (0, 3), 4: (0, 0), 5: (0, 2), 6: (0, 1), 7: (0, 3), 8: (3, 2), 9: (0, 5), 10: (2, 4), 11: (0, 1), 12: (0, 1)},
+    2026: {1: (1, 5), 2: (0, 5), 3: (0, 5), 4: (2, 6), 5: (0, 3), 6: (0, 3)},
 }
 
 
@@ -318,10 +324,11 @@ def build_output(events):
             monthly[key]["noFault"] += 1
 
     # Overlay the Safety Officer's official monthly accident/incident counts for
-    # the closed years so the per-month chart reconciles with the headline annual
+    # the override years so the per-month chart reconciles with the headline annual
     # totals. noFault stays event-log-derived (not part of his breakdown), and a
     # month with no logged events still picks up its official accident/incident
-    # split via the defaultdict (noFault defaults to 0).
+    # split via the defaultdict (noFault defaults to 0) -- this is how June 2026
+    # gets added ahead of its event-log upload.
     for year, months in OFFICIAL_MONTHLY_OVERRIDES.items():
         for month, (accidents, incidents) in months.items():
             m = monthly[(year, month)]

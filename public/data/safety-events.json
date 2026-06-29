@@ -46,9 +46,9 @@
     },
     {
       "year": 2026,
-      "totalEvents": 36,
+      "totalEvents": 39,
       "accidents": 3,
-      "incidents": 24,
+      "incidents": 27,
       "noFault": 9,
       "lostTime": 0,
       "injuries": 7,
@@ -427,6 +427,13 @@
       "accidents": 0,
       "incidents": 3,
       "noFault": 3
+    },
+    {
+      "year": 2026,
+      "month": 6,
+      "accidents": 0,
+      "incidents": 3,
+      "noFault": 0
     }
   ],
   "eventTypes": [
