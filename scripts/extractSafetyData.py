@@ -234,6 +234,25 @@ OFFICIAL_YEARLY_OVERRIDES = {
     2025: {"accidents": 6, "incidents": 24, "injuries": 11},
 }
 
+# Safety Officer's official MONTHLY accident/incident split for the closed years,
+# from Jamal Dortch's June 2026 monthly breakdown ("Lens Monthly Safety Numbers"
+# workbook). His team re-reviewed the 2022-2024 records and re-cut the monthly
+# data so each month reconciles to the revised annual totals above; the
+# event-log-derived split differed (notably 2022 and 2024, where row-level
+# tagging diverged from the final classification). Each value is
+# (accidents, incidents) per month (1=Jan ... 12=Dec); every year sums to its
+# OFFICIAL_YEARLY_OVERRIDES accidents/incidents. No-fault counts are not part of
+# his breakdown and keep their event-log-derived monthly values; injuries are
+# tracked only at the year level, so they are not carried here. The live year
+# (2026) is intentionally absent -- it stays fully event-log-derived so weekly
+# refreshes keep updating it.
+OFFICIAL_MONTHLY_OVERRIDES = {
+    2022: {1: (1, 2), 2: (0, 2), 3: (1, 3), 4: (1, 5), 5: (2, 3), 6: (1, 8), 7: (1, 0), 8: (2, 1), 9: (0, 3), 10: (3, 2), 11: (0, 1), 12: (0, 2)},
+    2023: {1: (0, 1), 2: (1, 1), 3: (1, 3), 4: (0, 1), 5: (2, 2), 6: (1, 2), 7: (1, 2), 8: (1, 3), 9: (1, 1), 10: (1, 0), 11: (0, 3), 12: (0, 0)},
+    2024: {1: (0, 3), 2: (0, 1), 3: (0, 6), 4: (0, 1), 5: (0, 4), 6: (0, 3), 7: (2, 6), 8: (0, 3), 9: (1, 1), 10: (0, 5), 11: (2, 1), 12: (1, 3)},
+    2025: {1: (1, 0), 2: (0, 2), 3: (0, 3), 4: (0, 0), 5: (0, 2), 6: (0, 1), 7: (0, 3), 8: (3, 2), 9: (0, 5), 10: (2, 4), 11: (0, 1), 12: (0, 1)},
+}
+
 
 def build_output(events):
     # ---- yearlyTotals (excluding N/A by construction; further breakdowns) ----
@@ -297,6 +316,17 @@ def build_output(events):
             monthly[key]["incidents"] += 1
         elif e["classification"] == "no-fault":
             monthly[key]["noFault"] += 1
+
+    # Overlay the Safety Officer's official monthly accident/incident counts for
+    # the closed years so the per-month chart reconciles with the headline annual
+    # totals. noFault stays event-log-derived (not part of his breakdown), and a
+    # month with no logged events still picks up its official accident/incident
+    # split via the defaultdict (noFault defaults to 0).
+    for year, months in OFFICIAL_MONTHLY_OVERRIDES.items():
+        for month, (accidents, incidents) in months.items():
+            m = monthly[(year, month)]
+            m["accidents"] = accidents
+            m["incidents"] = incidents
 
     monthly_data = []
     for (year, month) in sorted(monthly.keys()):

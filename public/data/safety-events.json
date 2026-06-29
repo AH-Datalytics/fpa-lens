@@ -74,7 +74,7 @@
     {
       "year": 2022,
       "month": 3,
-      "accidents": 2,
+      "accidents": 1,
       "incidents": 3,
       "noFault": 0
     },
@@ -88,15 +88,15 @@
     {
       "year": 2022,
       "month": 5,
-      "accidents": 1,
-      "incidents": 4,
+      "accidents": 2,
+      "incidents": 3,
       "noFault": 4
     },
     {
       "year": 2022,
       "month": 6,
-      "accidents": 2,
-      "incidents": 7,
+      "accidents": 1,
+      "incidents": 8,
       "noFault": 1
     },
     {
@@ -109,8 +109,8 @@
     {
       "year": 2022,
       "month": 8,
-      "accidents": 1,
-      "incidents": 2,
+      "accidents": 2,
+      "incidents": 1,
       "noFault": 1
     },
     {
@@ -123,8 +123,8 @@
     {
       "year": 2022,
       "month": 10,
-      "accidents": 0,
-      "incidents": 5,
+      "accidents": 3,
+      "incidents": 2,
       "noFault": 0
     },
     {
@@ -145,7 +145,7 @@
       "year": 2023,
       "month": 1,
       "accidents": 0,
-      "incidents": 2,
+      "incidents": 1,
       "noFault": 1
     },
     {
@@ -219,10 +219,17 @@
       "noFault": 2
     },
     {
+      "year": 2023,
+      "month": 12,
+      "accidents": 0,
+      "incidents": 0,
+      "noFault": 0
+    },
+    {
       "year": 2024,
       "month": 1,
       "accidents": 0,
-      "incidents": 4,
+      "incidents": 3,
       "noFault": 1
     },
     {
@@ -263,8 +270,8 @@
     {
       "year": 2024,
       "month": 7,
-      "accidents": 1,
-      "incidents": 7,
+      "accidents": 2,
+      "incidents": 6,
       "noFault": 2
     },
     {
@@ -277,8 +284,8 @@
     {
       "year": 2024,
       "month": 9,
-      "accidents": 0,
-      "incidents": 2,
+      "accidents": 1,
+      "incidents": 1,
       "noFault": 0
     },
     {
@@ -291,15 +298,15 @@
     {
       "year": 2024,
       "month": 11,
-      "accidents": 0,
-      "incidents": 3,
+      "accidents": 2,
+      "incidents": 1,
       "noFault": 0
     },
     {
       "year": 2024,
       "month": 12,
-      "accidents": 0,
-      "incidents": 4,
+      "accidents": 1,
+      "incidents": 3,
       "noFault": 0
     },
     {
