@@ -1,6 +1,6 @@
 {
   "reportMonth": "June 2026",
-  "executiveSummary": "System conditions remain stable and overall operational readiness across the hurricane protection system remains Green, with all major flood protection assets operational and no threats to system integrity identified. Project execution remains a major focus, with construction underway on the LPV Access Bridge and Orpheum Slope Paving projects, the West Return Wall Splash Pad transitioning into closeout, and engineering advancing several critical flood protection initiatives. While staffing shortages remain the agency's primary readiness challenge, overall system readiness remains strong as the agency enters the 2026 hurricane season.",
+  "executiveSummary": "System conditions remain stable and overall operational readiness across the hurricane protection system remains Green. All major flood protection assets are operational, second-quarter inspections are nearing completion, and no threats to system integrity have been identified. While staffing shortages remain the agency's primary readiness challenge, the organization remains focused on hurricane season operations, project execution, workforce development, infrastructure reliability, and maintaining public confidence in the region's flood protection system.",
   "readiness": {
     "infrastructure": "Green",
     "staffing": "Amber",
@@ -25,61 +25,61 @@
     "Floodwalls, levees, gates, and valves continue routine inspection and maintenance activities with no impacts to system readiness.",
     "Seasonal storm readiness measures, including sandbag staging and facility preparation, are underway.",
     "Critical facilities, generators, and support infrastructure remain operational.",
-    "Routine equipment maintenance and repairs ongoing.",
+    "Routine maintenance and repairs on equipment.",
     "Rotational Valve Testing: 84 of 105 valves inspected in Q2.",
     "All turf maintenance targets met."
   ],
   "projects": [
     {
       "name": "Foreshore Erosion Repair",
-      "status": "USACE has determined a revised path forward; award date pending revised path.",
+      "status": "USACE has determined a revised path forward. Award date pending revised path. Engineering/Maintenance prepared for mitigation measures if needed.",
       "phase": "Pre-Award"
     },
     {
       "name": "West Return Wall Splash Pad",
-      "status": "Construction is substantially complete; project is transitioning into closeout phase.",
+      "status": "Construction is substantially complete. Project is transitioning into closeout phase.",
       "phase": "In Progress"
     },
     {
       "name": "LPV Access Bridge",
-      "status": "Construction has begun; contractor is mobilizing; RFI/shop drawing submittals underway.",
+      "status": "Construction has begun. Contractor is mobilizing. RFI/shop drawing submittals underway.",
       "phase": "In Progress"
     },
     {
       "name": "Orpheum Slope Paving",
-      "status": "Construction has begun; contractor is mobilized.",
+      "status": "Construction has begun. Contractor is mobilized.",
       "phase": "In Progress"
     },
     {
       "name": "Franklin Ave. Vault 4 Generator Replacement",
-      "status": "Bid opened May 26, 2026; Board to approve June 17, 2026.",
+      "status": "Bid opened May 26, 2026. Board to approve June 17, 2026.",
       "phase": "In Bidding"
     },
     {
       "name": "London Avenue Canal Erosion Mitigation (Phase 1)",
-      "status": "95% Plans and Specifications submitted; CEA negotiations ongoing; will be ready to advertise and award for construction to start at end of Hurricane Season.",
+      "status": "95% Plans and Specifications submitted. CEA negotiations ongoing. Will be ready to advertise and award for construction to start at end of Hurricane Season.",
       "phase": "In Design"
     },
     {
       "name": "40 Arpent Sheet Pile Rehabilitation (Phase 2)",
-      "status": "Task Order negotiation/execution ongoing; approx. 1 mile of sheet pile repair, sandblasting, and coating.",
+      "status": "Task Order negotiation/execution ongoing. Approx. 1 mile of sheet pile repair, sandblasting, and coating.",
       "phase": "Pre-Award"
     },
     {
       "name": "Franklin Herbicide Vehicle Containment",
-      "status": "Informal Bid Request; bid opening June 4, 2026.",
+      "status": "Informal Bid Request. Bid opening June 4, 2026.",
       "phase": "In Bidding"
     },
     {
       "name": "Lakeshore Drive Flooding Warning Signs",
-      "status": "Engineering reviewed, selected, and ordered warning sign systems; exploring exact locations and coordinating design for installation.",
+      "status": "Engineering reviewed, selected and ordered warning sign systems. Currently exploring exact locations and coordinating design for installation.",
       "phase": "In Design"
     }
   ],
   "inspections": {
     "cpra": {
       "status": "on-track",
-      "note": "Q1 field inspections submitted to CPRA; 2nd quarter field inspections underway and approximately 90% complete"
+      "note": "Q1 field inspections submitted to CPRA; 2nd quarter field inspections approximately 90% complete"
     },
     "usace": {
       "status": "not-reported",
