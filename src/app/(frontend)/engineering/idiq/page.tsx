@@ -15,6 +15,8 @@ import {
 } from "lucide-react";
 import SectionHeader, { SectionSubheader } from "@/components/SectionHeader";
 import KPICard from "@/components/KPICard";
+import { usePageCopy } from "@/lib/usePageCopy";
+import { IDIQ_DEFAULTS } from "@/globals/pages/idiqPage";
 
 interface TaskOrder {
   number: string;
@@ -69,37 +71,6 @@ interface IdiqData {
 }
 
 const ACCENT = "#2FA4A9";
-
-// Micro-descriptions per director feedback (Apr 2026). Keys cover both the
-// 2022-cycle and 2025-cycle naming variants for the same service category.
-const SERVICE_DESCRIPTIONS: Record<string, string> = {
-  "Civil Engineering": "Levee repair, site development, and infrastructure design",
-  "Surveying": "Levee and structure elevation surveys and mapping",
-  "Surveying Services": "Levee and structure elevation surveys and mapping",
-  "Geotechnical Engineering": "Soil analysis, subsurface investigations, and testing",
-  "Construction Materials & Testing": "Materials and soil testing for construction quality control",
-  "Constuction Materials & Testing": "Materials and soil testing for construction quality control",
-  "MEP Services": "Mechanical and electrical systems for facilities and pump stations",
-};
-
-const processSteps = [
-  {
-    label: "Qualifications-Based Selection",
-    description: "Firms respond to a public solicitation and are evaluated based on qualifications and experience",
-  },
-  {
-    label: "Pre-Approved Contract Pool",
-    description: "Selected firms are placed under contract with pre-established rates and terms",
-  },
-  {
-    label: "Task Order Awarded",
-    description: "As project needs arise, specific work is assigned to a qualified firm without a full procurement",
-  },
-  {
-    label: "Project Execution & Oversight",
-    description: "The firm completes the work, with costs tracked against the contract ceiling",
-  },
-];
 
 function formatCurrency(amount: number): string {
   if (amount >= 1_000_000) return `$${(amount / 1_000_000).toFixed(1)}M`;
@@ -191,9 +162,17 @@ function ContractRow({ contract }: { contract: Contract }) {
   );
 }
 
-function ServiceCategory({ st, poolId }: { st: ServiceType; poolId: string }) {
+function ServiceCategory({
+  st,
+  poolId,
+  descriptions,
+}: {
+  st: ServiceType;
+  poolId: string;
+  descriptions: Record<string, string>;
+}) {
   const [expanded, setExpanded] = useState(false);
-  const micro = SERVICE_DESCRIPTIONS[st.service];
+  const micro = descriptions[st.service];
   const sortedContracts = [...st.contracts].sort((a, b) => a.consultant.localeCompare(b.consultant));
 
   return (
@@ -286,6 +265,26 @@ function poolSummary(pool: ContractPool) {
 export default function IdiqPage() {
   const [data, setData] = useState<IdiqData | null>(null);
   const [activePool, setActivePool] = useState("2025");
+  const copy = usePageCopy("idiq-page", IDIQ_DEFAULTS);
+
+  // Micro-descriptions per director feedback (Apr 2026). Keys cover both the
+  // 2022-cycle and 2025-cycle naming variants for the same service category.
+  const serviceDescriptions: Record<string, string> = {
+    "Civil Engineering": copy.serviceCivilEngineering,
+    "Surveying": copy.serviceSurveying,
+    "Surveying Services": copy.serviceSurveying,
+    "Geotechnical Engineering": copy.serviceGeotechnicalEngineering,
+    "Construction Materials & Testing": copy.serviceConstructionMaterialsTesting,
+    "Constuction Materials & Testing": copy.serviceConstructionMaterialsTesting,
+    "MEP Services": copy.serviceMepServices,
+  };
+
+  const processSteps = [
+    { label: copy.processStep1Label, description: copy.processStep1Description },
+    { label: copy.processStep2Label, description: copy.processStep2Description },
+    { label: copy.processStep3Label, description: copy.processStep3Description },
+    { label: copy.processStep4Label, description: copy.processStep4Description },
+  ];
 
   useEffect(() => {
     fetch("/data/idiq-contracts.json")
@@ -329,8 +328,8 @@ export default function IdiqPage() {
         </div>
 
         <SectionHeader
-          title="IDIQ Contract Tracker"
-          subtitle="How we procure and assign engineering and professional services work"
+          title={copy.pageTitle}
+          subtitle={copy.pageSubtitle}
         />
 
         {/* Key Takeaway */}
@@ -347,12 +346,10 @@ export default function IdiqPage() {
             </div>
             <div>
               <h3 className="text-sm font-semibold uppercase tracking-wide mb-1" style={{ color: ACCENT }}>
-                Key Takeaway
+                {copy.keyTakeawayHeading}
               </h3>
               <p className="text-[15px] text-gray-800 leading-relaxed">
-                IDIQ contracts allow the Authority to respond quickly to project needs by working with
-                pre-qualified firms. Work is assigned based on project requirements and expertise, not
-                preset allocation, so utilization will vary across firms.
+                {copy.keyTakeawayBody}
               </p>
             </div>
           </div>
@@ -361,25 +358,11 @@ export default function IdiqPage() {
         {/* Educational Intro */}
         <section className="mb-12">
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 md:p-8">
-            <h2 className="text-xl font-bold text-[#21355a] mb-4">What is an IDIQ contract?</h2>
+            <h2 className="text-xl font-bold text-[#21355a] mb-4">{copy.introHeading}</h2>
             <div className="space-y-4 text-sm text-gray-700 leading-relaxed">
-              <p>
-                IDIQ (Indefinite Delivery, Indefinite Quantity) contracts allow the Authority to
-                pre-qualify engineering and professional service firms through a competitive,
-                qualifications-based process. Task orders are issued as project needs arise, such as
-                inspections, design, construction support, and facility improvements, without
-                requiring a full procurement each time.
-              </p>
-              <p>
-                IDIQ contracts are awarded in multi-year cycles (typically three years). The 2022
-                contracts were active through 2025, and the 2025 contracts represent the current
-                cycle.
-              </p>
-              <p>
-                Work is assigned based on project needs, timing, and expertise. As a result,
-                utilization varies across firms within each service category; this is expected and
-                reflects how IDIQ programs are designed to function.
-              </p>
+              <p>{copy.introParagraph1}</p>
+              <p>{copy.introParagraph2}</p>
+              <p>{copy.introParagraph3}</p>
             </div>
 
             {/* Process Flow */}
@@ -418,7 +401,7 @@ export default function IdiqPage() {
         {/* Contract Cycle Selector */}
         <section>
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
-            <SectionSubheader title="Contract Cycle" className="mb-0" />
+            <SectionSubheader title={copy.contractCycleHeading} className="mb-0" />
             <div className="flex items-center gap-2 text-xs text-gray-500">
               <CalendarDays className="h-3 w-3" />
               Monthly updates
@@ -472,7 +455,12 @@ export default function IdiqPage() {
           {/* Service Categories */}
           <div className="space-y-4">
             {sortedServices.map((st) => (
-              <ServiceCategory key={`${pool.id}-${st.service}`} st={st} poolId={pool.id} />
+              <ServiceCategory
+                key={`${pool.id}-${st.service}`}
+                st={st}
+                poolId={pool.id}
+                descriptions={serviceDescriptions}
+              />
             ))}
           </div>
         </section>

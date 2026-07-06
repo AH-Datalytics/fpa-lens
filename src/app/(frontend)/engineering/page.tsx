@@ -16,6 +16,8 @@ import { SectionSubheader } from "@/components/SectionHeader";
 import DataCard from "@/components/DataCard";
 import KPICard from "@/components/KPICard";
 import { financialData, operationsData, readinessMetrics } from "@/data/siteData";
+import { usePageCopy } from "@/lib/usePageCopy";
+import { ENGINEERING_DEFAULTS } from "@/globals/pages/engineeringPage";
 
 type StatusColor = "GREEN" | "AMBER" | "RED" | "NEUTRAL";
 
@@ -116,6 +118,7 @@ function ReadinessCard({
 }
 
 export default function OperationsPage() {
+  const copy = usePageCopy("engineering-page", ENGINEERING_DEFAULTS);
   const [showFullPipeline, setShowFullPipeline] = useState(false);
 
   // Routine maintenance activities auto-refresh from the latest SITREP digest
@@ -171,8 +174,8 @@ export default function OperationsPage() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-8">
           <div>
-            <h1 className="text-3xl md:text-4xl font-bold text-[#21355a]">Engineering</h1>
-            <p className="mt-2 text-lg text-gray-600">Permits, inspections, and engineering contracts</p>
+            <h1 className="text-3xl md:text-4xl font-bold text-[#21355a]">{copy.pageTitle}</h1>
+            <p className="mt-2 text-lg text-gray-600">{copy.pageSubtitle}</p>
             <p className="mt-2 text-sm text-gray-400">Data source: {latestPermit.source}</p>
           </div>
           <Link
@@ -187,11 +190,11 @@ export default function OperationsPage() {
 
         {/* Federal & State Inspections */}
         <section className="mb-12">
-          <SectionSubheader title="Federal &amp; State Inspections" />
+          <SectionSubheader title={copy.inspectionsHeading} />
           <div className="grid md:grid-cols-2 gap-4">
             <ReadinessCard
-              title="CPRA Quarterly Inspection"
-              description="State-mandated quarterly visual inspection of the levee system, with findings reported to the Coastal Protection and Restoration Authority."
+              title={copy.cpraTitle}
+              description={copy.cpraDescription}
               mandate={cpra.mandate}
               period={cpra.currentQuarter}
               icon={ClipboardCheck}
@@ -202,8 +205,8 @@ export default function OperationsPage() {
               note={cpra.reportSubmittedDate ? `Report submitted to CPRA ${cpra.reportSubmittedDate}` : "CPRA submission date pending"}
             />
             <ReadinessCard
-              title="USACE Semi-Annual Inspection"
-              description="Federal inspection of HSDRRS levees, floodwalls, PCCPs, and complex structures. 100% = on pace for this point in the half-year cycle."
+              title={copy.usaceTitle}
+              description={copy.usaceDescription}
               mandate={usace.mandate}
               period="Semi-Annual &middot; Ongoing"
               icon={ClipboardCheck}
@@ -219,9 +222,9 @@ export default function OperationsPage() {
 
         {/* Current Capital Projects */}
         <section id="current-capital-projects" className="mb-12 scroll-mt-24">
-          <SectionSubheader title="Current Capital Projects" />
+          <SectionSubheader title={copy.capitalProjectsHeading} />
           <p className="text-sm text-gray-600 mb-4">
-            Major capital projects currently under contract, in construction, or in active bidding.
+            {copy.capitalProjectsIntro}
           </p>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
             {financialData.capitalProjects.map((project) => (
@@ -253,7 +256,7 @@ export default function OperationsPage() {
         </section>
 
         {/* Permits */}
-        <SectionSubheader title="Permits" />
+        <SectionSubheader title={copy.permitsHeading} />
 
         {/* Key Metrics */}
         <section className="mb-12">
@@ -286,7 +289,7 @@ export default function OperationsPage() {
 
         {/* Permit Pipeline */}
         <section className="mb-12">
-          <p className="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-4">Permit Processing Pipeline</p>
+          <p className="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-4">{copy.pipelineLabel}</p>
           <DataCard
             title={
               <div className="flex items-center justify-between">
@@ -305,12 +308,12 @@ export default function OperationsPage() {
             {showFullPipeline ? (
               <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-0 py-4 flex-wrap">
                 {[
-                  { label: "Permit Submittal", highlight: true },
-                  { label: "FPA-E Review" },
-                  { label: "External Agency Coordination" },
-                  { label: "Receipt of LNO", tooltip: "Letter of No Objection from the Levee District" },
-                  { label: "Final Review" },
-                  { label: "Permit Issued", highlight: true, success: true },
+                  { label: copy.pipelineStep1, highlight: true },
+                  { label: copy.pipelineStep2 },
+                  { label: copy.pipelineStep3 },
+                  { label: copy.pipelineStep4, tooltip: copy.lnoTooltipFull },
+                  { label: copy.pipelineStep5 },
+                  { label: copy.pipelineStep6, highlight: true, success: true },
                 ].map((step, i, arr) => (
                   <div key={step.label} className="flex flex-col sm:flex-row items-center">
                     <div
@@ -355,7 +358,7 @@ export default function OperationsPage() {
                 <div className="flex flex-col items-center px-6 py-4 border-2 border-gray-300 rounded-lg min-w-[120px] bg-gray-50">
                   <span
                     className="text-xs font-medium text-gray-500 uppercase tracking-wide border-b border-dashed border-gray-300 cursor-help"
-                    title="LNO: Letter of No Objection issued by the Levee District"
+                    title={copy.lnoTooltipSimple}
                   >
                     LNO Review
                   </span>
@@ -380,8 +383,8 @@ export default function OperationsPage() {
 
         {/* Permits Chart */}
         <section className="mb-12">
-          <p className="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-4">Permits Issued</p>
-          <DataCard title="Monthly Permits Trend" source="SITREPs">
+          <p className="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-4">{copy.permitsIssuedLabel}</p>
+          <DataCard title={copy.permitsTrendTitle} source="SITREPs">
             <div className="h-64">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={permitChartData}>
@@ -418,8 +421,8 @@ export default function OperationsPage() {
 
         {/* Maintenance Activities */}
         <section>
-          <p className="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-4">Routine Maintenance Activities</p>
-          <DataCard title="Current Maintenance Work" source={sitrepMonth ? `${sitrepMonth} SITREP` : operationsData.maintenanceSource}>
+          <p className="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-4">{copy.maintenanceLabel}</p>
+          <DataCard title={copy.maintenanceCardTitle} source={sitrepMonth ? `${sitrepMonth} SITREP` : operationsData.maintenanceSource}>
             <ul className="space-y-3">
               {(sitrepActivities ?? operationsData.maintenanceActivities).map((activity, index) => (
                 <li key={index} className="flex items-start gap-3">

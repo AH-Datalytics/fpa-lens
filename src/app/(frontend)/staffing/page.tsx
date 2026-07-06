@@ -8,6 +8,8 @@ import ZoneLegend from "@/components/ZoneLegend";
 import { staffingData } from "@/data/siteData";
 import { applyStaffingOverlay, type StaffingJson } from "@/lib/staffingOverlay";
 import { assertAggregateMatchesSum } from "@/lib/staffingZones";
+import { usePageCopy } from "@/lib/usePageCopy";
+import { STAFFING_DEFAULTS } from "@/globals/pages/staffingPage";
 
 type ZoneViewMode = "percent" | "raw";
 
@@ -23,6 +25,7 @@ export default function OurTeamPage() {
   }, []);
   const data = useMemo(() => applyStaffingOverlay(staffingData, staffingJson), [staffingJson]);
   const { coreFPU, adminFunctions } = data;
+  const copy = usePageCopy("staffing-page", STAFFING_DEFAULTS);
   const [viewMode, setViewMode] = useState<ZoneViewMode>("percent");
   const [showDepts, setShowDepts] = useState(false);
   const [showAdminDepts, setShowAdminDepts] = useState(false);
@@ -43,8 +46,8 @@ export default function OurTeamPage() {
     <div className="py-12">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <SectionHeader
-          title="Staffing"
-          subtitle="The dedicated professionals protecting Greater New Orleans"
+          title={copy.pageTitle}
+          subtitle={copy.pageSubtitle}
           source={data.source}
         />
 
@@ -71,11 +74,11 @@ export default function OurTeamPage() {
 
         {/* Core Flood Protection Unit */}
         <section className="mb-10">
-          <SectionSubheader title="Core Flood Protection Unit" />
+          <SectionSubheader title={copy.coreHeading} />
           <div className="bg-white rounded-xl shadow-md border border-gray-100 p-6">
             <div className="flex flex-wrap items-start justify-between gap-3 mb-5">
               <p className="text-sm text-gray-600 max-w-2xl">
-                Operational capacity across Maintenance, Operations, Engineering, and Police.
+                {copy.coreDescription}
               </p>
               <div
                 role="group"
@@ -160,11 +163,11 @@ export default function OurTeamPage() {
 
         {/* Administrative Functions */}
         <section className="mb-10">
-          <SectionSubheader title="Administrative Functions" />
+          <SectionSubheader title={copy.adminHeading} />
           <div className="bg-white rounded-xl shadow-md border border-gray-100 p-6">
             <div className="flex flex-wrap items-start justify-between gap-3 mb-5">
               <p className="text-sm text-gray-600 max-w-2xl">
-                Support functions that keep the agency running. Not directly tied to storm response operations, but essential to sustained organizational capacity.
+                {copy.adminDescription}
               </p>
               <div className="flex items-center gap-2">
                 <div

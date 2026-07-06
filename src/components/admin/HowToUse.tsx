@@ -12,8 +12,9 @@ export function HowToUse() {
         <li>
           <span className="fpa-howto__num">1</span>
           <div>
-            <strong>Choose what to edit</strong> from the menu on the left: page text
-            (Home Content, Site Settings) or Staff Members.
+            <strong>Choose what to edit</strong> from the menu on the left: any page&rsquo;s
+            wording under <strong>Page Content</strong>, plus Home Content, Site Settings, and
+            Staff Members.
           </div>
         </li>
         <li>

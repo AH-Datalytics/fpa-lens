@@ -19,6 +19,8 @@ import {
   type KpiLevel,
 } from "@/lib/turfMaintenance";
 import type { DistrictFilter } from "@/components/GrassCuttingMap";
+import { usePageCopy } from "@/lib/usePageCopy";
+import { TURF_DEFAULTS } from "@/globals/pages/turfPage";
 
 // Map uses Leaflet (touches `window`), so load it client-side only.
 const GrassCuttingMap = dynamic(() => import("@/components/GrassCuttingMap"), {
@@ -273,6 +275,8 @@ export default function GrassCuttingPage() {
         ? "Watch"
         : "Behind";
 
+  const copy = usePageCopy("turf-page", TURF_DEFAULTS);
+
   const [district, setDistrict] = useState<DistrictFilter>("ALL");
   const showOld = district === "ALL" || district === "OLD";
   const showEjld = district === "ALL" || district === "EJLD";
@@ -290,8 +294,8 @@ export default function GrassCuttingPage() {
         </Link>
 
         <SectionHeader
-          title="Turf Maintenance"
-          subtitle="Levee turf maintenance progress across the system"
+          title={copy.pageTitle}
+          subtitle={copy.pageSubtitle}
         />
 
         {/* PLAN HERO. Plain-English summary of what the dashboard tracks.
@@ -300,7 +304,7 @@ export default function GrassCuttingPage() {
         <section className="mb-12">
           <div className="bg-white rounded-xl shadow-md border border-gray-100 p-6">
             <p className="text-xs uppercase tracking-wide text-gray-500 font-semibold">
-              The maintenance plan
+              {copy.planEyebrow}
             </p>
             <h2 className="text-2xl font-bold text-[#21355a] mt-1">
               Routine mowing across {systemAcres.toLocaleString()} acres of
@@ -324,7 +328,7 @@ export default function GrassCuttingPage() {
             mirrors the system-wide on-pace status shown on the home
             and infrastructure pages. */}
         <section className="mb-12">
-          <SectionSubheader title="System overview" />
+          <SectionSubheader title={copy.systemOverviewTitle} />
           <div className="bg-white rounded-xl shadow-md border border-gray-100 p-6">
             <div className="flex flex-wrap items-start justify-between gap-3 mb-6">
               <div>
@@ -409,24 +413,12 @@ export default function GrassCuttingPage() {
                 aria-hidden="true"
               />
               <h3 className="text-sm font-bold text-[#21355a]">
-                Operational Note — June 2026
+                {copy.operationalNoteHeading}
               </h3>
             </div>
             <div className="space-y-3 text-sm text-gray-700 leading-relaxed max-w-3xl">
-              <p>
-                Recent rainfall has reduced the number of workable mowing days
-                across portions of the system. For safety and turf protection,
-                mowing may be delayed when levee slopes, access roads, or work
-                areas are saturated. SLFPA-East is using additional crews and
-                overtime, including scheduled off-day work, to recover
-                production where conditions allow.
-              </p>
-              <p>
-                The dashboard will continue to show actual progress against
-                monthly mowing targets. Status colors are not adjusted for
-                weather impacts, but operational notes will be provided when
-                conditions materially affect monthly progress.
-              </p>
+              <p>{copy.operationalNoteBody1}</p>
+              <p>{copy.operationalNoteBody2}</p>
             </div>
           </div>
         </section>
@@ -463,8 +455,8 @@ export default function GrassCuttingPage() {
         {/* MAP - interactive levee centerline colored by mowing zone */}
         <section className="mb-12">
           <SectionSubheader
-            title="Zones across the system"
-            subtitle="Mowing-area polygons colored by zone. Click any polygon for its name, zone, and acreage."
+            title={copy.mapTitle}
+            subtitle={copy.mapSubtitle}
           />
           <GrassCuttingMap districtFilter={district} />
           <p className="text-xs text-gray-500 italic mt-3 leading-relaxed">
@@ -489,7 +481,7 @@ export default function GrassCuttingPage() {
                 aria-hidden="true"
               />
               <h3 className="text-sm font-semibold text-[#21355a]">
-                How to read the zone cards
+                {copy.howToReadHeading}
               </h3>
             </div>
             <p className="text-xs text-gray-700 leading-relaxed mb-2">
@@ -501,15 +493,7 @@ export default function GrassCuttingPage() {
               month.
             </p>
             <p className="text-xs text-gray-700 leading-relaxed mb-2">
-              The mowing status reflects progress against the monthly mowing
-              target for each zone. It is an operational production indicator
-              and does not, by itself, indicate a deficiency in the flood
-              protection system. Weather, saturated ground conditions, site
-              access, safety considerations, equipment availability, and other
-              operating conditions may affect daily mowing production. When
-              those conditions materially affect monthly progress, SLFPA-East
-              may provide an operational note explaining the cause and recovery
-              actions.
+              {copy.statusExplainer}
             </p>
             <ul className="text-xs text-gray-700 space-y-0.5">
               <li className="flex items-center gap-1.5">

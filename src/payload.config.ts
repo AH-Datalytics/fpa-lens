@@ -12,6 +12,7 @@ import { Media } from "./collections/Media";
 import { StaffMembers } from "./collections/StaffMembers";
 import { SiteSettings } from "./globals/SiteSettings";
 import { HomeContent } from "./globals/HomeContent";
+import { pageGlobals, PAGE_GLOBAL_PATHS } from "./globals/pages";
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
@@ -39,17 +40,20 @@ export default buildConfig({
       afterNavLinks: ["/components/admin/BackToSite#BackToSite"],
     },
     livePreview: {
-      url: ({ collectionConfig }) => {
+      url: ({ collectionConfig, globalConfig }) => {
         const base = process.env.NEXT_PUBLIC_SERVER_URL || "";
+        if (globalConfig?.slug && PAGE_GLOBAL_PATHS[globalConfig.slug]) {
+          return `${base}${PAGE_GLOBAL_PATHS[globalConfig.slug]}`;
+        }
         if (collectionConfig?.slug === "staff-members") return `${base}/about`;
         return `${base}/`;
       },
-      globals: ["home-content", "site-settings"],
+      globals: ["home-content", "site-settings", ...Object.keys(PAGE_GLOBAL_PATHS)],
       collections: ["staff-members"],
     },
   },
   collections: [Users, Media, StaffMembers],
-  globals: [SiteSettings, HomeContent],
+  globals: [SiteSettings, HomeContent, ...pageGlobals],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || "",
   typescript: {

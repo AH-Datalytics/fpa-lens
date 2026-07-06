@@ -123,3 +123,31 @@ export const getSiteSettings = unstable_cache(
   ["cms-site-settings"],
   CACHE_OPTS,
 );
+
+// ---------------------------------------------------------------------------
+// Per-page copy globals (about-page, finance-page, etc.)
+//
+// Each page has a Payload global whose fields carry that page's editable
+// prose, with `defaultValue` set to the current wording (so the admin form
+// pre-fills and unsaved globals still return the text). Pages import their
+// `*_DEFAULTS` for a resilient fallback and read live values via this helper.
+// ---------------------------------------------------------------------------
+export async function getPageContent<T = Record<string, unknown>>(
+  slug: string,
+): Promise<T | null> {
+  return unstable_cache(
+    async () => {
+      try {
+        const payload = await getPayload({ config });
+        const found = await payload.findGlobal({
+          slug: slug as Parameters<typeof payload.findGlobal>[0]["slug"],
+        });
+        return found as T;
+      } catch {
+        return null;
+      }
+    },
+    [`cms-page-${slug}`],
+    CACHE_OPTS,
+  )();
+}
