@@ -7,6 +7,15 @@ checked off and removed from `cms-checklist.md`. Reasoning and context live in `
 
 ## 2026-07
 
+- **2026-07-06 13:57 EDT** — Phase C: seeded content + editors and wired the first page.
+  - Idempotent seed (`scripts/seed-cms.ts`, run via `payload run`): HomeContent, SiteSettings, 12
+    StaffMembers (from `siteData.leadership`), and the 4 editor users (jwilliams editor; the three
+    AHD accounts admin; created with temp passwords, they reset via Resend email).
+  - Home hero heading now reads from the `HomeContent` global via a resilient server helper
+    (`src/lib/cms.ts`, falls back to `siteData` on any error); page is ISR (`revalidate = 60`).
+  - **Proven edit-to-live:** set a distinct hero value in the DB and confirmed the live home page
+    rendered it. Build passes (`/` is ISR 1m), 36 tests pass.
+  - Not yet wired: staff photos (skipped in seed), and the other pages/Footer still read `siteData`.
 - **2026-07-06 13:36 EDT** — Phase C: mounted the branded admin panel at `/admin`.
   - Route-group refactor: moved the site into `(frontend)`, added `(payload)` (admin + api) so each
     has its own root layout; wrapped `next.config.ts` with `withPayload` (redirects/headers kept).
