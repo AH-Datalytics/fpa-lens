@@ -95,12 +95,11 @@ const run = async () => {
       image?: string;
       bio?: { heading: string; text: string }[];
     };
-    // Only upload into Media when a public store is configured; otherwise the
-    // frontend serves the curated /headshots asset (persistent everywhere).
-    const photo =
-      process.env.CMS_MEDIA_BLOB === "true"
-        ? await uploadPhoto(payload, leader.image, leader.name)
-        : undefined;
+    // Upload into Media only when the public Blob store token is configured;
+    // otherwise the frontend serves the curated /headshots asset.
+    const photo = process.env.CMS_MEDIA_BLOB_TOKEN
+      ? await uploadPhoto(payload, leader.image, leader.name)
+      : undefined;
     const data = {
       name: leader.name,
       title: leader.title,

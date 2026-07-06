@@ -66,16 +66,16 @@ export default buildConfig({
     apiKey: process.env.RESEND_API_KEY || "",
   }),
   plugins: [
-    // Media stays on local disk until a PUBLIC Vercel Blob store is provisioned
-    // (the current store is private and can't serve public image URLs). Seeded
-    // staff photos render from the static /headshots assets in the meantime.
-    // To switch media to Blob: set CMS_MEDIA_BLOB=true with a public-store token.
-    ...(process.env.CMS_MEDIA_BLOB === "true" && process.env.BLOB_READ_WRITE_TOKEN
+    // Staff photos go to a dedicated PUBLIC Vercel Blob store, addressed by its
+    // own token (CMS_MEDIA_BLOB_TOKEN) so it stays separate from the lakefront
+    // store's BLOB_READ_WRITE_TOKEN. Enabled whenever that token is present;
+    // local dev without it falls back to disk / the curated /headshots assets.
+    ...(process.env.CMS_MEDIA_BLOB_TOKEN
       ? [
           vercelBlobStorage({
             enabled: true,
             collections: { [Media.slug]: true },
-            token: process.env.BLOB_READ_WRITE_TOKEN,
+            token: process.env.CMS_MEDIA_BLOB_TOKEN,
           }),
         ]
       : []),
