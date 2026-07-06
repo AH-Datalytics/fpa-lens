@@ -7,6 +7,15 @@ checked off and removed from `cms-checklist.md`. Reasoning and context live in `
 
 ## 2026-07
 
+- **2026-07-06 13:36 EDT** — Phase C: mounted the branded admin panel at `/admin`.
+  - Route-group refactor: moved the site into `(frontend)`, added `(payload)` (admin + api) so each
+    has its own root layout; wrapped `next.config.ts` with `withPayload` (redirects/headers kept).
+    Fixed the graphql route OPTIONS export for Payload 3.85.
+  - Custom FPA branding: logo + "FPA Lens / Content Portal" wordmark, navy (#21355a) + green
+    (#65bc7b) palette, a welcome line on login, and a **"How to use" guide on the dashboard**.
+    Components in `src/components/admin/`, styles in `(payload)/custom.scss`.
+  - Verified: `next build` passes (public site + `/admin` + Payload API coexist with existing
+    `/api/*` routes), 36 tests pass, created a first user, and screenshotted the login + dashboard.
 - **2026-07-06 13:13 EDT** — Phase C setup (on branch `feature/cms-payload`):
   - Installed Payload 3.85.2 + `db-postgres`, `db-sqlite`, `storage-vercel-blob`, `email-resend`,
     `richtext-lexical`, `sharp`. Next 16 peer-dep held (clean install).
