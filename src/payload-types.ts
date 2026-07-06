@@ -403,7 +403,7 @@ export interface SiteSetting {
   createdAt?: string | null;
 }
 /**
- * Home page hero and intro copy.
+ * Home page hero heading and subtext.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "home-content".
@@ -411,13 +411,13 @@ export interface SiteSetting {
 export interface HomeContent {
   id: number;
   /**
-   * Hero tagline.
+   * The large hero headline on the home page.
    */
-  tagline?: string | null;
+  heroHeading?: string | null;
   /**
-   * Intro paragraph under the hero.
+   * The paragraph beneath the hero headline.
    */
-  intro?: string | null;
+  heroSubtext?: string | null;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -442,8 +442,8 @@ export interface SiteSettingsSelect<T extends boolean = true> {
  * via the `definition` "home-content_select".
  */
 export interface HomeContentSelect<T extends boolean = true> {
-  tagline?: T;
-  intro?: T;
+  heroHeading?: T;
+  heroSubtext?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
