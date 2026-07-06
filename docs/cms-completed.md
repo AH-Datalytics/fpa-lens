@@ -7,6 +7,17 @@ checked off and removed from `cms-checklist.md`. Reasoning and context live in `
 
 ## 2026-07
 
+- **2026-07-06 16:23 EDT** — Phase C: production database + first deploy.
+  - Provisioned **Neon Postgres** via the Vercel Storage integration under the **AHD team** (region
+    Washington DC / us-east-1, Neon Auth off, no deploy branches, prefix `POSTGRES` → `POSTGRES_URL`).
+    Env vars are marked Sensitive (can't be pulled via CLI — seed from the dashboard string).
+  - Set `PAYLOAD_SECRET` in Vercel (Production + Preview); stored locally in `.cms-payload-secret`
+    (gitignored).
+  - Seeded the team Neon (schema auto-created via push over the direct/unpooled connection): home,
+    site settings, 12 staff, 4 editors.
+  - **Preview deploy verified end-to-end:** public site (hero from Neon) + branded `/admin` both
+    HTTP 200 on `fpa-lens-jw6kv6b6c-ahdatalytics.vercel.app`. Set a temp password on
+    `oboochever@ahdatalytics.com` for testing (`scripts/set-password.ts`).
 - **2026-07-06 14:31 EDT** — Phase C: full content wiring + portal polish.
   - Wired staff/leadership cards (About) and the footer to Payload (`StaffMembers`, `SiteSettings`)
     via cached helpers with `siteData` fallbacks. Seeded staff photos render from the curated

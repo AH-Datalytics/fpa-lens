@@ -185,6 +185,28 @@ Still open:
 
 ---
 
+## 8b. Deploy & operations (2026-07-06)
+
+- **Hosting:** Vercel (AHD team). **Database:** Neon Postgres provisioned via the Vercel Storage
+  integration under the team (region us-east-1). The integration created `POSTGRES_URL` (pooled,
+  used at runtime) + `POSTGRES_URL_NON_POOLING` (direct, use for schema/seed) and marked them
+  **Sensitive** — so they can't be read via `vercel env pull`; grab the string from the Neon/Vercel
+  dashboard when you need to seed.
+- **Env:** `PAYLOAD_SECRET` is set in Vercel (Production + Preview) and mirrored locally in the
+  gitignored `.cms-payload-secret`. Local dev uses SQLite (`DATABASE_URI=file:./cms-dev.db` in
+  `.env.local`); prod uses Neon (`POSTGRES_URL`). The config auto-selects based on `POSTGRES_URL`.
+- **Seed prod:** `POSTGRES_URL="<direct/unpooled neon>" PAYLOAD_SECRET="<secret>" npx payload run
+  scripts/seed-cms.ts` (idempotent; push auto-creates the schema on a fresh DB). Add `SEED_DEV_ADMIN=1`
+  only for a throwaway local login — never in prod.
+- **Grant initial access:** `PW_EMAIL=... PW_VALUE=... npx payload run scripts/set-password.ts`
+  (before editors use the Resend "Forgot password" flow).
+- **Staff photos:** upload UI is built but gated behind `CMS_MEDIA_BLOB=true` + a **public** Blob
+  store (the existing Blob store is private and can't serve public image URLs). Until then, seeded
+  staff render their curated `/headshots` assets. Use a **dedicated** token env var for the CMS
+  store so it doesn't clash with the existing private-store `BLOB_READ_WRITE_TOKEN`.
+- **Constraints from Oscar (2026-07-06):** do NOT send editor invites until he finishes testing;
+  the Neon password stays as-is (not rotating).
+
 ## 9. Future considerations / parking lot (NOT action items)
 
 These become action items only if/when that upgrade is decided upon.
