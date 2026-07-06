@@ -200,10 +200,11 @@ Still open:
   only for a throwaway local login — never in prod.
 - **Grant initial access:** `PW_EMAIL=... PW_VALUE=... npx payload run scripts/set-password.ts`
   (before editors use the Resend "Forgot password" flow).
-- **Staff photos:** upload UI is built but gated behind `CMS_MEDIA_BLOB=true` + a **public** Blob
-  store (the existing Blob store is private and can't serve public image URLs). Until then, seeded
-  staff render their curated `/headshots` assets. Use a **dedicated** token env var for the CMS
-  store so it doesn't clash with the existing private-store `BLOB_READ_WRITE_TOKEN`.
+- **Staff photos:** live. A dedicated **public** Vercel Blob store backs the Media collection,
+  addressed by `CMS_MEDIA_BLOB_TOKEN` (Vercel Production + Preview) — kept separate from the
+  lakefront `BLOB_READ_WRITE_TOKEN` store. The plugin is enabled whenever that token is set (prod);
+  local dev without it uses disk / the curated `/headshots` fallback. Re-seed photos by running the
+  seed with `CMS_MEDIA_BLOB_TOKEN` set. Media serves via the `/api/media/file/*` proxy (blob-backed).
 - **Constraints from Oscar (2026-07-06):** do NOT send editor invites until he finishes testing;
   the Neon password stays as-is (not rotating).
 

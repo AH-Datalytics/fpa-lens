@@ -7,6 +7,13 @@ checked off and removed from `cms-checklist.md`. Reasoning and context live in `
 
 ## 2026-07
 
+- **2026-07-06 18:29 EDT** — **Staff photo uploads live.** Created a dedicated **public** Vercel Blob
+  store (separate from the lakefront `BLOB_READ_WRITE_TOKEN` store, which was left untouched). Wired
+  the Media adapter to `CMS_MEDIA_BLOB_TOKEN` (set in Vercel Production + Preview), uploaded the 12
+  seeded headshots into it, and deployed. Verified: `/about` on fpalens.org serves the photos from
+  the store (`/api/media/file/*` → HTTP 200, image/png), and editors can now upload/replace staff
+  photos in the portal. (Note: media serves through the Payload proxy route, not direct blob CDN —
+  fine for this scale; a future optimization if needed.)
 - **2026-07-06 16:29 EDT** — **CMS live in production.** Merged `feature/cms-payload` → `main`;
   Vercel production deploy succeeded. Verified end-to-end on **fpalens.org**: home (CMS hero),
   branded `/admin`, and `/about` (staff) all HTTP 200. Proved edit-to-live in prod via the API
