@@ -10,7 +10,7 @@ export const StaffMembers: CollectionConfig = {
   slug: "staff-members",
   admin: {
     useAsTitle: "name",
-    defaultColumns: ["name", "title", "order"],
+    defaultColumns: ["photo", "name", "title", "order"],
     description: "Leadership and staff cards. Drag order via the Order field.",
   },
   access: {

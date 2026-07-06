@@ -18,22 +18,50 @@ export interface Person {
   bio?: string | BioSection[];
 }
 
-function PersonCard({ person, onOpen }: { person: Person; onOpen: () => void }) {
+/** True when a person has any bio content worth showing in the modal. */
+function hasBio(person: Person): boolean {
+  if (!person.bio) return false;
+  if (Array.isArray(person.bio)) {
+    return person.bio.some((b) => (b.text ?? "").trim() || (b.heading ?? "").trim());
+  }
+  return person.bio.trim().length > 0;
+}
+
+function PersonPhoto({ image }: { image?: string }) {
+  return (
+    <div className="relative w-24 h-24 mb-3 rounded-full overflow-hidden bg-gray-100 flex-shrink-0 ring-2 ring-transparent group-hover:ring-[#21355a]/20 transition-all">
+      {image ? (
+        <Image src={image} alt="" fill sizes="96px" className="object-cover" />
+      ) : (
+        <Image src="/fpa_logo.png" alt="" fill sizes="96px" className="object-contain p-2" />
+      )}
+    </div>
+  );
+}
+
+const CARD_BASE =
+  "group relative bg-white rounded-lg shadow-sm border border-gray-100 p-4 flex flex-col items-center text-center transition-all duration-200";
+
+function PersonCard({ person, onOpen }: { person: Person; onOpen?: () => void }) {
+  // No bio -> render a non-interactive card (no "Read bio", no empty modal).
+  if (!onOpen) {
+    return (
+      <div className={CARD_BASE}>
+        <PersonPhoto image={person.image} />
+        <p className="font-semibold text-[#21355a] leading-tight">{person.name}</p>
+        <p className="text-sm text-gray-600 mt-1 leading-snug">{person.title}</p>
+      </div>
+    );
+  }
   return (
     <button
       type="button"
       onClick={onOpen}
       aria-haspopup="dialog"
       aria-label={`View bio for ${person.name}`}
-      className="group relative bg-white rounded-lg shadow-sm border border-gray-100 p-4 flex flex-col items-center text-center transition-all duration-200 hover:-translate-y-1 hover:shadow-lg hover:border-[#21355a]/30 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#21355a] focus-visible:ring-offset-2"
+      className={`${CARD_BASE} hover:-translate-y-1 hover:shadow-lg hover:border-[#21355a]/30 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#21355a] focus-visible:ring-offset-2`}
     >
-      <div className="relative w-24 h-24 mb-3 rounded-full overflow-hidden bg-gray-100 flex-shrink-0 ring-2 ring-transparent group-hover:ring-[#21355a]/20 transition-all">
-        {person.image ? (
-          <Image src={person.image} alt="" fill sizes="96px" className="object-cover" />
-        ) : (
-          <Image src="/fpa_logo.png" alt="" fill sizes="96px" className="object-contain p-2" />
-        )}
-      </div>
+      <PersonPhoto image={person.image} />
       <p className="font-semibold text-[#21355a] leading-tight">{person.name}</p>
       <p className="text-sm text-gray-600 mt-1 leading-snug">{person.title}</p>
       <span className="mt-3 inline-flex items-center gap-1 text-xs font-medium text-[#21355a]/70 group-hover:text-[#21355a] transition-colors">
@@ -129,7 +157,7 @@ export default function LeadershipSection({ leaders }: { leaders?: Person[] }) {
           <PersonCard
             key={leader.name}
             person={leader}
-            onOpen={() => setActivePerson(leader)}
+            onOpen={hasBio(leader) ? () => setActivePerson(leader) : undefined}
           />
         ))}
       </div>
