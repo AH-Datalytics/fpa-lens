@@ -140,6 +140,23 @@ const run = async () => {
   }
   payload.logger.info(`Users: ${created} created, ${EDITORS.length - created} already existed`);
 
+  // Local-only convenience admin with a known password (never in prod).
+  if (process.env.SEED_DEV_ADMIN) {
+    const email = "dev@fpalens.local";
+    const existing = await payload.find({
+      collection: "users",
+      where: { email: { equals: email } },
+      limit: 1,
+    });
+    if (!existing.docs[0]) {
+      await payload.create({
+        collection: "users",
+        data: { email, name: "Dev Admin", role: "admin", password: "devpassword123" },
+      });
+      payload.logger.info(`Created dev admin ${email} / devpassword123`);
+    }
+  }
+
   payload.logger.info("Seed complete.");
 };
 

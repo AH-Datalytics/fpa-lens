@@ -1,4 +1,5 @@
 import type { GlobalConfig } from "payload";
+import { revalidateCms } from "@/lib/revalidateCms";
 
 /**
  * Small, occasionally-edited site-wide values: the footer address/phone and the
@@ -13,6 +14,7 @@ export const SiteSettings: GlobalConfig = {
   access: {
     read: () => true,
   },
+  hooks: { afterChange: [revalidateCms] },
   fields: [
     {
       type: "collapsible",

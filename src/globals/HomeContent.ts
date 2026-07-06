@@ -1,4 +1,5 @@
 import type { GlobalConfig } from "payload";
+import { revalidateCms } from "@/lib/revalidateCms";
 
 /**
  * Editable copy for the home page hero. First "page copy" global; additional
@@ -13,6 +14,7 @@ export const HomeContent: GlobalConfig = {
   access: {
     read: () => true,
   },
+  hooks: { afterChange: [revalidateCms] },
   fields: [
     {
       name: "heroHeading",

@@ -130,3 +130,29 @@ html[data-theme="dark"] .fpa-brand__title {
     color: var(--theme-elevation-600);
   }
 }
+
+/* --- "View public site" link in the admin nav --- */
+.fpa-back-to-site {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 10px 0;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-decoration: none;
+  color: #21355a;
+  background: rgba(101, 188, 123, 0.14);
+  border: 1px solid rgba(101, 188, 123, 0.35);
+  transition: background 0.15s ease;
+
+  &:hover {
+    background: rgba(101, 188, 123, 0.24);
+  }
+}
+
+html[data-theme="dark"] .fpa-back-to-site {
+  color: #cdd7ea;
+  background: rgba(101, 188, 123, 0.12);
+}

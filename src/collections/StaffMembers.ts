@@ -1,4 +1,5 @@
 import type { CollectionConfig } from "payload";
+import { revalidateCms } from "@/lib/revalidateCms";
 
 /**
  * Leadership / staff cards shown on the About and staffing views. Mirrors the
@@ -15,6 +16,7 @@ export const StaffMembers: CollectionConfig = {
   access: {
     read: () => true,
   },
+  hooks: { afterChange: [revalidateCms], afterDelete: [revalidateCms] },
   defaultSort: "order",
   fields: [
     { name: "name", type: "text", required: true },

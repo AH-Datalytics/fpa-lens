@@ -36,6 +36,16 @@ export default buildConfig({
       },
       beforeLogin: ["/components/admin/BeforeLogin#BeforeLogin"],
       beforeDashboard: ["/components/admin/HowToUse#HowToUse"],
+      afterNavLinks: ["/components/admin/BackToSite#BackToSite"],
+    },
+    livePreview: {
+      url: ({ collectionConfig }) => {
+        const base = process.env.NEXT_PUBLIC_SERVER_URL || "";
+        if (collectionConfig?.slug === "staff-members") return `${base}/about`;
+        return `${base}/`;
+      },
+      globals: ["home-content", "site-settings"],
+      collections: ["staff-members"],
     },
   },
   collections: [Users, Media, StaffMembers],
