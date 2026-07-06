@@ -7,6 +7,11 @@ checked off and removed from `cms-checklist.md`. Reasoning and context live in `
 
 ## 2026-07
 
+- **2026-07-06 16:29 EDT** — **CMS live in production.** Merged `feature/cms-payload` → `main`;
+  Vercel production deploy succeeded. Verified end-to-end on **fpalens.org**: home (CMS hero),
+  branded `/admin`, and `/about` (staff) all HTTP 200. Proved edit-to-live in prod via the API
+  (changed the hero, live site updated in ~20s, reverted, confirmed restored). Revalidation runs
+  within the ISR window (~20–40s); the "within a minute" promise holds.
 - **2026-07-06 16:23 EDT** — Phase C: production database + first deploy.
   - Provisioned **Neon Postgres** via the Vercel Storage integration under the **AHD team** (region
     Washington DC / us-east-1, Neon Auth off, no deploy branches, prefix `POSTGRES` → `POSTGRES_URL`).

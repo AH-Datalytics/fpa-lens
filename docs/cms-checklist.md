@@ -3,14 +3,11 @@
 **Active action items only.** When one is done: mark it `[x]`, then move it out of this file into
 `cms-completed.md` with a date/time stamp. Rationale and parking-lot ideas live in `cms-notes.md`.
 
-**Status:** Deployed and verified on a Vercel **preview** against the **team Neon** DB. Merging to
-production now. Portal is branded + fully wired (home/staff/footer), with live preview. Remaining:
-production verify, staff photo uploads (needs a public Blob store), and editor invites (on hold).
+**Status:** **LIVE in production on fpalens.org** (team Neon DB), verified end-to-end incl. edit-to-live.
+Portal is branded + fully wired (home/staff/footer) with live preview. Remaining: staff photo
+uploads (needs a public Blob store, Oscar setting up), and editor invites (on hold until testing done).
 
 ---
-
-## In progress
-- [ ] Merge `feature/cms-payload` → `main` and verify the **production** site end-to-end (fpalens.org)
 
 ## Staff photo uploads (Oscar is creating the store)
 - [ ] Oscar: create a **public** Vercel Blob store (Storage → Create → Blob)
