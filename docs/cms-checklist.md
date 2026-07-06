@@ -10,11 +10,6 @@ testing).
 
 ---
 
-## Pending review
-- [ ] Merge `cms-polish` → main — verified locally, awaiting Oscar's OK. Includes: editable copy on
-      every page (Page Content globals), staff-list thumbnails, editor user-list scoping, bio-aware
-      cards, and README/CLAUDE CMS docs.
-
 ## On hold (do NOT start until Oscar finishes testing)
 - [ ] Send the 4 editors their set-password invites (Resend) — **HOLD per Oscar**
 

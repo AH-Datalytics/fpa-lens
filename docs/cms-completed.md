@@ -7,8 +7,14 @@ checked off and removed from `cms-checklist.md`. Reasoning and context live in `
 
 ## 2026-07
 
-- **2026-07-06 19:39 EDT** — **Editable copy on every page** (branch `cms-polish`, NOT merged; tested
-  locally). Added per-page **Page Content** globals for all 10 pages (About, Finance, Safety,
+- **2026-07-06 19:58 EDT** — **Merged the CMS polish + editable page copy to `main` and deployed.**
+  Per Oscar: the *code* (editable-copy feature + fixes) ships; the *test content edits* never do
+  (they were local-only, never committed; local DB reset). Every page global defaults to its current
+  wording, so **no live copy changed** — verified on fpalens.org: all 11 pages HTTP 200 with normal
+  copy (no test strings), and the client-page globals API returns 200 (page-content tables were
+  provisioned on prod Neon via `scripts/push-schema.ts`, additive, no content change). `cms-polish`
+  branch deleted.
+- **2026-07-06 19:39 EDT** — **Editable copy on every page** (branch `cms-polish`, tested locally). Added per-page **Page Content** globals for all 10 pages (About, Finance, Safety,
   Engineering, Environment, Infrastructure, Protection, Staffing, Turf, IDIQ) — each field's
   `defaultValue` is the current wording, so admin forms pre-fill and unsaved globals return the text
   (no seed needed). Discovery: 8 of 10 pages are Client Components, so instead of risky server/client
