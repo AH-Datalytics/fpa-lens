@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import { withPayload } from "@payloadcms/next/withPayload";
 
 // Baseline security headers applied to every response. CSP is intentionally
 // omitted for now: Next.js injects inline scripts for hydration, so a strict
@@ -8,8 +9,9 @@ const securityHeaders = [
   { key: "Strict-Transport-Security", value: "max-age=63072000; includeSubDomains; preload" },
   // Block MIME-type sniffing (defense in depth against content-type confusion).
   { key: "X-Content-Type-Options", value: "nosniff" },
-  // Disallow framing entirely; nothing on this site needs to be embedded.
-  { key: "X-Frame-Options", value: "DENY" },
+  // Allow same-origin framing so the Payload admin Live Preview can embed the
+  // site in an iframe; cross-origin framing (clickjacking) stays blocked.
+  { key: "X-Frame-Options", value: "SAMEORIGIN" },
   // Send the origin only on cross-origin requests; full URL same-origin.
   { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
   // Drop access to sensors and hardware features the dashboard never uses.
@@ -20,6 +22,12 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
+  images: {
+    // Staff headshots uploaded via the CMS are served from Vercel Blob.
+    remotePatterns: [
+      { protocol: "https", hostname: "*.public.blob.vercel-storage.com" },
+    ],
+  },
   async headers() {
     return [
       {
@@ -47,4 +55,4 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+export default withPayload(nextConfig);

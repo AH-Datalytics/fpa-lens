@@ -2,6 +2,7 @@
   "name": "fpa",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "next dev",
     "prebuild": "eslint",
@@ -11,11 +12,20 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@payloadcms/db-postgres": "^3.85.2",
+    "@payloadcms/db-sqlite": "^3.85.2",
+    "@payloadcms/email-resend": "^3.85.2",
+    "@payloadcms/live-preview-react": "^3.85.2",
+    "@payloadcms/next": "^3.85.2",
+    "@payloadcms/richtext-lexical": "^3.85.2",
+    "@payloadcms/storage-vercel-blob": "^3.85.2",
     "@vercel/blob": "^2.4.1",
+    "graphql": "^16.14.2",
     "html-to-image": "^1.11.13",
     "leaflet": "^1.9.4",
     "lucide-react": "^1.11.0",
     "next": "16.2.9",
+    "payload": "^3.85.2",
     "proj4": "^2.20.9",
     "react": "19.2.7",
     "react-dom": "19.2.7",
@@ -23,6 +33,7 @@
     "recharts": "^3.8.1",
     "resend": "^6.14.0",
     "shapefile": "^0.6.6",
+    "sharp": "^0.35.3",
     "zod": "^4.4.3"
   },
   "devDependencies": {

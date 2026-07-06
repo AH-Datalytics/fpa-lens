@@ -25,6 +25,7 @@ import {
 import { computeReadinessRollups } from "@/lib/readinessRollups";
 import { getOmSummary } from "@/lib/financeData";
 import { computeZoneLevel } from "@/lib/staffingZones";
+import { getHomeContent } from "@/lib/cms";
 
 const quickLinks = [
   {
@@ -100,7 +101,12 @@ function statusTooltip(status: StatusLevel) {
   return `${defs.GREEN.label}: ${defs.GREEN.definition}`;
 }
 
-export default function Home() {
+// ISR: the home page regenerates at most once a minute, so a CMS edit to the
+// hero copy goes live within ~1 min (matches the portal's "how to use" note).
+export const revalidate = 60;
+
+export default async function Home() {
+  const home = await getHomeContent();
   const infra = getCategory("Infrastructure Readiness")!;
   const staffReadiness = getCategory("Staffing Readiness")!;
   const staffStatus: StatusLevel =
@@ -148,7 +154,7 @@ export default function Home() {
                 <span className="text-sm text-blue-200">All Systems Operational</span>
               </div>
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-6">
-                Protecting Greater New Orleans
+                {home?.heroHeading || "Protecting Greater New Orleans"}
               </h1>
               <p className="text-xl text-blue-100 mb-8 leading-relaxed">
                 The FPA Lens provides transparent, real-time insight into how the{" "}

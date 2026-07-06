@@ -1,0 +1,83 @@
+import path from "path";
+import { fileURLToPath } from "url";
+import { buildConfig } from "payload";
+import { lexicalEditor } from "@payloadcms/richtext-lexical";
+import { sqliteAdapter } from "@payloadcms/db-sqlite";
+import { postgresAdapter } from "@payloadcms/db-postgres";
+import { resendAdapter } from "@payloadcms/email-resend";
+import { vercelBlobStorage } from "@payloadcms/storage-vercel-blob";
+
+import { Users } from "./collections/Users";
+import { Media } from "./collections/Media";
+import { StaffMembers } from "./collections/StaffMembers";
+import { SiteSettings } from "./globals/SiteSettings";
+import { HomeContent } from "./globals/HomeContent";
+
+const filename = fileURLToPath(import.meta.url);
+const dirname = path.dirname(filename);
+
+// Prod (Vercel) provides a Postgres connection string; local dev falls back to
+// a zero-setup SQLite file. Same collections/globals either way.
+const postgresUrl =
+  process.env.POSTGRES_URL || process.env.DATABASE_URL || process.env.POSTGRES_PRISMA_URL;
+
+export default buildConfig({
+  admin: {
+    user: Users.slug,
+    importMap: { baseDir: path.resolve(dirname) },
+    meta: {
+      titleSuffix: "· FPA Lens Content Portal",
+      description: "Content portal for the SLFPA-E FPA Lens dashboard.",
+    },
+    components: {
+      graphics: {
+        Logo: "/components/admin/Logo#Logo",
+        Icon: "/components/admin/Icon#Icon",
+      },
+      beforeLogin: ["/components/admin/BeforeLogin#BeforeLogin"],
+      beforeDashboard: ["/components/admin/HowToUse#HowToUse"],
+      afterNavLinks: ["/components/admin/BackToSite#BackToSite"],
+    },
+    livePreview: {
+      url: ({ collectionConfig }) => {
+        const base = process.env.NEXT_PUBLIC_SERVER_URL || "";
+        if (collectionConfig?.slug === "staff-members") return `${base}/about`;
+        return `${base}/`;
+      },
+      globals: ["home-content", "site-settings"],
+      collections: ["staff-members"],
+    },
+  },
+  collections: [Users, Media, StaffMembers],
+  globals: [SiteSettings, HomeContent],
+  editor: lexicalEditor(),
+  secret: process.env.PAYLOAD_SECRET || "",
+  typescript: {
+    outputFile: path.resolve(dirname, "payload-types.ts"),
+  },
+  db: postgresUrl
+    ? postgresAdapter({ pool: { connectionString: postgresUrl } })
+    : sqliteAdapter({
+        client: { url: process.env.DATABASE_URI || "file:./cms-dev.db" },
+      }),
+  email: resendAdapter({
+    defaultFromAddress: "alerts@fpalens.org",
+    defaultFromName: "FPA Lens",
+    apiKey: process.env.RESEND_API_KEY || "",
+  }),
+  plugins: [
+    // Media stays on local disk until a PUBLIC Vercel Blob store is provisioned
+    // (the current store is private and can't serve public image URLs). Seeded
+    // staff photos render from the static /headshots assets in the meantime.
+    // To switch media to Blob: set CMS_MEDIA_BLOB=true with a public-store token.
+    ...(process.env.CMS_MEDIA_BLOB === "true" && process.env.BLOB_READ_WRITE_TOKEN
+      ? [
+          vercelBlobStorage({
+            enabled: true,
+            collections: { [Media.slug]: true },
+            token: process.env.BLOB_READ_WRITE_TOKEN,
+          }),
+        ]
+      : []),
+  ],
+});

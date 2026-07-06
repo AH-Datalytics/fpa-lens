@@ -61,3 +61,20 @@ next-env.d.ts
 /*.docx
 /*.xlsx
 /*.eml
+
+# Payload local dev SQLite
+cms-dev.db
+cms-dev.db-*
+
+# Playwright verification artifacts
+.playwright-mcp/
+cms-admin-*.png
+cms-dashboard.png
+cms-login.png
+
+# Payload local media (local-disk uploads)
+/media/
+cms-media/
+
+# CMS deploy secret (local only)
+.cms-payload-secret
