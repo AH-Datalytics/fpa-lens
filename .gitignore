@@ -61,3 +61,7 @@ next-env.d.ts
 /*.docx
 /*.xlsx
 /*.eml
+
+# Payload local dev SQLite
+cms-dev.db
+cms-dev.db-*
