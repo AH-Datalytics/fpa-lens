@@ -7,6 +7,14 @@ checked off and removed from `cms-checklist.md`. Reasoning and context live in `
 
 ## 2026-07
 
+- **2026-07-06 19:01 EDT** — End-to-end admin test pass + polish (branch `cms-polish`, NOT yet merged;
+  tested locally against isolated SQLite so nothing touched prod). All flows verified working:
+  login (admin + editor), staff create with bio array, **photo upload via the UI**, edit, delete,
+  and Home/Site Settings global edits — all persist and reflect on the site in ~5-8s, no console
+  errors. Fixes made: (1) Photo column added to the staff list; (2) editors now see only their own
+  user record (admins still see all) and have no user-create access — confirmed; (3) leadership
+  cards only show "Read bio"/open the modal when a bio exists. README + CLAUDE.md gained CMS
+  sections. Full build passes. **Awaiting Oscar's OK to merge `cms-polish` → main.**
 - **2026-07-06 18:29 EDT** — **Staff photo uploads live.** Created a dedicated **public** Vercel Blob
   store (separate from the lakefront `BLOB_READ_WRITE_TOKEN` store, which was left untouched). Wired
   the Media adapter to `CMS_MEDIA_BLOB_TOKEN` (set in Vercel Production + Preview), uploaded the 12
