@@ -26,7 +26,16 @@ export default buildConfig({
     user: Users.slug,
     importMap: { baseDir: path.resolve(dirname) },
     meta: {
-      titleSuffix: "· FPA Lens CMS",
+      titleSuffix: "· FPA Lens Content Portal",
+      description: "Content portal for the SLFPA-E FPA Lens dashboard.",
+    },
+    components: {
+      graphics: {
+        Logo: "/components/admin/Logo#Logo",
+        Icon: "/components/admin/Icon#Icon",
+      },
+      beforeLogin: ["/components/admin/BeforeLogin#BeforeLogin"],
+      beforeDashboard: ["/components/admin/HowToUse#HowToUse"],
     },
   },
   collections: [Users, Media, StaffMembers],

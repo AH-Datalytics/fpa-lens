@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import { withPayload } from "@payloadcms/next/withPayload";
 
 // Baseline security headers applied to every response. CSP is intentionally
 // omitted for now: Next.js injects inline scripts for hydration, so a strict
@@ -47,4 +48,4 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+export default withPayload(nextConfig);

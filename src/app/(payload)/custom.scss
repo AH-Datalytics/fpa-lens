@@ -1,0 +1,132 @@
+/* ==========================================================================
+   FPA Lens Content Portal — admin branding
+   Brand: navy #21355a (primary), green #65bc7b (accent). Uses Payload theme
+   variables where possible so everything adapts to light/dark automatically.
+   ========================================================================== */
+
+/* --- Primary buttons in brand navy (Save, Create, etc.) --- */
+.btn.btn--style-primary:not(.btn--disabled) {
+  background-color: #21355a;
+  border-color: #21355a;
+
+  &:hover,
+  &:focus {
+    background-color: #2c3859;
+    border-color: #2c3859;
+  }
+}
+
+/* --- Brand mark (login + nav) --- */
+.fpa-brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+
+  &--login {
+    justify-content: center;
+    margin-bottom: 4px;
+  }
+
+  &__mark {
+    width: 60px;
+    height: 60px;
+    object-fit: contain;
+
+    &--sm {
+      width: 26px;
+      height: 26px;
+    }
+  }
+
+  &__text {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.12;
+  }
+
+  &__title {
+    font-size: 1.55rem;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    color: #21355a;
+  }
+
+  &__subtitle {
+    font-size: 0.78rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    color: #4a9e63;
+  }
+}
+
+html[data-theme="dark"] .fpa-brand__title {
+  color: #cdd7ea;
+}
+
+/* --- Welcome line above the login form --- */
+.fpa-before-login {
+  max-width: 400px;
+  margin: 0 auto 6px;
+
+  p {
+    margin: 0;
+    text-align: center;
+    font-size: 0.9rem;
+    color: var(--theme-elevation-600);
+  }
+}
+
+/* --- "How to use" guide on the dashboard --- */
+.fpa-howto {
+  margin-bottom: 28px;
+  padding: 20px 24px;
+  border: 1px solid var(--theme-elevation-150);
+  border-left: 4px solid #65bc7b;
+  border-radius: 8px;
+  background: var(--theme-elevation-50);
+
+  &__title {
+    margin: 0 0 14px;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--theme-text);
+  }
+
+  &__steps {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    li {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      font-size: 0.92rem;
+      color: var(--theme-elevation-800);
+    }
+  }
+
+  &__num {
+    flex: 0 0 26px;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: #21355a;
+    color: #fff;
+    font-weight: 700;
+    font-size: 0.82rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &__note {
+    margin: 16px 0 0;
+    font-size: 0.85rem;
+    color: var(--theme-elevation-600);
+  }
+}

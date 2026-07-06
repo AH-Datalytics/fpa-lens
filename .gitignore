@@ -65,3 +65,9 @@ next-env.d.ts
 # Payload local dev SQLite
 cms-dev.db
 cms-dev.db-*
+
+# Playwright verification artifacts
+.playwright-mcp/
+cms-admin-*.png
+cms-dashboard.png
+cms-login.png
