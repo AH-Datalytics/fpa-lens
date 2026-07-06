@@ -36,6 +36,7 @@ jobs:
         run: pip install openpyxl
 
       - name: Refresh data from SharePoint
+        id: refresh
         env:
           SHAREPOINT_TENANT_ID: ${{ secrets.SHAREPOINT_TENANT_ID }}
           SHAREPOINT_CLIENT_ID: ${{ secrets.SHAREPOINT_CLIENT_ID }}
@@ -46,14 +47,17 @@ jobs:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: node scripts/refresh-data.mjs
 
-      # Email the data-ops contact when a new SITREP advances the dashboard to a
-      # new report month. Runs before the commit step so HEAD is still the prior
-      # month for the comparison. Self-silences on a same-month re-parse.
-      - name: Notify on SITREP roll
-        if: success()
+      # Always email a single digest of the run: what data changed this week,
+      # per-source pull status, and any failures. Runs before the commit step so
+      # it can diff the working tree against HEAD to describe the changes. Never
+      # fails the run (always exits 0).
+      - name: Email refresh digest
+        if: always()
         env:
           RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
-        run: node scripts/notify-sitrep-roll.mjs
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          REFRESH_OUTCOME: ${{ steps.refresh.outcome }}
+        run: node scripts/notify-digest.mjs
 
       # Commit even on partial failure so categories that DID update still publish.
       - name: Commit refreshed data
@@ -68,11 +72,3 @@ jobs:
             git commit -m "chore: weekly data refresh [skip ci]"
             git push
           fi
-
-      # Email the data-ops contact if anything failed.
-      - name: Notify on failure
-        if: failure()
-        env:
-          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
-          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-        run: node scripts/notify-failure.mjs
