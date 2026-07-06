@@ -7,6 +7,17 @@ checked off and removed from `cms-checklist.md`. Reasoning and context live in `
 
 ## 2026-07
 
+- **2026-07-06 14:31 EDT** — Phase C: full content wiring + portal polish.
+  - Wired staff/leadership cards (About) and the footer to Payload (`StaffMembers`, `SiteSettings`)
+    via cached helpers with `siteData` fallbacks. Seeded staff photos render from the curated
+    `/headshots` assets (Media-to-Blob gated behind `CMS_MEDIA_BLOB` until a PUBLIC store exists).
+  - **Live Preview**: admin shows the site in an iframe as you edit — verified it renders the real
+    home page with CMS content. Relaxed `X-Frame-Options` DENY→SAMEORIGIN for same-origin framing;
+    `RefreshRouteOnSave` refreshes the preview on save.
+  - **Instant updates**: afterChange/afterDelete hooks call `updateTag('cms')` (read-your-own-writes),
+    with 60s ISR as the fallback. All frontend pages are ISR.
+  - **"View public site"** link in the admin nav. Optional dev admin in the seed (`SEED_DEV_ADMIN`).
+  - Verified: `next build` passes, staff photos + footer + live preview all render from the CMS.
 - **2026-07-06 13:57 EDT** — Phase C: seeded content + editors and wired the first page.
   - Idempotent seed (`scripts/seed-cms.ts`, run via `payload run`): HomeContent, SiteSettings, 12
     StaffMembers (from `siteData.leadership`), and the 4 editor users (jwilliams editor; the three
