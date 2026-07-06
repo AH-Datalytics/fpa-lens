@@ -18,7 +18,7 @@ Friday cron; the first manual run publishes the SharePoint data.
 | SITREP | PDF → Claude digest → engineering maintenance list (narrative only) | folder empty — activates on first upload |
 | Turf | newer-month overlay onto `grassCutting` (no regression) | folder empty — activates on first upload |
 
-- Friday cron `0 13 * * 5`, `workflow_dispatch`, commit-only-what-changed, **failure email to Oscar**.
+- Friday cron `0 13 * * 5`, `workflow_dispatch`, commit-only-what-changed, **per-run digest email to Oscar** (`scripts/notify-digest.mjs`: changes published, per-source status, failures; sent every run).
 - SITREP feeds narrative only; readiness/financial/safety come from their own pipelines.
 - Turf/SITREP overlay safely: unmatched/older data falls back to curated values.
 - `Engineering/` SharePoint folder is empty/unused (IDIQ lives in `Finance/IDIQ/`).
@@ -80,11 +80,17 @@ they change rarely and stay manual.
 - Mirror `SHAREPOINT_*` from Vercel (cleaned of the `\n`).
 - `ANTHROPIC_API_KEY` — **new, does not exist anywhere yet.**
 
-## 6. Failure handling
+## 6. Notifications & failure handling
 
-- Rely on GitHub's built-in failed-scheduled-run email to Oscar (confirm notification settings;
-  cron committed under his account).
-- Orchestrator exits non-zero on any category error → GitHub marks the run failed → email.
+- **Per-run digest email** (`scripts/notify-digest.mjs`, `if: always()` before the commit step):
+  one Resend email to Oscar on *every* run with (a) data changes published this run (diffed from
+  the working tree vs HEAD), (b) per-source pull status (REFRESHED/SKIPPED/FAILED), and (c) any
+  failures. Sends on no-change weeks too, so a green run is always confirmed. Never fails the job
+  (always exits 0). Consolidates + replaces the old failure-only and SITREP-roll-only emails
+  (July 2026). Pure logic unit-tested in `notify-digest.test.mjs`.
+- Orchestrator exits non-zero on any category error → GitHub marks the run failed; the digest still
+  sends (it reads `steps.refresh.outcome` to flag a hard error even if no per-source summary was
+  written). GitHub's built-in failed-run email is a backstop.
 - Naming guard: a file not matching `descriptor_YYYY-MM(-DD).ext` is skipped + logged, never parsed.
 
 ## 7. Open issues / cleanups

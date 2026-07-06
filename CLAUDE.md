@@ -7,6 +7,11 @@ Dashboard for the Southeast Louisiana Flood Protection Authority (FPA). Built fo
 - `next` and `eslint-config-next` are exact-pinned (no caret) to match the house style of `react`/`react-dom`. Bump them together.
 - Known accepted residual (June 2026): `npm audit` reports 2 moderate `postcss@8.4.31` alerts (GHSA-qx2v-qp2m-jg93). That postcss is hard-pinned *inside* Next.js for its build-time CSS internals -- not attacker-reachable, and npm's only offered "fix" is an absurd downgrade to `next@9`. Leave it; it clears when Next bumps its own pin. The top-level `postcss` (8.5.x via Tailwind/Vite) is already patched. Do not run `npm audit fix --force`.
 
+## Data Refresh Automation
+- Weekly GitHub Action `.github/workflows/refresh-data.yml` (`cron: 0 13 * * 5`, Fridays ~8am Central; also `workflow_dispatch`) pulls the newest source files from the SharePoint `LensRepository`, regenerates the dashboard JSON in `public/data/` (+ `src/data/turfCycles.json`), commits only what changed, and lets Vercel auto-deploy. Orchestrator: `scripts/refresh-data.mjs`; SharePoint auth/fetch in `scripts/sharepoint/`. Categories: finance, idiq, safety, staffing, sitrep, turf. Full design in `docs/data-automation-plan.md`.
+- **Digest email** (`scripts/notify-digest.mjs`, unit-tested via `notify-digest.test.mjs`): one email to Oscar on *every* run (Resend, from `alerts@fpalens.org`), reporting data changes published that run (diffed from the working tree vs HEAD), per-source pull status (REFRESHED/SKIPPED/FAILED), and any failures. Sends even on no-change weeks so the run is always confirmed; runs `if: always()` before the commit step and never fails the job. It replaced the earlier failure-only and SITREP-roll-only emails (July 2026).
+- SharePoint creds live in Vercel + GitHub secrets (`SHAREPOINT_*`). For local pipeline runs, `graph.mjs` reads them from `.env.vercel-prod` (gitignored) -- hydrate it with `vercel env pull .env.vercel-prod --environment=production`.
+
 ## Dashboard Pages
 
 ### Home (/)
@@ -20,7 +25,7 @@ Dashboard for the Southeast Louisiana Flood Protection Authority (FPA). Built fo
 
 ### Financial (/finance)
 - Budget vs actuals is live. Refreshed from the Dashboard Reports `.xlsm` workbook Finance sends on a monthly (or quarterly) cadence.
-- Current data: FY26 YTD through Mar 31, 2026.
+- Current data auto-refreshes monthly from SharePoint via the weekly Action (see Data Refresh Automation); the live period label lives in `public/data/actuals-fy26.json` (through June 30, 2026 as of the Jul 3 refresh). No manual month bumps needed here.
 - Projects are shown separately from O&M per the Director's direction, since project timing would otherwise distort the operational spending story.
 
 ### Engineering (/engineering)
