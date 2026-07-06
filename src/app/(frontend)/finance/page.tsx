@@ -30,6 +30,8 @@ import {
   type ActualsData,
   type ActualsLineItem,
 } from "@/lib/financeData";
+import { usePageCopy } from "@/lib/usePageCopy";
+import { FINANCE_DEFAULTS } from "@/globals/pages/financePage";
 
 const ACRONYMS: Record<string, string> = {
   OLD: "Orleans Levee District",
@@ -86,6 +88,7 @@ type ActualsSortKey = "name" | "ytdBudget" | "ytdActual" | "variancePct" | "tota
 const actuals: ActualsData = getActuals();
 
 export default function FinancialPage() {
+  const copy = usePageCopy("finance-page", FINANCE_DEFAULTS);
   const [selectedEntity, setSelectedEntity] = useState("wholeEntity");
   const [catSortKey, setCatSortKey] = useState<ActualsSortKey>("ytdActual");
   const [catSortDir, setCatSortDir] = useState<"asc" | "desc">("desc");
@@ -127,8 +130,8 @@ export default function FinancialPage() {
     <div className="py-12">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <SectionHeader
-          title="Finance"
-          subtitle="How your tax dollars are invested in flood protection"
+          title={copy.pageTitle}
+          subtitle={copy.pageSubtitle}
           source="FY26 Adopted Budget & Dashboard Reports"
         />
 
@@ -204,7 +207,7 @@ export default function FinancialPage() {
           return (
             <section className="mb-12">
               <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between mb-2">
-                <SectionSubheader title="Year-to-Date Spending vs Budget" />
+                <SectionSubheader title={copy.spendingSectionHeading} />
                 <span className="inline-flex items-center gap-1.5 text-xs text-gray-500 bg-gray-50 border border-gray-200 rounded-full px-3 py-1 self-start sm:self-auto">
                   <CalendarDays className="h-3 w-3" />
                   Data through {new Date(actuals.lastUpdated + "T00:00:00").toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}
@@ -234,7 +237,7 @@ export default function FinancialPage() {
                     </div>
                     <span className="text-xs font-medium text-gray-500">{revCollectedPct}%</span>
                   </div>
-                  <p className="text-[10px] text-gray-400 mt-2 leading-snug">Tax revenue is seasonal; large payments arrive at billing cycles</p>
+                  <p className="text-[10px] text-gray-400 mt-2 leading-snug">{copy.revenueCaption}</p>
                 </div>
 
                 {/* O&M Expenses */}
@@ -271,7 +274,7 @@ export default function FinancialPage() {
                     </div>
                     <span className="text-xs font-medium text-gray-500">{projUsedPct}%</span>
                   </div>
-                  <p className="text-[10px] text-gray-400 mt-2 leading-snug">Multi-year projects ramp at different rates</p>
+                  <p className="text-[10px] text-gray-400 mt-2 leading-snug">{copy.projectsCaption}</p>
                 </div>
 
                 {/* Net Position */}
@@ -394,7 +397,7 @@ export default function FinancialPage() {
                       </select>
                     </div>
                   }
-                  note="Note: When filtering by district, some categories and departments may not appear because not all expense types and departments exist within every district."
+                  note={copy.varianceTableNote}
                 >
                   <div className="overflow-x-auto">
                     {tableView === "category" ? (
@@ -536,10 +539,9 @@ export default function FinancialPage() {
 
         {/* Major Future Projects */}
         <section className="mb-12">
-          <SectionSubheader title="Major Future Projects" />
+          <SectionSubheader title={copy.majorProjectsHeading} />
           <p className="text-sm text-gray-600 mb-2">
-            Long-term capital needs the Authority has identified but that are not yet funded
-            or scheduled. For projects currently under contract, in construction, or out for
+            {copy.majorProjectsIntro} For projects currently under contract, in construction, or out for
             bid, see{" "}
             <Link
               href="/engineering#current-capital-projects"
@@ -592,15 +594,8 @@ export default function FinancialPage() {
             <div className="flex items-start gap-3">
               <Info className="h-5 w-5 text-gray-400 mt-0.5 flex-shrink-0" />
               <div className="text-xs text-gray-500 space-y-1">
-                <p>
-                  Budget vs Actuals sourced from FPA Dashboard Reports (Finance Department).
-                  O&M expenses are shown separately from Projects to avoid distortion from
-                  multi-year project timing. Hover over any acronym for its full name.
-                </p>
-                <p>
-                  Future projects sourced from SITREP reports. Current capital projects
-                  live on the Engineering page.
-                </p>
+                <p>{copy.dataNoteBudget}</p>
+                <p>{copy.dataNoteProjects}</p>
               </div>
             </div>
           </div>

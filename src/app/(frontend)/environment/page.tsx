@@ -35,6 +35,8 @@ import { RiskIndicator } from "@/components/RiskBadge";
 import RiskBadge from "@/components/RiskBadge";
 import type { LakefrontData, RiskLevel } from "@/lib/lakefrontRisk";
 import { RISK_THRESHOLDS } from "@/lib/lakefrontRisk";
+import { usePageCopy } from "@/lib/usePageCopy";
+import { ENVIRONMENT_DEFAULTS } from "@/globals/pages/environmentPage";
 
 const REFRESH_INTERVAL = 5 * 60 * 1000; // 5 minutes
 
@@ -110,6 +112,7 @@ function formatDateTime(ts: string): string {
 }
 
 export default function EnvironmentalPage() {
+  const copy = usePageCopy("environment-page", ENVIRONMENT_DEFAULTS);
   const [data, setData] = useState<LakefrontData | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [refreshing, setRefreshing] = useState(false);
@@ -365,8 +368,8 @@ export default function EnvironmentalPage() {
     <div className="py-12">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <SectionHeader
-          title="Environmental Conditions"
-          subtitle="Real-time Lakeshore Drive flood risk assessment"
+          title={copy.pageTitle}
+          subtitle={copy.pageSubtitle}
           source={`NOAA Station ${data.stationId} (${data.stationName}) & NWS`}
         />
 
@@ -396,7 +399,7 @@ export default function EnvironmentalPage() {
             <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 mb-6">
               <div className="flex-1">
                 <h2 className="text-sm font-medium text-gray-500 uppercase tracking-wide mb-3">
-                  Lakeshore Drive Flood Risk
+                  {copy.heroHeading}
                 </h2>
                 <RiskIndicator level={risk.level} action={risk.action} />
               </div>
@@ -439,7 +442,7 @@ export default function EnvironmentalPage() {
             {/* Contributing Factors */}
             <div className="bg-gray-50 rounded-lg p-4">
               <h3 className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">
-                Contributing Factors
+                {copy.contributingFactorsHeading}
               </h3>
               <ul className="space-y-1">
                 {risk.factors.map((factor, i) => (
@@ -458,55 +461,48 @@ export default function EnvironmentalPage() {
         {/* Plain-English explainer: what makes the risk go up */}
         <section className="mb-12">
           <SectionSubheader
-            title="What drives this risk indicator"
-            subtitle="Three things have to line up before flooding becomes likely"
+            title={copy.drivesTitle}
+            subtitle={copy.drivesSubtitle}
           />
           <div className="bg-white rounded-xl shadow-md border border-gray-100 p-6">
             <p className="text-base text-gray-700 leading-relaxed mb-6">
-              Lakeshore Drive floods when wind pushes Lake Pontchartrain water against
-              the south shore. Most days the wind blows the lake away from the shore and
-              there is no risk. The indicator turns yellow, orange, or red only when the
-              right combination of wind direction, wind strength, duration, and rising
-              water lines up.
+              {copy.drivesIntro}
             </p>
             <div className="grid md:grid-cols-3 gap-4 mb-6">
               <div className="rounded-lg border border-gray-100 bg-gray-50/60 p-5">
                 <div className="flex items-center gap-2 mb-2 text-[#21355a]">
                   <Compass className="h-5 w-5" aria-hidden="true" />
                   <h3 className="font-semibold text-sm uppercase tracking-wide">
-                    Wind direction
+                    {copy.windDirectionHeading}
                   </h3>
                 </div>
-                <p className="text-2xl font-bold text-[#21355a] mb-1">Onshore</p>
+                <p className="text-2xl font-bold text-[#21355a] mb-1">{copy.windDirectionValue}</p>
                 <p className="text-sm text-gray-700 leading-snug">
-                  Blowing from the north (NW, N, or NE) toward Lakeshore Drive. Winds from
-                  the south push water away and pose no risk.
+                  {copy.windDirectionText}
                 </p>
               </div>
               <div className="rounded-lg border border-gray-100 bg-gray-50/60 p-5">
                 <div className="flex items-center gap-2 mb-2 text-[#21355a]">
                   <Wind className="h-5 w-5" aria-hidden="true" />
                   <h3 className="font-semibold text-sm uppercase tracking-wide">
-                    Wind strength &amp; duration
+                    {copy.windStrengthHeading}
                   </h3>
                 </div>
-                <p className="text-2xl font-bold text-[#21355a] mb-1">Sustained</p>
+                <p className="text-2xl font-bold text-[#21355a] mb-1">{copy.windStrengthValue}</p>
                 <p className="text-sm text-gray-700 leading-snug">
-                  Yellow and orange require winds above 15 / 25 knots for at least
-                  ~2 of the previous 3 hours. Red triggers immediately above 35 knots.
+                  {copy.windStrengthText}
                 </p>
               </div>
               <div className="rounded-lg border border-gray-100 bg-gray-50/60 p-5">
                 <div className="flex items-center gap-2 mb-2 text-[#21355a]">
                   <Waves className="h-5 w-5" aria-hidden="true" />
                   <h3 className="font-semibold text-sm uppercase tracking-wide">
-                    Lake level vs. tide
+                    {copy.lakeLevelHeading}
                   </h3>
                 </div>
-                <p className="text-2xl font-bold text-[#21355a] mb-1">Above predicted</p>
+                <p className="text-2xl font-bold text-[#21355a] mb-1">{copy.lakeLevelValue}</p>
                 <p className="text-sm text-gray-700 leading-snug">
-                  Lake level above tide prediction (surge anomaly) signals water piling
-                  up on the south shore. Only counted as risk when wind is also onshore.
+                  {copy.lakeLevelText}
                 </p>
               </div>
             </div>
@@ -515,24 +511,22 @@ export default function EnvironmentalPage() {
                 <div className="flex items-center gap-2 mb-1.5">
                   <span className="w-2 h-2 rounded-full bg-green-500" aria-hidden="true" />
                   <span className="text-xs font-semibold uppercase tracking-wide text-green-800">
-                    Normal conditions (green)
+                    {copy.normalConditionsHeading}
                   </span>
                 </div>
                 <p className="text-sm text-gray-700 leading-snug">
-                  Wind is calm, blowing offshore, or below 15 knots; lake level is near
-                  tide prediction. No action required.
+                  {copy.normalConditionsText}
                 </p>
               </div>
               <div className="rounded-lg border border-amber-200 bg-amber-50/60 p-4">
                 <div className="flex items-center gap-2 mb-1.5">
                   <Clock className="h-3.5 w-3.5 text-amber-700" aria-hidden="true" />
                   <span className="text-xs font-semibold uppercase tracking-wide text-amber-800">
-                    Elevated conditions (yellow / orange / red)
+                    {copy.elevatedConditionsHeading}
                   </span>
                 </div>
                 <p className="text-sm text-gray-700 leading-snug">
-                  Sustained onshore wind plus rising lake level. The longer the wind
-                  blows that direction, the higher water gets pushed against the shore.
+                  {copy.elevatedConditionsText}
                 </p>
               </div>
             </div>
@@ -546,7 +540,7 @@ export default function EnvironmentalPage() {
 
         {/* Current Conditions */}
         <section className="mb-12">
-          <SectionSubheader title="Current Conditions" />
+          <SectionSubheader title={copy.currentConditionsTitle} />
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             {/* Wind */}
             <div className="bg-white rounded-xl shadow-md border border-gray-100 p-6">
@@ -670,9 +664,7 @@ export default function EnvironmentalPage() {
                 <span className="text-sm text-gray-500">ft</span>
               </div>
               <p className="text-xs text-gray-400 mt-1">
-                Lake Level minus Tide Prediction. Positive = water is higher than
-                tides alone explain, typically from wind pushing water toward shore.
-                This is what drives the surge component of the risk level.
+                {copy.surgeAnomalyExplainer}
               </p>
             </div>
 
@@ -738,7 +730,7 @@ export default function EnvironmentalPage() {
         {chartData.length > 0 && (
           <section className="mb-12">
             <SectionSubheader
-              title="Conditions Timeline"
+              title={copy.timelineTitle}
               subtitle={`${historyHours} hours observed & 2-day forecast`}
             />
             {/* Chart controls */}
@@ -959,7 +951,7 @@ export default function EnvironmentalPage() {
         {/* Active NWS Alerts */}
         {alerts.length > 0 && (
           <section className="mb-12">
-            <SectionSubheader title="Active Weather Alerts" />
+            <SectionSubheader title={copy.alertsTitle} />
             <div className="space-y-4">
               {alerts.map((alert, index) => (
                 <div
@@ -1000,8 +992,8 @@ export default function EnvironmentalPage() {
 
         {/* Threshold Reference */}
         <section id="thresholds" className="mb-12 scroll-mt-24">
-          <SectionSubheader title="Risk Level Thresholds" />
-          <DataCard title="What triggers each risk level" source="SLFPA-E Operational Thresholds">
+          <SectionSubheader title={copy.thresholdsTitle} />
+          <DataCard title={copy.thresholdsCardTitle} source="SLFPA-E Operational Thresholds">
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
@@ -1068,7 +1060,7 @@ export default function EnvironmentalPage() {
               noise rather than wind-driven flood risk, so it is suppressed.
             </p>
             <p className="text-xs text-gray-600 italic mt-2">
-              These thresholds are preliminary and subject to calibration based on operational experience.
+              {copy.thresholdsPreliminaryNote}
             </p>
           </DataCard>
         </section>
@@ -1076,17 +1068,13 @@ export default function EnvironmentalPage() {
         {/* Structure Gauges - Secondary Reference */}
         {structureGauges && structureGauges.length > 0 && (
           <section className="mb-12">
-            <SectionSubheader title="Flood Structure Gauges" />
+            <SectionSubheader title={copy.structureGaugesTitle} />
             <DataCard
-              title="Secondary reference for validating conditions"
+              title={copy.structureGaugesCardTitle}
               source="USGS Water Services"
             >
               <p className="text-sm text-gray-600 mb-4">
-                These are live water levels at flood control structures near Lake Pontchartrain,
-                pulled from the same USGS gauges FPA operations monitors. Use them to corroborate
-                the risk level above: if the indicator shows elevated risk from sustained northerly
-                winds, rising levels at these structures confirm that lake water is actually being
-                pushed toward shore and into the flood protection system.
+                {copy.structureGaugesIntro}
               </p>
               <div className="grid sm:grid-cols-3 gap-4 mb-4">
                 {structureGauges.map((gauge) => (
@@ -1125,12 +1113,11 @@ export default function EnvironmentalPage() {
                   active wind setup.
                 </p>
                 <p>
-                  Normal levels fluctuate near 0 ft. Values climbing above +0.5 ft during sustained
-                  northerly winds suggest meaningful water movement toward the flood protection system.
+                  {copy.structureGaugesNormalNote}
                 </p>
               </div>
               <p className="text-xs text-amber-600 mt-3">
-                Gauge selection is preliminary and subject to confirmation with FPA operations.
+                {copy.structureGaugesConfirmationNote}
               </p>
             </DataCard>
           </section>
@@ -1156,19 +1143,13 @@ export default function EnvironmentalPage() {
                   , updated every 6 minutes.
                 </p>
                 <p>
-                  Wind forecasts from the National Weather Service (NWS Slidell, LA office).
-                  Water level forecasts from NOAA&apos;s NGOFS2 operational model.
-                  Weather alerts from NWS.
+                  {copy.dataSourcesForecast}
                 </p>
                 <p>
-                  Structure gauge levels from USGS Water Services (Seabrook, Surge Barrier, Bayou Dupre).
-                  These are the same gauges monitored by FPA operations and serve as secondary
-                  corroboration of Lake Pontchartrain conditions.
+                  {copy.dataSourcesStructureGauges}
                 </p>
                 <p>
-                  The risk indicator is a rule-based decision-support tool. It does not replace
-                  professional judgment or official NWS warnings. Always follow official
-                  SLFPA-E operational procedures.
+                  {copy.dataSourcesDisclaimer}
                 </p>
               </div>
             </div>

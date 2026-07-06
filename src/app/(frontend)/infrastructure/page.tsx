@@ -32,6 +32,8 @@ import {
 } from "@/data/siteData";
 import { grassCuttingData } from "@/data/grassCutting";
 import { computeMonthlyKpi, type AnyZone } from "@/lib/turfMaintenance";
+import { usePageCopy } from "@/lib/usePageCopy";
+import { INFRASTRUCTURE_DEFAULTS } from "@/globals/pages/infrastructurePage";
 
 const smsKeywords = [
   {
@@ -233,6 +235,7 @@ function ReadinessCard({
 }
 
 export default function OurSystemPage() {
+  const copy = usePageCopy("infrastructure-page", INFRASTRUCTURE_DEFAULTS);
   const asOf = new Date(readinessMetrics.dataAsOf + "T00:00:00");
   const today = new Date();
 
@@ -298,9 +301,9 @@ export default function OurSystemPage() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-8">
           <div>
-            <h1 className="text-3xl md:text-4xl font-bold text-[#21355a]">Infrastructure</h1>
+            <h1 className="text-3xl md:text-4xl font-bold text-[#21355a]">{copy.mainHeading}</h1>
             <p className="mt-2 text-lg text-gray-600">
-              Learn about the flood protection infrastructure that keeps Greater New Orleans safe
+              {copy.intro}
             </p>
           </div>
           <Link
@@ -321,13 +324,9 @@ export default function OurSystemPage() {
                 <Shield className="h-6 w-6 text-[#65bc7b]" />
               </div>
               <div>
-                <h2 className="text-2xl font-bold text-[#21355a] mb-2">Overview</h2>
+                <h2 className="text-2xl font-bold text-[#21355a] mb-2">{copy.overviewHeading}</h2>
                 <p className="text-gray-600 leading-relaxed">
-                  The Southeast Louisiana Flood Protection Authority &ndash; East (SLFPA-E) manages flood
-                  protection infrastructure across the Greater New Orleans area, including the East Bank
-                  of Orleans and Jefferson Parishes, and St. Bernard Parish. Our system includes levees,
-                  floodgates, pump stations, and complex structures that work together to protect our
-                  community from flooding caused by hurricanes, tropical storms, and other weather events.
+                  {copy.overviewBody}
                 </p>
               </div>
             </div>
@@ -336,10 +335,9 @@ export default function OurSystemPage() {
 
         {/* System Map */}
         <section className="mb-12">
-          <SectionSubheader title="System Map" />
+          <SectionSubheader title={copy.systemMapHeading} />
           <p className="text-gray-600 mb-4">
-            Interactive map showing levee alignments, floodgates, pump stations, and complex structures
-            across the SLFPA-E flood protection system. Click on features for more information.
+            {copy.systemMapBody}
           </p>
           <SystemMap />
           <p className="text-xs text-gray-400 mt-2">
@@ -358,9 +356,9 @@ export default function OurSystemPage() {
 
         {/* System at a Glance */}
         <section className="mb-12">
-          <SectionSubheader title="System at a Glance" />
+          <SectionSubheader title={copy.systemGlanceHeading} />
           <p className="text-sm text-gray-500 mb-4">
-            Components of the flood protection system, with counts by district.
+            {copy.systemGlanceBody}
           </p>
           <div className="bg-white rounded-xl shadow-md overflow-hidden">
             <div className="overflow-x-auto">
@@ -429,7 +427,7 @@ export default function OurSystemPage() {
               </table>
             </div>
             <div className="bg-[#65bc7b] text-white text-center px-5 py-3 text-sm italic">
-              &ldquo;A world-class system, built to protect and maintained to perform.&rdquo;
+              &ldquo;{copy.systemGlanceQuote}&rdquo;
             </div>
           </div>
           <p className="text-xs text-gray-400 mt-2">
@@ -440,7 +438,7 @@ export default function OurSystemPage() {
         {/* Infrastructure Readiness */}
         <section id="infrastructure-readiness" className="mb-12 scroll-mt-24">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
-            <SectionSubheader title="Infrastructure Readiness" className="mb-0" />
+            <SectionSubheader title={copy.readinessHeading} className="mb-0" />
             <div className="flex items-center gap-3">
               <StatusBadge status={systemReadiness.overallStatus} size="md" />
               <span className="text-sm text-gray-500">Overall system status</span>
@@ -453,21 +451,21 @@ export default function OurSystemPage() {
               <CheckCircle className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
               <div className="text-xs">
                 <div className="font-semibold text-green-800">GREEN &middot; 90%+</div>
-                <div className="text-green-700">At or ahead of expected progress</div>
+                <div className="text-green-700">{copy.statusGreenDesc}</div>
               </div>
             </div>
             <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 flex items-start gap-2">
               <AlertTriangle className="h-4 w-4 text-amber-600 mt-0.5 flex-shrink-0" />
               <div className="text-xs">
                 <div className="font-semibold text-amber-800">AMBER &middot; 80-90%</div>
-                <div className="text-amber-700">Slightly behind, monitor closely</div>
+                <div className="text-amber-700">{copy.statusAmberDesc}</div>
               </div>
             </div>
             <div className="bg-red-50 border border-red-200 rounded-lg p-3 flex items-start gap-2">
               <AlertCircle className="h-4 w-4 text-red-600 mt-0.5 flex-shrink-0" />
               <div className="text-xs">
                 <div className="font-semibold text-red-800">RED &middot; &lt;80%</div>
-                <div className="text-red-700">Significantly behind expected progress</div>
+                <div className="text-red-700">{copy.statusRedDesc}</div>
               </div>
             </div>
           </div>
@@ -597,18 +595,16 @@ export default function OurSystemPage() {
 
         {/* Stay Informed */}
         <section className="mb-12">
-          <SectionSubheader title="Stay Informed" />
+          <SectionSubheader title={copy.stayInformedHeading} />
           <div className="bg-white rounded-xl shadow-md border border-gray-100 p-6">
             <div className="flex flex-col md:flex-row items-start gap-6">
               <div className="flex-1">
                 <div className="flex items-center gap-3 mb-3">
                   <Bell className="h-5 w-5 text-[#21355a]" />
-                  <h3 className="text-lg font-bold text-[#21355a]">Real-Time Alerts</h3>
+                  <h3 className="text-lg font-bold text-[#21355a]">{copy.alertsHeading}</h3>
                 </div>
                 <p className="text-gray-600 text-sm mb-4">
-                  Get notified about floodgate operations, road closures, river levels, and high tide
-                  events. Operations issues Rave alerts for maintenance work and any activity that may
-                  affect travel through structures.
+                  {copy.alertsBody}
                 </p>
                 <div className="flex flex-wrap gap-2 mb-4">
                   {smsKeywords.map((item) => (

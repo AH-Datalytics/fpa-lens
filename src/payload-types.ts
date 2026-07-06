@@ -92,10 +92,30 @@ export interface Config {
   globals: {
     'site-settings': SiteSetting;
     'home-content': HomeContent;
+    'about-page': AboutPage;
+    'finance-page': FinancePage;
+    'safety-page': SafetyPage;
+    'engineering-page': EngineeringPage;
+    'environment-page': EnvironmentPage;
+    'infrastructure-page': InfrastructurePage;
+    'protection-page': ProtectionPage;
+    'staffing-page': StaffingPage;
+    'turf-page': TurfPage;
+    'idiq-page': IdiqPage;
   };
   globalsSelect: {
     'site-settings': SiteSettingsSelect<false> | SiteSettingsSelect<true>;
     'home-content': HomeContentSelect<false> | HomeContentSelect<true>;
+    'about-page': AboutPageSelect<false> | AboutPageSelect<true>;
+    'finance-page': FinancePageSelect<false> | FinancePageSelect<true>;
+    'safety-page': SafetyPageSelect<false> | SafetyPageSelect<true>;
+    'engineering-page': EngineeringPageSelect<false> | EngineeringPageSelect<true>;
+    'environment-page': EnvironmentPageSelect<false> | EnvironmentPageSelect<true>;
+    'infrastructure-page': InfrastructurePageSelect<false> | InfrastructurePageSelect<true>;
+    'protection-page': ProtectionPageSelect<false> | ProtectionPageSelect<true>;
+    'staffing-page': StaffingPageSelect<false> | StaffingPageSelect<true>;
+    'turf-page': TurfPageSelect<false> | TurfPageSelect<true>;
+    'idiq-page': IdiqPageSelect<false> | IdiqPageSelect<true>;
   };
   locale: null;
   widgets: {
@@ -422,6 +442,928 @@ export interface HomeContent {
   createdAt?: string | null;
 }
 /**
+ * Editable copy on the About page.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "about-page".
+ */
+export interface AboutPage {
+  id: number;
+  /**
+   * Large page heading at the top of the About page.
+   */
+  pageTitle?: string | null;
+  /**
+   * Tagline shown directly beneath the page heading.
+   */
+  pageSubtitle?: string | null;
+  /**
+   * Opening overview paragraph (blue left-bordered block) describing SLFPA-E's origin, governance, and coverage.
+   */
+  missionOverview?: string | null;
+  /**
+   * Heading of the dark-blue HSDRRS panel (left).
+   */
+  hsdrrsHeading?: string | null;
+  /**
+   * First paragraph inside the HSDRRS panel. (The second paragraph with the dollar figure is generated automatically and is not editable here.)
+   */
+  hsdrrsIntro?: string | null;
+  /**
+   * Heading of the teal MR&T panel (right).
+   */
+  mrtHeading?: string | null;
+  /**
+   * First paragraph inside the MR&T panel.
+   */
+  mrtIntro?: string | null;
+  /**
+   * Second paragraph inside the MR&T panel (the lead-in before the bold closing phrase).
+   */
+  mrtBody?: string | null;
+  /**
+   * Bold closing phrase of the MR&T panel's second paragraph.
+   */
+  mrtBodyEmphasis?: string | null;
+  /**
+   * Section heading above the three responsibility cards.
+   */
+  responsibilitiesHeading?: string | null;
+  /**
+   * Title of the first responsibility card.
+   */
+  operateMaintainTitle?: string | null;
+  /**
+   * Intro paragraph of the 'Operate & Maintain' card.
+   */
+  operateMaintainBody?: string | null;
+  /**
+   * 'Operate & Maintain' card — first bullet point.
+   */
+  operateMaintainItem1?: string | null;
+  /**
+   * 'Operate & Maintain' card — second bullet point.
+   */
+  operateMaintainItem2?: string | null;
+  /**
+   * 'Operate & Maintain' card — third bullet point.
+   */
+  operateMaintainItem3?: string | null;
+  /**
+   * Title of the second responsibility card.
+   */
+  stormResponseTitle?: string | null;
+  /**
+   * Intro paragraph of the 'Storm Response' card.
+   */
+  stormResponseBody?: string | null;
+  /**
+   * 'Storm Response' card — first bullet point.
+   */
+  stormResponseItem1?: string | null;
+  /**
+   * 'Storm Response' card — second bullet point.
+   */
+  stormResponseItem2?: string | null;
+  /**
+   * 'Storm Response' card — third bullet point.
+   */
+  stormResponseItem3?: string | null;
+  /**
+   * Title of the third responsibility card.
+   */
+  permittingTitle?: string | null;
+  /**
+   * Intro paragraph of the 'Permitting & Compliance' card.
+   */
+  permittingBody?: string | null;
+  /**
+   * 'Permitting & Compliance' card — first bullet point.
+   */
+  permittingItem1?: string | null;
+  /**
+   * 'Permitting & Compliance' card — second bullet point.
+   */
+  permittingItem2?: string | null;
+  /**
+   * 'Permitting & Compliance' card — third bullet point.
+   */
+  permittingItem3?: string | null;
+  /**
+   * Section heading for the surge-vs-drainage explainer.
+   */
+  surgeDrainageHeading?: string | null;
+  /**
+   * Surge-vs-drainage intro paragraph, first part (the text before the bold phrase 'outer perimeter').
+   */
+  surgeDrainageIntro?: string | null;
+  /**
+   * Bold phrase within the surge-vs-drainage intro paragraph (default: 'outer perimeter').
+   */
+  surgeDrainageIntroEmphasis?: string | null;
+  /**
+   * Surge-vs-drainage intro paragraph, remainder (the text after the bold phrase).
+   */
+  surgeDrainageIntroRest?: string | null;
+  /**
+   * Title of the left comparison card (SLFPA-E).
+   */
+  slfpaCardTitle?: string | null;
+  /**
+   * SLFPA-E comparison card lead sentence, first part (before the highlighted phrase 'storm surge').
+   */
+  slfpaCardLead?: string | null;
+  /**
+   * Highlighted phrase in the SLFPA-E comparison card lead sentence (default: 'storm surge').
+   */
+  slfpaCardLeadEmphasis?: string | null;
+  /**
+   * SLFPA-E comparison card lead sentence, remainder (after the highlighted phrase).
+   */
+  slfpaCardLeadRest?: string | null;
+  /**
+   * SLFPA-E comparison card — first checklist item.
+   */
+  slfpaItem1?: string | null;
+  /**
+   * SLFPA-E comparison card — second checklist item.
+   */
+  slfpaItem2?: string | null;
+  /**
+   * SLFPA-E comparison card — third checklist item.
+   */
+  slfpaItem3?: string | null;
+  /**
+   * SLFPA-E comparison card — fourth checklist item.
+   */
+  slfpaItem4?: string | null;
+  /**
+   * SLFPA-E comparison card — fifth checklist item.
+   */
+  slfpaItem5?: string | null;
+  /**
+   * Title of the right comparison card (SWBNO).
+   */
+  swbnoCardTitle?: string | null;
+  /**
+   * SWBNO comparison card lead sentence, first part (before the highlighted phrase 'rainwater drainage').
+   */
+  swbnoCardLead?: string | null;
+  /**
+   * Highlighted phrase in the SWBNO comparison card lead sentence (default: 'rainwater drainage').
+   */
+  swbnoCardLeadEmphasis?: string | null;
+  /**
+   * SWBNO comparison card lead sentence, remainder (after the highlighted phrase).
+   */
+  swbnoCardLeadRest?: string | null;
+  /**
+   * SWBNO comparison card — first list item.
+   */
+  swbnoItem1?: string | null;
+  /**
+   * SWBNO comparison card — second list item.
+   */
+  swbnoItem2?: string | null;
+  /**
+   * SWBNO comparison card — third list item.
+   */
+  swbnoItem3?: string | null;
+  /**
+   * SWBNO comparison card — fourth list item.
+   */
+  swbnoItem4?: string | null;
+  /**
+   * SWBNO comparison card — fifth list item.
+   */
+  swbnoItem5?: string | null;
+  /**
+   * Heading of the blue 'Where the Systems Connect' callout.
+   */
+  systemsConnectHeading?: string | null;
+  /**
+   * Body paragraph of the 'Where the Systems Connect' callout describing the SLFPA-E / SWBNO handoff.
+   */
+  systemsConnectBody?: string | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * Editable copy on the Finance page.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "finance-page".
+ */
+export interface FinancePage {
+  id: number;
+  /**
+   * The main page heading (H1) at the top of the Finance page.
+   */
+  pageTitle?: string | null;
+  /**
+   * The descriptive subtitle shown beneath the Finance page heading.
+   */
+  pageSubtitle?: string | null;
+  /**
+   * Heading for the lead budget-vs-actuals section.
+   */
+  spendingSectionHeading?: string | null;
+  /**
+   * Small explainer caption under the Revenue Collected KPI card.
+   */
+  revenueCaption?: string | null;
+  /**
+   * Small explainer caption under the Projects KPI card.
+   */
+  projectsCaption?: string | null;
+  /**
+   * Methodology footnote beneath the Variance Detail table explaining why some rows disappear when filtering by district.
+   */
+  varianceTableNote?: string | null;
+  /**
+   * Heading for the Major Future Projects section.
+   */
+  majorProjectsHeading?: string | null;
+  /**
+   * Lead sentence introducing the Major Future Projects table. The following sentence (with the inline Current Capital Projects link to the Engineering page) stays in the page markup.
+   */
+  majorProjectsIntro?: string | null;
+  /**
+   * First paragraph of the Data Note callout at the bottom of the page (budget/actuals sourcing and O&M-vs-Projects methodology).
+   */
+  dataNoteBudget?: string | null;
+  /**
+   * Second paragraph of the Data Note callout (future-projects sourcing / SITREP).
+   */
+  dataNoteProjects?: string | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * Editable copy on the Safety page.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "safety-page".
+ */
+export interface SafetyPage {
+  id: number;
+  /**
+   * Main page title at the top of the Safety page.
+   */
+  pageTitle?: string | null;
+  /**
+   * Subtitle shown beneath the Safety page title.
+   */
+  pageSubtitle?: string | null;
+  /**
+   * Heading for the "Definitions" section.
+   */
+  definitionsHeading?: string | null;
+  /**
+   * Heading for the multi-year trend charts section.
+   */
+  trendsHeading?: string | null;
+  /**
+   * Heading for the monthly breakdown chart section.
+   */
+  monthlyHeading?: string | null;
+  /**
+   * Heading for the events-by-category section.
+   */
+  categoryHeading?: string | null;
+  /**
+   * Term/heading of the "Accident" definition card.
+   */
+  accidentTerm?: string | null;
+  /**
+   * Body text of the "Accident" definition card.
+   */
+  accidentDefinition?: string | null;
+  /**
+   * Term/heading of the "Incident" definition card.
+   */
+  incidentTerm?: string | null;
+  /**
+   * Body text of the "Incident" definition card.
+   */
+  incidentDefinition?: string | null;
+  /**
+   * Term/heading of the "Lost-Time Injury" definition card.
+   */
+  lostTimeTerm?: string | null;
+  /**
+   * Body text of the "Lost-Time Injury" definition card.
+   */
+  lostTimeDefinition?: string | null;
+  /**
+   * Term/heading of the "Non-Lost-Time Injury" definition card.
+   */
+  nonLostTimeTerm?: string | null;
+  /**
+   * Body text of the "Non-Lost-Time Injury" definition card.
+   */
+  nonLostTimeDefinition?: string | null;
+  /**
+   * Card title above the "Accidents by Year" bar chart.
+   */
+  accidentsByYearTitle?: string | null;
+  /**
+   * Card title above the annual event breakdown table.
+   */
+  annualBreakdownTitle?: string | null;
+  /**
+   * Card title above the events-by-category chart.
+   */
+  categoryChartTitle?: string | null;
+  /**
+   * Footnote beneath the "Accidents by Year" chart.
+   */
+  accidentsByYearNote?: string | null;
+  /**
+   * Footnote beneath the Total Events / Lost Time chart.
+   */
+  totalEventsNote?: string | null;
+  /**
+   * Hover tooltip explaining "Lost Time" (reused on the chart title and the breakdown table header).
+   */
+  lostTimeTooltip?: string | null;
+  /**
+   * Data note paragraph 1 (privacy/anonymization).
+   */
+  dataNotePrivacy?: string | null;
+  /**
+   * Data note paragraph 2 (source + classification).
+   */
+  dataNoteClassification?: string | null;
+  /**
+   * Data note paragraph 3 (reporting period + cadence).
+   */
+  dataNoteReporting?: string | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * Editable copy on the Engineering page.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "engineering-page".
+ */
+export interface EngineeringPage {
+  id: number;
+  /**
+   * The large H1 heading at the top of the Engineering page.
+   */
+  pageTitle?: string | null;
+  /**
+   * The subtitle line beneath the page heading.
+   */
+  pageSubtitle?: string | null;
+  /**
+   * Section heading above the two inspection cards.
+   */
+  inspectionsHeading?: string | null;
+  /**
+   * Title of the CPRA inspection card.
+   */
+  cpraTitle?: string | null;
+  /**
+   * Explainer paragraph inside the CPRA inspection card.
+   */
+  cpraDescription?: string | null;
+  /**
+   * Title of the USACE inspection card.
+   */
+  usaceTitle?: string | null;
+  /**
+   * Explainer paragraph inside the USACE inspection card.
+   */
+  usaceDescription?: string | null;
+  /**
+   * Section heading above the capital-projects grid.
+   */
+  capitalProjectsHeading?: string | null;
+  /**
+   * Intro paragraph beneath the Current Capital Projects heading.
+   */
+  capitalProjectsIntro?: string | null;
+  /**
+   * Section heading for the "Permits" block.
+   */
+  permitsHeading?: string | null;
+  /**
+   * Small uppercase label above the permit-processing pipeline card.
+   */
+  pipelineLabel?: string | null;
+  /**
+   * Small uppercase label above the monthly permits chart.
+   */
+  permitsIssuedLabel?: string | null;
+  /**
+   * Title of the monthly permits-trend chart card.
+   */
+  permitsTrendTitle?: string | null;
+  /**
+   * Permit pipeline (Full workflow) step 1 label.
+   */
+  pipelineStep1?: string | null;
+  /**
+   * Permit pipeline (Full workflow) step 2 label.
+   */
+  pipelineStep2?: string | null;
+  /**
+   * Permit pipeline (Full workflow) step 3 label.
+   */
+  pipelineStep3?: string | null;
+  /**
+   * Permit pipeline (Full workflow) step 4 label.
+   */
+  pipelineStep4?: string | null;
+  /**
+   * Permit pipeline (Full workflow) step 5 label.
+   */
+  pipelineStep5?: string | null;
+  /**
+   * Permit pipeline (Full workflow) final step label.
+   */
+  pipelineStep6?: string | null;
+  /**
+   * Tooltip on the "Receipt of LNO" step in the Full workflow view.
+   */
+  lnoTooltipFull?: string | null;
+  /**
+   * Tooltip on the "LNO Review" node in the simple pipeline view.
+   */
+  lnoTooltipSimple?: string | null;
+  /**
+   * Small uppercase label above the maintenance-activities card.
+   */
+  maintenanceLabel?: string | null;
+  /**
+   * Title of the current-maintenance-work card.
+   */
+  maintenanceCardTitle?: string | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * Editable copy on the Environment page.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "environment-page".
+ */
+export interface EnvironmentPage {
+  id: number;
+  /**
+   * Main page title (top of the Environment page).
+   */
+  pageTitle?: string | null;
+  /**
+   * Subtitle under the main page title.
+   */
+  pageSubtitle?: string | null;
+  /**
+   * Small heading above the hero risk indicator.
+   */
+  heroHeading?: string | null;
+  /**
+   * Heading for the contributing-factors list in the hero card.
+   */
+  contributingFactorsHeading?: string | null;
+  /**
+   * Section heading: the risk-drivers explainer.
+   */
+  drivesTitle?: string | null;
+  /**
+   * Subtitle for the risk-drivers explainer section.
+   */
+  drivesSubtitle?: string | null;
+  /**
+   * Intro paragraph of the risk-drivers explainer.
+   */
+  drivesIntro?: string | null;
+  /**
+   * Explainer card 1 heading (wind direction).
+   */
+  windDirectionHeading?: string | null;
+  /**
+   * Explainer card 1 bold value (wind direction).
+   */
+  windDirectionValue?: string | null;
+  /**
+   * Explainer card 1 body (wind direction).
+   */
+  windDirectionText?: string | null;
+  /**
+   * Explainer card 2 heading (wind strength & duration).
+   */
+  windStrengthHeading?: string | null;
+  /**
+   * Explainer card 2 bold value (wind strength & duration).
+   */
+  windStrengthValue?: string | null;
+  /**
+   * Explainer card 2 body (wind strength & duration). Mentions the 15/25/35 kt cutoffs in prose — keep in sync with the model thresholds.
+   */
+  windStrengthText?: string | null;
+  /**
+   * Explainer card 3 heading (lake level vs. tide).
+   */
+  lakeLevelHeading?: string | null;
+  /**
+   * Explainer card 3 bold value (lake level vs. tide).
+   */
+  lakeLevelValue?: string | null;
+  /**
+   * Explainer card 3 body (lake level vs. tide).
+   */
+  lakeLevelText?: string | null;
+  /**
+   * Green callout label (normal conditions).
+   */
+  normalConditionsHeading?: string | null;
+  /**
+   * Green callout body (normal conditions). Mentions the 15 kt cutoff in prose — keep in sync with the model.
+   */
+  normalConditionsText?: string | null;
+  /**
+   * Amber callout label (elevated conditions).
+   */
+  elevatedConditionsHeading?: string | null;
+  /**
+   * Amber callout body (elevated conditions).
+   */
+  elevatedConditionsText?: string | null;
+  /**
+   * Section heading: Current Conditions.
+   */
+  currentConditionsTitle?: string | null;
+  /**
+   * Explainer note under the Surge Anomaly metric card.
+   */
+  surgeAnomalyExplainer?: string | null;
+  /**
+   * Section heading: Conditions Timeline (charts).
+   */
+  timelineTitle?: string | null;
+  /**
+   * Section heading: Active Weather Alerts.
+   */
+  alertsTitle?: string | null;
+  /**
+   * Section heading: Risk Level Thresholds.
+   */
+  thresholdsTitle?: string | null;
+  /**
+   * Card title for the thresholds table.
+   */
+  thresholdsCardTitle?: string | null;
+  /**
+   * Italic note below the thresholds table.
+   */
+  thresholdsPreliminaryNote?: string | null;
+  /**
+   * Section heading: Flood Structure Gauges.
+   */
+  structureGaugesTitle?: string | null;
+  /**
+   * Card title for the structure-gauges section.
+   */
+  structureGaugesCardTitle?: string | null;
+  /**
+   * Intro paragraph above the structure-gauge cards.
+   */
+  structureGaugesIntro?: string | null;
+  /**
+   * Second paragraph in the blue 'How to read these' callout (normal-level note).
+   */
+  structureGaugesNormalNote?: string | null;
+  /**
+   * Amber note below the structure-gauge callout.
+   */
+  structureGaugesConfirmationNote?: string | null;
+  /**
+   * Data-sources footer: forecast sources paragraph.
+   */
+  dataSourcesForecast?: string | null;
+  /**
+   * Data-sources footer: structure-gauge sources paragraph.
+   */
+  dataSourcesStructureGauges?: string | null;
+  /**
+   * Data-sources footer: decision-support disclaimer.
+   */
+  dataSourcesDisclaimer?: string | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * Editable copy on the Infrastructure page.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "infrastructure-page".
+ */
+export interface InfrastructurePage {
+  id: number;
+  /**
+   * Page title (H1) at the top of the Infrastructure page.
+   */
+  mainHeading?: string | null;
+  /**
+   * Subtitle beneath the page title.
+   */
+  intro?: string | null;
+  /**
+   * Heading of the "Overview" card.
+   */
+  overviewHeading?: string | null;
+  /**
+   * Overview paragraph describing SLFPA-E and the system.
+   */
+  overviewBody?: string | null;
+  /**
+   * Heading above the interactive system map ("System Map").
+   */
+  systemMapHeading?: string | null;
+  /**
+   * Explainer paragraph above the interactive system map.
+   */
+  systemMapBody?: string | null;
+  /**
+   * Heading above the components table ("System at a Glance").
+   */
+  systemGlanceHeading?: string | null;
+  /**
+   * Caption line above the System-at-a-Glance table.
+   */
+  systemGlanceBody?: string | null;
+  /**
+   * Green callout quote below the table (decorative curly quotes are added by the page).
+   */
+  systemGlanceQuote?: string | null;
+  /**
+   * Heading of the readiness section ("Infrastructure Readiness").
+   */
+  readinessHeading?: string | null;
+  /**
+   * Explainer text for the GREEN status legend (the 90%+ threshold label is fixed in code).
+   */
+  statusGreenDesc?: string | null;
+  /**
+   * Explainer text for the AMBER status legend (the 80-90% threshold label is fixed in code).
+   */
+  statusAmberDesc?: string | null;
+  /**
+   * Explainer text for the RED status legend (the <80% threshold label is fixed in code).
+   */
+  statusRedDesc?: string | null;
+  /**
+   * Heading of the alerts section ("Stay Informed").
+   */
+  stayInformedHeading?: string | null;
+  /**
+   * Sub-heading of the alerts card ("Real-Time Alerts").
+   */
+  alertsHeading?: string | null;
+  /**
+   * Paragraph describing the Rave real-time alerts program.
+   */
+  alertsBody?: string | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * Editable copy on the Protection page.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "protection-page".
+ */
+export interface ProtectionPage {
+  id: number;
+  /**
+   * Main page heading at the top of the Protection page.
+   */
+  pageTitle?: string | null;
+  /**
+   * Subtitle beneath the main page heading.
+   */
+  pageSubtitle?: string | null;
+  /**
+   * Heading inside the blue mission callout.
+   */
+  missionHeading?: string | null;
+  /**
+   * Section heading for the "Infrastructure monitoring activity" block.
+   */
+  monitoringHeading?: string | null;
+  /**
+   * Section heading for the "Levee and system awareness" block.
+   */
+  leveeAwarenessHeading?: string | null;
+  /**
+   * Section heading for the "Operational outcomes" block.
+   */
+  outcomesHeading?: string | null;
+  /**
+   * Subtitle beneath the Operational outcomes heading.
+   */
+  outcomesSubtitle?: string | null;
+  /**
+   * Section heading for the "Workforce context" block.
+   */
+  workforceHeading?: string | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * Editable copy on the Staffing page.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "staffing-page".
+ */
+export interface StaffingPage {
+  id: number;
+  /**
+   * Main page heading (top of the Staffing page).
+   */
+  pageTitle?: string | null;
+  /**
+   * Subtitle beneath the page heading.
+   */
+  pageSubtitle?: string | null;
+  /**
+   * Heading of the first section ("Core Flood Protection Unit").
+   */
+  coreHeading?: string | null;
+  /**
+   * Intro paragraph under the Core Flood Protection Unit heading.
+   */
+  coreDescription?: string | null;
+  /**
+   * Heading of the second section ("Administrative Functions").
+   */
+  adminHeading?: string | null;
+  /**
+   * Intro paragraph under the Administrative Functions heading.
+   */
+  adminDescription?: string | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * Editable copy on the Turf Maintenance page.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "turf-page".
+ */
+export interface TurfPage {
+  id: number;
+  /**
+   * Page title (top section header).
+   */
+  pageTitle?: string | null;
+  /**
+   * Subtitle beneath the page title.
+   */
+  pageSubtitle?: string | null;
+  /**
+   * Small eyebrow label above the plan hero heading.
+   */
+  planEyebrow?: string | null;
+  /**
+   * Heading for the System overview section.
+   */
+  systemOverviewTitle?: string | null;
+  /**
+   * Heading for the dated Operational Note callout.
+   */
+  operationalNoteHeading?: string | null;
+  /**
+   * First paragraph of the Operational Note callout.
+   */
+  operationalNoteBody1?: string | null;
+  /**
+   * Second paragraph of the Operational Note callout.
+   */
+  operationalNoteBody2?: string | null;
+  /**
+   * Heading above the interactive zone map.
+   */
+  mapTitle?: string | null;
+  /**
+   * Explainer subtitle above the interactive zone map.
+   */
+  mapSubtitle?: string | null;
+  /**
+   * Heading for the 'How to read the zone cards' box.
+   */
+  howToReadHeading?: string | null;
+  /**
+   * Operational-indicator caveat paragraph in the how-to-read box.
+   */
+  statusExplainer?: string | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * Editable copy on the IDIQ Contract Tracker page.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "idiq-page".
+ */
+export interface IdiqPage {
+  id: number;
+  /**
+   * Main page heading (SectionHeader title).
+   */
+  pageTitle?: string | null;
+  /**
+   * Subtitle beneath the page heading.
+   */
+  pageSubtitle?: string | null;
+  /**
+   * Small uppercase label on the teal callout box.
+   */
+  keyTakeawayHeading?: string | null;
+  /**
+   * Body paragraph inside the Key Takeaway callout.
+   */
+  keyTakeawayBody?: string | null;
+  /**
+   * Heading of the intro card ("What is an IDIQ contract?").
+   */
+  introHeading?: string | null;
+  /**
+   * First explainer paragraph in the intro card.
+   */
+  introParagraph1?: string | null;
+  /**
+   * Second explainer paragraph in the intro card.
+   */
+  introParagraph2?: string | null;
+  /**
+   * Third explainer paragraph in the intro card.
+   */
+  introParagraph3?: string | null;
+  /**
+   * Step 1 box label.
+   */
+  processStep1Label?: string | null;
+  /**
+   * Step 1 tooltip text.
+   */
+  processStep1Description?: string | null;
+  /**
+   * Step 2 box label.
+   */
+  processStep2Label?: string | null;
+  /**
+   * Step 2 tooltip text.
+   */
+  processStep2Description?: string | null;
+  /**
+   * Step 3 box label.
+   */
+  processStep3Label?: string | null;
+  /**
+   * Step 3 tooltip text.
+   */
+  processStep3Description?: string | null;
+  /**
+   * Step 4 box label.
+   */
+  processStep4Label?: string | null;
+  /**
+   * Step 4 tooltip text.
+   */
+  processStep4Description?: string | null;
+  /**
+   * Section heading above the contract cycle selector.
+   */
+  contractCycleHeading?: string | null;
+  /**
+   * Civil Engineering.
+   */
+  serviceCivilEngineering?: string | null;
+  /**
+   * Surveying / Surveying Services.
+   */
+  serviceSurveying?: string | null;
+  /**
+   * Geotechnical Engineering.
+   */
+  serviceGeotechnicalEngineering?: string | null;
+  /**
+   * Construction Materials & Testing.
+   */
+  serviceConstructionMaterialsTesting?: string | null;
+  /**
+   * MEP Services.
+   */
+  serviceMepServices?: string | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "site-settings_select".
  */
@@ -444,6 +1386,299 @@ export interface SiteSettingsSelect<T extends boolean = true> {
 export interface HomeContentSelect<T extends boolean = true> {
   heroHeading?: T;
   heroSubtext?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "about-page_select".
+ */
+export interface AboutPageSelect<T extends boolean = true> {
+  pageTitle?: T;
+  pageSubtitle?: T;
+  missionOverview?: T;
+  hsdrrsHeading?: T;
+  hsdrrsIntro?: T;
+  mrtHeading?: T;
+  mrtIntro?: T;
+  mrtBody?: T;
+  mrtBodyEmphasis?: T;
+  responsibilitiesHeading?: T;
+  operateMaintainTitle?: T;
+  operateMaintainBody?: T;
+  operateMaintainItem1?: T;
+  operateMaintainItem2?: T;
+  operateMaintainItem3?: T;
+  stormResponseTitle?: T;
+  stormResponseBody?: T;
+  stormResponseItem1?: T;
+  stormResponseItem2?: T;
+  stormResponseItem3?: T;
+  permittingTitle?: T;
+  permittingBody?: T;
+  permittingItem1?: T;
+  permittingItem2?: T;
+  permittingItem3?: T;
+  surgeDrainageHeading?: T;
+  surgeDrainageIntro?: T;
+  surgeDrainageIntroEmphasis?: T;
+  surgeDrainageIntroRest?: T;
+  slfpaCardTitle?: T;
+  slfpaCardLead?: T;
+  slfpaCardLeadEmphasis?: T;
+  slfpaCardLeadRest?: T;
+  slfpaItem1?: T;
+  slfpaItem2?: T;
+  slfpaItem3?: T;
+  slfpaItem4?: T;
+  slfpaItem5?: T;
+  swbnoCardTitle?: T;
+  swbnoCardLead?: T;
+  swbnoCardLeadEmphasis?: T;
+  swbnoCardLeadRest?: T;
+  swbnoItem1?: T;
+  swbnoItem2?: T;
+  swbnoItem3?: T;
+  swbnoItem4?: T;
+  swbnoItem5?: T;
+  systemsConnectHeading?: T;
+  systemsConnectBody?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "finance-page_select".
+ */
+export interface FinancePageSelect<T extends boolean = true> {
+  pageTitle?: T;
+  pageSubtitle?: T;
+  spendingSectionHeading?: T;
+  revenueCaption?: T;
+  projectsCaption?: T;
+  varianceTableNote?: T;
+  majorProjectsHeading?: T;
+  majorProjectsIntro?: T;
+  dataNoteBudget?: T;
+  dataNoteProjects?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "safety-page_select".
+ */
+export interface SafetyPageSelect<T extends boolean = true> {
+  pageTitle?: T;
+  pageSubtitle?: T;
+  definitionsHeading?: T;
+  trendsHeading?: T;
+  monthlyHeading?: T;
+  categoryHeading?: T;
+  accidentTerm?: T;
+  accidentDefinition?: T;
+  incidentTerm?: T;
+  incidentDefinition?: T;
+  lostTimeTerm?: T;
+  lostTimeDefinition?: T;
+  nonLostTimeTerm?: T;
+  nonLostTimeDefinition?: T;
+  accidentsByYearTitle?: T;
+  annualBreakdownTitle?: T;
+  categoryChartTitle?: T;
+  accidentsByYearNote?: T;
+  totalEventsNote?: T;
+  lostTimeTooltip?: T;
+  dataNotePrivacy?: T;
+  dataNoteClassification?: T;
+  dataNoteReporting?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "engineering-page_select".
+ */
+export interface EngineeringPageSelect<T extends boolean = true> {
+  pageTitle?: T;
+  pageSubtitle?: T;
+  inspectionsHeading?: T;
+  cpraTitle?: T;
+  cpraDescription?: T;
+  usaceTitle?: T;
+  usaceDescription?: T;
+  capitalProjectsHeading?: T;
+  capitalProjectsIntro?: T;
+  permitsHeading?: T;
+  pipelineLabel?: T;
+  permitsIssuedLabel?: T;
+  permitsTrendTitle?: T;
+  pipelineStep1?: T;
+  pipelineStep2?: T;
+  pipelineStep3?: T;
+  pipelineStep4?: T;
+  pipelineStep5?: T;
+  pipelineStep6?: T;
+  lnoTooltipFull?: T;
+  lnoTooltipSimple?: T;
+  maintenanceLabel?: T;
+  maintenanceCardTitle?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "environment-page_select".
+ */
+export interface EnvironmentPageSelect<T extends boolean = true> {
+  pageTitle?: T;
+  pageSubtitle?: T;
+  heroHeading?: T;
+  contributingFactorsHeading?: T;
+  drivesTitle?: T;
+  drivesSubtitle?: T;
+  drivesIntro?: T;
+  windDirectionHeading?: T;
+  windDirectionValue?: T;
+  windDirectionText?: T;
+  windStrengthHeading?: T;
+  windStrengthValue?: T;
+  windStrengthText?: T;
+  lakeLevelHeading?: T;
+  lakeLevelValue?: T;
+  lakeLevelText?: T;
+  normalConditionsHeading?: T;
+  normalConditionsText?: T;
+  elevatedConditionsHeading?: T;
+  elevatedConditionsText?: T;
+  currentConditionsTitle?: T;
+  surgeAnomalyExplainer?: T;
+  timelineTitle?: T;
+  alertsTitle?: T;
+  thresholdsTitle?: T;
+  thresholdsCardTitle?: T;
+  thresholdsPreliminaryNote?: T;
+  structureGaugesTitle?: T;
+  structureGaugesCardTitle?: T;
+  structureGaugesIntro?: T;
+  structureGaugesNormalNote?: T;
+  structureGaugesConfirmationNote?: T;
+  dataSourcesForecast?: T;
+  dataSourcesStructureGauges?: T;
+  dataSourcesDisclaimer?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "infrastructure-page_select".
+ */
+export interface InfrastructurePageSelect<T extends boolean = true> {
+  mainHeading?: T;
+  intro?: T;
+  overviewHeading?: T;
+  overviewBody?: T;
+  systemMapHeading?: T;
+  systemMapBody?: T;
+  systemGlanceHeading?: T;
+  systemGlanceBody?: T;
+  systemGlanceQuote?: T;
+  readinessHeading?: T;
+  statusGreenDesc?: T;
+  statusAmberDesc?: T;
+  statusRedDesc?: T;
+  stayInformedHeading?: T;
+  alertsHeading?: T;
+  alertsBody?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "protection-page_select".
+ */
+export interface ProtectionPageSelect<T extends boolean = true> {
+  pageTitle?: T;
+  pageSubtitle?: T;
+  missionHeading?: T;
+  monitoringHeading?: T;
+  leveeAwarenessHeading?: T;
+  outcomesHeading?: T;
+  outcomesSubtitle?: T;
+  workforceHeading?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "staffing-page_select".
+ */
+export interface StaffingPageSelect<T extends boolean = true> {
+  pageTitle?: T;
+  pageSubtitle?: T;
+  coreHeading?: T;
+  coreDescription?: T;
+  adminHeading?: T;
+  adminDescription?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "turf-page_select".
+ */
+export interface TurfPageSelect<T extends boolean = true> {
+  pageTitle?: T;
+  pageSubtitle?: T;
+  planEyebrow?: T;
+  systemOverviewTitle?: T;
+  operationalNoteHeading?: T;
+  operationalNoteBody1?: T;
+  operationalNoteBody2?: T;
+  mapTitle?: T;
+  mapSubtitle?: T;
+  howToReadHeading?: T;
+  statusExplainer?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "idiq-page_select".
+ */
+export interface IdiqPageSelect<T extends boolean = true> {
+  pageTitle?: T;
+  pageSubtitle?: T;
+  keyTakeawayHeading?: T;
+  keyTakeawayBody?: T;
+  introHeading?: T;
+  introParagraph1?: T;
+  introParagraph2?: T;
+  introParagraph3?: T;
+  processStep1Label?: T;
+  processStep1Description?: T;
+  processStep2Label?: T;
+  processStep2Description?: T;
+  processStep3Label?: T;
+  processStep3Description?: T;
+  processStep4Label?: T;
+  processStep4Description?: T;
+  contractCycleHeading?: T;
+  serviceCivilEngineering?: T;
+  serviceSurveying?: T;
+  serviceGeotechnicalEngineering?: T;
+  serviceConstructionMaterialsTesting?: T;
+  serviceMepServices?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;

@@ -22,12 +22,15 @@ export const Users: CollectionConfig = {
     defaultColumns: ["name", "email", "role"],
   },
   access: {
-    // Only admins manage the editor list; editors can still read/update self.
+    // Only admins manage the editor list; editors can read/update only self.
     create: isAdmin,
     delete: isAdmin,
     update: ({ req, id }) =>
       req.user?.role === "admin" || req.user?.id === id,
-    read: () => true,
+    read: ({ req }) => {
+      if (req.user?.role === "admin") return true;
+      return { id: { equals: req.user?.id } };
+    },
   },
   fields: [
     { name: "name", type: "text" },

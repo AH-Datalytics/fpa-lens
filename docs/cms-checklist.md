@@ -10,11 +10,16 @@ testing).
 
 ---
 
+## Pending review
+- [ ] Merge `cms-polish` → main — verified locally, awaiting Oscar's OK. Includes: editable copy on
+      every page (Page Content globals), staff-list thumbnails, editor user-list scoping, bio-aware
+      cards, and README/CLAUDE CMS docs.
+
 ## On hold (do NOT start until Oscar finishes testing)
 - [ ] Send the 4 editors their set-password invites (Resend) — **HOLD per Oscar**
 
 ## Handoff / follow-ups
 - [ ] Add Ben/Asher as co-admins on the Neon project (team already owns the Vercel project)
-- [ ] Runtime check: an `admin` can create/edit/revoke an `editor`; an `editor` cannot
-- [ ] Add page-copy globals for other pages as desired (About, section explainers)
 - [ ] (Optional) serve media via direct blob CDN URLs instead of the `/api/media/file` proxy
+- [ ] (Optional) lift the client pages that show edited copy on first paint (currently a brief
+      defaults-then-edited flash on reworded strings) into server wrappers, if that flash matters

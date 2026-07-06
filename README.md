@@ -260,9 +260,57 @@ When a new SITREP arrives:
 - **Styling:** Tailwind CSS 4
 - **Charts:** Recharts
 - **Maps:** Leaflet / React-Leaflet
+- **CMS:** Payload 3 (admin at `/admin`), Neon Postgres (prod) / SQLite (local dev), Vercel Blob for media
 - **Deployment:** Vercel (auto-deploy on push to main)
 - **Data extraction:** Python (openpyxl, pdfplumber), Node.js
 
+## Content Management (CMS)
+
+A **content portal** at `/admin` (Payload CMS, lives inside this app) lets FPA staff edit the
+curated, human-authored content without touching code — the leadership/staff cards (including photo
+uploads), the footer/contact details, and the **editable prose on every page** (intros, section
+headings, descriptions, callouts). It does **not** manage the automated data (finance, safety, turf,
+readiness, permits) — those keep coming from the SharePoint pipeline and lakefront engine described
+above.
+
+- **Where content lives:** the public pages read curated content from Payload with a fallback to the
+  in-code defaults, so the site always renders even if the CMS is unreachable. Server pages read via
+  `getPageContent` (`src/lib/cms.ts`, SSR); interactive client pages read via the `usePageCopy` hook
+  (`src/lib/usePageCopy.ts`). Edits go live within ~1 minute (ISR + on-save revalidation), and the
+  admin has a **Live Preview** of the site as you edit.
+- **Page copy:** each page's editable text is a Payload global under the **"Page Content"** group,
+  defined in `src/globals/pages/*.ts` (each field's `defaultValue` is the current wording, so
+  nothing changes visually until an editor rewords it). Add a new page by following the pattern in
+  `docs/cms-notes.md` §8a.
+- **Roles:** `admin` (AHD — manages the editor list + content) and `editor` (content only).
+- **Structure:** `src/payload.config.ts`, `src/collections/` (Users, Media, StaffMembers),
+  `src/globals/` (SiteSettings, HomeContent, and `pages/`), and the `src/app/(payload)/` admin route
+  group. The public site lives in `src/app/(frontend)/`.
+- **Seed / utilities:** `scripts/seed-cms.ts` (idempotent; content + editors from `siteData.ts`),
+  `scripts/set-password.ts` (grant initial access).
+
+### Running the CMS locally
+
+Local dev uses a zero-setup SQLite file (isolated from production). Add to `.env.local`:
+
+```
+PAYLOAD_SECRET=<any long random string>
+DATABASE_URI=file:./cms-dev.db
+```
+
+Then seed and run:
+
+```bash
+SEED_DEV_ADMIN=1 npx payload run scripts/seed-cms.ts   # seeds content + a dev@fpalens.local / devpassword123 admin
+npm run dev                                             # portal at http://localhost:3000/admin
+```
+
+Production uses Neon Postgres (`POSTGRES_URL`) and a public Vercel Blob store for photos
+(`CMS_MEDIA_BLOB_TOKEN`), all set in Vercel. Full operational notes are in `docs/cms-notes.md`.
+
 ## Deployment
 
-The site auto-deploys from the `main` branch via Vercel. Push to `main` to deploy.
+The site auto-deploys from the `main` branch via Vercel. Push to `main` to deploy. Production env
+(Vercel): `POSTGRES_URL` (Neon), `PAYLOAD_SECRET`, `CMS_MEDIA_BLOB_TOKEN` (public Blob store for
+staff photos), plus the existing `SHAREPOINT_*`, `RESEND_API_KEY`, `ANTHROPIC_API_KEY`, and
+`BLOB_READ_WRITE_TOKEN` (lakefront) vars.

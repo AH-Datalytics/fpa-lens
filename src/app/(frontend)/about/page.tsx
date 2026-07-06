@@ -4,30 +4,27 @@ import SectionHeader, { SectionSubheader } from "@/components/SectionHeader";
 import DataCard from "@/components/DataCard";
 import LeadershipSection from "@/components/LeadershipSection";
 import { formatCurrency } from "@/data/siteData";
-import { getStaffMembers } from "@/lib/cms";
+import { getStaffMembers, getPageContent } from "@/lib/cms";
+import { ABOUT_DEFAULTS } from "@/globals/pages/aboutPage";
 
 // ISR: leadership edits in the portal go live within ~1 minute.
 export const revalidate = 60;
 
 export default async function WhatWeDoPage() {
   const leaders = await getStaffMembers();
+  const copy = await getPageContent<typeof ABOUT_DEFAULTS>("about-page");
   return (
     <div className="py-12">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <SectionHeader
-          title="About Us"
-          subtitle="Protecting Greater New Orleans from hurricane surge and Mississippi River flooding"
+          title={copy?.pageTitle ?? ABOUT_DEFAULTS.pageTitle}
+          subtitle={copy?.pageSubtitle ?? ABOUT_DEFAULTS.pageSubtitle}
         />
 
         {/* Mission + Governance */}
         <section className="mb-12 pl-6 border-l-4 border-[#21355a]">
           <p className="text-gray-700 leading-relaxed text-lg">
-            The Southeast Louisiana Flood Protection Authority - East (SLFPA-E) was established
-            after Hurricane Katrina as the regional governmental body responsible for a restored,
-            strengthened, and enhanced multi-parish integrated hurricane and flood protection system.
-            Governed by a board of commissioners appointed by the Governor and confirmed by the Louisiana Senate,
-            the Authority oversees the Orleans Levee District (OLD) and East Jefferson Levee District (EJLD),
-            together protecting more than one million residents across Orleans, Jefferson, and St. Bernard Parishes.
+            {copy?.missionOverview ?? ABOUT_DEFAULTS.missionOverview}
           </p>
         </section>
 
@@ -35,9 +32,9 @@ export default async function WhatWeDoPage() {
         <section className="mb-12">
           <div className="grid md:grid-cols-2 gap-5">
             <div className="bg-gradient-to-br from-[#21355a] to-[#2c3859] rounded-xl p-6 text-white flex flex-col">
-              <h2 className="text-xl font-bold mb-3">The Hurricane &amp; Storm Damage Risk Reduction System</h2>
+              <h2 className="text-xl font-bold mb-3">{copy?.hsdrrsHeading ?? ABOUT_DEFAULTS.hsdrrsHeading}</h2>
               <p className="text-blue-100 text-sm leading-relaxed mb-2">
-                More than a million neighbors in New Orleans and its surrounding areas are better protected from hurricane-driven flooding today than ever before.
+                {copy?.hsdrrsIntro ?? ABOUT_DEFAULTS.hsdrrsIntro}
               </p>
               <p className="text-blue-100 text-sm leading-relaxed mb-5">
                 The <span className="text-white font-semibold">{formatCurrency(14600000000)}</span> HSDRRS provides defense against a 100-year storm surge for Orleans, Jefferson, and St. Bernard Parishes.
@@ -58,13 +55,13 @@ export default async function WhatWeDoPage() {
               </div>
             </div>
             <div className="bg-gradient-to-br from-[#1f4d52] to-[#2c6770] rounded-xl p-6 text-white flex flex-col">
-              <h2 className="text-xl font-bold mb-3">The Mississippi River &amp; Tributaries Project</h2>
+              <h2 className="text-xl font-bold mb-3">{copy?.mrtHeading ?? ABOUT_DEFAULTS.mrtHeading}</h2>
               <p className="text-teal-100 text-sm leading-relaxed mb-2">
-                Authorized by the Flood Control Act of 1928 after the Great Flood of 1927, MR&amp;T is one of the largest civil works projects in U.S. history.
+                {copy?.mrtIntro ?? ABOUT_DEFAULTS.mrtIntro}
               </p>
               <p className="text-teal-100 text-sm leading-relaxed mb-5">
-                The east-bank river levees and floodwalls in Orleans and Jefferson Parishes are part of this national system.{" "}
-                <span className="text-white font-semibold">SLFPA-E operates and maintains it locally</span>.
+                {copy?.mrtBody ?? ABOUT_DEFAULTS.mrtBody}{" "}
+                <span className="text-white font-semibold">{copy?.mrtBodyEmphasis ?? ABOUT_DEFAULTS.mrtBodyEmphasis}</span>.
               </p>
               <div className="mt-auto grid grid-cols-2 sm:grid-cols-4 gap-2">
                 {([
@@ -86,72 +83,69 @@ export default async function WhatWeDoPage() {
 
         {/* What We Do */}
         <section className="mb-12">
-          <SectionSubheader title="Our Responsibilities" />
+          <SectionSubheader title={copy?.responsibilitiesHeading ?? ABOUT_DEFAULTS.responsibilitiesHeading} />
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <DataCard title="Operate & Maintain">
+            <DataCard title={copy?.operateMaintainTitle ?? ABOUT_DEFAULTS.operateMaintainTitle}>
               <div className="space-y-3">
                 <p className="text-gray-600">
-                  We operate and maintain the HSDRRS infrastructure 24/7, ensuring all systems
-                  are ready to protect our community at a moment&apos;s notice.
+                  {copy?.operateMaintainBody ?? ABOUT_DEFAULTS.operateMaintainBody}
                 </p>
                 <ul className="text-sm text-gray-600 space-y-2">
                   <li className="flex items-start gap-2">
                     <span className="w-1.5 h-1.5 bg-[#65bc7b] rounded-full mt-2"></span>
-                    Regular inspections of levees, floodwalls, and gates
+                    {copy?.operateMaintainItem1 ?? ABOUT_DEFAULTS.operateMaintainItem1}
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="w-1.5 h-1.5 bg-[#65bc7b] rounded-full mt-2"></span>
-                    Vegetation management and erosion control
+                    {copy?.operateMaintainItem2 ?? ABOUT_DEFAULTS.operateMaintainItem2}
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="w-1.5 h-1.5 bg-[#65bc7b] rounded-full mt-2"></span>
-                    Equipment maintenance and testing
+                    {copy?.operateMaintainItem3 ?? ABOUT_DEFAULTS.operateMaintainItem3}
                   </li>
                 </ul>
               </div>
             </DataCard>
 
-            <DataCard title="Storm Response">
+            <DataCard title={copy?.stormResponseTitle ?? ABOUT_DEFAULTS.stormResponseTitle}>
               <div className="space-y-3">
                 <p className="text-gray-600">
-                  When storms threaten, we activate our emergency protocols to close floodgates,
-                  monitor water levels, and coordinate with emergency management agencies.
+                  {copy?.stormResponseBody ?? ABOUT_DEFAULTS.stormResponseBody}
                 </p>
                 <ul className="text-sm text-gray-600 space-y-2">
                   <li className="flex items-start gap-2">
                     <span className="w-1.5 h-1.5 bg-[#65bc7b] rounded-full mt-2"></span>
-                    Close sector gates and floodgates before storm arrival
+                    {copy?.stormResponseItem1 ?? ABOUT_DEFAULTS.stormResponseItem1}
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="w-1.5 h-1.5 bg-[#65bc7b] rounded-full mt-2"></span>
-                    Monitor surge levels throughout the system
+                    {copy?.stormResponseItem2 ?? ABOUT_DEFAULTS.stormResponseItem2}
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="w-1.5 h-1.5 bg-[#65bc7b] rounded-full mt-2"></span>
-                    Coordinate with local, state, and federal agencies
+                    {copy?.stormResponseItem3 ?? ABOUT_DEFAULTS.stormResponseItem3}
                   </li>
                 </ul>
               </div>
             </DataCard>
 
-            <DataCard title="Permitting & Compliance">
+            <DataCard title={copy?.permittingTitle ?? ABOUT_DEFAULTS.permittingTitle}>
               <div className="space-y-3">
                 <p className="text-gray-600">
-                  We review and issue permits for any work on or near flood protection infrastructure
-                  to ensure system integrity is maintained.
+                  {copy?.permittingBody ?? ABOUT_DEFAULTS.permittingBody}
                 </p>
                 <ul className="text-sm text-gray-600 space-y-2">
                   <li className="flex items-start gap-2">
                     <span className="w-1.5 h-1.5 bg-[#65bc7b] rounded-full mt-2"></span>
-                    Construction permits near levees
+                    {copy?.permittingItem1 ?? ABOUT_DEFAULTS.permittingItem1}
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="w-1.5 h-1.5 bg-[#65bc7b] rounded-full mt-2"></span>
-                    Utility crossing permits
+                    {copy?.permittingItem2 ?? ABOUT_DEFAULTS.permittingItem2}
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="w-1.5 h-1.5 bg-[#65bc7b] rounded-full mt-2"></span>
-                    Encroachment reviews
+                    {copy?.permittingItem3 ?? ABOUT_DEFAULTS.permittingItem3}
                   </li>
                 </ul>
               </div>
@@ -161,15 +155,12 @@ export default async function WhatWeDoPage() {
 
         {/* Surge vs. Rain */}
         <section className="mb-12">
-          <SectionSubheader title="Surge Protection vs. Drainage" />
+          <SectionSubheader title={copy?.surgeDrainageHeading ?? ABOUT_DEFAULTS.surgeDrainageHeading} />
 
           <p className="text-gray-600 leading-relaxed mb-6">
-            Greater New Orleans has two separate flood protection systems run by two separate agencies.
-            SLFPA-E is the <strong>outer perimeter</strong>: we keep hurricane surge and lake water out.
-            The Sewerage &amp; Water Board of New Orleans (SWBNO) handles everything inside that perimeter:
-            drainage pumps, storm drains, drinking water, and sewage. We do not operate drainage pump
-            stations, and SWBNO does not operate levees or floodgates. The two systems are complementary
-            but independent.
+            {copy?.surgeDrainageIntro ?? ABOUT_DEFAULTS.surgeDrainageIntro}{" "}
+            <strong>{copy?.surgeDrainageIntroEmphasis ?? ABOUT_DEFAULTS.surgeDrainageIntroEmphasis}</strong>
+            {copy?.surgeDrainageIntroRest ?? ABOUT_DEFAULTS.surgeDrainageIntroRest}
           </p>
 
           <div className="grid md:grid-cols-2 gap-6">
@@ -178,31 +169,33 @@ export default async function WhatWeDoPage() {
                 <div className="w-10 h-10 bg-[#21355a] rounded-lg flex items-center justify-center">
                   <Shield className="h-5 w-5 text-white" />
                 </div>
-                <h3 className="text-lg font-bold text-[#21355a]">SLFPA-E (Us)</h3>
+                <h3 className="text-lg font-bold text-[#21355a]">{copy?.slfpaCardTitle ?? ABOUT_DEFAULTS.slfpaCardTitle}</h3>
               </div>
               <p className="text-gray-600 mb-4 font-medium">
-                We protect against <span className="text-[#21355a]">storm surge</span> from hurricanes, tropical storms, and high tides.
+                {copy?.slfpaCardLead ?? ABOUT_DEFAULTS.slfpaCardLead}{" "}
+                <span className="text-[#21355a]">{copy?.slfpaCardLeadEmphasis ?? ABOUT_DEFAULTS.slfpaCardLeadEmphasis}</span>{" "}
+                {copy?.slfpaCardLeadRest ?? ABOUT_DEFAULTS.slfpaCardLeadRest}
               </p>
               <ul className="space-y-2 text-sm text-gray-600">
                 <li className="flex items-start gap-2">
                   <span className="text-[#65bc7b] font-bold">&#10003;</span>
-                  Levees, floodwalls, and surge barriers
+                  {copy?.slfpaItem1 ?? ABOUT_DEFAULTS.slfpaItem1}
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="text-[#65bc7b] font-bold">&#10003;</span>
-                  Floodgates that close during storms
+                  {copy?.slfpaItem2 ?? ABOUT_DEFAULTS.slfpaItem2}
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="text-[#65bc7b] font-bold">&#10003;</span>
-                  Permanent Canal Closure Pump Stations (PCCP)
+                  {copy?.slfpaItem3 ?? ABOUT_DEFAULTS.slfpaItem3}
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="text-[#65bc7b] font-bold">&#10003;</span>
-                  Lake Borgne Surge Barrier
+                  {copy?.slfpaItem4 ?? ABOUT_DEFAULTS.slfpaItem4}
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="text-[#65bc7b] font-bold">&#10003;</span>
-                  Protection from Lake Pontchartrain &amp; Gulf of Mexico
+                  {copy?.slfpaItem5 ?? ABOUT_DEFAULTS.slfpaItem5}
                 </li>
               </ul>
             </div>
@@ -212,44 +205,42 @@ export default async function WhatWeDoPage() {
                 <div className="w-10 h-10 bg-gray-400 rounded-lg flex items-center justify-center">
                   <Droplets className="h-5 w-5 text-white" />
                 </div>
-                <h3 className="text-lg font-bold text-gray-700">SWBNO (Sewerage &amp; Water Board)</h3>
+                <h3 className="text-lg font-bold text-gray-700">{copy?.swbnoCardTitle ?? ABOUT_DEFAULTS.swbnoCardTitle}</h3>
               </div>
               <p className="text-gray-600 mb-4 font-medium">
-                They manage <span className="text-gray-700">rainwater drainage</span>, drinking water, and sewage services.
+                {copy?.swbnoCardLead ?? ABOUT_DEFAULTS.swbnoCardLead}{" "}
+                <span className="text-gray-700">{copy?.swbnoCardLeadEmphasis ?? ABOUT_DEFAULTS.swbnoCardLeadEmphasis}</span>
+                {copy?.swbnoCardLeadRest ?? ABOUT_DEFAULTS.swbnoCardLeadRest}
               </p>
               <ul className="space-y-2 text-sm text-gray-600">
                 <li className="flex items-start gap-2">
                   <span className="text-gray-400 font-bold">&bull;</span>
-                  Drainage pump stations that remove rainwater
+                  {copy?.swbnoItem1 ?? ABOUT_DEFAULTS.swbnoItem1}
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="text-gray-400 font-bold">&bull;</span>
-                  Storm drains and underground canals
+                  {copy?.swbnoItem2 ?? ABOUT_DEFAULTS.swbnoItem2}
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="text-gray-400 font-bold">&bull;</span>
-                  Drinking water treatment and distribution
+                  {copy?.swbnoItem3 ?? ABOUT_DEFAULTS.swbnoItem3}
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="text-gray-400 font-bold">&bull;</span>
-                  Sewage collection and treatment
+                  {copy?.swbnoItem4 ?? ABOUT_DEFAULTS.swbnoItem4}
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="text-gray-400 font-bold">&bull;</span>
-                  Street flooding from heavy rain
+                  {copy?.swbnoItem5 ?? ABOUT_DEFAULTS.swbnoItem5}
                 </li>
               </ul>
             </div>
           </div>
 
           <div className="mt-6 bg-blue-50 rounded-lg p-6">
-            <h4 className="font-semibold text-[#21355a] mb-2">Where the Systems Connect</h4>
+            <h4 className="font-semibold text-[#21355a] mb-2">{copy?.systemsConnectHeading ?? ABOUT_DEFAULTS.systemsConnectHeading}</h4>
             <p className="text-gray-600">
-              During a storm, SLFPA-E closes the floodgates at the outfall canals to block surge from
-              entering the city. While those gates are closed, SWBNO&apos;s drainage pumps push rainwater
-              into those same canals. Our Permanent Canal Closure Pump Stations (PCCPs) at 17th Street,
-              Orleans Avenue, and London Avenue then pump that water over the gates and out to Lake
-              Pontchartrain. That handoff is the one point where the two systems meet.
+              {copy?.systemsConnectBody ?? ABOUT_DEFAULTS.systemsConnectBody}
             </p>
           </div>
 

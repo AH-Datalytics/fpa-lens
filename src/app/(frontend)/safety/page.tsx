@@ -25,6 +25,8 @@ import {
 import SectionHeader, { SectionSubheader } from "@/components/SectionHeader";
 import DataCard from "@/components/DataCard";
 import { safetyData } from "@/data/siteData";
+import { usePageCopy } from "@/lib/usePageCopy";
+import { SAFETY_DEFAULTS } from "@/globals/pages/safetyPage";
 
 interface YearlyTotal {
   year: number;
@@ -76,6 +78,7 @@ const MONTHLY_GOAL_PACE = ANNUAL_GOAL / 12;
 export default function SafetyPage() {
   const [data, setData] = useState<SafetyEvents | null>(null);
   const [selectedYear, setSelectedYear] = useState<number>(CURRENT_CY);
+  const copy = usePageCopy("safety-page", SAFETY_DEFAULTS);
 
   useEffect(() => {
     fetch("/data/safety-events.json")
@@ -156,8 +159,8 @@ export default function SafetyPage() {
     <div className="py-12">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <SectionHeader
-          title="Safety Performance"
-          subtitle="Our commitment to a safe workplace"
+          title={copy.pageTitle}
+          subtitle={copy.pageSubtitle}
           source="FPA Safety Officer & Event Logs (2022-2026, calendar year)"
         />
 
@@ -234,17 +237,15 @@ export default function SafetyPage() {
 
         {/* Definitions */}
         <section className="mb-12">
-          <SectionSubheader title="Definitions" />
+          <SectionSubheader title={copy.definitionsHeading} />
           <div className="grid md:grid-cols-2 gap-6">
             <div className="bg-red-50 rounded-xl border border-red-200 p-6">
               <div className="flex items-start gap-3">
                 <ShieldAlert className="h-6 w-6 text-red-800 flex-shrink-0 mt-0.5" />
                 <div>
-                  <h4 className="font-semibold text-red-900 mb-2">Accident</h4>
+                  <h4 className="font-semibold text-red-900 mb-2">{copy.accidentTerm}</h4>
                   <p className="text-sm text-red-800 leading-relaxed">
-                    A work-related event that resulted in an OSHA-recordable injury or
-                    illness (medical treatment beyond first aid, lost time, restricted
-                    duty, or worse).
+                    {copy.accidentDefinition}
                   </p>
                 </div>
               </div>
@@ -253,10 +254,9 @@ export default function SafetyPage() {
               <div className="flex items-start gap-3">
                 <FileWarning className="h-6 w-6 text-orange-500 flex-shrink-0 mt-0.5" />
                 <div>
-                  <h4 className="font-semibold text-orange-800 mb-2">Incident</h4>
+                  <h4 className="font-semibold text-orange-800 mb-2">{copy.incidentTerm}</h4>
                   <p className="text-sm text-orange-700 leading-relaxed">
-                    A tracked work-related event that did not meet OSHA-recordable
-                    criteria (typically property damage, near-miss, or first-aid-only).
+                    {copy.incidentDefinition}
                   </p>
                 </div>
               </div>
@@ -265,10 +265,9 @@ export default function SafetyPage() {
               <div className="flex items-start gap-3">
                 <Clock className="h-6 w-6 text-gray-500 flex-shrink-0 mt-0.5" />
                 <div>
-                  <h4 className="font-semibold text-gray-800 mb-2">Lost-Time Injury</h4>
+                  <h4 className="font-semibold text-gray-800 mb-2">{copy.lostTimeTerm}</h4>
                   <p className="text-sm text-gray-700 leading-relaxed">
-                    A work-related injury or illness that causes an employee to miss
-                    one or more scheduled workdays after the day of the event.
+                    {copy.lostTimeDefinition}
                   </p>
                 </div>
               </div>
@@ -277,11 +276,9 @@ export default function SafetyPage() {
               <div className="flex items-start gap-3">
                 <HeartPulse className="h-6 w-6 text-gray-500 flex-shrink-0 mt-0.5" />
                 <div>
-                  <h4 className="font-semibold text-gray-800 mb-2">Non-Lost-Time Injury</h4>
+                  <h4 className="font-semibold text-gray-800 mb-2">{copy.nonLostTimeTerm}</h4>
                   <p className="text-sm text-gray-700 leading-relaxed">
-                    A work-related injury or illness that does not cause the employee
-                    to miss a scheduled workday. This may include first aid, medical
-                    treatment, or restricted duty, depending on the event.
+                    {copy.nonLostTimeDefinition}
                   </p>
                 </div>
               </div>
@@ -291,9 +288,9 @@ export default function SafetyPage() {
 
         {/* Multi-Year Trend */}
         <section className="mb-12">
-          <SectionSubheader title="Multi-Year Safety Trends" />
+          <SectionSubheader title={copy.trendsHeading} />
           <div className="grid lg:grid-cols-2 gap-6">
-            <DataCard title="Accidents by Year" source="FPA Event Logs (calendar year)">
+            <DataCard title={copy.accidentsByYearTitle} source="FPA Event Logs (calendar year)">
               <div className="h-72">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={yearlyTrendData}>
@@ -311,8 +308,7 @@ export default function SafetyPage() {
                 </ResponsiveContainer>
               </div>
               <p className="text-xs text-gray-500 mt-3">
-                OSHA-recordable accidents only. Incidents are tracked in the breakdown
-                table below.
+                {copy.accidentsByYearNote}
               </p>
             </DataCard>
             <DataCard
@@ -322,7 +318,7 @@ export default function SafetyPage() {
                   <span className="relative cursor-default border-b border-dashed border-gray-400 group">
                     Lost Time Events
                     <span className="invisible group-hover:visible absolute left-0 top-full mt-2 w-64 rounded-lg bg-gray-800 text-white text-xs font-normal p-3 leading-relaxed shadow-lg z-50">
-                      Any accident or incident where the injury or illness causes the employee to miss one or more subsequent workdays. Lost time is a subset of injuries.
+                      {copy.lostTimeTooltip}
                     </span>
                   </span>
                 </>
@@ -357,14 +353,14 @@ export default function SafetyPage() {
                 </ResponsiveContainer>
               </div>
               <p className="text-xs text-gray-500 mt-3">
-                Total Events = Accidents + Incidents. 2026 data is calendar year-to-date.
+                {copy.totalEventsNote}
               </p>
             </DataCard>
           </div>
 
           <div className="mt-6">
             <DataCard
-              title="Annual Event Breakdown"
+              title={copy.annualBreakdownTitle}
               source="FPA Event Logs (calendar year)"
             >
               <div className="overflow-x-auto">
@@ -379,7 +375,7 @@ export default function SafetyPage() {
                         <span className="relative cursor-default border-b border-dashed border-gray-400 group">
                           Lost Time
                           <span className="invisible group-hover:visible absolute right-0 top-full mt-2 w-64 rounded-lg bg-gray-800 text-white text-xs font-normal p-3 leading-relaxed shadow-lg z-50">
-                            Any accident or incident where the injury or illness causes the employee to miss one or more subsequent workdays. Lost time is a subset of injuries.
+                            {copy.lostTimeTooltip}
                           </span>
                         </span>
                       </th>
@@ -414,7 +410,7 @@ export default function SafetyPage() {
         {/* Monthly Breakdown */}
         <section className="mb-12">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4">
-            <SectionSubheader title="Monthly Breakdown" className="mb-0" />
+            <SectionSubheader title={copy.monthlyHeading} className="mb-0" />
             <div className="flex flex-wrap gap-1">
               {availableYears.map((year) => (
                 <button
@@ -465,8 +461,8 @@ export default function SafetyPage() {
         {/* Event Types */}
         {categorizedTypes.length > 0 && (
           <section className="mb-12">
-            <SectionSubheader title="Events by Category" />
-            <DataCard title="All recorded years" source="FPA Event Logs">
+            <SectionSubheader title={copy.categoryHeading} />
+            <DataCard title={copy.categoryChartTitle} source="FPA Event Logs">
               <div className="h-72">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart
@@ -495,20 +491,13 @@ export default function SafetyPage() {
               <Info className="h-5 w-5 text-gray-400 mt-0.5 flex-shrink-0" />
               <div className="text-xs text-gray-500 space-y-1">
                 <p>
-                  All safety event data is anonymized. Individual event details (names,
-                  specific locations, equipment identifiers) are not published to protect
-                  employee privacy.
+                  {copy.dataNotePrivacy}
                 </p>
                 <p>
-                  Source data: FPA Event Logs 2022-2026, classified by the Safety Officer
-                  in April 2026. Each event is tagged Accident (OSHA-recordable) or
-                  Incident (not recordable). Events flagged N/A by the Safety Officer
-                  (reporting errors and duplicates) are excluded from all metrics.
+                  {copy.dataNoteClassification}
                 </p>
                 <p>
-                  Reporting period is the calendar year (Jan 1 - Dec 31). 2026 figures are
-                  year-to-date through the latest event log entry. Updated event logs are
-                  shared by the Safety Officer monthly.
+                  {copy.dataNoteReporting}
                 </p>
               </div>
             </div>
