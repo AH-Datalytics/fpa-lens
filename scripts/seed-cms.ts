@@ -11,9 +11,42 @@
  * set their own via the "Forgot password" flow (Resend email).
  */
 import crypto from "crypto";
+import fs from "fs";
+import path from "path";
 import { getPayload } from "payload";
 import config from "@payload-config";
 import { siteConfig, contacts, staffingData } from "../src/data/siteData";
+
+/** Upload a headshot from /public into Media (idempotent by filename); returns the media id. */
+async function uploadPhoto(
+  payload: Awaited<ReturnType<typeof getPayload>>,
+  imageRel: string | undefined,
+  name: string,
+): Promise<number | undefined> {
+  if (!imageRel) return undefined;
+  const filePath = path.resolve(process.cwd(), "public" + imageRel);
+  if (!fs.existsSync(filePath)) return undefined;
+  try {
+    const filename = path.basename(filePath);
+    const existing = await payload.find({
+      collection: "media",
+      where: { filename: { equals: filename } },
+      limit: 1,
+    });
+    if (existing.docs[0]) return Number(existing.docs[0].id);
+    const media = await payload.create({
+      collection: "media",
+      filePath,
+      data: { alt: `${name} headshot` },
+    });
+    return Number(media.id);
+  } catch (err) {
+    // No public media store configured yet (e.g. Blob store is private) — skip
+    // the upload; the frontend falls back to the curated /headshots asset.
+    payload.logger.warn(`Photo upload skipped for ${name}: ${(err as Error).message}`);
+    return undefined;
+  }
+}
 
 const HERO_HEADING = "Protecting Greater New Orleans";
 const HERO_SUBTEXT =
@@ -59,12 +92,20 @@ const run = async () => {
     const leader = staffingData.leadership[i] as {
       name: string;
       title: string;
+      image?: string;
       bio?: { heading: string; text: string }[];
     };
+    // Only upload into Media when a public store is configured; otherwise the
+    // frontend serves the curated /headshots asset (persistent everywhere).
+    const photo =
+      process.env.CMS_MEDIA_BLOB === "true"
+        ? await uploadPhoto(payload, leader.image, leader.name)
+        : undefined;
     const data = {
       name: leader.name,
       title: leader.title,
       order: i,
+      ...(photo ? { photo } : {}),
       bio: (leader.bio ?? []).map((b) => ({ heading: b.heading, text: b.text })),
     };
     const existing = await payload.find({

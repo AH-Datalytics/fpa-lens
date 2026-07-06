@@ -1,8 +1,10 @@
 import Link from "next/link";
 import { MapPin, Phone, ExternalLink, Scissors, FileText, MessageSquare } from "lucide-react";
 import { siteConfig } from "@/data/siteData";
+import { getSiteSettings } from "@/lib/cms";
 
-export default function Footer() {
+export default async function Footer() {
+  const settings = await getSiteSettings();
   return (
     <footer className="bg-[#21355a] text-white">
       <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
@@ -16,8 +18,8 @@ export default function Footer() {
               <div className="flex items-start gap-2">
                 <MapPin className="h-4 w-4 mt-0.5 flex-shrink-0" />
                 <span>
-                  {siteConfig.address.street}<br />
-                  {siteConfig.address.city}, {siteConfig.address.state} {siteConfig.address.zip}
+                  {settings.street}<br />
+                  {settings.city}, {settings.state} {settings.zip}
                 </span>
               </div>
             </div>
@@ -29,7 +31,7 @@ export default function Footer() {
             <div className="space-y-2 text-sm text-blue-200">
               <div className="flex items-center gap-2">
                 <Phone className="h-4 w-4" />
-                <span>(504) 286-3100</span>
+                <span>{settings.phone}</span>
               </div>
               <Link
                 href="/feedback"

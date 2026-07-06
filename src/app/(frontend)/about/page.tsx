@@ -4,8 +4,13 @@ import SectionHeader, { SectionSubheader } from "@/components/SectionHeader";
 import DataCard from "@/components/DataCard";
 import LeadershipSection from "@/components/LeadershipSection";
 import { formatCurrency } from "@/data/siteData";
+import { getStaffMembers } from "@/lib/cms";
 
-export default function WhatWeDoPage() {
+// ISR: leadership edits in the portal go live within ~1 minute.
+export const revalidate = 60;
+
+export default async function WhatWeDoPage() {
+  const leaders = await getStaffMembers();
   return (
     <div className="py-12">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -262,7 +267,7 @@ export default function WhatWeDoPage() {
         {/* Governance removed — content moved to top prose block */}
 
         <div className="mt-12">
-          <LeadershipSection />
+          <LeadershipSection leaders={leaders} />
         </div>
       </div>
     </div>

@@ -116,14 +116,16 @@ function BioModal({ person, onClose }: { person: Person; onClose: () => void }) 
   );
 }
 
-export default function LeadershipSection() {
+export default function LeadershipSection({ leaders }: { leaders?: Person[] }) {
   const [activePerson, setActivePerson] = useState<Person | null>(null);
+  // Fall back to the curated list if the CMS passes nothing.
+  const people = leaders && leaders.length > 0 ? leaders : staffingData.leadership;
 
   return (
     <section>
       <SectionSubheader title="Leadership" />
       <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        {staffingData.leadership.map((leader) => (
+        {people.map((leader) => (
           <PersonCard
             key={leader.name}
             person={leader}

@@ -71,3 +71,7 @@ cms-dev.db-*
 cms-admin-*.png
 cms-dashboard.png
 cms-login.png
+
+# Payload local media (local-disk uploads)
+/media/
+cms-media/
