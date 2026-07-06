@@ -75,3 +75,6 @@ cms-login.png
 # Payload local media (local-disk uploads)
 /media/
 cms-media/
+
+# CMS deploy secret (local only)
+.cms-payload-secret
