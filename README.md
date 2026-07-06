@@ -267,21 +267,27 @@ When a new SITREP arrives:
 ## Content Management (CMS)
 
 A **content portal** at `/admin` (Payload CMS, lives inside this app) lets FPA staff edit the
-curated, human-authored content without touching code — the home hero copy, the leadership/staff
-cards (including photo uploads), and the footer/contact details. It does **not** manage the
-automated data (finance, safety, turf, readiness, permits) — those keep coming from the SharePoint
-pipeline and lakefront engine described above.
+curated, human-authored content without touching code — the leadership/staff cards (including photo
+uploads), the footer/contact details, and the **editable prose on every page** (intros, section
+headings, descriptions, callouts). It does **not** manage the automated data (finance, safety, turf,
+readiness, permits) — those keep coming from the SharePoint pipeline and lakefront engine described
+above.
 
-- **Where content lives:** the public pages read curated content from Payload via cached helpers in
-  `src/lib/cms.ts`, each with a fallback to `src/data/siteData.ts`, so the site always renders even
-  if the CMS is unreachable. Edits go live within ~1 minute (ISR + on-save revalidation), and the
+- **Where content lives:** the public pages read curated content from Payload with a fallback to the
+  in-code defaults, so the site always renders even if the CMS is unreachable. Server pages read via
+  `getPageContent` (`src/lib/cms.ts`, SSR); interactive client pages read via the `usePageCopy` hook
+  (`src/lib/usePageCopy.ts`). Edits go live within ~1 minute (ISR + on-save revalidation), and the
   admin has a **Live Preview** of the site as you edit.
+- **Page copy:** each page's editable text is a Payload global under the **"Page Content"** group,
+  defined in `src/globals/pages/*.ts` (each field's `defaultValue` is the current wording, so
+  nothing changes visually until an editor rewords it). Add a new page by following the pattern in
+  `docs/cms-notes.md` §8a.
 - **Roles:** `admin` (AHD — manages the editor list + content) and `editor` (content only).
 - **Structure:** `src/payload.config.ts`, `src/collections/` (Users, Media, StaffMembers),
-  `src/globals/` (SiteSettings, HomeContent), and the `src/app/(payload)/` admin route group. The
-  public site lives in `src/app/(frontend)/`.
-- **Seed / utilities:** `scripts/seed-cms.ts` (idempotent; populates content + editors from
-  `siteData.ts`), `scripts/set-password.ts`.
+  `src/globals/` (SiteSettings, HomeContent, and `pages/`), and the `src/app/(payload)/` admin route
+  group. The public site lives in `src/app/(frontend)/`.
+- **Seed / utilities:** `scripts/seed-cms.ts` (idempotent; content + editors from `siteData.ts`),
+  `scripts/set-password.ts` (grant initial access).
 
 ### Running the CMS locally
 
