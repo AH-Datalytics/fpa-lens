@@ -185,6 +185,27 @@ Still open:
 
 ---
 
+## 8a. Page copy — "Page Content" globals (2026-07-06)
+
+- Every page's editable prose lives in a per-page Payload global in `src/globals/pages/*.ts`
+  (registered via `src/globals/pages/index.ts` -> `pageGlobals` in the config). Each file exports a
+  `*_DEFAULTS` object (single source of truth for the wording) and the `GlobalConfig`; every field's
+  `defaultValue` comes from `*_DEFAULTS`, so admin forms pre-fill and an unsaved global still returns
+  the current text — **no seed step needed for page copy**.
+- **Two read paths, by page type:**
+  - **Server component pages** (About, Protection): `const copy = await getPageContent<typeof X_DEFAULTS>("<slug>")`, render `copy?.field ?? X_DEFAULTS.field`. SSR, no flash.
+  - **Client component pages** (Finance, Safety, Engineering, Environment, Infrastructure, Staffing,
+    Turf, IDIQ — most pages, due to charts/maps/state): `const copy = usePageCopy("<slug>", X_DEFAULTS)`
+    (`src/lib/usePageCopy.ts`), render `copy.field`. The hook renders defaults immediately then
+    overlays non-empty saved values from `/api/globals/<slug>` (public read), so the only "flash" is
+    on strings an editor actually reworded.
+- **What's intentionally NOT editable:** data/numbers, computed values, chart/table labels, nav/button
+  labels, and prose that embeds live data (e.g. turf plan/legend text with acreage/month) — those stay
+  in code so they can't drift from the source.
+- To add copy to a new page: create `src/globals/pages/<name>Page.ts` (defaults + global), add it to
+  `pageGlobals` + `PAGE_GLOBAL_PATHS`, wire the page with the matching read path, then
+  `payload generate:types`.
+
 ## 8b. Deploy & operations (2026-07-06)
 
 - **Hosting:** Vercel (AHD team). **Database:** Neon Postgres provisioned via the Vercel Storage

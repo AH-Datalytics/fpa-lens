@@ -7,6 +7,17 @@ checked off and removed from `cms-checklist.md`. Reasoning and context live in `
 
 ## 2026-07
 
+- **2026-07-06 19:39 EDT** — **Editable copy on every page** (branch `cms-polish`, NOT merged; tested
+  locally). Added per-page **Page Content** globals for all 10 pages (About, Finance, Safety,
+  Engineering, Environment, Infrastructure, Protection, Staffing, Turf, IDIQ) — each field's
+  `defaultValue` is the current wording, so admin forms pre-fill and unsaved globals return the text
+  (no seed needed). Discovery: 8 of 10 pages are Client Components, so instead of risky server/client
+  refactors they read copy via a new client hook `usePageCopy` (fetches the public global); the 2
+  server pages (About, Protection) use `getPageContent` (SSR). Globals grouped under "Page Content"
+  in the admin; Live Preview maps each to its page. Data-coupled strings stay computed (e.g. turf
+  plan/legend text embedding live acreage/month was trimmed from its global). Verified end-to-end:
+  all 10 pages render identically; editing copy on a server page (About) and a client page (Finance)
+  both reflect on the site; build + 36 tests pass. **Awaiting Oscar's OK to merge.**
 - **2026-07-06 19:01 EDT** — End-to-end admin test pass + polish (branch `cms-polish`, NOT yet merged;
   tested locally against isolated SQLite so nothing touched prod). All flows verified working:
   login (admin + editor), staff create with bio array, **photo upload via the UI**, edit, delete,
