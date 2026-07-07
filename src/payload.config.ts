@@ -23,6 +23,13 @@ const postgresUrl =
   process.env.POSTGRES_URL || process.env.DATABASE_URL || process.env.POSTGRES_PRISMA_URL;
 
 export default buildConfig({
+  // Canonical URL for absolute links (password-reset / invite emails, etc.).
+  // Local dev sets NEXT_PUBLIC_SERVER_URL; production uses the custom domain.
+  // Without this, Payload can't infer the host behind Vercel's proxy and emits a
+  // hostname-less "http:///admin/reset/<token>" link in emails.
+  serverURL:
+    process.env.NEXT_PUBLIC_SERVER_URL ||
+    (process.env.VERCEL_ENV === "production" ? "https://fpalens.org" : undefined),
   admin: {
     user: Users.slug,
     importMap: { baseDir: path.resolve(dirname) },
