@@ -36,8 +36,15 @@ export default buildConfig({
         Icon: "/components/admin/Icon#Icon",
       },
       beforeLogin: ["/components/admin/BeforeLogin#BeforeLogin"],
-      beforeDashboard: ["/components/admin/HowToUse#HowToUse"],
       afterNavLinks: ["/components/admin/BackToSite#BackToSite"],
+      views: {
+        // Custom dashboard: grouped, described cards instead of Payload's bare
+        // default grid. Renders the "How to use" guide itself, so beforeDashboard
+        // is no longer needed.
+        dashboard: {
+          Component: "/components/admin/Dashboard#Dashboard",
+        },
+      },
     },
     livePreview: {
       url: ({ collectionConfig, globalConfig }) => {

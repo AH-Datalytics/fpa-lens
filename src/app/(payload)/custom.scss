@@ -156,3 +156,109 @@ html[data-theme="dark"] .fpa-back-to-site {
   color: #cdd7ea;
   background: rgba(101, 188, 123, 0.12);
 }
+
+/* --- Custom dashboard: grouped, described cards --- */
+.fpa-dash {
+  padding-bottom: 40px;
+
+  &__welcome {
+    margin: 4px 0 22px;
+  }
+
+  &__welcome-title {
+    margin: 0 0 4px;
+    font-size: 1.7rem;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    color: var(--theme-text);
+  }
+
+  &__welcome-sub {
+    margin: 0;
+    font-size: 0.95rem;
+    color: var(--theme-elevation-600);
+  }
+
+  &__section {
+    margin-top: 32px;
+  }
+
+  &__section-title {
+    margin: 0 0 4px;
+    font-size: 1.12rem;
+    font-weight: 700;
+    color: var(--theme-text);
+  }
+
+  &__section-hint {
+    margin: 0 0 14px;
+    font-size: 0.85rem;
+    color: var(--theme-elevation-600);
+  }
+
+  &__section-title:last-child {
+    margin-bottom: 14px;
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 14px;
+  }
+
+  &__card {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 16px 18px;
+    border: 1px solid var(--theme-elevation-150);
+    border-left: 3px solid #65bc7b;
+    border-radius: 10px;
+    background: var(--theme-elevation-50);
+    text-decoration: none;
+    transition:
+      transform 0.12s ease,
+      box-shadow 0.12s ease,
+      border-color 0.12s ease;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 18px rgba(33, 53, 90, 0.12);
+      border-left-color: #21355a;
+    }
+  }
+
+  &__card-title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 1rem;
+    font-weight: 700;
+    color: #21355a;
+  }
+
+  &__card-arrow {
+    color: #65bc7b;
+    transition: transform 0.12s ease;
+  }
+
+  &__card:hover &__card-arrow {
+    transform: translateX(3px);
+  }
+
+  &__card-desc {
+    font-size: 0.83rem;
+    line-height: 1.4;
+    color: var(--theme-elevation-600);
+  }
+}
+
+html[data-theme="dark"] {
+  .fpa-dash__card {
+    background: var(--theme-elevation-100);
+  }
+
+  .fpa-dash__card-title {
+    color: #cdd7ea;
+  }
+}

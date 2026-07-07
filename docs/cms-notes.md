@@ -29,7 +29,7 @@ wants more. No separate options-presentation step.
   - `editor` — edit content only. FPA Director.
   Invite / password-reset emails go through the existing Resend key (`@payloadcms/email-resend`).
 - **Initial editor list (seed):** (confirmed 2026-07-06)
-  - `jwilliams@slfpae.gov` — Director, role `editor`
+  - `jwilliams@slfpae.gov` — Director, role `admin` (was `editor`; promoted 2026-07-06 per Oscar)
   - `oboochever@ahdatalytics.com` — role `admin`
   - `jasher@ahdatalytics.com` — role `admin`
   - `bhorwitz@ahdatalytics.com` — role `admin`
@@ -192,16 +192,19 @@ Still open:
   `*_DEFAULTS` object (single source of truth for the wording) and the `GlobalConfig`; every field's
   `defaultValue` comes from `*_DEFAULTS`, so admin forms pre-fill and an unsaved global still returns
   the current text — **no seed step needed for page copy**.
-- **Two read paths, by page type:**
-  - **Server component pages** (About, Protection): `const copy = await getPageContent<typeof X_DEFAULTS>("<slug>")`, render `copy?.field ?? X_DEFAULTS.field`. SSR, no flash.
-  - **Client component pages** (Finance, Safety, Engineering, Environment, Infrastructure, Staffing,
-    Turf, IDIQ — most pages, due to charts/maps/state): `const copy = usePageCopy("<slug>", X_DEFAULTS)`
-    (`src/lib/usePageCopy.ts`), render `copy.field`. The hook renders defaults immediately then
-    overlays non-empty saved values from `/api/globals/<slug>` (public read), so the only "flash" is
-    on strings an editor actually reworded.
-- **What's intentionally NOT editable:** data/numbers, computed values, chart/table labels, nav/button
-  labels, and prose that embeds live data (e.g. turf plan/legend text with acreage/month) — those stay
-  in code so they can't drift from the source.
+- **Read path — `usePageCopy` (client), all pages** (as of 2026-07-06): `const copy = usePageCopy("<slug>", X_DEFAULTS)`
+  (`src/lib/usePageCopy.ts`), render `copy.field`. Renders defaults immediately, overlays non-empty
+  saved values from `/api/globals/<slug>` (public read), AND — via `@payloadcms/live-preview-react`'s
+  `useLivePreview` — streams the editor's unsaved form state in real time when rendered inside the
+  admin Live Preview iframe (updates as you type; see §8c). Most pages were already client
+  (charts/maps/state); **About + Protection were converted to client** for this (About = a slim server
+  shell that fetches staff + an `AboutContent` client component), and the home hero moved into a client
+  `HomeHero`. `getPageContent` (server, `src/lib/cms.ts`) still exists but page copy no longer uses it.
+- **What's editable (audited 2026-07-06):** page/section headings + body/intro/callout prose + staff
+  bios/photos ONLY. **Not editable** (hardcoded in the page): data/numbers, chart/card/metric titles,
+  status legends & values, thresholds, nav/button/tab labels, tooltips, abbreviation expansions,
+  process-step labels, prose that embeds live data, and **AHD-authored data-source / sourcing /
+  methodology notes**. The audit trimmed 65 such fields to literals; see cms-completed 2026-07-06.
 - To add copy to a new page: create `src/globals/pages/<name>Page.ts` (defaults + global), add it to
   `pageGlobals` + `PAGE_GLOBAL_PATHS`, wire the page with the matching read path, then
   `payload generate:types`.
@@ -229,6 +232,22 @@ Still open:
 - **Constraints from Oscar (2026-07-06):** do NOT send editor invites until he finishes testing;
   the Neon password stays as-is (not rotating).
 
+## 8c. Admin portal: dashboard, live preview, roles (2026-07-06)
+
+- **Custom dashboard** (`src/components/admin/Dashboard.tsx`, wired via
+  `admin.components.views.dashboard`): welcome header + How-to guide + grouped, *described* cards
+  (Website pages / People, home & settings / Portal administration) instead of Payload's bare card
+  grid. It renders content ONLY — `RootPage` already wraps the dashboard view in `DefaultTemplate`, so
+  wrapping again double-renders the header/nav. The "Portal administration" (Users) group is admin-only.
+- **Real-time Live Preview:** the preview iframe updates as the editor types (before Save), via
+  `useLivePreview` inside `usePageCopy` (and the client `HomeHero`). `RefreshRouteOnSave` remains the
+  save-time fallback and is what still drives the Footer (Site Settings) + Staff previews — those are
+  updated-on-save, not yet keystroke-live.
+- **Roles:** `admin` (AHD — manages the editor roster + all content) vs `editor` (content only). The
+  Users collection is `admin.hidden` for non-admins, so editors never see the roster in the nav; they
+  change their own login via the Account page. Users access control: create/delete/role = admin only;
+  read/update = self for editors.
+
 ## 9. Future considerations / parking lot (NOT action items)
 
 These become action items only if/when that upgrade is decided upon.
@@ -240,7 +259,8 @@ These become action items only if/when that upgrade is decided upon.
   override (vs SITREP) with a clear precedence rule.
 - **Option 1:** full data editing. Advise against; it undermines the SharePoint pipeline.
 - **CMS add-ons to consider later:** draft/preview mode + publish workflow; scheduled or
-  auto-expiring alerts; content versioning + audit log; multi-user roles; Payload live-preview
-  in-place editing; richer media library; localization.
+  auto-expiring alerts; content versioning + audit log; richer media library; localization; extending
+  keystroke-live preview to Staff + Footer (currently updated-on-save). (Real-time page/hero Live
+  Preview and admin/editor roles are **done** — see §8c.)
 - **Cross-feature idea:** the alert banner could optionally auto-post from the lakefront risk engine
   at ORANGE/RED (tie the curated banner to the automated risk level). Future only.

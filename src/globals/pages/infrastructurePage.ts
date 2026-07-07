@@ -48,9 +48,6 @@ export const INFRASTRUCTURE_DEFAULTS = {
 
   // Infrastructure Readiness section
   readinessHeading: "Infrastructure Readiness",
-  statusGreenDesc: "At or ahead of expected progress",
-  statusAmberDesc: "Slightly behind, monitor closely",
-  statusRedDesc: "Significantly behind expected progress",
 
   // Stay Informed section
   stayInformedHeading: "Stay Informed",
@@ -139,33 +136,6 @@ export const InfrastructurePage: GlobalConfig = {
       type: "text",
       defaultValue: INFRASTRUCTURE_DEFAULTS.readinessHeading,
       admin: { description: 'Heading of the readiness section ("Infrastructure Readiness").' },
-    },
-    {
-      name: "statusGreenDesc",
-      type: "text",
-      defaultValue: INFRASTRUCTURE_DEFAULTS.statusGreenDesc,
-      admin: {
-        description:
-          "Explainer text for the GREEN status legend (the 90%+ threshold label is fixed in code).",
-      },
-    },
-    {
-      name: "statusAmberDesc",
-      type: "text",
-      defaultValue: INFRASTRUCTURE_DEFAULTS.statusAmberDesc,
-      admin: {
-        description:
-          "Explainer text for the AMBER status legend (the 80-90% threshold label is fixed in code).",
-      },
-    },
-    {
-      name: "statusRedDesc",
-      type: "text",
-      defaultValue: INFRASTRUCTURE_DEFAULTS.statusRedDesc,
-      admin: {
-        description:
-          "Explainer text for the RED status legend (the <80% threshold label is fixed in code).",
-      },
     },
 
     // Stay Informed section

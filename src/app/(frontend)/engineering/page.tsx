@@ -193,7 +193,7 @@ export default function OperationsPage() {
           <SectionSubheader title={copy.inspectionsHeading} />
           <div className="grid md:grid-cols-2 gap-4">
             <ReadinessCard
-              title={copy.cpraTitle}
+              title="CPRA Quarterly Inspection"
               description={copy.cpraDescription}
               mandate={cpra.mandate}
               period={cpra.currentQuarter}
@@ -205,7 +205,7 @@ export default function OperationsPage() {
               note={cpra.reportSubmittedDate ? `Report submitted to CPRA ${cpra.reportSubmittedDate}` : "CPRA submission date pending"}
             />
             <ReadinessCard
-              title={copy.usaceTitle}
+              title="USACE Semi-Annual Inspection"
               description={copy.usaceDescription}
               mandate={usace.mandate}
               period="Semi-Annual &middot; Ongoing"
@@ -289,7 +289,7 @@ export default function OperationsPage() {
 
         {/* Permit Pipeline */}
         <section className="mb-12">
-          <p className="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-4">{copy.pipelineLabel}</p>
+          <p className="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-4">Permit Processing Pipeline</p>
           <DataCard
             title={
               <div className="flex items-center justify-between">
@@ -308,12 +308,12 @@ export default function OperationsPage() {
             {showFullPipeline ? (
               <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-0 py-4 flex-wrap">
                 {[
-                  { label: copy.pipelineStep1, highlight: true },
-                  { label: copy.pipelineStep2 },
-                  { label: copy.pipelineStep3 },
-                  { label: copy.pipelineStep4, tooltip: copy.lnoTooltipFull },
-                  { label: copy.pipelineStep5 },
-                  { label: copy.pipelineStep6, highlight: true, success: true },
+                  { label: "Permit Submittal", highlight: true },
+                  { label: "FPA-E Review" },
+                  { label: "External Agency Coordination" },
+                  { label: "Receipt of LNO", tooltip: "Letter of No Objection from the Levee District" },
+                  { label: "Final Review" },
+                  { label: "Permit Issued", highlight: true, success: true },
                 ].map((step, i, arr) => (
                   <div key={step.label} className="flex flex-col sm:flex-row items-center">
                     <div
@@ -358,7 +358,7 @@ export default function OperationsPage() {
                 <div className="flex flex-col items-center px-6 py-4 border-2 border-gray-300 rounded-lg min-w-[120px] bg-gray-50">
                   <span
                     className="text-xs font-medium text-gray-500 uppercase tracking-wide border-b border-dashed border-gray-300 cursor-help"
-                    title={copy.lnoTooltipSimple}
+                    title="LNO: Letter of No Objection issued by the Levee District"
                   >
                     LNO Review
                   </span>
@@ -383,8 +383,8 @@ export default function OperationsPage() {
 
         {/* Permits Chart */}
         <section className="mb-12">
-          <p className="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-4">{copy.permitsIssuedLabel}</p>
-          <DataCard title={copy.permitsTrendTitle} source="SITREPs">
+          <p className="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-4">Permits Issued</p>
+          <DataCard title="Monthly Permits Trend" source="SITREPs">
             <div className="h-64">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={permitChartData}>
@@ -421,8 +421,8 @@ export default function OperationsPage() {
 
         {/* Maintenance Activities */}
         <section>
-          <p className="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-4">{copy.maintenanceLabel}</p>
-          <DataCard title={copy.maintenanceCardTitle} source={sitrepMonth ? `${sitrepMonth} SITREP` : operationsData.maintenanceSource}>
+          <p className="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-4">Routine Maintenance Activities</p>
+          <DataCard title="Current Maintenance Work" source={sitrepMonth ? `${sitrepMonth} SITREP` : operationsData.maintenanceSource}>
             <ul className="space-y-3">
               {(sitrepActivities ?? operationsData.maintenanceActivities).map((activity, index) => (
                 <li key={index} className="flex items-start gap-3">

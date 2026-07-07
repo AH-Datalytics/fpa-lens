@@ -24,7 +24,6 @@ export const IDIQ_DEFAULTS = {
   pageTitle: "IDIQ Contract Tracker",
   pageSubtitle: "How we procure and assign engineering and professional services work",
 
-  keyTakeawayHeading: "Key Takeaway",
   keyTakeawayBody:
     "IDIQ contracts allow the Authority to respond quickly to project needs by working with pre-qualified firms. Work is assigned based on project requirements and expertise, not preset allocation, so utilization will vary across firms.",
 
@@ -35,19 +34,6 @@ export const IDIQ_DEFAULTS = {
     "IDIQ contracts are awarded in multi-year cycles (typically three years). The 2022 contracts were active through 2025, and the 2025 contracts represent the current cycle.",
   introParagraph3:
     "Work is assigned based on project needs, timing, and expertise. As a result, utilization varies across firms within each service category; this is expected and reflects how IDIQ programs are designed to function.",
-
-  processStep1Label: "Qualifications-Based Selection",
-  processStep1Description:
-    "Firms respond to a public solicitation and are evaluated based on qualifications and experience",
-  processStep2Label: "Pre-Approved Contract Pool",
-  processStep2Description:
-    "Selected firms are placed under contract with pre-established rates and terms",
-  processStep3Label: "Task Order Awarded",
-  processStep3Description:
-    "As project needs arise, specific work is assigned to a qualified firm without a full procurement",
-  processStep4Label: "Project Execution & Oversight",
-  processStep4Description:
-    "The firm completes the work, with costs tracked against the contract ceiling",
 
   contractCycleHeading: "Contract Cycle",
 
@@ -95,12 +81,6 @@ export const IdiqPage: GlobalConfig = {
       label: "Key Takeaway callout",
       fields: [
         {
-          name: "keyTakeawayHeading",
-          type: "text",
-          defaultValue: IDIQ_DEFAULTS.keyTakeawayHeading,
-          admin: { description: "Small uppercase label on the teal callout box." },
-        },
-        {
           name: "keyTakeawayBody",
           type: "textarea",
           defaultValue: IDIQ_DEFAULTS.keyTakeawayBody,
@@ -135,64 +115,6 @@ export const IdiqPage: GlobalConfig = {
           type: "textarea",
           defaultValue: IDIQ_DEFAULTS.introParagraph3,
           admin: { description: "Third explainer paragraph in the intro card." },
-        },
-      ],
-    },
-    {
-      type: "collapsible",
-      label: "Process flow boxes",
-      admin: {
-        description:
-          "The four steps in the procurement process flow. Label shows in the box; description is the hover tooltip.",
-      },
-      fields: [
-        {
-          name: "processStep1Label",
-          type: "text",
-          defaultValue: IDIQ_DEFAULTS.processStep1Label,
-          admin: { description: "Step 1 box label." },
-        },
-        {
-          name: "processStep1Description",
-          type: "textarea",
-          defaultValue: IDIQ_DEFAULTS.processStep1Description,
-          admin: { description: "Step 1 tooltip text." },
-        },
-        {
-          name: "processStep2Label",
-          type: "text",
-          defaultValue: IDIQ_DEFAULTS.processStep2Label,
-          admin: { description: "Step 2 box label." },
-        },
-        {
-          name: "processStep2Description",
-          type: "textarea",
-          defaultValue: IDIQ_DEFAULTS.processStep2Description,
-          admin: { description: "Step 2 tooltip text." },
-        },
-        {
-          name: "processStep3Label",
-          type: "text",
-          defaultValue: IDIQ_DEFAULTS.processStep3Label,
-          admin: { description: "Step 3 box label." },
-        },
-        {
-          name: "processStep3Description",
-          type: "textarea",
-          defaultValue: IDIQ_DEFAULTS.processStep3Description,
-          admin: { description: "Step 3 tooltip text." },
-        },
-        {
-          name: "processStep4Label",
-          type: "text",
-          defaultValue: IDIQ_DEFAULTS.processStep4Label,
-          admin: { description: "Step 4 box label." },
-        },
-        {
-          name: "processStep4Description",
-          type: "textarea",
-          defaultValue: IDIQ_DEFAULTS.processStep4Description,
-          admin: { description: "Step 4 tooltip text." },
         },
       ],
     },

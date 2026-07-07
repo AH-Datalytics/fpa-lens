@@ -423,7 +423,7 @@ export interface SiteSetting {
   createdAt?: string | null;
 }
 /**
- * Home page hero heading and subtext.
+ * Home page hero headline.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "home-content".
@@ -434,10 +434,6 @@ export interface HomeContent {
    * The large hero headline on the home page.
    */
   heroHeading?: string | null;
-  /**
-   * The paragraph beneath the hero headline.
-   */
-  heroSubtext?: string | null;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -669,18 +665,6 @@ export interface FinancePage {
    */
   spendingSectionHeading?: string | null;
   /**
-   * Small explainer caption under the Revenue Collected KPI card.
-   */
-  revenueCaption?: string | null;
-  /**
-   * Small explainer caption under the Projects KPI card.
-   */
-  projectsCaption?: string | null;
-  /**
-   * Methodology footnote beneath the Variance Detail table explaining why some rows disappear when filtering by district.
-   */
-  varianceTableNote?: string | null;
-  /**
    * Heading for the Major Future Projects section.
    */
   majorProjectsHeading?: string | null;
@@ -688,14 +672,6 @@ export interface FinancePage {
    * Lead sentence introducing the Major Future Projects table. The following sentence (with the inline Current Capital Projects link to the Engineering page) stays in the page markup.
    */
   majorProjectsIntro?: string | null;
-  /**
-   * First paragraph of the Data Note callout at the bottom of the page (budget/actuals sourcing and O&M-vs-Projects methodology).
-   */
-  dataNoteBudget?: string | null;
-  /**
-   * Second paragraph of the Data Note callout (future-projects sourcing / SITREP).
-   */
-  dataNoteProjects?: string | null;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -732,73 +708,21 @@ export interface SafetyPage {
    */
   categoryHeading?: string | null;
   /**
-   * Term/heading of the "Accident" definition card.
-   */
-  accidentTerm?: string | null;
-  /**
    * Body text of the "Accident" definition card.
    */
   accidentDefinition?: string | null;
-  /**
-   * Term/heading of the "Incident" definition card.
-   */
-  incidentTerm?: string | null;
   /**
    * Body text of the "Incident" definition card.
    */
   incidentDefinition?: string | null;
   /**
-   * Term/heading of the "Lost-Time Injury" definition card.
-   */
-  lostTimeTerm?: string | null;
-  /**
    * Body text of the "Lost-Time Injury" definition card.
    */
   lostTimeDefinition?: string | null;
   /**
-   * Term/heading of the "Non-Lost-Time Injury" definition card.
-   */
-  nonLostTimeTerm?: string | null;
-  /**
    * Body text of the "Non-Lost-Time Injury" definition card.
    */
   nonLostTimeDefinition?: string | null;
-  /**
-   * Card title above the "Accidents by Year" bar chart.
-   */
-  accidentsByYearTitle?: string | null;
-  /**
-   * Card title above the annual event breakdown table.
-   */
-  annualBreakdownTitle?: string | null;
-  /**
-   * Card title above the events-by-category chart.
-   */
-  categoryChartTitle?: string | null;
-  /**
-   * Footnote beneath the "Accidents by Year" chart.
-   */
-  accidentsByYearNote?: string | null;
-  /**
-   * Footnote beneath the Total Events / Lost Time chart.
-   */
-  totalEventsNote?: string | null;
-  /**
-   * Hover tooltip explaining "Lost Time" (reused on the chart title and the breakdown table header).
-   */
-  lostTimeTooltip?: string | null;
-  /**
-   * Data note paragraph 1 (privacy/anonymization).
-   */
-  dataNotePrivacy?: string | null;
-  /**
-   * Data note paragraph 2 (source + classification).
-   */
-  dataNoteClassification?: string | null;
-  /**
-   * Data note paragraph 3 (reporting period + cadence).
-   */
-  dataNoteReporting?: string | null;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -823,17 +747,9 @@ export interface EngineeringPage {
    */
   inspectionsHeading?: string | null;
   /**
-   * Title of the CPRA inspection card.
-   */
-  cpraTitle?: string | null;
-  /**
    * Explainer paragraph inside the CPRA inspection card.
    */
   cpraDescription?: string | null;
-  /**
-   * Title of the USACE inspection card.
-   */
-  usaceTitle?: string | null;
   /**
    * Explainer paragraph inside the USACE inspection card.
    */
@@ -850,58 +766,6 @@ export interface EngineeringPage {
    * Section heading for the "Permits" block.
    */
   permitsHeading?: string | null;
-  /**
-   * Small uppercase label above the permit-processing pipeline card.
-   */
-  pipelineLabel?: string | null;
-  /**
-   * Small uppercase label above the monthly permits chart.
-   */
-  permitsIssuedLabel?: string | null;
-  /**
-   * Title of the monthly permits-trend chart card.
-   */
-  permitsTrendTitle?: string | null;
-  /**
-   * Permit pipeline (Full workflow) step 1 label.
-   */
-  pipelineStep1?: string | null;
-  /**
-   * Permit pipeline (Full workflow) step 2 label.
-   */
-  pipelineStep2?: string | null;
-  /**
-   * Permit pipeline (Full workflow) step 3 label.
-   */
-  pipelineStep3?: string | null;
-  /**
-   * Permit pipeline (Full workflow) step 4 label.
-   */
-  pipelineStep4?: string | null;
-  /**
-   * Permit pipeline (Full workflow) step 5 label.
-   */
-  pipelineStep5?: string | null;
-  /**
-   * Permit pipeline (Full workflow) final step label.
-   */
-  pipelineStep6?: string | null;
-  /**
-   * Tooltip on the "Receipt of LNO" step in the Full workflow view.
-   */
-  lnoTooltipFull?: string | null;
-  /**
-   * Tooltip on the "LNO Review" node in the simple pipeline view.
-   */
-  lnoTooltipSimple?: string | null;
-  /**
-   * Small uppercase label above the maintenance-activities card.
-   */
-  maintenanceLabel?: string | null;
-  /**
-   * Title of the current-maintenance-work card.
-   */
-  maintenanceCardTitle?: string | null;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -922,14 +786,6 @@ export interface EnvironmentPage {
    */
   pageSubtitle?: string | null;
   /**
-   * Small heading above the hero risk indicator.
-   */
-  heroHeading?: string | null;
-  /**
-   * Heading for the contributing-factors list in the hero card.
-   */
-  contributingFactorsHeading?: string | null;
-  /**
    * Section heading: the risk-drivers explainer.
    */
   drivesTitle?: string | null;
@@ -942,53 +798,13 @@ export interface EnvironmentPage {
    */
   drivesIntro?: string | null;
   /**
-   * Explainer card 1 heading (wind direction).
-   */
-  windDirectionHeading?: string | null;
-  /**
-   * Explainer card 1 bold value (wind direction).
-   */
-  windDirectionValue?: string | null;
-  /**
    * Explainer card 1 body (wind direction).
    */
   windDirectionText?: string | null;
   /**
-   * Explainer card 2 heading (wind strength & duration).
-   */
-  windStrengthHeading?: string | null;
-  /**
-   * Explainer card 2 bold value (wind strength & duration).
-   */
-  windStrengthValue?: string | null;
-  /**
-   * Explainer card 2 body (wind strength & duration). Mentions the 15/25/35 kt cutoffs in prose — keep in sync with the model thresholds.
-   */
-  windStrengthText?: string | null;
-  /**
-   * Explainer card 3 heading (lake level vs. tide).
-   */
-  lakeLevelHeading?: string | null;
-  /**
-   * Explainer card 3 bold value (lake level vs. tide).
-   */
-  lakeLevelValue?: string | null;
-  /**
    * Explainer card 3 body (lake level vs. tide).
    */
   lakeLevelText?: string | null;
-  /**
-   * Green callout label (normal conditions).
-   */
-  normalConditionsHeading?: string | null;
-  /**
-   * Green callout body (normal conditions). Mentions the 15 kt cutoff in prose — keep in sync with the model.
-   */
-  normalConditionsText?: string | null;
-  /**
-   * Amber callout label (elevated conditions).
-   */
-  elevatedConditionsHeading?: string | null;
   /**
    * Amber callout body (elevated conditions).
    */
@@ -997,10 +813,6 @@ export interface EnvironmentPage {
    * Section heading: Current Conditions.
    */
   currentConditionsTitle?: string | null;
-  /**
-   * Explainer note under the Surge Anomaly metric card.
-   */
-  surgeAnomalyExplainer?: string | null;
   /**
    * Section heading: Conditions Timeline (charts).
    */
@@ -1018,10 +830,6 @@ export interface EnvironmentPage {
    */
   thresholdsCardTitle?: string | null;
   /**
-   * Italic note below the thresholds table.
-   */
-  thresholdsPreliminaryNote?: string | null;
-  /**
    * Section heading: Flood Structure Gauges.
    */
   structureGaugesTitle?: string | null;
@@ -1029,30 +837,6 @@ export interface EnvironmentPage {
    * Card title for the structure-gauges section.
    */
   structureGaugesCardTitle?: string | null;
-  /**
-   * Intro paragraph above the structure-gauge cards.
-   */
-  structureGaugesIntro?: string | null;
-  /**
-   * Second paragraph in the blue 'How to read these' callout (normal-level note).
-   */
-  structureGaugesNormalNote?: string | null;
-  /**
-   * Amber note below the structure-gauge callout.
-   */
-  structureGaugesConfirmationNote?: string | null;
-  /**
-   * Data-sources footer: forecast sources paragraph.
-   */
-  dataSourcesForecast?: string | null;
-  /**
-   * Data-sources footer: structure-gauge sources paragraph.
-   */
-  dataSourcesStructureGauges?: string | null;
-  /**
-   * Data-sources footer: decision-support disclaimer.
-   */
-  dataSourcesDisclaimer?: string | null;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -1104,18 +888,6 @@ export interface InfrastructurePage {
    * Heading of the readiness section ("Infrastructure Readiness").
    */
   readinessHeading?: string | null;
-  /**
-   * Explainer text for the GREEN status legend (the 90%+ threshold label is fixed in code).
-   */
-  statusGreenDesc?: string | null;
-  /**
-   * Explainer text for the AMBER status legend (the 80-90% threshold label is fixed in code).
-   */
-  statusAmberDesc?: string | null;
-  /**
-   * Explainer text for the RED status legend (the <80% threshold label is fixed in code).
-   */
-  statusRedDesc?: string | null;
   /**
    * Heading of the alerts section ("Stay Informed").
    */
@@ -1281,10 +1053,6 @@ export interface IdiqPage {
    */
   pageSubtitle?: string | null;
   /**
-   * Small uppercase label on the teal callout box.
-   */
-  keyTakeawayHeading?: string | null;
-  /**
    * Body paragraph inside the Key Takeaway callout.
    */
   keyTakeawayBody?: string | null;
@@ -1304,38 +1072,6 @@ export interface IdiqPage {
    * Third explainer paragraph in the intro card.
    */
   introParagraph3?: string | null;
-  /**
-   * Step 1 box label.
-   */
-  processStep1Label?: string | null;
-  /**
-   * Step 1 tooltip text.
-   */
-  processStep1Description?: string | null;
-  /**
-   * Step 2 box label.
-   */
-  processStep2Label?: string | null;
-  /**
-   * Step 2 tooltip text.
-   */
-  processStep2Description?: string | null;
-  /**
-   * Step 3 box label.
-   */
-  processStep3Label?: string | null;
-  /**
-   * Step 3 tooltip text.
-   */
-  processStep3Description?: string | null;
-  /**
-   * Step 4 box label.
-   */
-  processStep4Label?: string | null;
-  /**
-   * Step 4 tooltip text.
-   */
-  processStep4Description?: string | null;
   /**
    * Section heading above the contract cycle selector.
    */
@@ -1385,7 +1121,6 @@ export interface SiteSettingsSelect<T extends boolean = true> {
  */
 export interface HomeContentSelect<T extends boolean = true> {
   heroHeading?: T;
-  heroSubtext?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
@@ -1456,13 +1191,8 @@ export interface FinancePageSelect<T extends boolean = true> {
   pageTitle?: T;
   pageSubtitle?: T;
   spendingSectionHeading?: T;
-  revenueCaption?: T;
-  projectsCaption?: T;
-  varianceTableNote?: T;
   majorProjectsHeading?: T;
   majorProjectsIntro?: T;
-  dataNoteBudget?: T;
-  dataNoteProjects?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
@@ -1478,23 +1208,10 @@ export interface SafetyPageSelect<T extends boolean = true> {
   trendsHeading?: T;
   monthlyHeading?: T;
   categoryHeading?: T;
-  accidentTerm?: T;
   accidentDefinition?: T;
-  incidentTerm?: T;
   incidentDefinition?: T;
-  lostTimeTerm?: T;
   lostTimeDefinition?: T;
-  nonLostTimeTerm?: T;
   nonLostTimeDefinition?: T;
-  accidentsByYearTitle?: T;
-  annualBreakdownTitle?: T;
-  categoryChartTitle?: T;
-  accidentsByYearNote?: T;
-  totalEventsNote?: T;
-  lostTimeTooltip?: T;
-  dataNotePrivacy?: T;
-  dataNoteClassification?: T;
-  dataNoteReporting?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
@@ -1507,26 +1224,11 @@ export interface EngineeringPageSelect<T extends boolean = true> {
   pageTitle?: T;
   pageSubtitle?: T;
   inspectionsHeading?: T;
-  cpraTitle?: T;
   cpraDescription?: T;
-  usaceTitle?: T;
   usaceDescription?: T;
   capitalProjectsHeading?: T;
   capitalProjectsIntro?: T;
   permitsHeading?: T;
-  pipelineLabel?: T;
-  permitsIssuedLabel?: T;
-  permitsTrendTitle?: T;
-  pipelineStep1?: T;
-  pipelineStep2?: T;
-  pipelineStep3?: T;
-  pipelineStep4?: T;
-  pipelineStep5?: T;
-  pipelineStep6?: T;
-  lnoTooltipFull?: T;
-  lnoTooltipSimple?: T;
-  maintenanceLabel?: T;
-  maintenanceCardTitle?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
@@ -1538,39 +1240,19 @@ export interface EngineeringPageSelect<T extends boolean = true> {
 export interface EnvironmentPageSelect<T extends boolean = true> {
   pageTitle?: T;
   pageSubtitle?: T;
-  heroHeading?: T;
-  contributingFactorsHeading?: T;
   drivesTitle?: T;
   drivesSubtitle?: T;
   drivesIntro?: T;
-  windDirectionHeading?: T;
-  windDirectionValue?: T;
   windDirectionText?: T;
-  windStrengthHeading?: T;
-  windStrengthValue?: T;
-  windStrengthText?: T;
-  lakeLevelHeading?: T;
-  lakeLevelValue?: T;
   lakeLevelText?: T;
-  normalConditionsHeading?: T;
-  normalConditionsText?: T;
-  elevatedConditionsHeading?: T;
   elevatedConditionsText?: T;
   currentConditionsTitle?: T;
-  surgeAnomalyExplainer?: T;
   timelineTitle?: T;
   alertsTitle?: T;
   thresholdsTitle?: T;
   thresholdsCardTitle?: T;
-  thresholdsPreliminaryNote?: T;
   structureGaugesTitle?: T;
   structureGaugesCardTitle?: T;
-  structureGaugesIntro?: T;
-  structureGaugesNormalNote?: T;
-  structureGaugesConfirmationNote?: T;
-  dataSourcesForecast?: T;
-  dataSourcesStructureGauges?: T;
-  dataSourcesDisclaimer?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
@@ -1590,9 +1272,6 @@ export interface InfrastructurePageSelect<T extends boolean = true> {
   systemGlanceBody?: T;
   systemGlanceQuote?: T;
   readinessHeading?: T;
-  statusGreenDesc?: T;
-  statusAmberDesc?: T;
-  statusRedDesc?: T;
   stayInformedHeading?: T;
   alertsHeading?: T;
   alertsBody?: T;
@@ -1659,20 +1338,11 @@ export interface TurfPageSelect<T extends boolean = true> {
 export interface IdiqPageSelect<T extends boolean = true> {
   pageTitle?: T;
   pageSubtitle?: T;
-  keyTakeawayHeading?: T;
   keyTakeawayBody?: T;
   introHeading?: T;
   introParagraph1?: T;
   introParagraph2?: T;
   introParagraph3?: T;
-  processStep1Label?: T;
-  processStep1Description?: T;
-  processStep2Label?: T;
-  processStep2Description?: T;
-  processStep3Label?: T;
-  processStep3Description?: T;
-  processStep4Label?: T;
-  processStep4Description?: T;
   contractCycleHeading?: T;
   serviceCivilEngineering?: T;
   serviceSurveying?: T;

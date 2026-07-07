@@ -280,10 +280,24 @@ export default function IdiqPage() {
   };
 
   const processSteps = [
-    { label: copy.processStep1Label, description: copy.processStep1Description },
-    { label: copy.processStep2Label, description: copy.processStep2Description },
-    { label: copy.processStep3Label, description: copy.processStep3Description },
-    { label: copy.processStep4Label, description: copy.processStep4Description },
+    {
+      label: "Qualifications-Based Selection",
+      description:
+        "Firms respond to a public solicitation and are evaluated based on qualifications and experience",
+    },
+    {
+      label: "Pre-Approved Contract Pool",
+      description: "Selected firms are placed under contract with pre-established rates and terms",
+    },
+    {
+      label: "Task Order Awarded",
+      description:
+        "As project needs arise, specific work is assigned to a qualified firm without a full procurement",
+    },
+    {
+      label: "Project Execution & Oversight",
+      description: "The firm completes the work, with costs tracked against the contract ceiling",
+    },
   ];
 
   useEffect(() => {
@@ -346,7 +360,7 @@ export default function IdiqPage() {
             </div>
             <div>
               <h3 className="text-sm font-semibold uppercase tracking-wide mb-1" style={{ color: ACCENT }}>
-                {copy.keyTakeawayHeading}
+                Key Takeaway
               </h3>
               <p className="text-[15px] text-gray-800 leading-relaxed">
                 {copy.keyTakeawayBody}

@@ -399,7 +399,7 @@ export default function EnvironmentalPage() {
             <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 mb-6">
               <div className="flex-1">
                 <h2 className="text-sm font-medium text-gray-500 uppercase tracking-wide mb-3">
-                  {copy.heroHeading}
+                  Lakeshore Drive Flood Risk
                 </h2>
                 <RiskIndicator level={risk.level} action={risk.action} />
               </div>
@@ -442,7 +442,7 @@ export default function EnvironmentalPage() {
             {/* Contributing Factors */}
             <div className="bg-gray-50 rounded-lg p-4">
               <h3 className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">
-                {copy.contributingFactorsHeading}
+                Contributing Factors
               </h3>
               <ul className="space-y-1">
                 {risk.factors.map((factor, i) => (
@@ -473,10 +473,10 @@ export default function EnvironmentalPage() {
                 <div className="flex items-center gap-2 mb-2 text-[#21355a]">
                   <Compass className="h-5 w-5" aria-hidden="true" />
                   <h3 className="font-semibold text-sm uppercase tracking-wide">
-                    {copy.windDirectionHeading}
+                    Wind direction
                   </h3>
                 </div>
-                <p className="text-2xl font-bold text-[#21355a] mb-1">{copy.windDirectionValue}</p>
+                <p className="text-2xl font-bold text-[#21355a] mb-1">Onshore</p>
                 <p className="text-sm text-gray-700 leading-snug">
                   {copy.windDirectionText}
                 </p>
@@ -485,22 +485,22 @@ export default function EnvironmentalPage() {
                 <div className="flex items-center gap-2 mb-2 text-[#21355a]">
                   <Wind className="h-5 w-5" aria-hidden="true" />
                   <h3 className="font-semibold text-sm uppercase tracking-wide">
-                    {copy.windStrengthHeading}
+                    {"Wind strength & duration"}
                   </h3>
                 </div>
-                <p className="text-2xl font-bold text-[#21355a] mb-1">{copy.windStrengthValue}</p>
+                <p className="text-2xl font-bold text-[#21355a] mb-1">Sustained</p>
                 <p className="text-sm text-gray-700 leading-snug">
-                  {copy.windStrengthText}
+                  Yellow and orange require winds above 15 / 25 knots for at least ~2 of the previous 3 hours. Red triggers immediately above 35 knots.
                 </p>
               </div>
               <div className="rounded-lg border border-gray-100 bg-gray-50/60 p-5">
                 <div className="flex items-center gap-2 mb-2 text-[#21355a]">
                   <Waves className="h-5 w-5" aria-hidden="true" />
                   <h3 className="font-semibold text-sm uppercase tracking-wide">
-                    {copy.lakeLevelHeading}
+                    Lake level vs. tide
                   </h3>
                 </div>
-                <p className="text-2xl font-bold text-[#21355a] mb-1">{copy.lakeLevelValue}</p>
+                <p className="text-2xl font-bold text-[#21355a] mb-1">Above predicted</p>
                 <p className="text-sm text-gray-700 leading-snug">
                   {copy.lakeLevelText}
                 </p>
@@ -511,18 +511,18 @@ export default function EnvironmentalPage() {
                 <div className="flex items-center gap-2 mb-1.5">
                   <span className="w-2 h-2 rounded-full bg-green-500" aria-hidden="true" />
                   <span className="text-xs font-semibold uppercase tracking-wide text-green-800">
-                    {copy.normalConditionsHeading}
+                    Normal conditions (green)
                   </span>
                 </div>
                 <p className="text-sm text-gray-700 leading-snug">
-                  {copy.normalConditionsText}
+                  Wind is calm, blowing offshore, or below 15 knots; lake level is near tide prediction. No action required.
                 </p>
               </div>
               <div className="rounded-lg border border-amber-200 bg-amber-50/60 p-4">
                 <div className="flex items-center gap-2 mb-1.5">
                   <Clock className="h-3.5 w-3.5 text-amber-700" aria-hidden="true" />
                   <span className="text-xs font-semibold uppercase tracking-wide text-amber-800">
-                    {copy.elevatedConditionsHeading}
+                    Elevated conditions (yellow / orange / red)
                   </span>
                 </div>
                 <p className="text-sm text-gray-700 leading-snug">
@@ -664,7 +664,7 @@ export default function EnvironmentalPage() {
                 <span className="text-sm text-gray-500">ft</span>
               </div>
               <p className="text-xs text-gray-400 mt-1">
-                {copy.surgeAnomalyExplainer}
+                {"Lake Level minus Tide Prediction. Positive = water is higher than tides alone explain, typically from wind pushing water toward shore. This is what drives the surge component of the risk level."}
               </p>
             </div>
 
@@ -1060,7 +1060,7 @@ export default function EnvironmentalPage() {
               noise rather than wind-driven flood risk, so it is suppressed.
             </p>
             <p className="text-xs text-gray-600 italic mt-2">
-              {copy.thresholdsPreliminaryNote}
+              {"These thresholds are preliminary and subject to calibration based on operational experience."}
             </p>
           </DataCard>
         </section>
@@ -1074,7 +1074,7 @@ export default function EnvironmentalPage() {
               source="USGS Water Services"
             >
               <p className="text-sm text-gray-600 mb-4">
-                {copy.structureGaugesIntro}
+                {"These are live water levels at flood control structures near Lake Pontchartrain, pulled from the same USGS gauges FPA operations monitors. Use them to corroborate the risk level above: if the indicator shows elevated risk from sustained northerly winds, rising levels at these structures confirm that lake water is actually being pushed toward shore and into the flood protection system."}
               </p>
               <div className="grid sm:grid-cols-3 gap-4 mb-4">
                 {structureGauges.map((gauge) => (
@@ -1113,11 +1113,11 @@ export default function EnvironmentalPage() {
                   active wind setup.
                 </p>
                 <p>
-                  {copy.structureGaugesNormalNote}
+                  Normal levels fluctuate near 0 ft. Values climbing above +0.5 ft during sustained northerly winds suggest meaningful water movement toward the flood protection system.
                 </p>
               </div>
               <p className="text-xs text-amber-600 mt-3">
-                {copy.structureGaugesConfirmationNote}
+                {"Gauge selection is preliminary and subject to confirmation with FPA operations."}
               </p>
             </DataCard>
           </section>
@@ -1143,13 +1143,13 @@ export default function EnvironmentalPage() {
                   , updated every 6 minutes.
                 </p>
                 <p>
-                  {copy.dataSourcesForecast}
+                  {"Wind forecasts from the National Weather Service (NWS Slidell, LA office). Water level forecasts from NOAA's NGOFS2 operational model. Weather alerts from NWS."}
                 </p>
                 <p>
-                  {copy.dataSourcesStructureGauges}
+                  {"Structure gauge levels from USGS Water Services (Seabrook, Surge Barrier, Bayou Dupre). These are the same gauges monitored by FPA operations and serve as secondary corroboration of Lake Pontchartrain conditions."}
                 </p>
                 <p>
-                  {copy.dataSourcesDisclaimer}
+                  {"The risk indicator is a rule-based decision-support tool. It does not replace professional judgment or official NWS warnings. Always follow official SLFPA-E operational procedures."}
                 </p>
               </div>
             </div>

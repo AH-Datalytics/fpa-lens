@@ -451,21 +451,21 @@ export default function OurSystemPage() {
               <CheckCircle className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
               <div className="text-xs">
                 <div className="font-semibold text-green-800">GREEN &middot; 90%+</div>
-                <div className="text-green-700">{copy.statusGreenDesc}</div>
+                <div className="text-green-700">At or ahead of expected progress</div>
               </div>
             </div>
             <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 flex items-start gap-2">
               <AlertTriangle className="h-4 w-4 text-amber-600 mt-0.5 flex-shrink-0" />
               <div className="text-xs">
                 <div className="font-semibold text-amber-800">AMBER &middot; 80-90%</div>
-                <div className="text-amber-700">{copy.statusAmberDesc}</div>
+                <div className="text-amber-700">Slightly behind, monitor closely</div>
               </div>
             </div>
             <div className="bg-red-50 border border-red-200 rounded-lg p-3 flex items-start gap-2">
               <AlertCircle className="h-4 w-4 text-red-600 mt-0.5 flex-shrink-0" />
               <div className="text-xs">
                 <div className="font-semibold text-red-800">RED &middot; &lt;80%</div>
-                <div className="text-red-700">{copy.statusRedDesc}</div>
+                <div className="text-red-700">Significantly behind expected progress</div>
               </div>
             </div>
           </div>

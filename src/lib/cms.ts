@@ -16,28 +16,6 @@ import { staffingData, siteConfig } from "@/data/siteData";
 const CACHE_OPTS = { revalidate: 60, tags: ["cms"] };
 
 // ---------------------------------------------------------------------------
-// Home content
-// ---------------------------------------------------------------------------
-export interface HomeContentData {
-  heroHeading: string | null;
-  heroSubtext: string | null;
-}
-
-export const getHomeContent = unstable_cache(
-  async (): Promise<HomeContentData> => {
-    try {
-      const payload = await getPayload({ config });
-      const g = await payload.findGlobal({ slug: "home-content" });
-      return { heroHeading: g?.heroHeading ?? null, heroSubtext: g?.heroSubtext ?? null };
-    } catch {
-      return { heroHeading: null, heroSubtext: null };
-    }
-  },
-  ["cms-home-content"],
-  CACHE_OPTS,
-);
-
-// ---------------------------------------------------------------------------
 // Staff members (falls back to the curated leadership list)
 // ---------------------------------------------------------------------------
 export interface StaffBioSection {

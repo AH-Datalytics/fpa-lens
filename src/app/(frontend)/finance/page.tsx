@@ -237,7 +237,7 @@ export default function FinancialPage() {
                     </div>
                     <span className="text-xs font-medium text-gray-500">{revCollectedPct}%</span>
                   </div>
-                  <p className="text-[10px] text-gray-400 mt-2 leading-snug">{copy.revenueCaption}</p>
+                  <p className="text-[10px] text-gray-400 mt-2 leading-snug">Tax revenue is seasonal; large payments arrive at billing cycles</p>
                 </div>
 
                 {/* O&M Expenses */}
@@ -274,7 +274,7 @@ export default function FinancialPage() {
                     </div>
                     <span className="text-xs font-medium text-gray-500">{projUsedPct}%</span>
                   </div>
-                  <p className="text-[10px] text-gray-400 mt-2 leading-snug">{copy.projectsCaption}</p>
+                  <p className="text-[10px] text-gray-400 mt-2 leading-snug">Multi-year projects ramp at different rates</p>
                 </div>
 
                 {/* Net Position */}
@@ -397,7 +397,7 @@ export default function FinancialPage() {
                       </select>
                     </div>
                   }
-                  note={copy.varianceTableNote}
+                  note="Note: When filtering by district, some categories and departments may not appear because not all expense types and departments exist within every district."
                 >
                   <div className="overflow-x-auto">
                     {tableView === "category" ? (
@@ -594,8 +594,8 @@ export default function FinancialPage() {
             <div className="flex items-start gap-3">
               <Info className="h-5 w-5 text-gray-400 mt-0.5 flex-shrink-0" />
               <div className="text-xs text-gray-500 space-y-1">
-                <p>{copy.dataNoteBudget}</p>
-                <p>{copy.dataNoteProjects}</p>
+                <p>{"Budget vs Actuals sourced from FPA Dashboard Reports (Finance Department). O&M expenses are shown separately from Projects to avoid distortion from multi-year project timing. Hover over any acronym for its full name."}</p>
+                <p>Future projects sourced from SITREP reports. Current capital projects live on the Engineering page.</p>
               </div>
             </div>
           </div>

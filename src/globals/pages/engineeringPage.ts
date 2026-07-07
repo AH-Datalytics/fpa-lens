@@ -26,10 +26,8 @@ export const ENGINEERING_DEFAULTS = {
 
   // --- Federal & State Inspections section ---
   inspectionsHeading: "Federal & State Inspections",
-  cpraTitle: "CPRA Quarterly Inspection",
   cpraDescription:
     "State-mandated quarterly visual inspection of the levee system, with findings reported to the Coastal Protection and Restoration Authority.",
-  usaceTitle: "USACE Semi-Annual Inspection",
   usaceDescription:
     "Federal inspection of HSDRRS levees, floodwalls, PCCPs, and complex structures. 100% = on pace for this point in the half-year cycle.",
 
@@ -40,23 +38,6 @@ export const ENGINEERING_DEFAULTS = {
 
   // --- Permits section ---
   permitsHeading: "Permits",
-  pipelineLabel: "Permit Processing Pipeline",
-  permitsIssuedLabel: "Permits Issued",
-  permitsTrendTitle: "Monthly Permits Trend",
-
-  // --- Permit-pipeline "Full workflow" process steps ---
-  pipelineStep1: "Permit Submittal",
-  pipelineStep2: "FPA-E Review",
-  pipelineStep3: "External Agency Coordination",
-  pipelineStep4: "Receipt of LNO",
-  pipelineStep5: "Final Review",
-  pipelineStep6: "Permit Issued",
-  lnoTooltipFull: "Letter of No Objection from the Levee District",
-  lnoTooltipSimple: "LNO: Letter of No Objection issued by the Levee District",
-
-  // --- Routine Maintenance section ---
-  maintenanceLabel: "Routine Maintenance Activities",
-  maintenanceCardTitle: "Current Maintenance Work",
 };
 
 export const EngineeringPage: GlobalConfig = {
@@ -90,22 +71,10 @@ export const EngineeringPage: GlobalConfig = {
       admin: { description: "Section heading above the two inspection cards." },
     },
     {
-      name: "cpraTitle",
-      type: "text",
-      defaultValue: ENGINEERING_DEFAULTS.cpraTitle,
-      admin: { description: "Title of the CPRA inspection card." },
-    },
-    {
       name: "cpraDescription",
       type: "textarea",
       defaultValue: ENGINEERING_DEFAULTS.cpraDescription,
       admin: { description: "Explainer paragraph inside the CPRA inspection card." },
-    },
-    {
-      name: "usaceTitle",
-      type: "text",
-      defaultValue: ENGINEERING_DEFAULTS.usaceTitle,
-      admin: { description: "Title of the USACE inspection card." },
     },
     {
       name: "usaceDescription",
@@ -134,88 +103,6 @@ export const EngineeringPage: GlobalConfig = {
       type: "text",
       defaultValue: ENGINEERING_DEFAULTS.permitsHeading,
       admin: { description: 'Section heading for the "Permits" block.' },
-    },
-    {
-      name: "pipelineLabel",
-      type: "text",
-      defaultValue: ENGINEERING_DEFAULTS.pipelineLabel,
-      admin: { description: "Small uppercase label above the permit-processing pipeline card." },
-    },
-    {
-      name: "permitsIssuedLabel",
-      type: "text",
-      defaultValue: ENGINEERING_DEFAULTS.permitsIssuedLabel,
-      admin: { description: "Small uppercase label above the monthly permits chart." },
-    },
-    {
-      name: "permitsTrendTitle",
-      type: "text",
-      defaultValue: ENGINEERING_DEFAULTS.permitsTrendTitle,
-      admin: { description: "Title of the monthly permits-trend chart card." },
-    },
-
-    // --- Permit-pipeline "Full workflow" process steps ---
-    {
-      name: "pipelineStep1",
-      type: "text",
-      defaultValue: ENGINEERING_DEFAULTS.pipelineStep1,
-      admin: { description: "Permit pipeline (Full workflow) step 1 label." },
-    },
-    {
-      name: "pipelineStep2",
-      type: "text",
-      defaultValue: ENGINEERING_DEFAULTS.pipelineStep2,
-      admin: { description: "Permit pipeline (Full workflow) step 2 label." },
-    },
-    {
-      name: "pipelineStep3",
-      type: "text",
-      defaultValue: ENGINEERING_DEFAULTS.pipelineStep3,
-      admin: { description: "Permit pipeline (Full workflow) step 3 label." },
-    },
-    {
-      name: "pipelineStep4",
-      type: "text",
-      defaultValue: ENGINEERING_DEFAULTS.pipelineStep4,
-      admin: { description: "Permit pipeline (Full workflow) step 4 label." },
-    },
-    {
-      name: "pipelineStep5",
-      type: "text",
-      defaultValue: ENGINEERING_DEFAULTS.pipelineStep5,
-      admin: { description: "Permit pipeline (Full workflow) step 5 label." },
-    },
-    {
-      name: "pipelineStep6",
-      type: "text",
-      defaultValue: ENGINEERING_DEFAULTS.pipelineStep6,
-      admin: { description: "Permit pipeline (Full workflow) final step label." },
-    },
-    {
-      name: "lnoTooltipFull",
-      type: "text",
-      defaultValue: ENGINEERING_DEFAULTS.lnoTooltipFull,
-      admin: { description: 'Tooltip on the "Receipt of LNO" step in the Full workflow view.' },
-    },
-    {
-      name: "lnoTooltipSimple",
-      type: "textarea",
-      defaultValue: ENGINEERING_DEFAULTS.lnoTooltipSimple,
-      admin: { description: 'Tooltip on the "LNO Review" node in the simple pipeline view.' },
-    },
-
-    // --- Routine Maintenance section ---
-    {
-      name: "maintenanceLabel",
-      type: "text",
-      defaultValue: ENGINEERING_DEFAULTS.maintenanceLabel,
-      admin: { description: "Small uppercase label above the maintenance-activities card." },
-    },
-    {
-      name: "maintenanceCardTitle",
-      type: "text",
-      defaultValue: ENGINEERING_DEFAULTS.maintenanceCardTitle,
-      admin: { description: "Title of the current-maintenance-work card." },
     },
   ],
 };

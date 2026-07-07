@@ -267,27 +267,46 @@ When a new SITREP arrives:
 ## Content Management (CMS)
 
 A **content portal** at `/admin` (Payload CMS, lives inside this app) lets FPA staff edit the
-curated, human-authored content without touching code — the leadership/staff cards (including photo
+curated, human-authored content without touching code: the leadership/staff cards (including photo
 uploads), the footer/contact details, and the **editable prose on every page** (intros, section
 headings, descriptions, callouts). It does **not** manage the automated data (finance, safety, turf,
-readiness, permits) — those keep coming from the SharePoint pipeline and lakefront engine described
+readiness, permits); those keep coming from the SharePoint pipeline and lakefront engine described
 above.
 
 - **Where content lives:** the public pages read curated content from Payload with a fallback to the
-  in-code defaults, so the site always renders even if the CMS is unreachable. Server pages read via
-  `getPageContent` (`src/lib/cms.ts`, SSR); interactive client pages read via the `usePageCopy` hook
-  (`src/lib/usePageCopy.ts`). Edits go live within ~1 minute (ISR + on-save revalidation), and the
-  admin has a **Live Preview** of the site as you edit.
+  in-code defaults, so the site always renders even if the CMS is unreachable. Every page now reads
+  its copy through the `usePageCopy` client hook (`src/lib/usePageCopy.ts`); the About and Protection
+  pages (and the home hero), previously server-rendered via `getPageContent`, were converted to
+  client components so they share it. Edits go live within ~1 minute (ISR + on-save revalidation),
+  and the admin's **Live Preview** shows the page updating *as you type*, before you Save
+  (implemented with `@payloadcms/live-preview-react`'s `useLivePreview`; a save-time
+  `RefreshRouteOnSave` fallback covers Staff and Footer/Site Settings).
 - **Page copy:** each page's editable text is a Payload global under the **"Page Content"** group,
   defined in `src/globals/pages/*.ts` (each field's `defaultValue` is the current wording, so
   nothing changes visually until an editor rewords it). Add a new page by following the pattern in
   `docs/cms-notes.md` §8a.
-- **Roles:** `admin` (AHD — manages the editor list + content) and `editor` (content only).
+- **What editors can change:** prose only: page and section headings, body/intro/callout paragraphs,
+  and staff bios + photos. Everything else stays hardcoded in the page and is not editable: data and
+  numbers, chart/card/metric titles, status legends and their values, thresholds, nav/button/tab
+  labels, tooltips, abbreviation expansions (e.g. LNO), process-step labels, prose that embeds live
+  data, and the AHD-authored data-source and methodology notes. A 2026-07-06 audit trimmed 65 such
+  fields back to hardcoded literals. Editable-field counts by page: About 49, Finance 5, Safety 10,
+  Engineering 8, Environment 15, Infrastructure 13, Protection 8, Staffing 6, Turf 11, IDIQ 13; Home
+  Content is just the hero headline.
+- **Admin dashboard:** `/admin` opens on a custom dashboard (`src/components/admin/Dashboard.tsx`,
+  via `admin.components.views.dashboard`) with a welcome header, a short how-to guide, and grouped,
+  described cards (Website pages / People, home & settings / Portal administration). The Portal
+  administration (Users) group is admin-only.
+- **Roles:** `admin` (AH Datalytics accounts, who manage the editor roster + all content) and
+  `editor` (content only). The Users collection is hidden from editors (`admin.hidden`), so they
+  don't see the roster in the nav and manage their own login from the Account page. Jeff Williams
+  (`jwilliams@slfpae.gov`) is an admin.
 - **Structure:** `src/payload.config.ts`, `src/collections/` (Users, Media, StaffMembers),
   `src/globals/` (SiteSettings, HomeContent, and `pages/`), and the `src/app/(payload)/` admin route
   group. The public site lives in `src/app/(frontend)/`.
-- **Seed / utilities:** `scripts/seed-cms.ts` (idempotent; content + editors from `siteData.ts`),
-  `scripts/set-password.ts` (grant initial access).
+- **Seed / utilities:** `scripts/seed-cms.ts` (idempotent; content + editors from `siteData.ts`,
+  seeding Jeff Williams as `admin` and re-enforcing each user's role on re-run),
+  `scripts/set-password.ts` (grant initial access), `scripts/set-role.ts` (set a user's role).
 
 ### Running the CMS locally
 

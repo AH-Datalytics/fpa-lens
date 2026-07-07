@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Shield,
   Clock,
@@ -16,10 +18,8 @@ import {
 } from "lucide-react";
 import SectionHeader, { SectionSubheader } from "@/components/SectionHeader";
 import { protectionData } from "@/data/protectionData";
-import { getPageContent } from "@/lib/cms";
+import { usePageCopy } from "@/lib/usePageCopy";
 import { PROTECTION_DEFAULTS } from "@/globals/pages/protectionPage";
-
-export const revalidate = 60;
 
 const formatNumber = (n: number) => n.toLocaleString();
 
@@ -39,17 +39,17 @@ const categoryColor: Record<string, string> = {
   ENG_MAINT_SUPPORT: "#f59e0b",
 };
 
-export default async function ProtectionPage() {
+export default function ProtectionPage() {
   const data = protectionData;
   const perDay = Math.round(data.totalActivities / data.daysInYear);
-  const copy = await getPageContent<typeof PROTECTION_DEFAULTS>("protection-page");
+  const copy = usePageCopy("protection-page", PROTECTION_DEFAULTS);
 
   return (
     <div className="py-12">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <SectionHeader
-          title={copy?.pageTitle ?? PROTECTION_DEFAULTS.pageTitle}
-          subtitle={copy?.pageSubtitle ?? PROTECTION_DEFAULTS.pageSubtitle}
+          title={copy.pageTitle}
+          subtitle={copy.pageSubtitle}
         />
 
         {/* MISSION */}
@@ -61,7 +61,7 @@ export default async function ProtectionPage() {
               </div>
               <div>
                 <h2 className="text-2xl font-bold mb-3">
-                  {copy?.missionHeading ?? PROTECTION_DEFAULTS.missionHeading}
+                  {copy.missionHeading}
                 </h2>
                 <p className="text-blue-100 leading-relaxed">{data.mission}</p>
                 <p className="text-blue-100 leading-relaxed mt-3">
@@ -134,7 +134,7 @@ export default async function ProtectionPage() {
         {/* MONITORING ACTIVITY */}
         <section className="mb-12">
           <SectionSubheader
-            title={copy?.monitoringHeading ?? PROTECTION_DEFAULTS.monitoringHeading}
+            title={copy.monitoringHeading}
             subtitle={`How ${formatNumber(data.totalActivities)} field activities map onto the flood-protection system`}
           />
 
@@ -222,7 +222,7 @@ export default async function ProtectionPage() {
         {/* LEVEE AWARENESS */}
         <section className="mb-12">
           <SectionSubheader
-            title={copy?.leveeAwarenessHeading ?? PROTECTION_DEFAULTS.leveeAwarenessHeading}
+            title={copy.leveeAwarenessHeading}
           />
           <div className="bg-[#65bc7b]/5 border border-[#65bc7b]/30 rounded-xl p-6">
             <div className="flex items-start gap-4">
@@ -254,8 +254,8 @@ export default async function ProtectionPage() {
         {/* OUTCOMES */}
         <section className="mb-12">
           <SectionSubheader
-            title={copy?.outcomesHeading ?? PROTECTION_DEFAULTS.outcomesHeading}
-            subtitle={copy?.outcomesSubtitle ?? PROTECTION_DEFAULTS.outcomesSubtitle}
+            title={copy.outcomesHeading}
+            subtitle={copy.outcomesSubtitle}
           />
           <div className="grid md:grid-cols-2 gap-4">
             {data.outcomes.map((o) => (
@@ -274,7 +274,7 @@ export default async function ProtectionPage() {
         {/* WORKFORCE */}
         <section className="mb-12">
           <SectionSubheader
-            title={copy?.workforceHeading ?? PROTECTION_DEFAULTS.workforceHeading}
+            title={copy.workforceHeading}
           />
           <div className="grid md:grid-cols-2 gap-4">
             {data.workforce.map((d) => (

@@ -49,12 +49,9 @@ async function uploadPhoto(
 }
 
 const HERO_HEADING = "Protecting Greater New Orleans";
-const HERO_SUBTEXT =
-  "The FPA Lens provides transparent, real-time insight into how the SLFPA-E " +
-  "protects our community through world-class flood defense infrastructure.";
 
 const EDITORS: { email: string; name: string; role: "admin" | "editor" }[] = [
-  { email: "jwilliams@slfpae.gov", name: "L. Jeff Williams", role: "editor" },
+  { email: "jwilliams@slfpae.gov", name: "L. Jeff Williams", role: "admin" },
   { email: "oboochever@ahdatalytics.com", name: "Oscar Boochever", role: "admin" },
   { email: "jasher@ahdatalytics.com", name: "Asher", role: "admin" },
   { email: "bhorwitz@ahdatalytics.com", name: "Ben Horwitz", role: "admin" },
@@ -68,7 +65,7 @@ const run = async () => {
   // 1. Home hero copy
   await payload.updateGlobal({
     slug: "home-content",
-    data: { heroHeading: HERO_HEADING, heroSubtext: HERO_SUBTEXT },
+    data: { heroHeading: HERO_HEADING },
   });
   payload.logger.info("Seeded home-content");
 
@@ -135,6 +132,14 @@ const run = async () => {
       });
       created += 1;
       payload.logger.info(`Created ${ed.role}: ${ed.email} (must reset password)`);
+    } else if (existing.docs[0].role !== ed.role) {
+      // Enforce the intended role on re-seed (does not touch the password).
+      await payload.update({
+        collection: "users",
+        id: existing.docs[0].id,
+        data: { role: ed.role },
+      });
+      payload.logger.info(`Updated role for ${ed.email}: ${existing.docs[0].role} -> ${ed.role}`);
     }
   }
   payload.logger.info(`Users: ${created} created, ${EDITORS.length - created} already existed`);

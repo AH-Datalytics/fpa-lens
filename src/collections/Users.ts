@@ -20,6 +20,11 @@ export const Users: CollectionConfig = {
   admin: {
     useAsTitle: "email",
     defaultColumns: ["name", "email", "role"],
+    // Hide the Users collection from editors entirely (nav + dashboard). Editors
+    // manage their own login via the Account page, not the user list; only admins
+    // see and manage the editor roster.
+    hidden: ({ user }) =>
+      (user as { role?: string } | undefined)?.role !== "admin",
   },
   access: {
     // Only admins manage the editor list; editors can read/update only self.

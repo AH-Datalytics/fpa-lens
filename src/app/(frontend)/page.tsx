@@ -11,7 +11,6 @@ import {
   Info,
 } from "lucide-react";
 import StatusBadge from "@/components/StatusBadge";
-import SiteGuide from "@/components/SiteGuide";
 import EnvironmentalCard from "@/components/EnvironmentalCard";
 import StaffingZoneBar from "@/components/StaffingZoneBar";
 import {
@@ -25,7 +24,7 @@ import {
 import { computeReadinessRollups } from "@/lib/readinessRollups";
 import { getOmSummary } from "@/lib/financeData";
 import { computeZoneLevel } from "@/lib/staffingZones";
-import { getHomeContent } from "@/lib/cms";
+import HomeHero from "@/components/HomeHero";
 
 const quickLinks = [
   {
@@ -106,7 +105,6 @@ function statusTooltip(status: StatusLevel) {
 export const revalidate = 60;
 
 export default async function Home() {
-  const home = await getHomeContent();
   const infra = getCategory("Infrastructure Readiness")!;
   const staffReadiness = getCategory("Staffing Readiness")!;
   const staffStatus: StatusLevel =
@@ -140,43 +138,11 @@ export default async function Home() {
 
   return (
     <div>
-      {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-[#21355a] via-[#2c3859] to-[#21355a] text-white">
-        <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-5"></div>
-        <div className="relative mx-auto max-w-7xl px-4 pt-10 pb-28 sm:px-6 lg:px-8 lg:pt-12 lg:pb-32">
-          <div className="absolute top-10 right-4 sm:right-6 lg:right-8 z-10">
-            <SiteGuide />
-          </div>
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div>
-              <div className="flex items-center gap-2 mb-6">
-                <StatusBadge status={systemReadiness.overallStatus} size="md" tooltip={statusTooltip(systemReadiness.overallStatus)} />
-                <span className="text-sm text-blue-200">All Systems Operational</span>
-              </div>
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-6">
-                {home?.heroHeading || "Protecting Greater New Orleans"}
-              </h1>
-              <p className="text-xl text-blue-100 mb-8 leading-relaxed">
-                The FPA Lens provides transparent, real-time insight into how the{" "}
-                <span className="text-white font-semibold">{siteConfig.organizationShort}</span>{" "}
-                protects our community through world-class flood defense infrastructure.
-              </p>
-            </div>
-            <div className="hidden lg:flex justify-center">
-              <div className="relative">
-                <div className="absolute -inset-4 bg-[#65bc7b]/20 rounded-full blur-3xl"></div>
-                <Image
-                  src="/fpa_logo.png"
-                  alt="SLFPA-E Logo"
-                  width={300}
-                  height={300}
-                  className="relative rounded-full bg-white p-6 shadow-2xl"
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* Hero Section (client component: headline updates live in the admin preview) */}
+      <HomeHero
+        overallStatus={systemReadiness.overallStatus}
+        overallTooltip={statusTooltip(systemReadiness.overallStatus)}
+      />
 
       {/* Three Readiness Gauges */}
       <section className="relative -mt-12 z-10">
