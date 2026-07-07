@@ -7,6 +7,23 @@ checked off and removed from `cms-checklist.md`. Reasoning and context live in `
 
 ## 2026-07
 
+- **2026-07-07 00:25 EDT** — **Shipped the admin-portal polish pass + prod follow-ups.**
+  - **Merged `cms-admin-polish` → `main`, deployed, verified prod.** Public site unchanged (all pages
+    HTTP 200; live `/finance` still renders its headings + the now-inlined data-notes; the finance
+    global serves the reduced 5 fields; home = just `heroHeading`). Branch deleted; Playwright
+    screenshots cleaned up.
+  - **Jeff Williams promoted to `admin` in the prod Neon DB** via a direct SQL `UPDATE` (confirmed
+    `editor` → `admin`). Note: `payload run scripts/set-role.ts` against prod **hangs on the dev
+    schema-push `(y/N)` prompt** because prod Neon still has the removed columns — the orphaned columns
+    are harmless (Payload ignores columns not in the config), but for one-off prod DB edits use direct
+    SQL, or `NODE_ENV=production` to disable push. Do NOT accept that push prompt against prod.
+  - **Admin/password emails now send from `password@fpalens.org`** (Payload Resend adapter
+    `defaultFromAddress`, name "FPA Lens Content Portal"). Any local-part on the verified `fpalens.org`
+    domain works; kept separate from the `alerts@fpalens.org` digest/alert sender.
+  - **Forgot-password verified working.** `POST /api/users/forgot-password` returns `200 {"message":"Success"}`;
+    Resend delivers from the verified domain, and because the login-page flow is REST-triggered Payload
+    builds the reset link from the request host (`fpalens.org`) — so no `config.serverURL` is needed.
+    Sent a live test to `oboochever@ahdatalytics.com` to confirm end-to-end.
 - **2026-07-06 21:45 EDT** — **Admin-portal polish pass (branch `cms-admin-polish`), verified end-to-end in a real browser with Playwright.** Five things:
   1. **Editability audit — removed 65 non-prose fields.** Fan-out audit of all 12 globals against a strict rubric, then trimmed anything that isn't editorial prose to hardcoded literals in the page: chart/card/metric titles, status legends & values, thresholds, tooltips, abbreviation expansions (LNO), process-step labels, and — per Oscar — **all AHD-authored data-source / sourcing / methodology notes** (e.g. "sourced from…", data-note paragraphs, model disclaimers). Per-global counts now: about 49, finance 5, safety 10, engineering 8, environment 15, infrastructure 13, protection 8, staffing 6, turf 11, idiq 13 (home-content trimmed to just `heroHeading`; the dead `heroSubtext` field removed). **Principle:** editable = page/section headings + body/callout prose + staff bios/photos; NOT editable = anything bound to a data component, or that AHD authors. See cms-notes §8c.
   2. **Real-time Live Preview.** `usePageCopy` now layers in `@payloadcms/live-preview-react`'s `useLivePreview`, so the admin preview iframe updates **as you type, before Save** (not just on save). Converted the 3 server-rendered surfaces to client so they get it too: Protection → client; About → server shell (`getStaffMembers`) + `AboutContent` client; home hero → new client `HomeHero`. Verified live-typing updates on Finance, About, and Home.
