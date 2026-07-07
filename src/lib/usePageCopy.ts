@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useLivePreview } from "@payloadcms/live-preview-react";
+import { isRichText, richTextHasText } from "@/lib/richText";
 
 // Stable empty seed for useLivePreview. Must be a module-level constant so the
 // hook's internal effect doesn't re-subscribe on every render.
@@ -62,7 +63,13 @@ export function usePageCopy<T extends Record<string, unknown>>(
   if (source) {
     for (const key of Object.keys(defaults) as (keyof T)[]) {
       const value = source[key as string];
-      if (value != null && value !== "") merged[key] = value as T[keyof T];
+      if (isRichText(defaults[key])) {
+        // richText field: override only when the saved/live state has real text
+        // (an "empty" Lexical state is still a non-null object).
+        if (richTextHasText(value)) merged[key] = value as T[keyof T];
+      } else if (value != null && value !== "") {
+        merged[key] = value as T[keyof T];
+      }
     }
   }
   return merged;

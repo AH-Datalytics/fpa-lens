@@ -454,17 +454,45 @@ export interface AboutPage {
    */
   pageSubtitle?: string | null;
   /**
-   * Opening overview paragraph (blue left-bordered block) describing SLFPA-E's origin, governance, and coverage.
+   * Opening overview paragraph (blue left-bordered block) on SLFPA-E's origin, governance, and coverage.
    */
-  missionOverview?: string | null;
+  missionOverview?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   /**
    * Heading of the dark-blue HSDRRS panel (left).
    */
   hsdrrsHeading?: string | null;
   /**
-   * First paragraph inside the HSDRRS panel. (The second paragraph with the dollar figure is generated automatically and is not editable here.)
+   * Paragraph inside the HSDRRS panel. (The line with the dollar figure is generated automatically and isn't editable here.)
    */
-  hsdrrsIntro?: string | null;
+  hsdrrsIntro?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   /**
    * Heading of the teal MR&T panel (right).
    */
@@ -472,15 +500,39 @@ export interface AboutPage {
   /**
    * First paragraph inside the MR&T panel.
    */
-  mrtIntro?: string | null;
+  mrtIntro?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   /**
-   * Second paragraph inside the MR&T panel (the lead-in before the bold closing phrase).
+   * Second paragraph inside the MR&T panel.
    */
-  mrtBody?: string | null;
-  /**
-   * Bold closing phrase of the MR&T panel's second paragraph.
-   */
-  mrtBodyEmphasis?: string | null;
+  mrtBody?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   /**
    * Section heading above the three responsibility cards.
    */
@@ -492,19 +544,25 @@ export interface AboutPage {
   /**
    * Intro paragraph of the 'Operate & Maintain' card.
    */
-  operateMaintainBody?: string | null;
+  operateMaintainBody?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   /**
-   * 'Operate & Maintain' card — first bullet point.
+   * 'Operate & Maintain' card bullets. One item per line. Each line becomes a bullet.
    */
-  operateMaintainItem1?: string | null;
-  /**
-   * 'Operate & Maintain' card — second bullet point.
-   */
-  operateMaintainItem2?: string | null;
-  /**
-   * 'Operate & Maintain' card — third bullet point.
-   */
-  operateMaintainItem3?: string | null;
+  operateMaintainItems?: string | null;
   /**
    * Title of the second responsibility card.
    */
@@ -512,19 +570,25 @@ export interface AboutPage {
   /**
    * Intro paragraph of the 'Storm Response' card.
    */
-  stormResponseBody?: string | null;
+  stormResponseBody?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   /**
-   * 'Storm Response' card — first bullet point.
+   * 'Storm Response' card bullets. One item per line. Each line becomes a bullet.
    */
-  stormResponseItem1?: string | null;
-  /**
-   * 'Storm Response' card — second bullet point.
-   */
-  stormResponseItem2?: string | null;
-  /**
-   * 'Storm Response' card — third bullet point.
-   */
-  stormResponseItem3?: string | null;
+  stormResponseItems?: string | null;
   /**
    * Title of the third responsibility card.
    */
@@ -532,115 +596,121 @@ export interface AboutPage {
   /**
    * Intro paragraph of the 'Permitting & Compliance' card.
    */
-  permittingBody?: string | null;
+  permittingBody?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   /**
-   * 'Permitting & Compliance' card — first bullet point.
+   * 'Permitting & Compliance' card bullets. One item per line. Each line becomes a bullet.
    */
-  permittingItem1?: string | null;
-  /**
-   * 'Permitting & Compliance' card — second bullet point.
-   */
-  permittingItem2?: string | null;
-  /**
-   * 'Permitting & Compliance' card — third bullet point.
-   */
-  permittingItem3?: string | null;
+  permittingItems?: string | null;
   /**
    * Section heading for the surge-vs-drainage explainer.
    */
   surgeDrainageHeading?: string | null;
   /**
-   * Surge-vs-drainage intro paragraph, first part (the text before the bold phrase 'outer perimeter').
+   * The surge-vs-drainage explainer paragraph.
    */
-  surgeDrainageIntro?: string | null;
-  /**
-   * Bold phrase within the surge-vs-drainage intro paragraph (default: 'outer perimeter').
-   */
-  surgeDrainageIntroEmphasis?: string | null;
-  /**
-   * Surge-vs-drainage intro paragraph, remainder (the text after the bold phrase).
-   */
-  surgeDrainageIntroRest?: string | null;
+  surgeDrainageIntro?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   /**
    * Title of the left comparison card (SLFPA-E).
    */
   slfpaCardTitle?: string | null;
   /**
-   * SLFPA-E comparison card lead sentence, first part (before the highlighted phrase 'storm surge').
+   * Lead sentence of the SLFPA-E comparison card.
    */
-  slfpaCardLead?: string | null;
+  slfpaCardLead?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   /**
-   * Highlighted phrase in the SLFPA-E comparison card lead sentence (default: 'storm surge').
+   * SLFPA-E comparison card checklist. One item per line. Each line becomes a bullet.
    */
-  slfpaCardLeadEmphasis?: string | null;
-  /**
-   * SLFPA-E comparison card lead sentence, remainder (after the highlighted phrase).
-   */
-  slfpaCardLeadRest?: string | null;
-  /**
-   * SLFPA-E comparison card — first checklist item.
-   */
-  slfpaItem1?: string | null;
-  /**
-   * SLFPA-E comparison card — second checklist item.
-   */
-  slfpaItem2?: string | null;
-  /**
-   * SLFPA-E comparison card — third checklist item.
-   */
-  slfpaItem3?: string | null;
-  /**
-   * SLFPA-E comparison card — fourth checklist item.
-   */
-  slfpaItem4?: string | null;
-  /**
-   * SLFPA-E comparison card — fifth checklist item.
-   */
-  slfpaItem5?: string | null;
+  slfpaItems?: string | null;
   /**
    * Title of the right comparison card (SWBNO).
    */
   swbnoCardTitle?: string | null;
   /**
-   * SWBNO comparison card lead sentence, first part (before the highlighted phrase 'rainwater drainage').
+   * Lead sentence of the SWBNO comparison card.
    */
-  swbnoCardLead?: string | null;
+  swbnoCardLead?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   /**
-   * Highlighted phrase in the SWBNO comparison card lead sentence (default: 'rainwater drainage').
+   * SWBNO comparison card list. One item per line. Each line becomes a bullet.
    */
-  swbnoCardLeadEmphasis?: string | null;
-  /**
-   * SWBNO comparison card lead sentence, remainder (after the highlighted phrase).
-   */
-  swbnoCardLeadRest?: string | null;
-  /**
-   * SWBNO comparison card — first list item.
-   */
-  swbnoItem1?: string | null;
-  /**
-   * SWBNO comparison card — second list item.
-   */
-  swbnoItem2?: string | null;
-  /**
-   * SWBNO comparison card — third list item.
-   */
-  swbnoItem3?: string | null;
-  /**
-   * SWBNO comparison card — fourth list item.
-   */
-  swbnoItem4?: string | null;
-  /**
-   * SWBNO comparison card — fifth list item.
-   */
-  swbnoItem5?: string | null;
+  swbnoItems?: string | null;
   /**
    * Heading of the blue 'Where the Systems Connect' callout.
    */
   systemsConnectHeading?: string | null;
   /**
-   * Body paragraph of the 'Where the Systems Connect' callout describing the SLFPA-E / SWBNO handoff.
+   * Body paragraph of the 'Where the Systems Connect' callout.
    */
-  systemsConnectBody?: string | null;
+  systemsConnectBody?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -1138,45 +1208,24 @@ export interface AboutPageSelect<T extends boolean = true> {
   mrtHeading?: T;
   mrtIntro?: T;
   mrtBody?: T;
-  mrtBodyEmphasis?: T;
   responsibilitiesHeading?: T;
   operateMaintainTitle?: T;
   operateMaintainBody?: T;
-  operateMaintainItem1?: T;
-  operateMaintainItem2?: T;
-  operateMaintainItem3?: T;
+  operateMaintainItems?: T;
   stormResponseTitle?: T;
   stormResponseBody?: T;
-  stormResponseItem1?: T;
-  stormResponseItem2?: T;
-  stormResponseItem3?: T;
+  stormResponseItems?: T;
   permittingTitle?: T;
   permittingBody?: T;
-  permittingItem1?: T;
-  permittingItem2?: T;
-  permittingItem3?: T;
+  permittingItems?: T;
   surgeDrainageHeading?: T;
   surgeDrainageIntro?: T;
-  surgeDrainageIntroEmphasis?: T;
-  surgeDrainageIntroRest?: T;
   slfpaCardTitle?: T;
   slfpaCardLead?: T;
-  slfpaCardLeadEmphasis?: T;
-  slfpaCardLeadRest?: T;
-  slfpaItem1?: T;
-  slfpaItem2?: T;
-  slfpaItem3?: T;
-  slfpaItem4?: T;
-  slfpaItem5?: T;
+  slfpaItems?: T;
   swbnoCardTitle?: T;
   swbnoCardLead?: T;
-  swbnoCardLeadEmphasis?: T;
-  swbnoCardLeadRest?: T;
-  swbnoItem1?: T;
-  swbnoItem2?: T;
-  swbnoItem3?: T;
-  swbnoItem4?: T;
-  swbnoItem5?: T;
+  swbnoItems?: T;
   systemsConnectHeading?: T;
   systemsConnectBody?: T;
   updatedAt?: T;
