@@ -7,6 +7,9 @@ checked off and removed from `cms-checklist.md`. Reasoning and context live in `
 
 ## 2026-07
 
+- **2026-07-07 11:50 EDT** — **Hotfix: prod admin was rendering blank; restored the Blob component in `importMap.js`.** After the merge, `src/app/(payload)/admin/importMap.js` was missing `VercelBlobClientUploadHandler` because it had been regenerated locally without `CMS_MEDIA_BLOB_TOKEN` (blob plugin disabled → component stripped). Prod enables the blob plugin, so the admin referenced a component absent from the map and rendered **blank on every admin route** (login + password-reset included; 0 console errors — a silent resolution failure, not a thrown error). It had been broken since the merge deploy; missed because only *public* pages were browser-checked on prod, not the admin. Fix: added the blob import + map entry back (kept the Dashboard view), deployed, and **verified in a real browser** that the prod login and reset-password forms render. Recorded the trap in CLAUDE.md.
+  - Related, same session: set `serverURL` (production → `https://fpalens.org`) so password-reset email links are absolute — Payload couldn't infer the host behind Vercel's proxy and had been emitting a hostless `http:///admin/reset/<token>`. Verified the reset link + page end-to-end and re-sent a working test email.
+  - Lessons: browser-check the prod **admin** after any admin/config deploy, not just public pages; never call an email flow "verified" off a 200 without checking the actual link and destination page.
 - **2026-07-07 00:25 EDT** — **Shipped the admin-portal polish pass + prod follow-ups.**
   - **Merged `cms-admin-polish` → `main`, deployed, verified prod.** Public site unchanged (all pages
     HTTP 200; live `/finance` still renders its headings + the now-inlined data-notes; the finance
