@@ -72,8 +72,11 @@ export default buildConfig({
         client: { url: process.env.DATABASE_URI || "file:./cms-dev.db" },
       }),
   email: resendAdapter({
-    defaultFromAddress: "alerts@fpalens.org",
-    defaultFromName: "FPA Lens",
+    // Admin/account emails (password reset, editor invites) send from this
+    // address. Any local-part on the verified fpalens.org Resend domain works;
+    // kept separate from the digest/alert sender (alerts@fpalens.org).
+    defaultFromAddress: "password@fpalens.org",
+    defaultFromName: "FPA Lens Content Portal",
     apiKey: process.env.RESEND_API_KEY || "",
   }),
   plugins: [
