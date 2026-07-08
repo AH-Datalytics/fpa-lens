@@ -286,7 +286,10 @@ above.
   nothing changes visually until an editor rewords it). Add a new page by following the pattern in
   `docs/cms-notes.md` §8a.
 - **What editors can change:** prose only: page and section headings, body/intro/callout paragraphs,
-  and staff bios + photos. Everything else stays hardcoded in the page and is not editable: data and
+  and staff bios + photos. Paragraph fields are a rich-text (WYSIWYG) editor with a formatting toolbar
+  pinned to the top of each field (bold, italic, underline, links), so an editor can emphasize any word
+  inline; each field is styled as a bordered box matching the plain text inputs. Everything else stays
+  hardcoded in the page and is not editable: data and
   numbers, chart/card/metric titles, status legends and their values, thresholds, nav/button/tab
   labels, tooltips, abbreviation expansions (e.g. LNO), process-step labels, prose that embeds live
   data, and the AHD-authored data-source and methodology notes. A 2026-07-06 audit trimmed 65 such
