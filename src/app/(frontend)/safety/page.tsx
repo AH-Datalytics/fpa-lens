@@ -24,6 +24,7 @@ import {
 } from "recharts";
 import SectionHeader, { SectionSubheader } from "@/components/SectionHeader";
 import DataCard from "@/components/DataCard";
+import Prose from "@/components/Prose";
 import { safetyData } from "@/data/siteData";
 import { usePageCopy } from "@/lib/usePageCopy";
 import { SAFETY_DEFAULTS } from "@/globals/pages/safetyPage";
@@ -244,9 +245,10 @@ export default function SafetyPage() {
                 <ShieldAlert className="h-6 w-6 text-red-800 flex-shrink-0 mt-0.5" />
                 <div>
                   <h4 className="font-semibold text-red-900 mb-2">Accident</h4>
-                  <p className="text-sm text-red-800 leading-relaxed">
-                    {copy.accidentDefinition}
-                  </p>
+                  <Prose
+                    className="text-sm text-red-800 leading-relaxed [&_p]:m-0"
+                    data={copy.accidentDefinition}
+                  />
                 </div>
               </div>
             </div>
@@ -255,9 +257,10 @@ export default function SafetyPage() {
                 <FileWarning className="h-6 w-6 text-orange-500 flex-shrink-0 mt-0.5" />
                 <div>
                   <h4 className="font-semibold text-orange-800 mb-2">Incident</h4>
-                  <p className="text-sm text-orange-700 leading-relaxed">
-                    {copy.incidentDefinition}
-                  </p>
+                  <Prose
+                    className="text-sm text-orange-700 leading-relaxed [&_p]:m-0"
+                    data={copy.incidentDefinition}
+                  />
                 </div>
               </div>
             </div>
@@ -266,9 +269,10 @@ export default function SafetyPage() {
                 <Clock className="h-6 w-6 text-gray-500 flex-shrink-0 mt-0.5" />
                 <div>
                   <h4 className="font-semibold text-gray-800 mb-2">Lost-Time Injury</h4>
-                  <p className="text-sm text-gray-700 leading-relaxed">
-                    {copy.lostTimeDefinition}
-                  </p>
+                  <Prose
+                    className="text-sm text-gray-700 leading-relaxed [&_p]:m-0"
+                    data={copy.lostTimeDefinition}
+                  />
                 </div>
               </div>
             </div>
@@ -277,9 +281,10 @@ export default function SafetyPage() {
                 <HeartPulse className="h-6 w-6 text-gray-500 flex-shrink-0 mt-0.5" />
                 <div>
                   <h4 className="font-semibold text-gray-800 mb-2">Non-Lost-Time Injury</h4>
-                  <p className="text-sm text-gray-700 leading-relaxed">
-                    {copy.nonLostTimeDefinition}
-                  </p>
+                  <Prose
+                    className="text-sm text-gray-700 leading-relaxed [&_p]:m-0"
+                    data={copy.nonLostTimeDefinition}
+                  />
                 </div>
               </div>
             </div>

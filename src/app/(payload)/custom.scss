@@ -262,3 +262,9 @@ html[data-theme="dark"] {
     color: #cdd7ea;
   }
 }
+
+/* --- Rich-text editors: use the admin sans-serif, not Payload's default serif,
+   so richText fields match the plain text inputs. --- */
+.ContentEditable__root {
+  font-family: var(--font-body);
+}

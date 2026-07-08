@@ -31,6 +31,7 @@ import {
 import { toPng } from "html-to-image";
 import SectionHeader, { SectionSubheader } from "@/components/SectionHeader";
 import DataCard from "@/components/DataCard";
+import Prose from "@/components/Prose";
 import { RiskIndicator } from "@/components/RiskBadge";
 import RiskBadge from "@/components/RiskBadge";
 import type { LakefrontData, RiskLevel } from "@/lib/lakefrontRisk";
@@ -465,9 +466,10 @@ export default function EnvironmentalPage() {
             subtitle={copy.drivesSubtitle}
           />
           <div className="bg-white rounded-xl shadow-md border border-gray-100 p-6">
-            <p className="text-base text-gray-700 leading-relaxed mb-6">
-              {copy.drivesIntro}
-            </p>
+            <Prose
+              className="text-base text-gray-700 leading-relaxed mb-6 [&_p]:m-0"
+              data={copy.drivesIntro}
+            />
             <div className="grid md:grid-cols-3 gap-4 mb-6">
               <div className="rounded-lg border border-gray-100 bg-gray-50/60 p-5">
                 <div className="flex items-center gap-2 mb-2 text-[#21355a]">
@@ -477,9 +479,10 @@ export default function EnvironmentalPage() {
                   </h3>
                 </div>
                 <p className="text-2xl font-bold text-[#21355a] mb-1">Onshore</p>
-                <p className="text-sm text-gray-700 leading-snug">
-                  {copy.windDirectionText}
-                </p>
+                <Prose
+                  className="text-sm text-gray-700 leading-snug [&_p]:m-0"
+                  data={copy.windDirectionText}
+                />
               </div>
               <div className="rounded-lg border border-gray-100 bg-gray-50/60 p-5">
                 <div className="flex items-center gap-2 mb-2 text-[#21355a]">
@@ -501,9 +504,10 @@ export default function EnvironmentalPage() {
                   </h3>
                 </div>
                 <p className="text-2xl font-bold text-[#21355a] mb-1">Above predicted</p>
-                <p className="text-sm text-gray-700 leading-snug">
-                  {copy.lakeLevelText}
-                </p>
+                <Prose
+                  className="text-sm text-gray-700 leading-snug [&_p]:m-0"
+                  data={copy.lakeLevelText}
+                />
               </div>
             </div>
             <div className="grid md:grid-cols-2 gap-4">
@@ -525,9 +529,10 @@ export default function EnvironmentalPage() {
                     Elevated conditions (yellow / orange / red)
                   </span>
                 </div>
-                <p className="text-sm text-gray-700 leading-snug">
-                  {copy.elevatedConditionsText}
-                </p>
+                <Prose
+                  className="text-sm text-gray-700 leading-snug [&_p]:m-0"
+                  data={copy.elevatedConditionsText}
+                />
               </div>
             </div>
             <p className="text-xs text-gray-500 mt-4">

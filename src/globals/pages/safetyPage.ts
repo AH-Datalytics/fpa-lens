@@ -1,5 +1,6 @@
 import type { GlobalConfig } from "payload";
 import { revalidateCms } from "@/lib/revalidateCms";
+import { rt } from "@/lib/richText";
 
 /**
  * Editable copy for the Safety page (`/safety`). Follows the same "page copy"
@@ -29,14 +30,18 @@ export const SAFETY_DEFAULTS = {
   categoryHeading: "Events by Category",
 
   // Definitions cards ---------------------------------------------------------
-  accidentDefinition:
+  accidentDefinition: rt(
     "A work-related event that resulted in an OSHA-recordable injury or illness (medical treatment beyond first aid, lost time, restricted duty, or worse).",
-  incidentDefinition:
+  ),
+  incidentDefinition: rt(
     "A tracked work-related event that did not meet OSHA-recordable criteria (typically property damage, near-miss, or first-aid-only).",
-  lostTimeDefinition:
+  ),
+  lostTimeDefinition: rt(
     "A work-related injury or illness that causes an employee to miss one or more scheduled workdays after the day of the event.",
-  nonLostTimeDefinition:
+  ),
+  nonLostTimeDefinition: rt(
     "A work-related injury or illness that does not cause the employee to miss a scheduled workday. This may include first aid, medical treatment, or restricted duty, depending on the event.",
+  ),
 };
 
 export const SafetyPage: GlobalConfig = {
@@ -54,13 +59,13 @@ export const SafetyPage: GlobalConfig = {
     {
       name: "pageTitle",
       type: "text",
-      defaultValue: SAFETY_DEFAULTS.pageTitle,
+      defaultValue: () => SAFETY_DEFAULTS.pageTitle,
       admin: { description: "Main page title at the top of the Safety page." },
     },
     {
       name: "pageSubtitle",
       type: "text",
-      defaultValue: SAFETY_DEFAULTS.pageSubtitle,
+      defaultValue: () => SAFETY_DEFAULTS.pageSubtitle,
       admin: { description: "Subtitle shown beneath the Safety page title." },
     },
 
@@ -68,51 +73,51 @@ export const SafetyPage: GlobalConfig = {
     {
       name: "definitionsHeading",
       type: "text",
-      defaultValue: SAFETY_DEFAULTS.definitionsHeading,
+      defaultValue: () => SAFETY_DEFAULTS.definitionsHeading,
       admin: { description: 'Heading for the "Definitions" section.' },
     },
     {
       name: "trendsHeading",
       type: "text",
-      defaultValue: SAFETY_DEFAULTS.trendsHeading,
+      defaultValue: () => SAFETY_DEFAULTS.trendsHeading,
       admin: { description: 'Heading for the multi-year trend charts section.' },
     },
     {
       name: "monthlyHeading",
       type: "text",
-      defaultValue: SAFETY_DEFAULTS.monthlyHeading,
+      defaultValue: () => SAFETY_DEFAULTS.monthlyHeading,
       admin: { description: 'Heading for the monthly breakdown chart section.' },
     },
     {
       name: "categoryHeading",
       type: "text",
-      defaultValue: SAFETY_DEFAULTS.categoryHeading,
+      defaultValue: () => SAFETY_DEFAULTS.categoryHeading,
       admin: { description: 'Heading for the events-by-category section.' },
     },
 
     // Definitions cards -------------------------------------------------------
     {
       name: "accidentDefinition",
-      type: "textarea",
-      defaultValue: SAFETY_DEFAULTS.accidentDefinition,
+      type: "richText",
+      defaultValue: () => SAFETY_DEFAULTS.accidentDefinition,
       admin: { description: 'Body text of the "Accident" definition card.' },
     },
     {
       name: "incidentDefinition",
-      type: "textarea",
-      defaultValue: SAFETY_DEFAULTS.incidentDefinition,
+      type: "richText",
+      defaultValue: () => SAFETY_DEFAULTS.incidentDefinition,
       admin: { description: 'Body text of the "Incident" definition card.' },
     },
     {
       name: "lostTimeDefinition",
-      type: "textarea",
-      defaultValue: SAFETY_DEFAULTS.lostTimeDefinition,
+      type: "richText",
+      defaultValue: () => SAFETY_DEFAULTS.lostTimeDefinition,
       admin: { description: 'Body text of the "Lost-Time Injury" definition card.' },
     },
     {
       name: "nonLostTimeDefinition",
-      type: "textarea",
-      defaultValue: SAFETY_DEFAULTS.nonLostTimeDefinition,
+      type: "richText",
+      defaultValue: () => SAFETY_DEFAULTS.nonLostTimeDefinition,
       admin: { description: 'Body text of the "Non-Lost-Time Injury" definition card.' },
     },
   ],

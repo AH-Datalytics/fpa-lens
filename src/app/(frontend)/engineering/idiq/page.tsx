@@ -15,6 +15,8 @@ import {
 } from "lucide-react";
 import SectionHeader, { SectionSubheader } from "@/components/SectionHeader";
 import KPICard from "@/components/KPICard";
+import Prose from "@/components/Prose";
+import MaybeRich from "@/components/MaybeRich";
 import { usePageCopy } from "@/lib/usePageCopy";
 import { IDIQ_DEFAULTS } from "@/globals/pages/idiqPage";
 
@@ -169,7 +171,7 @@ function ServiceCategory({
 }: {
   st: ServiceType;
   poolId: string;
-  descriptions: Record<string, string>;
+  descriptions: Record<string, unknown>;
 }) {
   const [expanded, setExpanded] = useState(false);
   const micro = descriptions[st.service];
@@ -192,9 +194,9 @@ function ServiceCategory({
                 {st.contractCount} firm{st.contractCount !== 1 ? "s" : ""}
               </span>
             </div>
-            {micro && (
-              <p className="text-sm text-gray-600 mt-1 leading-snug">{micro}</p>
-            )}
+            {micro ? (
+              <MaybeRich value={micro} className="text-sm text-gray-600 mt-1 leading-snug [&_p]:m-0" />
+            ) : null}
           </div>
           <ChevronDown
             className={`h-5 w-5 text-gray-500 flex-shrink-0 mt-1 transition-transform duration-200 ${expanded ? "rotate-180" : ""}`}
@@ -269,7 +271,7 @@ export default function IdiqPage() {
 
   // Micro-descriptions per director feedback (Apr 2026). Keys cover both the
   // 2022-cycle and 2025-cycle naming variants for the same service category.
-  const serviceDescriptions: Record<string, string> = {
+  const serviceDescriptions: Record<string, unknown> = {
     "Civil Engineering": copy.serviceCivilEngineering,
     "Surveying": copy.serviceSurveying,
     "Surveying Services": copy.serviceSurveying,
@@ -362,9 +364,10 @@ export default function IdiqPage() {
               <h3 className="text-sm font-semibold uppercase tracking-wide mb-1" style={{ color: ACCENT }}>
                 Key Takeaway
               </h3>
-              <p className="text-[15px] text-gray-800 leading-relaxed">
-                {copy.keyTakeawayBody}
-              </p>
+              <Prose
+                className="text-[15px] text-gray-800 leading-relaxed [&_p]:m-0"
+                data={copy.keyTakeawayBody}
+              />
             </div>
           </div>
         </section>
@@ -374,9 +377,9 @@ export default function IdiqPage() {
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 md:p-8">
             <h2 className="text-xl font-bold text-[#21355a] mb-4">{copy.introHeading}</h2>
             <div className="space-y-4 text-sm text-gray-700 leading-relaxed">
-              <p>{copy.introParagraph1}</p>
-              <p>{copy.introParagraph2}</p>
-              <p>{copy.introParagraph3}</p>
+              <Prose className="[&_p]:m-0" data={copy.introParagraph1} />
+              <Prose className="[&_p]:m-0" data={copy.introParagraph2} />
+              <Prose className="[&_p]:m-0" data={copy.introParagraph3} />
             </div>
 
             {/* Process Flow */}

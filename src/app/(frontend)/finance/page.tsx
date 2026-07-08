@@ -23,6 +23,7 @@ import {
 } from "recharts";
 import SectionHeader, { SectionSubheader } from "@/components/SectionHeader";
 import DataCard from "@/components/DataCard";
+import Prose from "@/components/Prose";
 import VarianceBadge from "@/components/VarianceBadge";
 import { financialData, formatCurrency } from "@/data/siteData";
 import {
@@ -540,8 +541,9 @@ export default function FinancialPage() {
         {/* Major Future Projects */}
         <section className="mb-12">
           <SectionSubheader title={copy.majorProjectsHeading} />
+          <Prose className="text-sm text-gray-600 mb-2 [&_p]:m-0" data={copy.majorProjectsIntro} />
           <p className="text-sm text-gray-600 mb-2">
-            {copy.majorProjectsIntro} For projects currently under contract, in construction, or out for
+            For projects currently under contract, in construction, or out for
             bid, see{" "}
             <Link
               href="/engineering#current-capital-projects"

@@ -1,5 +1,6 @@
 import type { GlobalConfig } from "payload";
 import { revalidateCms } from "@/lib/revalidateCms";
+import { rt } from "@/lib/richText";
 
 /**
  * Editable copy for the Environment page (`/environment` — Lakefront flood
@@ -28,17 +29,21 @@ export const ENVIRONMENT_DEFAULTS = {
   // "What drives this risk indicator" explainer
   drivesTitle: "What drives this risk indicator",
   drivesSubtitle: "Three things have to line up before flooding becomes likely",
-  drivesIntro:
+  drivesIntro: rt(
     "Lakeshore Drive floods when wind pushes Lake Pontchartrain water against the south shore. Most days the wind blows the lake away from the shore and there is no risk. The indicator turns yellow, orange, or red only when the right combination of wind direction, wind strength, duration, and rising water lines up.",
+  ),
 
-  windDirectionText:
+  windDirectionText: rt(
     "Blowing from the north (NW, N, or NE) toward Lakeshore Drive. Winds from the south push water away and pose no risk.",
+  ),
 
-  lakeLevelText:
+  lakeLevelText: rt(
     "Lake level above tide prediction (surge anomaly) signals water piling up on the south shore. Only counted as risk when wind is also onshore.",
+  ),
 
-  elevatedConditionsText:
+  elevatedConditionsText: rt(
     "Sustained onshore wind plus rising lake level. The longer the wind blows that direction, the higher water gets pushed against the shore.",
+  ),
 
   // Current conditions
   currentConditionsTitle: "Current Conditions",
@@ -71,13 +76,13 @@ export const EnvironmentPage: GlobalConfig = {
     {
       name: "pageTitle",
       type: "text",
-      defaultValue: ENVIRONMENT_DEFAULTS.pageTitle,
+      defaultValue: () => ENVIRONMENT_DEFAULTS.pageTitle,
       admin: { description: "Main page title (top of the Environment page)." },
     },
     {
       name: "pageSubtitle",
       type: "text",
-      defaultValue: ENVIRONMENT_DEFAULTS.pageSubtitle,
+      defaultValue: () => ENVIRONMENT_DEFAULTS.pageSubtitle,
       admin: { description: "Subtitle under the main page title." },
     },
 
@@ -85,37 +90,37 @@ export const EnvironmentPage: GlobalConfig = {
     {
       name: "drivesTitle",
       type: "text",
-      defaultValue: ENVIRONMENT_DEFAULTS.drivesTitle,
+      defaultValue: () => ENVIRONMENT_DEFAULTS.drivesTitle,
       admin: { description: "Section heading: the risk-drivers explainer." },
     },
     {
       name: "drivesSubtitle",
       type: "text",
-      defaultValue: ENVIRONMENT_DEFAULTS.drivesSubtitle,
+      defaultValue: () => ENVIRONMENT_DEFAULTS.drivesSubtitle,
       admin: { description: "Subtitle for the risk-drivers explainer section." },
     },
     {
       name: "drivesIntro",
-      type: "textarea",
-      defaultValue: ENVIRONMENT_DEFAULTS.drivesIntro,
+      type: "richText",
+      defaultValue: () => ENVIRONMENT_DEFAULTS.drivesIntro,
       admin: { description: "Intro paragraph of the risk-drivers explainer." },
     },
     {
       name: "windDirectionText",
-      type: "textarea",
-      defaultValue: ENVIRONMENT_DEFAULTS.windDirectionText,
+      type: "richText",
+      defaultValue: () => ENVIRONMENT_DEFAULTS.windDirectionText,
       admin: { description: "Explainer card 1 body (wind direction)." },
     },
     {
       name: "lakeLevelText",
-      type: "textarea",
-      defaultValue: ENVIRONMENT_DEFAULTS.lakeLevelText,
+      type: "richText",
+      defaultValue: () => ENVIRONMENT_DEFAULTS.lakeLevelText,
       admin: { description: "Explainer card 3 body (lake level vs. tide)." },
     },
     {
       name: "elevatedConditionsText",
-      type: "textarea",
-      defaultValue: ENVIRONMENT_DEFAULTS.elevatedConditionsText,
+      type: "richText",
+      defaultValue: () => ENVIRONMENT_DEFAULTS.elevatedConditionsText,
       admin: { description: "Amber callout body (elevated conditions)." },
     },
 
@@ -123,7 +128,7 @@ export const EnvironmentPage: GlobalConfig = {
     {
       name: "currentConditionsTitle",
       type: "text",
-      defaultValue: ENVIRONMENT_DEFAULTS.currentConditionsTitle,
+      defaultValue: () => ENVIRONMENT_DEFAULTS.currentConditionsTitle,
       admin: { description: "Section heading: Current Conditions." },
     },
 
@@ -131,7 +136,7 @@ export const EnvironmentPage: GlobalConfig = {
     {
       name: "timelineTitle",
       type: "text",
-      defaultValue: ENVIRONMENT_DEFAULTS.timelineTitle,
+      defaultValue: () => ENVIRONMENT_DEFAULTS.timelineTitle,
       admin: { description: "Section heading: Conditions Timeline (charts)." },
     },
 
@@ -139,7 +144,7 @@ export const EnvironmentPage: GlobalConfig = {
     {
       name: "alertsTitle",
       type: "text",
-      defaultValue: ENVIRONMENT_DEFAULTS.alertsTitle,
+      defaultValue: () => ENVIRONMENT_DEFAULTS.alertsTitle,
       admin: { description: "Section heading: Active Weather Alerts." },
     },
 
@@ -147,13 +152,13 @@ export const EnvironmentPage: GlobalConfig = {
     {
       name: "thresholdsTitle",
       type: "text",
-      defaultValue: ENVIRONMENT_DEFAULTS.thresholdsTitle,
+      defaultValue: () => ENVIRONMENT_DEFAULTS.thresholdsTitle,
       admin: { description: "Section heading: Risk Level Thresholds." },
     },
     {
       name: "thresholdsCardTitle",
       type: "text",
-      defaultValue: ENVIRONMENT_DEFAULTS.thresholdsCardTitle,
+      defaultValue: () => ENVIRONMENT_DEFAULTS.thresholdsCardTitle,
       admin: { description: "Card title for the thresholds table." },
     },
 
@@ -161,13 +166,13 @@ export const EnvironmentPage: GlobalConfig = {
     {
       name: "structureGaugesTitle",
       type: "text",
-      defaultValue: ENVIRONMENT_DEFAULTS.structureGaugesTitle,
+      defaultValue: () => ENVIRONMENT_DEFAULTS.structureGaugesTitle,
       admin: { description: "Section heading: Flood Structure Gauges." },
     },
     {
       name: "structureGaugesCardTitle",
       type: "text",
-      defaultValue: ENVIRONMENT_DEFAULTS.structureGaugesCardTitle,
+      defaultValue: () => ENVIRONMENT_DEFAULTS.structureGaugesCardTitle,
       admin: { description: "Card title for the structure-gauges section." },
     },
   ],

@@ -1,5 +1,6 @@
 import type { GlobalConfig } from "payload";
 import { revalidateCms } from "@/lib/revalidateCms";
+import { rt } from "@/lib/richText";
 
 /**
  * Editable copy for the IDIQ Contract Tracker page
@@ -24,28 +25,33 @@ export const IDIQ_DEFAULTS = {
   pageTitle: "IDIQ Contract Tracker",
   pageSubtitle: "How we procure and assign engineering and professional services work",
 
-  keyTakeawayBody:
+  keyTakeawayBody: rt(
     "IDIQ contracts allow the Authority to respond quickly to project needs by working with pre-qualified firms. Work is assigned based on project requirements and expertise, not preset allocation, so utilization will vary across firms.",
+  ),
 
   introHeading: "What is an IDIQ contract?",
-  introParagraph1:
+  introParagraph1: rt(
     "IDIQ (Indefinite Delivery, Indefinite Quantity) contracts allow the Authority to pre-qualify engineering and professional service firms through a competitive, qualifications-based process. Task orders are issued as project needs arise, such as inspections, design, construction support, and facility improvements, without requiring a full procurement each time.",
-  introParagraph2:
+  ),
+  introParagraph2: rt(
     "IDIQ contracts are awarded in multi-year cycles (typically three years). The 2022 contracts were active through 2025, and the 2025 contracts represent the current cycle.",
-  introParagraph3:
+  ),
+  introParagraph3: rt(
     "Work is assigned based on project needs, timing, and expertise. As a result, utilization varies across firms within each service category; this is expected and reflects how IDIQ programs are designed to function.",
+  ),
 
   contractCycleHeading: "Contract Cycle",
 
   // Service micro-descriptions (director feedback, Apr 2026). One entry per
   // service category; the page maps both the 2022-cycle and 2025-cycle naming
   // variants of a category to the same description.
-  serviceCivilEngineering: "Levee repair, site development, and infrastructure design",
-  serviceSurveying: "Levee and structure elevation surveys and mapping",
-  serviceGeotechnicalEngineering: "Soil analysis, subsurface investigations, and testing",
-  serviceConstructionMaterialsTesting:
+  serviceCivilEngineering: rt("Levee repair, site development, and infrastructure design"),
+  serviceSurveying: rt("Levee and structure elevation surveys and mapping"),
+  serviceGeotechnicalEngineering: rt("Soil analysis, subsurface investigations, and testing"),
+  serviceConstructionMaterialsTesting: rt(
     "Materials and soil testing for construction quality control",
-  serviceMepServices: "Mechanical and electrical systems for facilities and pump stations",
+  ),
+  serviceMepServices: rt("Mechanical and electrical systems for facilities and pump stations"),
 };
 
 export const IdiqPage: GlobalConfig = {
@@ -65,13 +71,13 @@ export const IdiqPage: GlobalConfig = {
         {
           name: "pageTitle",
           type: "text",
-          defaultValue: IDIQ_DEFAULTS.pageTitle,
+          defaultValue: () => IDIQ_DEFAULTS.pageTitle,
           admin: { description: "Main page heading (SectionHeader title)." },
         },
         {
           name: "pageSubtitle",
           type: "text",
-          defaultValue: IDIQ_DEFAULTS.pageSubtitle,
+          defaultValue: () => IDIQ_DEFAULTS.pageSubtitle,
           admin: { description: "Subtitle beneath the page heading." },
         },
       ],
@@ -82,8 +88,8 @@ export const IdiqPage: GlobalConfig = {
       fields: [
         {
           name: "keyTakeawayBody",
-          type: "textarea",
-          defaultValue: IDIQ_DEFAULTS.keyTakeawayBody,
+          type: "richText",
+          defaultValue: () => IDIQ_DEFAULTS.keyTakeawayBody,
           admin: { description: "Body paragraph inside the Key Takeaway callout." },
         },
       ],
@@ -95,25 +101,25 @@ export const IdiqPage: GlobalConfig = {
         {
           name: "introHeading",
           type: "text",
-          defaultValue: IDIQ_DEFAULTS.introHeading,
+          defaultValue: () => IDIQ_DEFAULTS.introHeading,
           admin: { description: 'Heading of the intro card ("What is an IDIQ contract?").' },
         },
         {
           name: "introParagraph1",
-          type: "textarea",
-          defaultValue: IDIQ_DEFAULTS.introParagraph1,
+          type: "richText",
+          defaultValue: () => IDIQ_DEFAULTS.introParagraph1,
           admin: { description: "First explainer paragraph in the intro card." },
         },
         {
           name: "introParagraph2",
-          type: "textarea",
-          defaultValue: IDIQ_DEFAULTS.introParagraph2,
+          type: "richText",
+          defaultValue: () => IDIQ_DEFAULTS.introParagraph2,
           admin: { description: "Second explainer paragraph in the intro card." },
         },
         {
           name: "introParagraph3",
-          type: "textarea",
-          defaultValue: IDIQ_DEFAULTS.introParagraph3,
+          type: "richText",
+          defaultValue: () => IDIQ_DEFAULTS.introParagraph3,
           admin: { description: "Third explainer paragraph in the intro card." },
         },
       ],
@@ -121,7 +127,7 @@ export const IdiqPage: GlobalConfig = {
     {
       name: "contractCycleHeading",
       type: "text",
-      defaultValue: IDIQ_DEFAULTS.contractCycleHeading,
+      defaultValue: () => IDIQ_DEFAULTS.contractCycleHeading,
       admin: { description: "Section heading above the contract cycle selector." },
     },
     {
@@ -134,32 +140,32 @@ export const IdiqPage: GlobalConfig = {
       fields: [
         {
           name: "serviceCivilEngineering",
-          type: "textarea",
-          defaultValue: IDIQ_DEFAULTS.serviceCivilEngineering,
+          type: "richText",
+          defaultValue: () => IDIQ_DEFAULTS.serviceCivilEngineering,
           admin: { description: "Civil Engineering." },
         },
         {
           name: "serviceSurveying",
-          type: "textarea",
-          defaultValue: IDIQ_DEFAULTS.serviceSurveying,
+          type: "richText",
+          defaultValue: () => IDIQ_DEFAULTS.serviceSurveying,
           admin: { description: "Surveying / Surveying Services." },
         },
         {
           name: "serviceGeotechnicalEngineering",
-          type: "textarea",
-          defaultValue: IDIQ_DEFAULTS.serviceGeotechnicalEngineering,
+          type: "richText",
+          defaultValue: () => IDIQ_DEFAULTS.serviceGeotechnicalEngineering,
           admin: { description: "Geotechnical Engineering." },
         },
         {
           name: "serviceConstructionMaterialsTesting",
-          type: "textarea",
-          defaultValue: IDIQ_DEFAULTS.serviceConstructionMaterialsTesting,
+          type: "richText",
+          defaultValue: () => IDIQ_DEFAULTS.serviceConstructionMaterialsTesting,
           admin: { description: "Construction Materials & Testing." },
         },
         {
           name: "serviceMepServices",
-          type: "textarea",
-          defaultValue: IDIQ_DEFAULTS.serviceMepServices,
+          type: "richText",
+          defaultValue: () => IDIQ_DEFAULTS.serviceMepServices,
           admin: { description: "MEP Services." },
         },
       ],

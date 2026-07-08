@@ -15,6 +15,8 @@ import {
 import { SectionSubheader } from "@/components/SectionHeader";
 import DataCard from "@/components/DataCard";
 import KPICard from "@/components/KPICard";
+import Prose from "@/components/Prose";
+import MaybeRich from "@/components/MaybeRich";
 import { financialData, operationsData, readinessMetrics } from "@/data/siteData";
 import { usePageCopy } from "@/lib/usePageCopy";
 import { ENGINEERING_DEFAULTS } from "@/globals/pages/engineeringPage";
@@ -66,7 +68,7 @@ function ReadinessCard({
   big,
 }: {
   title: string;
-  description?: string;
+  description?: unknown;
   mandate: string;
   period?: string;
   icon: React.ComponentType<{ className?: string }>;
@@ -92,9 +94,7 @@ function ReadinessCard({
         </span>
       </div>
       <div className="p-5 flex-1 flex flex-col">
-        {description && (
-          <p className="text-xs text-gray-600 leading-snug mb-3">{description}</p>
-        )}
+        <MaybeRich value={description} className="text-xs text-gray-600 leading-snug mb-3 [&_p]:m-0" />
         <div className="flex items-baseline gap-2 mb-1">
           <span className="text-3xl font-bold text-[#21355a]">{big}</span>
           {unit && <span className="text-sm text-gray-500">{unit}</span>}
@@ -223,9 +223,10 @@ export default function OperationsPage() {
         {/* Current Capital Projects */}
         <section id="current-capital-projects" className="mb-12 scroll-mt-24">
           <SectionSubheader title={copy.capitalProjectsHeading} />
-          <p className="text-sm text-gray-600 mb-4">
-            {copy.capitalProjectsIntro}
-          </p>
+          <Prose
+            className="text-sm text-gray-600 mb-4 [&_p]:m-0"
+            data={copy.capitalProjectsIntro}
+          />
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
             {financialData.capitalProjects.map((project) => (
               <div

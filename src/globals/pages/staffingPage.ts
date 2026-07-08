@@ -1,5 +1,6 @@
 import type { GlobalConfig } from "payload";
 import { revalidateCms } from "@/lib/revalidateCms";
+import { rt } from "@/lib/richText";
 
 /**
  * Editable copy for the Staffing page (`/staffing`). Only substantive editorial
@@ -15,11 +16,13 @@ export const STAFFING_DEFAULTS = {
   pageTitle: "Staffing",
   pageSubtitle: "The dedicated professionals protecting Greater New Orleans",
   coreHeading: "Core Flood Protection Unit",
-  coreDescription:
+  coreDescription: rt(
     "Operational capacity across Maintenance, Operations, Engineering, and Police.",
+  ),
   adminHeading: "Administrative Functions",
-  adminDescription:
+  adminDescription: rt(
     "Support functions that keep the agency running. Not directly tied to storm response operations, but essential to sustained organizational capacity.",
+  ),
 };
 
 export const StaffingPage: GlobalConfig = {
@@ -34,37 +37,37 @@ export const StaffingPage: GlobalConfig = {
     {
       name: "pageTitle",
       type: "text",
-      defaultValue: STAFFING_DEFAULTS.pageTitle,
+      defaultValue: () => STAFFING_DEFAULTS.pageTitle,
       admin: { description: "Main page heading (top of the Staffing page)." },
     },
     {
       name: "pageSubtitle",
       type: "textarea",
-      defaultValue: STAFFING_DEFAULTS.pageSubtitle,
+      defaultValue: () => STAFFING_DEFAULTS.pageSubtitle,
       admin: { description: "Subtitle beneath the page heading." },
     },
     {
       name: "coreHeading",
       type: "text",
-      defaultValue: STAFFING_DEFAULTS.coreHeading,
+      defaultValue: () => STAFFING_DEFAULTS.coreHeading,
       admin: { description: 'Heading of the first section ("Core Flood Protection Unit").' },
     },
     {
       name: "coreDescription",
-      type: "textarea",
-      defaultValue: STAFFING_DEFAULTS.coreDescription,
+      type: "richText",
+      defaultValue: () => STAFFING_DEFAULTS.coreDescription,
       admin: { description: "Intro paragraph under the Core Flood Protection Unit heading." },
     },
     {
       name: "adminHeading",
       type: "text",
-      defaultValue: STAFFING_DEFAULTS.adminHeading,
+      defaultValue: () => STAFFING_DEFAULTS.adminHeading,
       admin: { description: 'Heading of the second section ("Administrative Functions").' },
     },
     {
       name: "adminDescription",
-      type: "textarea",
-      defaultValue: STAFFING_DEFAULTS.adminDescription,
+      type: "richText",
+      defaultValue: () => STAFFING_DEFAULTS.adminDescription,
       admin: { description: "Intro paragraph under the Administrative Functions heading." },
     },
   ],

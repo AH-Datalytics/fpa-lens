@@ -5,6 +5,7 @@ import Link from "next/link";
 import dynamic from "next/dynamic";
 import { ArrowLeft, Info } from "lucide-react";
 import SectionHeader, { SectionSubheader } from "@/components/SectionHeader";
+import Prose from "@/components/Prose";
 import {
   grassCuttingData,
   OldGrassCuttingZone,
@@ -417,8 +418,8 @@ export default function GrassCuttingPage() {
               </h3>
             </div>
             <div className="space-y-3 text-sm text-gray-700 leading-relaxed max-w-3xl">
-              <p>{copy.operationalNoteBody1}</p>
-              <p>{copy.operationalNoteBody2}</p>
+              <Prose className="[&_p]:m-0" data={copy.operationalNoteBody1} />
+              <Prose className="[&_p]:m-0" data={copy.operationalNoteBody2} />
             </div>
           </div>
         </section>
@@ -492,9 +493,10 @@ export default function GrassCuttingPage() {
               where Cycle 1 should land for zones running more than once per
               month.
             </p>
-            <p className="text-xs text-gray-700 leading-relaxed mb-2">
-              {copy.statusExplainer}
-            </p>
+            <Prose
+              className="text-xs text-gray-700 leading-relaxed mb-2 [&_p]:m-0"
+              data={copy.statusExplainer}
+            />
             <ul className="text-xs text-gray-700 space-y-0.5">
               <li className="flex items-center gap-1.5">
                 <span

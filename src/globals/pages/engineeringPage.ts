@@ -1,5 +1,6 @@
 import type { GlobalConfig } from "payload";
 import { revalidateCms } from "@/lib/revalidateCms";
+import { rt } from "@/lib/richText";
 
 /**
  * Editable copy for the Engineering page (`/engineering`). Follows the per-page
@@ -26,15 +27,18 @@ export const ENGINEERING_DEFAULTS = {
 
   // --- Federal & State Inspections section ---
   inspectionsHeading: "Federal & State Inspections",
-  cpraDescription:
+  cpraDescription: rt(
     "State-mandated quarterly visual inspection of the levee system, with findings reported to the Coastal Protection and Restoration Authority.",
-  usaceDescription:
+  ),
+  usaceDescription: rt(
     "Federal inspection of HSDRRS levees, floodwalls, PCCPs, and complex structures. 100% = on pace for this point in the half-year cycle.",
+  ),
 
   // --- Current Capital Projects section ---
   capitalProjectsHeading: "Current Capital Projects",
-  capitalProjectsIntro:
+  capitalProjectsIntro: rt(
     "Major capital projects currently under contract, in construction, or in active bidding.",
+  ),
 
   // --- Permits section ---
   permitsHeading: "Permits",
@@ -53,13 +57,13 @@ export const EngineeringPage: GlobalConfig = {
     {
       name: "pageTitle",
       type: "text",
-      defaultValue: ENGINEERING_DEFAULTS.pageTitle,
+      defaultValue: () => ENGINEERING_DEFAULTS.pageTitle,
       admin: { description: "The large H1 heading at the top of the Engineering page." },
     },
     {
       name: "pageSubtitle",
       type: "text",
-      defaultValue: ENGINEERING_DEFAULTS.pageSubtitle,
+      defaultValue: () => ENGINEERING_DEFAULTS.pageSubtitle,
       admin: { description: "The subtitle line beneath the page heading." },
     },
 
@@ -67,19 +71,19 @@ export const EngineeringPage: GlobalConfig = {
     {
       name: "inspectionsHeading",
       type: "text",
-      defaultValue: ENGINEERING_DEFAULTS.inspectionsHeading,
+      defaultValue: () => ENGINEERING_DEFAULTS.inspectionsHeading,
       admin: { description: "Section heading above the two inspection cards." },
     },
     {
       name: "cpraDescription",
-      type: "textarea",
-      defaultValue: ENGINEERING_DEFAULTS.cpraDescription,
+      type: "richText",
+      defaultValue: () => ENGINEERING_DEFAULTS.cpraDescription,
       admin: { description: "Explainer paragraph inside the CPRA inspection card." },
     },
     {
       name: "usaceDescription",
-      type: "textarea",
-      defaultValue: ENGINEERING_DEFAULTS.usaceDescription,
+      type: "richText",
+      defaultValue: () => ENGINEERING_DEFAULTS.usaceDescription,
       admin: { description: "Explainer paragraph inside the USACE inspection card." },
     },
 
@@ -87,13 +91,13 @@ export const EngineeringPage: GlobalConfig = {
     {
       name: "capitalProjectsHeading",
       type: "text",
-      defaultValue: ENGINEERING_DEFAULTS.capitalProjectsHeading,
+      defaultValue: () => ENGINEERING_DEFAULTS.capitalProjectsHeading,
       admin: { description: "Section heading above the capital-projects grid." },
     },
     {
       name: "capitalProjectsIntro",
-      type: "textarea",
-      defaultValue: ENGINEERING_DEFAULTS.capitalProjectsIntro,
+      type: "richText",
+      defaultValue: () => ENGINEERING_DEFAULTS.capitalProjectsIntro,
       admin: { description: "Intro paragraph beneath the Current Capital Projects heading." },
     },
 
@@ -101,7 +105,7 @@ export const EngineeringPage: GlobalConfig = {
     {
       name: "permitsHeading",
       type: "text",
-      defaultValue: ENGINEERING_DEFAULTS.permitsHeading,
+      defaultValue: () => ENGINEERING_DEFAULTS.permitsHeading,
       admin: { description: 'Section heading for the "Permits" block.' },
     },
   ],

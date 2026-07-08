@@ -23,6 +23,7 @@ import {
 import { SectionSubheader } from "@/components/SectionHeader";
 import StatusBadge from "@/components/StatusBadge";
 import SystemMap from "@/components/SystemMap";
+import Prose from "@/components/Prose";
 import {
   infrastructureAssets,
   systemReadiness,
@@ -302,9 +303,7 @@ export default function OurSystemPage() {
         <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-8">
           <div>
             <h1 className="text-3xl md:text-4xl font-bold text-[#21355a]">{copy.mainHeading}</h1>
-            <p className="mt-2 text-lg text-gray-600">
-              {copy.intro}
-            </p>
+            <Prose className="mt-2 text-lg text-gray-600 [&_p]:m-0" data={copy.intro} />
           </div>
           <Link
             href="/infrastructure/turf-maintenance"
@@ -325,9 +324,7 @@ export default function OurSystemPage() {
               </div>
               <div>
                 <h2 className="text-2xl font-bold text-[#21355a] mb-2">{copy.overviewHeading}</h2>
-                <p className="text-gray-600 leading-relaxed">
-                  {copy.overviewBody}
-                </p>
+                <Prose className="text-gray-600 leading-relaxed [&_p]:m-0" data={copy.overviewBody} />
               </div>
             </div>
           </div>
@@ -336,9 +333,7 @@ export default function OurSystemPage() {
         {/* System Map */}
         <section className="mb-12">
           <SectionSubheader title={copy.systemMapHeading} />
-          <p className="text-gray-600 mb-4">
-            {copy.systemMapBody}
-          </p>
+          <Prose className="text-gray-600 mb-4 [&_p]:m-0" data={copy.systemMapBody} />
           <SystemMap />
           <p className="text-xs text-gray-400 mt-2">
             Source: SLFPA-E GIS Data (Centerline and Structures Shapefiles) &middot;{" "}
@@ -357,9 +352,7 @@ export default function OurSystemPage() {
         {/* System at a Glance */}
         <section className="mb-12">
           <SectionSubheader title={copy.systemGlanceHeading} />
-          <p className="text-sm text-gray-500 mb-4">
-            {copy.systemGlanceBody}
-          </p>
+          <Prose className="text-sm text-gray-500 mb-4 [&_p]:m-0" data={copy.systemGlanceBody} />
           <div className="bg-white rounded-xl shadow-md overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
@@ -427,7 +420,9 @@ export default function OurSystemPage() {
               </table>
             </div>
             <div className="bg-[#65bc7b] text-white text-center px-5 py-3 text-sm italic">
-              &ldquo;{copy.systemGlanceQuote}&rdquo;
+              &ldquo;
+              <Prose className="inline [&_p]:m-0 [&_p]:inline" data={copy.systemGlanceQuote} />
+              &rdquo;
             </div>
           </div>
           <p className="text-xs text-gray-400 mt-2">
@@ -603,9 +598,7 @@ export default function OurSystemPage() {
                   <Bell className="h-5 w-5 text-[#21355a]" />
                   <h3 className="text-lg font-bold text-[#21355a]">{copy.alertsHeading}</h3>
                 </div>
-                <p className="text-gray-600 text-sm mb-4">
-                  {copy.alertsBody}
-                </p>
+                <Prose className="text-gray-600 text-sm mb-4 [&_p]:m-0" data={copy.alertsBody} />
                 <div className="flex flex-wrap gap-2 mb-4">
                   {smsKeywords.map((item) => (
                     <span

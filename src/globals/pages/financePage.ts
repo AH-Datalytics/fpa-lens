@@ -1,5 +1,6 @@
 import type { GlobalConfig } from "payload";
 import { revalidateCms } from "@/lib/revalidateCms";
+import { rt } from "@/lib/richText";
 
 /**
  * Editable copy for the Finance page (`/finance`).
@@ -25,8 +26,9 @@ export const FINANCE_DEFAULTS = {
   pageSubtitle: "How your tax dollars are invested in flood protection",
   spendingSectionHeading: "Year-to-Date Spending vs Budget",
   majorProjectsHeading: "Major Future Projects",
-  majorProjectsIntro:
+  majorProjectsIntro: rt(
     "Long-term capital needs the Authority has identified but that are not yet funded or scheduled.",
+  ),
 };
 
 export const FinancePage: GlobalConfig = {
@@ -41,31 +43,31 @@ export const FinancePage: GlobalConfig = {
     {
       name: "pageTitle",
       type: "text",
-      defaultValue: FINANCE_DEFAULTS.pageTitle,
+      defaultValue: () => FINANCE_DEFAULTS.pageTitle,
       admin: { description: "The main page heading (H1) at the top of the Finance page." },
     },
     {
       name: "pageSubtitle",
       type: "text",
-      defaultValue: FINANCE_DEFAULTS.pageSubtitle,
+      defaultValue: () => FINANCE_DEFAULTS.pageSubtitle,
       admin: { description: "The descriptive subtitle shown beneath the Finance page heading." },
     },
     {
       name: "spendingSectionHeading",
       type: "text",
-      defaultValue: FINANCE_DEFAULTS.spendingSectionHeading,
+      defaultValue: () => FINANCE_DEFAULTS.spendingSectionHeading,
       admin: { description: "Heading for the lead budget-vs-actuals section." },
     },
     {
       name: "majorProjectsHeading",
       type: "text",
-      defaultValue: FINANCE_DEFAULTS.majorProjectsHeading,
+      defaultValue: () => FINANCE_DEFAULTS.majorProjectsHeading,
       admin: { description: "Heading for the Major Future Projects section." },
     },
     {
       name: "majorProjectsIntro",
-      type: "textarea",
-      defaultValue: FINANCE_DEFAULTS.majorProjectsIntro,
+      type: "richText",
+      defaultValue: () => FINANCE_DEFAULTS.majorProjectsIntro,
       admin: {
         description:
           "Lead sentence introducing the Major Future Projects table. The following sentence (with the inline Current Capital Projects link to the Engineering page) stays in the page markup.",

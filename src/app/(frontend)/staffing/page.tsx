@@ -5,6 +5,7 @@ import { ChevronDown, ChevronRight } from "lucide-react";
 import SectionHeader, { SectionSubheader } from "@/components/SectionHeader";
 import StaffingZoneBar from "@/components/StaffingZoneBar";
 import ZoneLegend from "@/components/ZoneLegend";
+import Prose from "@/components/Prose";
 import { staffingData } from "@/data/siteData";
 import { applyStaffingOverlay, type StaffingJson } from "@/lib/staffingOverlay";
 import { assertAggregateMatchesSum } from "@/lib/staffingZones";
@@ -77,9 +78,10 @@ export default function OurTeamPage() {
           <SectionSubheader title={copy.coreHeading} />
           <div className="bg-white rounded-xl shadow-md border border-gray-100 p-6">
             <div className="flex flex-wrap items-start justify-between gap-3 mb-5">
-              <p className="text-sm text-gray-600 max-w-2xl">
-                {copy.coreDescription}
-              </p>
+              <Prose
+                className="text-sm text-gray-600 max-w-2xl [&_p]:m-0"
+                data={copy.coreDescription}
+              />
               <div
                 role="group"
                 aria-label="Bar width view"
@@ -166,9 +168,10 @@ export default function OurTeamPage() {
           <SectionSubheader title={copy.adminHeading} />
           <div className="bg-white rounded-xl shadow-md border border-gray-100 p-6">
             <div className="flex flex-wrap items-start justify-between gap-3 mb-5">
-              <p className="text-sm text-gray-600 max-w-2xl">
-                {copy.adminDescription}
-              </p>
+              <Prose
+                className="text-sm text-gray-600 max-w-2xl [&_p]:m-0"
+                data={copy.adminDescription}
+              />
               <div className="flex items-center gap-2">
                 <div
                   role="group"
