@@ -7,6 +7,34 @@ checked off and removed from `cms-checklist.md`. Reasoning and context live in `
 
 ## 2026-07
 
+- **2026-07-08** — **Field consolidation + WYSIWYG rich text across all pages, deployed with a prod schema migration.**
+  - **Consolidation:** About page went 49 → 28 fields — the `lead / emphasis / rest` sentence
+    splits merged into one field each, and per-bullet fields (`item1..5`) merged into single
+    "one item per line" textareas (the page splits on newlines). Other pages were already
+    one-field-per-idea.
+  - **Rich text:** all body-prose fields (43 across every page except Protection, which is
+    headings-only) are now Payload **Lexical richText** — a WYSIWYG bold/italic/underline toolbar,
+    so editors select a word and toggle formatting (the original bold/color phrases became bold).
+    New helpers: `src/lib/richText.ts` (`rt(md)` builds a Lexical default from a markdown-ish
+    string; `**bold**` marks bold), `src/components/Prose.tsx` (renders a richText value via
+    `@payloadcms/richtext-lexical/react`), and `src/components/MaybeRich.tsx` (renders
+    richText-or-string, used for prose passed as a component prop — Engineering inspection
+    descriptions, IDIQ service micro-descriptions). Single-line subtitles/taglines stayed plain
+    `text` (they pass through shared title components). The editor font was overridden from
+    Payload's default serif to the admin sans-serif (`custom.scss`, `.ContentEditable__root`).
+  - **Gotchas handled:** richText `defaultValue` must be a **function** (`() => X_DEFAULTS.field`)
+    — a static object is inlined into the SQL column DEFAULT and JSON-with-apostrophes breaks the
+    DDL. And `payload generate:importmap` must run with `CMS_MEDIA_BLOB_TOKEN` set to a
+    **valid-format** token (the lakefront `BLOB_READ_WRITE_TOKEN` works) so it adds the Lexical
+    RSC/feature components AND keeps the blob handler; a fake token fails the adapter's format check.
+  - **Prod migration:** turning fields into richText changes their storage (text → `jsonb`), so the
+    prod page-content tables needed recreating. All 10 were confirmed empty (0 rows — no saved
+    content), so with Oscar's explicit OK they were dropped (+ the orphaned `home_content.hero_subtext`
+    column) and recreated fresh via `push-schema.ts` (clean CREATE, no data-loss prompt). Verified
+    the new columns (richText = jsonb, headings/items = varchar, no orphaned split columns). The
+    public site rendered from code defaults throughout, unaffected. Verified locally end-to-end
+    (editors pre-fill, bold renders, live preview, public pages render, no `[object Object]`,
+    `next build` green).
 - **2026-07-07 11:50 EDT** — **Hotfix: prod admin was rendering blank; restored the Blob component in `importMap.js`.** After the merge, `src/app/(payload)/admin/importMap.js` was missing `VercelBlobClientUploadHandler` because it had been regenerated locally without `CMS_MEDIA_BLOB_TOKEN` (blob plugin disabled → component stripped). Prod enables the blob plugin, so the admin referenced a component absent from the map and rendered **blank on every admin route** (login + password-reset included; 0 console errors — a silent resolution failure, not a thrown error). It had been broken since the merge deploy; missed because only *public* pages were browser-checked on prod, not the admin. Fix: added the blob import + map entry back (kept the Dashboard view), deployed, and **verified in a real browser** that the prod login and reset-password forms render. Recorded the trap in CLAUDE.md.
   - Related, same session: set `serverURL` (production → `https://fpalens.org`) so password-reset email links are absolute — Payload couldn't infer the host behind Vercel's proxy and had been emitting a hostless `http:///admin/reset/<token>`. Verified the reset link + page end-to-end and re-sent a working test email.
   - Lessons: browser-check the prod **admin** after any admin/config deploy, not just public pages; never call an email flow "verified" off a 200 without checking the actual link and destination page.
