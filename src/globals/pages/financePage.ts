@@ -42,30 +42,35 @@ export const FinancePage: GlobalConfig = {
   fields: [
     {
       name: "pageTitle",
+      label: "Page title",
       type: "text",
       defaultValue: () => FINANCE_DEFAULTS.pageTitle,
       admin: { description: "The main page heading (H1) at the top of the Finance page." },
     },
     {
       name: "pageSubtitle",
+      label: "Page subtitle",
       type: "text",
       defaultValue: () => FINANCE_DEFAULTS.pageSubtitle,
       admin: { description: "The descriptive subtitle shown beneath the Finance page heading." },
     },
     {
       name: "spendingSectionHeading",
+      label: "Spending section: heading",
       type: "text",
       defaultValue: () => FINANCE_DEFAULTS.spendingSectionHeading,
       admin: { description: "Heading for the lead budget-vs-actuals section." },
     },
     {
       name: "majorProjectsHeading",
+      label: "Major Future Projects: heading",
       type: "text",
       defaultValue: () => FINANCE_DEFAULTS.majorProjectsHeading,
       admin: { description: "Heading for the Major Future Projects section." },
     },
     {
       name: "majorProjectsIntro",
+      label: "Major Future Projects: intro",
       type: "richText",
       defaultValue: () => FINANCE_DEFAULTS.majorProjectsIntro,
       admin: {

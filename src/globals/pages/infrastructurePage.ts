@@ -75,12 +75,14 @@ export const InfrastructurePage: GlobalConfig = {
     // Page header
     {
       name: "mainHeading",
+      label: "Page title",
       type: "text",
       defaultValue: () => INFRASTRUCTURE_DEFAULTS.mainHeading,
       admin: { description: "Page title (H1) at the top of the Infrastructure page." },
     },
     {
       name: "intro",
+      label: "Page intro",
       type: "richText",
       defaultValue: () => INFRASTRUCTURE_DEFAULTS.intro,
       admin: { description: "Subtitle beneath the page title." },
@@ -89,12 +91,14 @@ export const InfrastructurePage: GlobalConfig = {
     // Overview section
     {
       name: "overviewHeading",
+      label: "Overview: heading",
       type: "text",
       defaultValue: () => INFRASTRUCTURE_DEFAULTS.overviewHeading,
       admin: { description: 'Heading of the "Overview" card.' },
     },
     {
       name: "overviewBody",
+      label: "Overview: body",
       type: "richText",
       defaultValue: () => INFRASTRUCTURE_DEFAULTS.overviewBody,
       admin: { description: "Overview paragraph describing SLFPA-E and the system." },
@@ -103,12 +107,14 @@ export const InfrastructurePage: GlobalConfig = {
     // System Map section
     {
       name: "systemMapHeading",
+      label: "System Map: heading",
       type: "text",
       defaultValue: () => INFRASTRUCTURE_DEFAULTS.systemMapHeading,
       admin: { description: 'Heading above the interactive system map ("System Map").' },
     },
     {
       name: "systemMapBody",
+      label: "System Map: description",
       type: "richText",
       defaultValue: () => INFRASTRUCTURE_DEFAULTS.systemMapBody,
       admin: { description: "Explainer paragraph above the interactive system map." },
@@ -117,18 +123,21 @@ export const InfrastructurePage: GlobalConfig = {
     // System at a Glance section
     {
       name: "systemGlanceHeading",
+      label: "System at a Glance: heading",
       type: "text",
       defaultValue: () => INFRASTRUCTURE_DEFAULTS.systemGlanceHeading,
       admin: { description: 'Heading above the components table ("System at a Glance").' },
     },
     {
       name: "systemGlanceBody",
+      label: "System at a Glance: caption",
       type: "richText",
       defaultValue: () => INFRASTRUCTURE_DEFAULTS.systemGlanceBody,
       admin: { description: "Caption line above the System-at-a-Glance table." },
     },
     {
       name: "systemGlanceQuote",
+      label: "System at a Glance: quote",
       type: "richText",
       defaultValue: () => INFRASTRUCTURE_DEFAULTS.systemGlanceQuote,
       admin: {
@@ -140,6 +149,7 @@ export const InfrastructurePage: GlobalConfig = {
     // Infrastructure Readiness section
     {
       name: "readinessHeading",
+      label: "Infrastructure Readiness: heading",
       type: "text",
       defaultValue: () => INFRASTRUCTURE_DEFAULTS.readinessHeading,
       admin: { description: 'Heading of the readiness section ("Infrastructure Readiness").' },
@@ -148,18 +158,21 @@ export const InfrastructurePage: GlobalConfig = {
     // Stay Informed section
     {
       name: "stayInformedHeading",
+      label: "Stay Informed: heading",
       type: "text",
       defaultValue: () => INFRASTRUCTURE_DEFAULTS.stayInformedHeading,
       admin: { description: 'Heading of the alerts section ("Stay Informed").' },
     },
     {
       name: "alertsHeading",
+      label: "Real-Time Alerts: heading",
       type: "text",
       defaultValue: () => INFRASTRUCTURE_DEFAULTS.alertsHeading,
       admin: { description: 'Sub-heading of the alerts card ("Real-Time Alerts").' },
     },
     {
       name: "alertsBody",
+      label: "Real-Time Alerts: body",
       type: "richText",
       defaultValue: () => INFRASTRUCTURE_DEFAULTS.alertsBody,
       admin: { description: "Paragraph describing the Rave real-time alerts program." },

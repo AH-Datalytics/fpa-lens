@@ -36,36 +36,42 @@ export const StaffingPage: GlobalConfig = {
   fields: [
     {
       name: "pageTitle",
+      label: "Page title",
       type: "text",
       defaultValue: () => STAFFING_DEFAULTS.pageTitle,
       admin: { description: "Main page heading (top of the Staffing page)." },
     },
     {
       name: "pageSubtitle",
+      label: "Page subtitle",
       type: "textarea",
       defaultValue: () => STAFFING_DEFAULTS.pageSubtitle,
       admin: { description: "Subtitle beneath the page heading." },
     },
     {
       name: "coreHeading",
+      label: "Core Unit: heading",
       type: "text",
       defaultValue: () => STAFFING_DEFAULTS.coreHeading,
       admin: { description: 'Heading of the first section ("Core Flood Protection Unit").' },
     },
     {
       name: "coreDescription",
+      label: "Core Unit: description",
       type: "richText",
       defaultValue: () => STAFFING_DEFAULTS.coreDescription,
       admin: { description: "Intro paragraph under the Core Flood Protection Unit heading." },
     },
     {
       name: "adminHeading",
+      label: "Administrative Functions: heading",
       type: "text",
       defaultValue: () => STAFFING_DEFAULTS.adminHeading,
       admin: { description: 'Heading of the second section ("Administrative Functions").' },
     },
     {
       name: "adminDescription",
+      label: "Administrative Functions: description",
       type: "richText",
       defaultValue: () => STAFFING_DEFAULTS.adminDescription,
       admin: { description: "Intro paragraph under the Administrative Functions heading." },

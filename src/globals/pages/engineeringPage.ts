@@ -56,12 +56,14 @@ export const EngineeringPage: GlobalConfig = {
     // --- Page header ---
     {
       name: "pageTitle",
+      label: "Page title",
       type: "text",
       defaultValue: () => ENGINEERING_DEFAULTS.pageTitle,
       admin: { description: "The large H1 heading at the top of the Engineering page." },
     },
     {
       name: "pageSubtitle",
+      label: "Page subtitle",
       type: "text",
       defaultValue: () => ENGINEERING_DEFAULTS.pageSubtitle,
       admin: { description: "The subtitle line beneath the page heading." },
@@ -70,18 +72,21 @@ export const EngineeringPage: GlobalConfig = {
     // --- Federal & State Inspections section ---
     {
       name: "inspectionsHeading",
+      label: "Inspections: section heading",
       type: "text",
       defaultValue: () => ENGINEERING_DEFAULTS.inspectionsHeading,
       admin: { description: "Section heading above the two inspection cards." },
     },
     {
       name: "cpraDescription",
+      label: "CPRA inspection: description",
       type: "richText",
       defaultValue: () => ENGINEERING_DEFAULTS.cpraDescription,
       admin: { description: "Explainer paragraph inside the CPRA inspection card." },
     },
     {
       name: "usaceDescription",
+      label: "USACE inspection: description",
       type: "richText",
       defaultValue: () => ENGINEERING_DEFAULTS.usaceDescription,
       admin: { description: "Explainer paragraph inside the USACE inspection card." },
@@ -90,12 +95,14 @@ export const EngineeringPage: GlobalConfig = {
     // --- Current Capital Projects section ---
     {
       name: "capitalProjectsHeading",
+      label: "Capital Projects: heading",
       type: "text",
       defaultValue: () => ENGINEERING_DEFAULTS.capitalProjectsHeading,
       admin: { description: "Section heading above the capital-projects grid." },
     },
     {
       name: "capitalProjectsIntro",
+      label: "Capital Projects: intro",
       type: "richText",
       defaultValue: () => ENGINEERING_DEFAULTS.capitalProjectsIntro,
       admin: { description: "Intro paragraph beneath the Current Capital Projects heading." },
@@ -104,6 +111,7 @@ export const EngineeringPage: GlobalConfig = {
     // --- Permits section ---
     {
       name: "permitsHeading",
+      label: "Permits: section heading",
       type: "text",
       defaultValue: () => ENGINEERING_DEFAULTS.permitsHeading,
       admin: { description: 'Section heading for the "Permits" block.' },

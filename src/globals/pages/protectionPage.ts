@@ -34,24 +34,28 @@ export const ProtectionPage: GlobalConfig = {
   fields: [
     {
       name: "pageTitle",
+      label: "Page title",
       type: "text",
       defaultValue: PROTECTION_DEFAULTS.pageTitle,
       admin: { description: "Main page heading at the top of the Protection page." },
     },
     {
       name: "pageSubtitle",
+      label: "Page subtitle",
       type: "text",
       defaultValue: PROTECTION_DEFAULTS.pageSubtitle,
       admin: { description: "Subtitle beneath the main page heading." },
     },
     {
       name: "missionHeading",
+      label: "Mission: heading",
       type: "text",
       defaultValue: PROTECTION_DEFAULTS.missionHeading,
       admin: { description: "Heading inside the blue mission callout." },
     },
     {
       name: "monitoringHeading",
+      label: "Monitoring Activity: heading",
       type: "text",
       defaultValue: PROTECTION_DEFAULTS.monitoringHeading,
       admin: {
@@ -60,6 +64,7 @@ export const ProtectionPage: GlobalConfig = {
     },
     {
       name: "leveeAwarenessHeading",
+      label: "Levee Awareness: heading",
       type: "text",
       defaultValue: PROTECTION_DEFAULTS.leveeAwarenessHeading,
       admin: {
@@ -68,18 +73,21 @@ export const ProtectionPage: GlobalConfig = {
     },
     {
       name: "outcomesHeading",
+      label: "Operational Outcomes: heading",
       type: "text",
       defaultValue: PROTECTION_DEFAULTS.outcomesHeading,
       admin: { description: 'Section heading for the "Operational outcomes" block.' },
     },
     {
       name: "outcomesSubtitle",
+      label: "Operational Outcomes: subtitle",
       type: "text",
       defaultValue: PROTECTION_DEFAULTS.outcomesSubtitle,
       admin: { description: "Subtitle beneath the Operational outcomes heading." },
     },
     {
       name: "workforceHeading",
+      label: "Workforce Context: heading",
       type: "text",
       defaultValue: PROTECTION_DEFAULTS.workforceHeading,
       admin: { description: 'Section heading for the "Workforce context" block.' },

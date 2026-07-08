@@ -1,7 +1,7 @@
 import path from "path";
 import { fileURLToPath } from "url";
 import { buildConfig } from "payload";
-import { lexicalEditor } from "@payloadcms/richtext-lexical";
+import { lexicalEditor, FixedToolbarFeature } from "@payloadcms/richtext-lexical";
 import { sqliteAdapter } from "@payloadcms/db-sqlite";
 import { postgresAdapter } from "@payloadcms/db-postgres";
 import { resendAdapter } from "@payloadcms/email-resend";
@@ -68,7 +68,14 @@ export default buildConfig({
   },
   collections: [Users, Media, StaffMembers],
   globals: [SiteSettings, HomeContent, ...pageGlobals],
-  editor: lexicalEditor(),
+  // A persistent toolbar pinned to the top of each rich-text field, instead of
+  // the default floating toolbar (which overlapped/cut off over the text).
+  editor: lexicalEditor({
+    features: ({ defaultFeatures }) => [
+      ...defaultFeatures.filter((feature) => feature.key !== "toolbarInline"),
+      FixedToolbarFeature(),
+    ],
+  }),
   secret: process.env.PAYLOAD_SECRET || "",
   typescript: {
     outputFile: path.resolve(dirname, "payload-types.ts"),

@@ -248,6 +248,36 @@ Still open:
   change their own login via the Account page. Users access control: create/delete/role = admin only;
   read/update = self for editors.
 
+## 8d. Rich-text editing UX (2026-07-08)
+
+- **WYSIWYG on every prose field.** All body/intro/callout prose fields are Payload `richText`
+  (Lexical), so an editor can bold/italic/underline any word mid-sentence and un/re-apply it — the ask
+  that drove the rollout. Headings and single-line labels stay plain `text`; bullet lists stay
+  `textarea` (one item per line). Public rendering is unchanged: `Prose`/`MaybeRich`
+  (`src/components/`) render the Lexical JSON, falling back to the string default.
+- **Fixed toolbar, not floating.** The editor is configured once in `payload.config.ts`
+  (`lexicalEditor({ features })`): the default **inline/floating** toolbar (`toolbarInline`) is
+  filtered out and replaced with `FixedToolbarFeature()`. The floating bar overlapped/cut off over the
+  text; the fixed bar is a persistent strip pinned to the top of each field.
+- **Boxed fields.** `custom.scss` wraps each rich-text field (`.rich-text-lexical__wrap`) in the same
+  1.5px bordered box as the plain text inputs, with the fixed toolbar as the box's top bar, so every
+  edit field looks consistent. **Gotcha:** the wrap's `overflow: hidden` (needed to clip the box
+  corners) makes it the sticky containing block, so Payload's default toolbar `top: 56px` shoved the
+  bar ~56px down into the field. Fixed by overriding `.rich-text-lexical__wrap .fixed-toolbar { top: 0 }`.
+  The editor font is also forced to `var(--font-body)` so richText matches the sans-serif inputs
+  (Lexical defaults to serif).
+- **Field labels.** Every field carries an explicit `label:` (e.g. "HSDRRS panel: heading",
+  "Operate & Maintain card: bullets") instead of Payload's auto camelCase-to-Title-Case. Convention:
+  sentence case, `Section: descriptor` where a field belongs to a named panel/card. Labels are
+  admin-display only — they don't touch field names, values, or public rendering.
+- **importMap trap (still applies):** switching the toolbar feature changed the importMap
+  (`InlineToolbarFeatureClient` → `FixedToolbarFeatureClient`). Regenerating it with the blob plugin
+  OFF *also* strips `VercelBlobClientUploadHandler` → **blank prod admin**. Always regenerate with the
+  token **exported** (not inline-prefixed — the inline form didn't survive the CLI exec):
+  `export CMS_MEDIA_BLOB_TOKEN=$(grep BLOB_READ_WRITE_TOKEN .env.vercel-prod|cut -d= -f2-); npx payload generate:importmap`,
+  then grep each of `VercelBlobClientUploadHandler` / `FixedToolbarFeatureClient` separately (each == 2).
+  Never plain `next build` before commit — it regenerates the importMap the same way.
+
 ## 9. Future considerations / parking lot (NOT action items)
 
 These become action items only if/when that upgrade is decided upon.

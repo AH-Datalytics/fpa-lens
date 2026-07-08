@@ -113,55 +113,55 @@ export const AboutPage: GlobalConfig = {
   hooks: { afterChange: [revalidateCms] },
   fields: [
     // --- Page header ---
-    { name: "pageTitle", type: "text", defaultValue: () => ABOUT_DEFAULTS.pageTitle, admin: { description: "Large page heading at the top of the About page." } },
-    { name: "pageSubtitle", type: "text", defaultValue: () => ABOUT_DEFAULTS.pageSubtitle, admin: { description: "Tagline shown directly beneath the page heading." } },
+    { name: "pageTitle", label: "Page title", type: "text", defaultValue: () => ABOUT_DEFAULTS.pageTitle, admin: { description: "Large page heading at the top of the About page." } },
+    { name: "pageSubtitle", label: "Page subtitle", type: "text", defaultValue: () => ABOUT_DEFAULTS.pageSubtitle, admin: { description: "Tagline shown directly beneath the page heading." } },
 
     // --- Mission overview ---
-    { name: "missionOverview", type: "richText", defaultValue: () => ABOUT_DEFAULTS.missionOverview, admin: { description: "Opening overview paragraph (blue left-bordered block) on SLFPA-E's origin, governance, and coverage." } },
+    { name: "missionOverview", label: "Mission overview", type: "richText", defaultValue: () => ABOUT_DEFAULTS.missionOverview, admin: { description: "Opening overview paragraph (blue left-bordered block) on SLFPA-E's origin, governance, and coverage." } },
 
     // --- HSDRRS panel ---
-    { name: "hsdrrsHeading", type: "text", defaultValue: () => ABOUT_DEFAULTS.hsdrrsHeading, admin: { description: "Heading of the dark-blue HSDRRS panel (left)." } },
-    { name: "hsdrrsIntro", type: "richText", defaultValue: () => ABOUT_DEFAULTS.hsdrrsIntro, admin: { description: "Paragraph inside the HSDRRS panel. (The line with the dollar figure is generated automatically and isn't editable here.)" } },
+    { name: "hsdrrsHeading", label: "HSDRRS panel: heading", type: "text", defaultValue: () => ABOUT_DEFAULTS.hsdrrsHeading, admin: { description: "Heading of the dark-blue HSDRRS panel (left)." } },
+    { name: "hsdrrsIntro", label: "HSDRRS panel: text", type: "richText", defaultValue: () => ABOUT_DEFAULTS.hsdrrsIntro, admin: { description: "Paragraph inside the HSDRRS panel. (The line with the dollar figure is generated automatically and isn't editable here.)" } },
 
     // --- MR&T panel ---
-    { name: "mrtHeading", type: "text", defaultValue: () => ABOUT_DEFAULTS.mrtHeading, admin: { description: "Heading of the teal MR&T panel (right)." } },
-    { name: "mrtIntro", type: "richText", defaultValue: () => ABOUT_DEFAULTS.mrtIntro, admin: { description: "First paragraph inside the MR&T panel." } },
-    { name: "mrtBody", type: "richText", defaultValue: () => ABOUT_DEFAULTS.mrtBody, admin: { description: "Second paragraph inside the MR&T panel." } },
+    { name: "mrtHeading", label: "MR&T panel: heading", type: "text", defaultValue: () => ABOUT_DEFAULTS.mrtHeading, admin: { description: "Heading of the teal MR&T panel (right)." } },
+    { name: "mrtIntro", label: "MR&T panel: first paragraph", type: "richText", defaultValue: () => ABOUT_DEFAULTS.mrtIntro, admin: { description: "First paragraph inside the MR&T panel." } },
+    { name: "mrtBody", label: "MR&T panel: second paragraph", type: "richText", defaultValue: () => ABOUT_DEFAULTS.mrtBody, admin: { description: "Second paragraph inside the MR&T panel." } },
 
     // --- "Our Responsibilities" section ---
-    { name: "responsibilitiesHeading", type: "text", defaultValue: () => ABOUT_DEFAULTS.responsibilitiesHeading, admin: { description: "Section heading above the three responsibility cards." } },
+    { name: "responsibilitiesHeading", label: "Responsibilities: section heading", type: "text", defaultValue: () => ABOUT_DEFAULTS.responsibilitiesHeading, admin: { description: "Section heading above the three responsibility cards." } },
 
     // Card 1: Operate & Maintain
-    { name: "operateMaintainTitle", type: "text", defaultValue: () => ABOUT_DEFAULTS.operateMaintainTitle, admin: { description: "Title of the first responsibility card." } },
-    { name: "operateMaintainBody", type: "richText", defaultValue: () => ABOUT_DEFAULTS.operateMaintainBody, admin: { description: "Intro paragraph of the 'Operate & Maintain' card." } },
-    { name: "operateMaintainItems", type: "textarea", defaultValue: () => ABOUT_DEFAULTS.operateMaintainItems, admin: { description: `'Operate & Maintain' card bullets. ${listHint}` } },
+    { name: "operateMaintainTitle", label: "Operate & Maintain card: title", type: "text", defaultValue: () => ABOUT_DEFAULTS.operateMaintainTitle, admin: { description: "Title of the first responsibility card." } },
+    { name: "operateMaintainBody", label: "Operate & Maintain card: intro", type: "richText", defaultValue: () => ABOUT_DEFAULTS.operateMaintainBody, admin: { description: "Intro paragraph of the 'Operate & Maintain' card." } },
+    { name: "operateMaintainItems", label: "Operate & Maintain card: bullets", type: "textarea", defaultValue: () => ABOUT_DEFAULTS.operateMaintainItems, admin: { description: `'Operate & Maintain' card bullets. ${listHint}` } },
 
     // Card 2: Storm Response
-    { name: "stormResponseTitle", type: "text", defaultValue: () => ABOUT_DEFAULTS.stormResponseTitle, admin: { description: "Title of the second responsibility card." } },
-    { name: "stormResponseBody", type: "richText", defaultValue: () => ABOUT_DEFAULTS.stormResponseBody, admin: { description: "Intro paragraph of the 'Storm Response' card." } },
-    { name: "stormResponseItems", type: "textarea", defaultValue: () => ABOUT_DEFAULTS.stormResponseItems, admin: { description: `'Storm Response' card bullets. ${listHint}` } },
+    { name: "stormResponseTitle", label: "Storm Response card: title", type: "text", defaultValue: () => ABOUT_DEFAULTS.stormResponseTitle, admin: { description: "Title of the second responsibility card." } },
+    { name: "stormResponseBody", label: "Storm Response card: intro", type: "richText", defaultValue: () => ABOUT_DEFAULTS.stormResponseBody, admin: { description: "Intro paragraph of the 'Storm Response' card." } },
+    { name: "stormResponseItems", label: "Storm Response card: bullets", type: "textarea", defaultValue: () => ABOUT_DEFAULTS.stormResponseItems, admin: { description: `'Storm Response' card bullets. ${listHint}` } },
 
     // Card 3: Permitting & Compliance
-    { name: "permittingTitle", type: "text", defaultValue: () => ABOUT_DEFAULTS.permittingTitle, admin: { description: "Title of the third responsibility card." } },
-    { name: "permittingBody", type: "richText", defaultValue: () => ABOUT_DEFAULTS.permittingBody, admin: { description: "Intro paragraph of the 'Permitting & Compliance' card." } },
-    { name: "permittingItems", type: "textarea", defaultValue: () => ABOUT_DEFAULTS.permittingItems, admin: { description: `'Permitting & Compliance' card bullets. ${listHint}` } },
+    { name: "permittingTitle", label: "Permitting & Compliance card: title", type: "text", defaultValue: () => ABOUT_DEFAULTS.permittingTitle, admin: { description: "Title of the third responsibility card." } },
+    { name: "permittingBody", label: "Permitting & Compliance card: intro", type: "richText", defaultValue: () => ABOUT_DEFAULTS.permittingBody, admin: { description: "Intro paragraph of the 'Permitting & Compliance' card." } },
+    { name: "permittingItems", label: "Permitting & Compliance card: bullets", type: "textarea", defaultValue: () => ABOUT_DEFAULTS.permittingItems, admin: { description: `'Permitting & Compliance' card bullets. ${listHint}` } },
 
     // --- "Surge Protection vs. Drainage" section ---
-    { name: "surgeDrainageHeading", type: "text", defaultValue: () => ABOUT_DEFAULTS.surgeDrainageHeading, admin: { description: "Section heading for the surge-vs-drainage explainer." } },
-    { name: "surgeDrainageIntro", type: "richText", defaultValue: () => ABOUT_DEFAULTS.surgeDrainageIntro, admin: { description: "The surge-vs-drainage explainer paragraph." } },
+    { name: "surgeDrainageHeading", label: "Surge vs. Drainage: section heading", type: "text", defaultValue: () => ABOUT_DEFAULTS.surgeDrainageHeading, admin: { description: "Section heading for the surge-vs-drainage explainer." } },
+    { name: "surgeDrainageIntro", label: "Surge vs. Drainage: explainer paragraph", type: "richText", defaultValue: () => ABOUT_DEFAULTS.surgeDrainageIntro, admin: { description: "The surge-vs-drainage explainer paragraph." } },
 
     // Comparison card: SLFPA-E (Us)
-    { name: "slfpaCardTitle", type: "text", defaultValue: () => ABOUT_DEFAULTS.slfpaCardTitle, admin: { description: "Title of the left comparison card (SLFPA-E)." } },
-    { name: "slfpaCardLead", type: "richText", defaultValue: () => ABOUT_DEFAULTS.slfpaCardLead, admin: { description: "Lead sentence of the SLFPA-E comparison card." } },
-    { name: "slfpaItems", type: "textarea", defaultValue: () => ABOUT_DEFAULTS.slfpaItems, admin: { description: `SLFPA-E comparison card checklist. ${listHint}` } },
+    { name: "slfpaCardTitle", label: "SLFPA-E card: title", type: "text", defaultValue: () => ABOUT_DEFAULTS.slfpaCardTitle, admin: { description: "Title of the left comparison card (SLFPA-E)." } },
+    { name: "slfpaCardLead", label: "SLFPA-E card: lead sentence", type: "richText", defaultValue: () => ABOUT_DEFAULTS.slfpaCardLead, admin: { description: "Lead sentence of the SLFPA-E comparison card." } },
+    { name: "slfpaItems", label: "SLFPA-E card: bullets", type: "textarea", defaultValue: () => ABOUT_DEFAULTS.slfpaItems, admin: { description: `SLFPA-E comparison card checklist. ${listHint}` } },
 
     // Comparison card: SWBNO
-    { name: "swbnoCardTitle", type: "text", defaultValue: () => ABOUT_DEFAULTS.swbnoCardTitle, admin: { description: "Title of the right comparison card (SWBNO)." } },
-    { name: "swbnoCardLead", type: "richText", defaultValue: () => ABOUT_DEFAULTS.swbnoCardLead, admin: { description: "Lead sentence of the SWBNO comparison card." } },
-    { name: "swbnoItems", type: "textarea", defaultValue: () => ABOUT_DEFAULTS.swbnoItems, admin: { description: `SWBNO comparison card list. ${listHint}` } },
+    { name: "swbnoCardTitle", label: "SWBNO card: title", type: "text", defaultValue: () => ABOUT_DEFAULTS.swbnoCardTitle, admin: { description: "Title of the right comparison card (SWBNO)." } },
+    { name: "swbnoCardLead", label: "SWBNO card: lead sentence", type: "richText", defaultValue: () => ABOUT_DEFAULTS.swbnoCardLead, admin: { description: "Lead sentence of the SWBNO comparison card." } },
+    { name: "swbnoItems", label: "SWBNO card: bullets", type: "textarea", defaultValue: () => ABOUT_DEFAULTS.swbnoItems, admin: { description: `SWBNO comparison card list. ${listHint}` } },
 
     // "Where the Systems Connect" callout
-    { name: "systemsConnectHeading", type: "text", defaultValue: () => ABOUT_DEFAULTS.systemsConnectHeading, admin: { description: "Heading of the blue 'Where the Systems Connect' callout." } },
-    { name: "systemsConnectBody", type: "richText", defaultValue: () => ABOUT_DEFAULTS.systemsConnectBody, admin: { description: "Body paragraph of the 'Where the Systems Connect' callout." } },
+    { name: "systemsConnectHeading", label: "Where the Systems Connect: heading", type: "text", defaultValue: () => ABOUT_DEFAULTS.systemsConnectHeading, admin: { description: "Heading of the blue 'Where the Systems Connect' callout." } },
+    { name: "systemsConnectBody", label: "Where the Systems Connect: body", type: "richText", defaultValue: () => ABOUT_DEFAULTS.systemsConnectBody, admin: { description: "Body paragraph of the 'Where the Systems Connect' callout." } },
   ],
 };

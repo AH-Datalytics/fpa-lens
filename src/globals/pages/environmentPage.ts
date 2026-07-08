@@ -75,12 +75,14 @@ export const EnvironmentPage: GlobalConfig = {
     // --- Page header ---
     {
       name: "pageTitle",
+      label: "Page title",
       type: "text",
       defaultValue: () => ENVIRONMENT_DEFAULTS.pageTitle,
       admin: { description: "Main page title (top of the Environment page)." },
     },
     {
       name: "pageSubtitle",
+      label: "Page subtitle",
       type: "text",
       defaultValue: () => ENVIRONMENT_DEFAULTS.pageSubtitle,
       admin: { description: "Subtitle under the main page title." },
@@ -89,36 +91,42 @@ export const EnvironmentPage: GlobalConfig = {
     // --- "What drives this risk indicator" explainer ---
     {
       name: "drivesTitle",
+      label: "What drives the risk: heading",
       type: "text",
       defaultValue: () => ENVIRONMENT_DEFAULTS.drivesTitle,
       admin: { description: "Section heading: the risk-drivers explainer." },
     },
     {
       name: "drivesSubtitle",
+      label: "What drives the risk: subtitle",
       type: "text",
       defaultValue: () => ENVIRONMENT_DEFAULTS.drivesSubtitle,
       admin: { description: "Subtitle for the risk-drivers explainer section." },
     },
     {
       name: "drivesIntro",
+      label: "What drives the risk: intro",
       type: "richText",
       defaultValue: () => ENVIRONMENT_DEFAULTS.drivesIntro,
       admin: { description: "Intro paragraph of the risk-drivers explainer." },
     },
     {
       name: "windDirectionText",
+      label: "Wind direction: explainer",
       type: "richText",
       defaultValue: () => ENVIRONMENT_DEFAULTS.windDirectionText,
       admin: { description: "Explainer card 1 body (wind direction)." },
     },
     {
       name: "lakeLevelText",
+      label: "Lake level: explainer",
       type: "richText",
       defaultValue: () => ENVIRONMENT_DEFAULTS.lakeLevelText,
       admin: { description: "Explainer card 3 body (lake level vs. tide)." },
     },
     {
       name: "elevatedConditionsText",
+      label: "Elevated conditions: callout",
       type: "richText",
       defaultValue: () => ENVIRONMENT_DEFAULTS.elevatedConditionsText,
       admin: { description: "Amber callout body (elevated conditions)." },
@@ -127,6 +135,7 @@ export const EnvironmentPage: GlobalConfig = {
     // --- Current conditions ---
     {
       name: "currentConditionsTitle",
+      label: "Current Conditions: heading",
       type: "text",
       defaultValue: () => ENVIRONMENT_DEFAULTS.currentConditionsTitle,
       admin: { description: "Section heading: Current Conditions." },
@@ -135,6 +144,7 @@ export const EnvironmentPage: GlobalConfig = {
     // --- Conditions timeline ---
     {
       name: "timelineTitle",
+      label: "Conditions Timeline: heading",
       type: "text",
       defaultValue: () => ENVIRONMENT_DEFAULTS.timelineTitle,
       admin: { description: "Section heading: Conditions Timeline (charts)." },
@@ -143,6 +153,7 @@ export const EnvironmentPage: GlobalConfig = {
     // --- Active alerts ---
     {
       name: "alertsTitle",
+      label: "Active Alerts: heading",
       type: "text",
       defaultValue: () => ENVIRONMENT_DEFAULTS.alertsTitle,
       admin: { description: "Section heading: Active Weather Alerts." },
@@ -151,12 +162,14 @@ export const EnvironmentPage: GlobalConfig = {
     // --- Risk level thresholds ---
     {
       name: "thresholdsTitle",
+      label: "Risk Thresholds: heading",
       type: "text",
       defaultValue: () => ENVIRONMENT_DEFAULTS.thresholdsTitle,
       admin: { description: "Section heading: Risk Level Thresholds." },
     },
     {
       name: "thresholdsCardTitle",
+      label: "Risk Thresholds: card title",
       type: "text",
       defaultValue: () => ENVIRONMENT_DEFAULTS.thresholdsCardTitle,
       admin: { description: "Card title for the thresholds table." },
@@ -165,12 +178,14 @@ export const EnvironmentPage: GlobalConfig = {
     // --- Flood structure gauges ---
     {
       name: "structureGaugesTitle",
+      label: "Structure Gauges: heading",
       type: "text",
       defaultValue: () => ENVIRONMENT_DEFAULTS.structureGaugesTitle,
       admin: { description: "Section heading: Flood Structure Gauges." },
     },
     {
       name: "structureGaugesCardTitle",
+      label: "Structure Gauges: card title",
       type: "text",
       defaultValue: () => ENVIRONMENT_DEFAULTS.structureGaugesCardTitle,
       admin: { description: "Card title for the structure-gauges section." },

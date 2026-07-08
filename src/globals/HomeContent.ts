@@ -22,6 +22,7 @@ export const HomeContent: GlobalConfig = {
   fields: [
     {
       name: "heroHeading",
+      label: "Home page headline",
       type: "text",
       defaultValue: HOME_DEFAULTS.heroHeading,
       admin: { description: "The large hero headline on the home page." },

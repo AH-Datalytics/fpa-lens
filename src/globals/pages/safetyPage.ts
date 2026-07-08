@@ -58,12 +58,14 @@ export const SafetyPage: GlobalConfig = {
     // Page header -------------------------------------------------------------
     {
       name: "pageTitle",
+      label: "Page title",
       type: "text",
       defaultValue: () => SAFETY_DEFAULTS.pageTitle,
       admin: { description: "Main page title at the top of the Safety page." },
     },
     {
       name: "pageSubtitle",
+      label: "Page subtitle",
       type: "text",
       defaultValue: () => SAFETY_DEFAULTS.pageSubtitle,
       admin: { description: "Subtitle shown beneath the Safety page title." },
@@ -72,24 +74,28 @@ export const SafetyPage: GlobalConfig = {
     // Section headings --------------------------------------------------------
     {
       name: "definitionsHeading",
+      label: "Definitions: section heading",
       type: "text",
       defaultValue: () => SAFETY_DEFAULTS.definitionsHeading,
       admin: { description: 'Heading for the "Definitions" section.' },
     },
     {
       name: "trendsHeading",
+      label: "Multi-Year Trends: heading",
       type: "text",
       defaultValue: () => SAFETY_DEFAULTS.trendsHeading,
       admin: { description: 'Heading for the multi-year trend charts section.' },
     },
     {
       name: "monthlyHeading",
+      label: "Monthly Breakdown: heading",
       type: "text",
       defaultValue: () => SAFETY_DEFAULTS.monthlyHeading,
       admin: { description: 'Heading for the monthly breakdown chart section.' },
     },
     {
       name: "categoryHeading",
+      label: "Events by Category: heading",
       type: "text",
       defaultValue: () => SAFETY_DEFAULTS.categoryHeading,
       admin: { description: 'Heading for the events-by-category section.' },
@@ -98,24 +104,28 @@ export const SafetyPage: GlobalConfig = {
     // Definitions cards -------------------------------------------------------
     {
       name: "accidentDefinition",
+      label: "Definition: Accident",
       type: "richText",
       defaultValue: () => SAFETY_DEFAULTS.accidentDefinition,
       admin: { description: 'Body text of the "Accident" definition card.' },
     },
     {
       name: "incidentDefinition",
+      label: "Definition: Incident",
       type: "richText",
       defaultValue: () => SAFETY_DEFAULTS.incidentDefinition,
       admin: { description: 'Body text of the "Incident" definition card.' },
     },
     {
       name: "lostTimeDefinition",
+      label: "Definition: Lost-Time Injury",
       type: "richText",
       defaultValue: () => SAFETY_DEFAULTS.lostTimeDefinition,
       admin: { description: 'Body text of the "Lost-Time Injury" definition card.' },
     },
     {
       name: "nonLostTimeDefinition",
+      label: "Definition: Non-Lost-Time Injury",
       type: "richText",
       defaultValue: () => SAFETY_DEFAULTS.nonLostTimeDefinition,
       admin: { description: 'Body text of the "Non-Lost-Time Injury" definition card.' },

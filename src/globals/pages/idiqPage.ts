@@ -70,12 +70,14 @@ export const IdiqPage: GlobalConfig = {
       fields: [
         {
           name: "pageTitle",
+          label: "Page title",
           type: "text",
           defaultValue: () => IDIQ_DEFAULTS.pageTitle,
           admin: { description: "Main page heading (SectionHeader title)." },
         },
         {
           name: "pageSubtitle",
+          label: "Page subtitle",
           type: "text",
           defaultValue: () => IDIQ_DEFAULTS.pageSubtitle,
           admin: { description: "Subtitle beneath the page heading." },
@@ -88,6 +90,7 @@ export const IdiqPage: GlobalConfig = {
       fields: [
         {
           name: "keyTakeawayBody",
+          label: "Key Takeaway: body",
           type: "richText",
           defaultValue: () => IDIQ_DEFAULTS.keyTakeawayBody,
           admin: { description: "Body paragraph inside the Key Takeaway callout." },
@@ -100,24 +103,28 @@ export const IdiqPage: GlobalConfig = {
       fields: [
         {
           name: "introHeading",
+          label: "What is an IDIQ Contract: heading",
           type: "text",
           defaultValue: () => IDIQ_DEFAULTS.introHeading,
           admin: { description: 'Heading of the intro card ("What is an IDIQ contract?").' },
         },
         {
           name: "introParagraph1",
+          label: "Intro: paragraph 1",
           type: "richText",
           defaultValue: () => IDIQ_DEFAULTS.introParagraph1,
           admin: { description: "First explainer paragraph in the intro card." },
         },
         {
           name: "introParagraph2",
+          label: "Intro: paragraph 2",
           type: "richText",
           defaultValue: () => IDIQ_DEFAULTS.introParagraph2,
           admin: { description: "Second explainer paragraph in the intro card." },
         },
         {
           name: "introParagraph3",
+          label: "Intro: paragraph 3",
           type: "richText",
           defaultValue: () => IDIQ_DEFAULTS.introParagraph3,
           admin: { description: "Third explainer paragraph in the intro card." },
@@ -126,6 +133,7 @@ export const IdiqPage: GlobalConfig = {
     },
     {
       name: "contractCycleHeading",
+      label: "Contract Cycle: heading",
       type: "text",
       defaultValue: () => IDIQ_DEFAULTS.contractCycleHeading,
       admin: { description: "Section heading above the contract cycle selector." },
@@ -140,30 +148,35 @@ export const IdiqPage: GlobalConfig = {
       fields: [
         {
           name: "serviceCivilEngineering",
+          label: "Service: Civil Engineering",
           type: "richText",
           defaultValue: () => IDIQ_DEFAULTS.serviceCivilEngineering,
           admin: { description: "Civil Engineering." },
         },
         {
           name: "serviceSurveying",
+          label: "Service: Surveying",
           type: "richText",
           defaultValue: () => IDIQ_DEFAULTS.serviceSurveying,
           admin: { description: "Surveying / Surveying Services." },
         },
         {
           name: "serviceGeotechnicalEngineering",
+          label: "Service: Geotechnical Engineering",
           type: "richText",
           defaultValue: () => IDIQ_DEFAULTS.serviceGeotechnicalEngineering,
           admin: { description: "Geotechnical Engineering." },
         },
         {
           name: "serviceConstructionMaterialsTesting",
+          label: "Service: Construction Materials & Testing",
           type: "richText",
           defaultValue: () => IDIQ_DEFAULTS.serviceConstructionMaterialsTesting,
           admin: { description: "Construction Materials & Testing." },
         },
         {
           name: "serviceMepServices",
+          label: "Service: MEP Services",
           type: "richText",
           defaultValue: () => IDIQ_DEFAULTS.serviceMepServices,
           admin: { description: "MEP Services." },
