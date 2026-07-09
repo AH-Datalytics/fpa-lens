@@ -40,6 +40,16 @@ const DISTRICT_FILTERS: { key: DistrictFilter; label: string }[] = [
   { key: "LBBLD", label: "Lake Borgne Basin (LBBLD)" },
 ];
 
+// Progress bars can show either raw acres completed against the monthly
+// target, or the same completion expressed as a percentage of cycle pace
+// (pace-adjusted when the reporting month is still in flight — the same
+// figure that drives each zone's Green/Amber/Red status).
+type ProgressView = "acres" | "pace";
+const PROGRESS_VIEWS: { key: ProgressView; label: string }[] = [
+  { key: "acres", label: "Acres completed" },
+  { key: "pace", label: "Cycle pace %" },
+];
+
 const PALETTE: Record<
   KpiLevel,
   { solid: string; badge: string; dot: string }
@@ -61,7 +71,13 @@ const PALETTE: Record<
   },
 };
 
-function ZoneProgressBody({ zone }: { zone: AnyZone }) {
+function ZoneProgressBody({
+  zone,
+  view,
+}: {
+  zone: AnyZone;
+  view: ProgressView;
+}) {
   // No reported actuals yet (e.g. EJLD — foreman hasn't started logging
   // weekly cumulative C1/C2 percentages). Show a neutral placeholder.
   if (!zone.hasReportedData) {
@@ -89,10 +105,23 @@ function ZoneProgressBody({ zone }: { zone: AnyZone }) {
   }
 
   const kpi = computeMonthlyKpi(zone, grassCuttingData.reportingMonth);
-  const fillPct = Math.min(100, kpi.progressFraction * 100);
-  const tick = cycle1TickPosition(zone);
-  const tickPct = tick === null ? null : tick * 100;
   const c = PALETTE[kpi.level];
+
+  // Cycle pace: the pace-adjusted completion percentage when the month is in
+  // flight, or raw completion when the month has closed — the same figure
+  // that sets the status badge. Can exceed 100% (ahead of pace); the bar fill
+  // caps at 100 while the label shows the true value.
+  const pacePct = Math.round((kpi.paceFraction ?? kpi.progressFraction) * 100);
+  const paceView = view === "pace";
+
+  const fillPct = Math.min(
+    100,
+    paceView ? pacePct : kpi.progressFraction * 100,
+  );
+  // The Cycle 1 tick marks acreage against the full monthly target, so it only
+  // maps cleanly onto the acres bar; hide it in the pace view.
+  const tick = cycle1TickPosition(zone);
+  const tickPct = paceView || tick === null ? null : tick * 100;
 
   return (
     <div className="pt-3 border-t border-gray-100 space-y-2">
@@ -113,7 +142,15 @@ function ZoneProgressBody({ zone }: { zone: AnyZone }) {
       <div
         className="relative"
         role="img"
-        aria-label={`${kpi.done} of ${kpi.target} acres completed this month`}
+        aria-label={
+          paceView
+            ? `${pacePct}% of ${
+                grassCuttingData.reportingMonth.isComplete
+                  ? "the monthly cycle target"
+                  : "cycle pace to date"
+              }`
+            : `${kpi.done} of ${kpi.target} acres completed this month`
+        }
       >
         <div className="relative h-3 rounded bg-gray-100 overflow-hidden">
           <div
@@ -143,12 +180,21 @@ function ZoneProgressBody({ zone }: { zone: AnyZone }) {
           </div>
         )}
       </div>
-      <p className="text-[11px] text-gray-700">
-        <strong className="text-gray-900">
-          {kpi.done.toLocaleString()} of {kpi.target.toLocaleString()} ac
-        </strong>{" "}
-        completed this month
-      </p>
+      {paceView ? (
+        <p className="text-[11px] text-gray-700">
+          <strong className="text-gray-900">{pacePct}%</strong> of{" "}
+          {grassCuttingData.reportingMonth.isComplete
+            ? "monthly cycle target"
+            : "cycle pace to date"}
+        </p>
+      ) : (
+        <p className="text-[11px] text-gray-700">
+          <strong className="text-gray-900">
+            {kpi.done.toLocaleString()} of {kpi.target.toLocaleString()} ac
+          </strong>{" "}
+          completed this month
+        </p>
+      )}
     </div>
   );
 }
@@ -211,7 +257,13 @@ function ZoneCardHeader({
   );
 }
 
-function OldZoneCard({ zone }: { zone: OldGrassCuttingZone }) {
+function OldZoneCard({
+  zone,
+  view,
+}: {
+  zone: OldGrassCuttingZone;
+  view: ProgressView;
+}) {
   return (
     <div className="bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden">
       <ZoneCardHeader
@@ -223,13 +275,19 @@ function OldZoneCard({ zone }: { zone: OldGrassCuttingZone }) {
       />
       <div className="p-4">
         <ReachList reaches={zone.reaches} />
-        <ZoneProgressBody zone={zone} />
+        <ZoneProgressBody zone={zone} view={view} />
       </div>
     </div>
   );
 }
 
-function OtherZoneCard({ zone }: { zone: OtherDistrictZone }) {
+function OtherZoneCard({
+  zone,
+  view,
+}: {
+  zone: OtherDistrictZone;
+  view: ProgressView;
+}) {
   return (
     <div className="bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden">
       <ZoneCardHeader
@@ -241,7 +299,7 @@ function OtherZoneCard({ zone }: { zone: OtherDistrictZone }) {
       />
       <div className="p-4">
         <ReachList reaches={zone.reaches} />
-        <ZoneProgressBody zone={zone} />
+        <ZoneProgressBody zone={zone} view={view} />
       </div>
     </div>
   );
@@ -279,6 +337,7 @@ export default function GrassCuttingPage() {
   const copy = usePageCopy("turf-page", TURF_DEFAULTS);
 
   const [district, setDistrict] = useState<DistrictFilter>("ALL");
+  const [progressView, setProgressView] = useState<ProgressView>("acres");
   const showOld = district === "ALL" || district === "OLD";
   const showEjld = district === "ALL" || district === "EJLD";
   const showLbbld = district === "ALL" || district === "LBBLD";
@@ -526,6 +585,43 @@ export default function GrassCuttingPage() {
                 </span>
               </li>
             </ul>
+            <p className="text-xs text-gray-700 leading-relaxed mt-2">
+              Use the <strong>Cycle pace %</strong> toggle above the cards to
+              switch each bar between acres completed and the percentage of the
+              monthly cutting goal completed — the same figure that sets each
+              zone&apos;s status.
+            </p>
+          </div>
+        </section>
+
+        {/* PROGRESS VIEW TOGGLE — flips every zone bar below between raw
+            acres completed and the cycle-pace percentage. Sits directly
+            above the zone cards so it reads as controlling all of them. */}
+        <section className="mb-6">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-xs uppercase tracking-wide text-gray-500 font-semibold mr-1">
+              Show:
+            </span>
+            <div className="inline-flex rounded-full border border-gray-300 bg-white p-0.5">
+              {PROGRESS_VIEWS.map((opt) => {
+                const active = progressView === opt.key;
+                return (
+                  <button
+                    key={opt.key}
+                    type="button"
+                    onClick={() => setProgressView(opt.key)}
+                    aria-pressed={active}
+                    className={`px-3 py-1 text-xs font-semibold rounded-full transition-colors ${
+                      active
+                        ? "bg-[#21355a] text-white"
+                        : "text-gray-700 hover:text-[#21355a]"
+                    }`}
+                  >
+                    {opt.label}
+                  </button>
+                );
+              })}
+            </div>
           </div>
         </section>
 
@@ -538,7 +634,7 @@ export default function GrassCuttingPage() {
             />
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {zones.map((zone) => (
-                <OldZoneCard key={zone.key} zone={zone} />
+                <OldZoneCard key={zone.key} zone={zone} view={progressView} />
               ))}
             </div>
           </section>
@@ -553,7 +649,7 @@ export default function GrassCuttingPage() {
             />
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {ejldZones.map((zone) => (
-                <OtherZoneCard key={zone.key} zone={zone} />
+                <OtherZoneCard key={zone.key} zone={zone} view={progressView} />
               ))}
             </div>
           </section>
@@ -568,7 +664,7 @@ export default function GrassCuttingPage() {
             />
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {lbbldZones.map((zone) => (
-                <OtherZoneCard key={zone.key} zone={zone} />
+                <OtherZoneCard key={zone.key} zone={zone} view={progressView} />
               ))}
             </div>
           </section>
