@@ -958,8 +958,8 @@
           "service": "MEP Services",
           "contractCount": 3,
           "totalMaximum": 1500000.0,
-          "totalUtilized": 6501.25,
-          "utilizationPct": 0,
+          "totalUtilized": 17247.5,
+          "utilizationPct": 1,
           "contracts": [
             {
               "number": "38-01",
@@ -978,7 +978,7 @@
               "contractDate": "2025-01-16",
               "endDate": "2028-01-16",
               "maximum": 500000.0,
-              "remaining": 496398.75,
+              "remaining": 486890.0,
               "taskOrders": [
                 {
                   "number": "01",
@@ -987,13 +987,13 @@
                   "projectNumber": "O8300081",
                   "leveeDistrict": "OLD",
                   "maximum": 23259.0,
-                  "costToDate": 3601.25,
+                  "costToDate": 13110.0,
                   "startDate": "2026-01-13",
                   "endDate": "2026-06-13"
                 }
               ],
-              "utilized": 3601.25,
-              "utilizationPct": 1
+              "utilized": 13110.0,
+              "utilizationPct": 3
             },
             {
               "number": "38-03",
@@ -1001,7 +1001,7 @@
               "contractDate": "2025-01-16",
               "endDate": "2028-01-16",
               "maximum": 500000.0,
-              "remaining": 497100.0,
+              "remaining": 495862.5,
               "taskOrders": [
                 {
                   "number": "01",
@@ -1010,7 +1010,7 @@
                   "projectNumber": "O3000151",
                   "leveeDistrict": "OLD",
                   "maximum": 53000.0,
-                  "costToDate": 2900.0,
+                  "costToDate": 4137.5,
                   "startDate": "2026-03-02",
                   "endDate": "2026-12-25"
                 },
@@ -1026,7 +1026,7 @@
                   "endDate": "2026-12-31"
                 }
               ],
-              "utilized": 2900.0,
+              "utilized": 4137.5,
               "utilizationPct": 1
             }
           ]
@@ -1056,6 +1056,17 @@
                   "costToDate": 0.0,
                   "startDate": "2026-03-02",
                   "endDate": "2026-07-06"
+                },
+                {
+                  "number": "02",
+                  "status": "Active",
+                  "description": "40 Arpent Sheet Pile Wall Rehab Phase 2 Survey",
+                  "projectNumber": "L2820063",
+                  "leveeDistrict": "LBBLD",
+                  "maximum": 29785.0,
+                  "costToDate": 0.0,
+                  "startDate": "2026-06-19",
+                  "endDate": "2026-08-31"
                 }
               ],
               "utilized": 0,
@@ -1112,7 +1123,7 @@
           "service": "Civil Engineering",
           "contractCount": 10,
           "totalMaximum": 9100000.0,
-          "totalUtilized": 85205.53000000003,
+          "totalUtilized": 117799.20000000007,
           "utilizationPct": 1,
           "contracts": [
             {
@@ -1132,7 +1143,7 @@
               "contractDate": "2025-10-14",
               "endDate": "2028-10-14",
               "maximum": 1000000.0,
-              "remaining": 995066.77,
+              "remaining": 992891.37,
               "taskOrders": [
                 {
                   "number": "01",
@@ -1141,13 +1152,13 @@
                   "projectNumber": "O8200231",
                   "leveeDistrict": "OLD",
                   "maximum": 49927.4,
-                  "costToDate": 4933.23,
+                  "costToDate": 7108.629999999999,
                   "startDate": "2026-03-26",
                   "endDate": "2028-10-13"
                 }
               ],
-              "utilized": 4933.229999999981,
-              "utilizationPct": 0
+              "utilized": 7108.630000000005,
+              "utilizationPct": 1
             },
             {
               "number": "40-03",
@@ -1164,7 +1175,7 @@
                   "projectNumber": "O3000219",
                   "leveeDistrict": "OLD",
                   "maximum": 34228.58,
-                  "costToDate": 14202.06,
+                  "costToDate": 16359.52,
                   "startDate": "2026-01-01",
                   "endDate": "2027-01-21"
                 }
@@ -1178,7 +1189,7 @@
               "contractDate": "2025-09-16",
               "endDate": "2028-09-16",
               "maximum": 1000000.0,
-              "remaining": 975239.0,
+              "remaining": 964391.0,
               "taskOrders": [
                 {
                   "number": "01",
@@ -1187,13 +1198,13 @@
                   "projectNumber": "O2150172",
                   "leveeDistrict": "OLD",
                   "maximum": 86944.0,
-                  "costToDate": 24761.0,
+                  "costToDate": 35609.0,
                   "startDate": "2026-02-23",
                   "endDate": "2026-07-03"
                 }
               ],
-              "utilized": 24761.0,
-              "utilizationPct": 2
+              "utilized": 35609.0,
+              "utilizationPct": 4
             },
             {
               "number": "40-05",
@@ -1221,7 +1232,7 @@
                   "projectNumber": "E2430017",
                   "leveeDistrict": "EJLD",
                   "maximum": 86964.0,
-                  "costToDate": 1605.25,
+                  "costToDate": 3807.75,
                   "startDate": "2026-03-01",
                   "endDate": "2027-02-03"
                 },
@@ -1232,7 +1243,7 @@
                   "projectNumber": "E2430018",
                   "leveeDistrict": "EJLD",
                   "maximum": 56732.0,
-                  "costToDate": 0.0,
+                  "costToDate": 1377.0,
                   "startDate": "2026-04-01",
                   "endDate": "2027-02-03"
                 }
@@ -1279,7 +1290,7 @@
               "contractDate": "2025-11-04",
               "endDate": "2028-11-04",
               "maximum": 1000000.0,
-              "remaining": 944488.7,
+              "remaining": 924918.4299999999,
               "taskOrders": [
                 {
                   "number": "01",
@@ -1288,7 +1299,7 @@
                   "projectNumber": "E2780167",
                   "leveeDistrict": "EJLD",
                   "maximum": 41000.0,
-                  "costToDate": 22411.3,
+                  "costToDate": 30581.57,
                   "startDate": "2025-11-10",
                   "endDate": "2026-06-01"
                 },
@@ -1299,13 +1310,13 @@
                   "projectNumber": "E2780168",
                   "leveeDistrict": "EJLD",
                   "maximum": 80000.0,
-                  "costToDate": 33100.0,
+                  "costToDate": 44500.0,
                   "startDate": "2025-11-10",
                   "endDate": "2026-06-01"
                 }
               ],
-              "utilized": 55511.30000000005,
-              "utilizationPct": 6
+              "utilized": 75081.57000000007,
+              "utilizationPct": 8
             }
           ]
         }
@@ -1315,8 +1326,8 @@
   "summary": {
     "totalContracts": 37,
     "totalMaxValue": 27000000.0,
-    "totalUtilized": 4515972.28,
-    "activeTaskOrders": 28,
+    "totalUtilized": 4559312.2,
+    "activeTaskOrders": 29,
     "completedTaskOrders": 45,
     "serviceTypes": 6,
     "firms": 30
