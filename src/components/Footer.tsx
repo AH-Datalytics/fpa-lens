@@ -40,6 +40,15 @@ export default async function Footer() {
                 <MessageSquare className="h-4 w-4" />
                 Send feedback
               </Link>
+              <a
+                href="https://www.floodauthority.org"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 hover:text-white transition-colors"
+              >
+                <ExternalLink className="h-4 w-4" />
+                Main SLFPA-E website
+              </a>
             </div>
           </div>
 
@@ -56,15 +65,6 @@ export default async function Footer() {
                 <ExternalLink className="h-4 w-4" />
                 Sign up for alerts
               </a>
-              <a
-                href="https://www.floodauthority.org"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 text-blue-200 hover:text-white transition-colors"
-              >
-                <ExternalLink className="h-4 w-4" />
-                Main SLFPA-E website
-              </a>
               <Link
                 href="/infrastructure/turf-maintenance"
                 className="flex items-center gap-2 text-blue-200 hover:text-white transition-colors"
@@ -78,6 +78,13 @@ export default async function Footer() {
               >
                 <FileText className="h-4 w-4" />
                 Engineering Contracts (IDIQ)
+              </Link>
+              <Link
+                href="/engineering/permits"
+                className="flex items-center gap-2 text-blue-200 hover:text-white transition-colors"
+              >
+                <FileText className="h-4 w-4" />
+                Permits
               </Link>
             </div>
           </div>

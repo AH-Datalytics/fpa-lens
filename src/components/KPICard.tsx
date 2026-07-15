@@ -13,6 +13,7 @@ interface KPICardProps {
   subtitle?: string;
   icon?: ReactNode;
   source?: string;
+  footer?: string;
 }
 
 export default function KPICard({
@@ -26,6 +27,7 @@ export default function KPICard({
   subtitle,
   icon,
   source,
+  footer,
 }: KPICardProps) {
   const isStatusCard = status !== undefined;
   const hasProgress = total !== undefined && typeof value === "number";
@@ -81,6 +83,11 @@ export default function KPICard({
       {source && (
         <p className="mt-3 text-xs text-gray-400 border-t border-gray-100 pt-2">
           Source: {source}
+        </p>
+      )}
+      {footer && (
+        <p className="mt-3 text-xs text-gray-400 border-t border-gray-100 pt-2">
+          {footer}
         </p>
       )}
     </div>
