@@ -22,7 +22,10 @@ const navigation: NavItem[] = [
   {
     name: "Engineering",
     href: "/engineering",
-    submenu: [{ name: "Contracts (IDIQ)", href: "/engineering/idiq" }],
+    submenu: [
+      { name: "Contracts (IDIQ)", href: "/engineering/idiq" },
+      { name: "Permits", href: "/engineering/permits" },
+    ],
   },
   { name: "Safety", href: "/safety" },
   { name: "Staffing", href: "/staffing" },

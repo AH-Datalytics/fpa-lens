@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { FileText, Wrench, CheckCircle, Clock, ArrowRight, ClipboardCheck, CalendarDays } from "lucide-react";
+import { FileText, Wrench, ArrowRight, ClipboardCheck, CalendarDays } from "lucide-react";
 import {
   BarChart,
   Bar,
@@ -14,7 +14,6 @@ import {
 } from "recharts";
 import { SectionSubheader } from "@/components/SectionHeader";
 import DataCard from "@/components/DataCard";
-import KPICard from "@/components/KPICard";
 import Prose from "@/components/Prose";
 import MaybeRich from "@/components/MaybeRich";
 import { financialData, operationsData, readinessMetrics } from "@/data/siteData";
@@ -119,7 +118,6 @@ function ReadinessCard({
 
 export default function OperationsPage() {
   const copy = usePageCopy("engineering-page", ENGINEERING_DEFAULTS);
-  const [showFullPipeline, setShowFullPipeline] = useState(false);
 
   // Routine maintenance activities auto-refresh from the latest SITREP digest
   // (public/data/sitrep.json), falling back to the curated list if absent.
@@ -167,7 +165,6 @@ export default function OperationsPage() {
   }));
 
   const latestPermit = operationsData.permitsIssued[operationsData.permitsIssued.length - 1];
-  const latestMonth = latestPermit.month.split(" ")[0].substring(0, 3);
 
   return (
     <div className="py-12">
@@ -259,133 +256,69 @@ export default function OperationsPage() {
         {/* Permits */}
         <SectionSubheader title={copy.permitsHeading} />
 
-        {/* Key Metrics */}
-        <section className="mb-12">
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <KPICard
-              label={`Permits Issued (${latestMonth})`}
-              value={latestPermit.count}
-              unit="permits"
-              icon={<FileText className="h-6 w-6" />}
-              source={latestPermit.source}
-            />
-            <KPICard
-              label="Permit Approval Rate"
-              value={operationsData.permitProcessing.approvalRate}
-              total={100}
-              unit="%"
-              icon={<CheckCircle className="h-6 w-6" />}
-              source={operationsData.permitProcessing.source}
-            />
-            <KPICard
-              label="Avg Processing Time"
-              value={operationsData.permitProcessing.avgTotalDays}
-              unit="days"
-              icon={<Clock className="h-6 w-6" />}
-              subtitle={`${operationsData.permitProcessing.period}`}
-              source={operationsData.permitProcessing.source}
-            />
-          </div>
+        <section className="mb-6">
+          <Link
+            href="/engineering/permits"
+            className="group inline-flex items-center gap-2 px-5 py-3 bg-[#21355a] hover:bg-[#2c4470] text-white rounded-lg text-sm font-semibold shadow-md hover:shadow-lg transition-all whitespace-nowrap self-start"
+          >
+            <FileText className="h-4 w-4" />
+            Permit Overview
+            <ArrowRight className="h-4 w-4 text-[#65bc7b] group-hover:translate-x-0.5 transition-transform" />
+          </Link>
         </section>
 
-        {/* Permit Pipeline */}
+        {/* Permit Processing Pipeline */}
         <section className="mb-12">
-          <p className="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-4">Permit Processing Pipeline</p>
           <DataCard
             title={
               <div className="flex items-center justify-between">
-                <span>{showFullPipeline ? "Life of a permit" : `Permit flow (${operationsData.permitProcessing.period.toLowerCase()})`}</span>
-                <button
-                  onClick={() => setShowFullPipeline(!showFullPipeline)}
-                  className="text-xs font-medium text-[#21355a] hover:text-[#21355a]/70 border border-gray-300 rounded-md px-2.5 py-1 transition-colors"
+                <span>Life of a permit</span>
+                <Link
+                  href="/engineering/permits"
+                  className="group inline-flex items-center gap-1.5 text-xs font-medium text-[#21355a] hover:text-[#21355a]/70 border border-gray-300 rounded-md px-2.5 py-1 transition-colors"
                 >
-                  {showFullPipeline ? "Show timing" : "Full workflow"}
-                </button>
+                  View permit data
+                  <ArrowRight className="h-3.5 w-3.5 group-hover:translate-x-0.5 transition-transform" />
+                </Link>
               </div>
             }
             source={operationsData.permitProcessing.source}
-            note={`Avg 69 days submittal to LNO (Letter of No Objection), 38 days LNO to approval (${operationsData.permitProcessing.period.toLowerCase()})`}
           >
-            {showFullPipeline ? (
-              <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-0 py-4 flex-wrap">
-                {[
-                  { label: "Permit Submittal", highlight: true },
-                  { label: "FPA-E Review" },
-                  { label: "External Agency Coordination" },
-                  { label: "Receipt of LNO", tooltip: "Letter of No Objection from the Levee District" },
-                  { label: "Final Review" },
-                  { label: "Permit Issued", highlight: true, success: true },
-                ].map((step, i, arr) => (
-                  <div key={step.label} className="flex flex-col sm:flex-row items-center">
-                    <div
-                      className={`flex flex-col items-center px-4 py-3 border-2 rounded-lg min-w-[100px] text-center ${
-                        step.success
-                          ? "border-[#65bc7b]"
-                          : step.highlight
-                            ? "border-[#21355a]"
-                            : "border-gray-300 bg-gray-50"
-                      } ${step.tooltip ? "cursor-help" : ""}`}
-                      title={step.tooltip}
-                    >
-                      <span className={`text-xs font-medium uppercase tracking-wide ${
-                        step.success ? "text-[#65bc7b]" : step.highlight ? "text-[#21355a]" : "text-gray-500"
-                      }`}>
-                        {step.label}
-                      </span>
-                    </div>
-                    {i < arr.length - 1 && (
-                      <>
-                        <ArrowRight className="hidden sm:block h-4 w-4 text-gray-400 mx-1 flex-shrink-0" />
-                        <ArrowRight className="sm:hidden h-4 w-4 text-gray-400 rotate-90 my-1" />
-                      </>
-                    )}
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-0 py-4">
-                <div className="flex flex-col items-center px-6 py-4 border-2 border-[#21355a] rounded-lg min-w-[120px]">
-                  <span className="text-xs font-medium text-gray-500 uppercase tracking-wide">Submitted</span>
-                  <span className="text-2xl font-bold text-[#21355a]">{operationsData.permitProcessing.submitted}</span>
-                </div>
-                <div className="flex flex-col items-center px-4">
-                  <span className="text-xs font-medium text-gray-500 mb-1">69 days avg</span>
-                  <div className="hidden sm:flex items-center">
-                    <div className="w-16 h-px bg-gray-300" />
-                    <ArrowRight className="h-4 w-4 text-gray-400 -ml-1" />
-                  </div>
-                  <ArrowRight className="h-4 w-4 text-gray-400 rotate-90 sm:hidden" />
-                </div>
-                <div className="flex flex-col items-center px-6 py-4 border-2 border-gray-300 rounded-lg min-w-[120px] bg-gray-50">
-                  <span
-                    className="text-xs font-medium text-gray-500 uppercase tracking-wide border-b border-dashed border-gray-300 cursor-help"
-                    title="LNO: Letter of No Objection issued by the Levee District"
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-0 py-4 flex-wrap">
+              {[
+                { label: "Permit Submittal", highlight: true },
+                { label: "FPA-E Review" },
+                { label: "External Agency Coordination" },
+                { label: "Receipt of LNO", tooltip: "Letter of No Objection from the Levee District" },
+                { label: "Final Review" },
+                { label: "Permit Issued", highlight: true, success: true },
+              ].map((step, i, arr) => (
+                <div key={step.label} className="flex flex-col sm:flex-row items-center">
+                  <div
+                    className={`flex flex-col items-center px-4 py-3 border-2 rounded-lg min-w-[100px] text-center ${
+                      step.success ? "border-[#65bc7b]" : step.highlight ? "border-[#21355a]" : "border-gray-300 bg-gray-50"
+                    } ${step.tooltip ? "cursor-help" : ""}`}
+                    title={step.tooltip}
                   >
-                    LNO Review
-                  </span>
-                  <span className="text-sm text-gray-600 mt-1">Levee District</span>
-                </div>
-                <div className="flex flex-col items-center px-4">
-                  <span className="text-xs font-medium text-gray-500 mb-1">38 days avg</span>
-                  <div className="hidden sm:flex items-center">
-                    <div className="w-16 h-px bg-gray-300" />
-                    <ArrowRight className="h-4 w-4 text-gray-400 -ml-1" />
+                    <span className={`text-xs font-medium uppercase tracking-wide ${
+                      step.success ? "text-[#65bc7b]" : step.highlight ? "text-[#21355a]" : "text-gray-500"
+                    }`}>{step.label}</span>
                   </div>
-                  <ArrowRight className="h-4 w-4 text-gray-400 rotate-90 sm:hidden" />
+                  {i < arr.length - 1 && (
+                    <>
+                      <ArrowRight className="hidden sm:block h-4 w-4 text-gray-400 mx-1 flex-shrink-0" />
+                      <ArrowRight className="sm:hidden h-4 w-4 text-gray-400 rotate-90 my-1" />
+                    </>
+                  )}
                 </div>
-                <div className="flex flex-col items-center px-6 py-4 border-2 border-[#65bc7b] rounded-lg min-w-[120px]">
-                  <span className="text-xs font-medium text-gray-500 uppercase tracking-wide">Approved</span>
-                  <span className="text-2xl font-bold text-[#65bc7b]">{operationsData.permitProcessing.approved}</span>
-                </div>
-              </div>
-            )}
+              ))}
+            </div>
           </DataCard>
         </section>
 
         {/* Permits Chart */}
         <section className="mb-12">
-          <p className="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-4">Permits Issued</p>
-          <DataCard title="Monthly Permits Trend" source="SITREPs">
+          <DataCard title="Monthly Permits Issued" source="SITREPs">
             <div className="h-64">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={permitChartData}>
@@ -407,7 +340,7 @@ export default function OperationsPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {operationsData.permitsIssued.map((item) => (
+                  {[...operationsData.permitsIssued].reverse().map((item) => (
                     <tr key={item.month} className="border-b border-gray-100">
                       <td className="py-2 text-gray-700">{item.month}</td>
                       <td className="py-2 text-right font-semibold text-[#21355a]">{item.count}</td>
@@ -424,6 +357,7 @@ export default function OperationsPage() {
         <section>
           <p className="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-4">Routine Maintenance Activities</p>
           <DataCard title="Current Maintenance Work" source={sitrepMonth ? `${sitrepMonth} SITREP` : operationsData.maintenanceSource}>
+
             <ul className="space-y-3">
               {(sitrepActivities ?? operationsData.maintenanceActivities).map((activity, index) => (
                 <li key={index} className="flex items-start gap-3">
