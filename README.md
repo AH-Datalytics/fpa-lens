@@ -11,6 +11,7 @@ Public transparency dashboard for the Southeast Louisiana Flood Protection Autho
 | `/infrastructure/turf-maintenance` | Turf Maintenance page: 3,633 acres across 14 zones in three levee districts (OLD, EJLD, LBBLD), with district filter, interactive map, system-wide on-pace badge, and per-zone Green/Amber/Red monthly progress |
 | `/engineering` | Engineering: permits, inspections, valve exercises, PCCP repairs, maintenance activities |
 | `/engineering/idiq` | IDIQ Contract Tracker: 2022 and 2025 cycles, service categories with micro-descriptions, firm-level utilization |
+| `/engineering/permits` | Permit Overview: live tracker fed by the Vinformatix permit API (hourly refresh; status/district/type/date filters). Auto-updates — no manual data step |
 | `/safety` | Accident/incident trends, events by category, lost time tracking. FY26 YTD accident count sourced from Safety Officer |
 | `/finance` | FY26 budget by category/district, budget vs actuals (monthly YTD refresh), capital projects |
 | `/staffing` | Staffing: leadership, headcount, vacancies, department status |
