@@ -8,6 +8,7 @@ import { ProtectionPage } from "./protectionPage";
 import { StaffingPage } from "./staffingPage";
 import { TurfPage } from "./turfPage";
 import { IdiqPage } from "./idiqPage";
+import { PermitsPage } from "./permitsPage";
 
 /** All per-page copy globals, registered in payload.config.ts. */
 export const pageGlobals = [
@@ -21,6 +22,7 @@ export const pageGlobals = [
   StaffingPage,
   TurfPage,
   IdiqPage,
+  PermitsPage,
 ];
 
 /** Global slug -> public page path (for Live Preview + editor context). */
@@ -35,4 +37,5 @@ export const PAGE_GLOBAL_PATHS: Record<string, string> = {
   "staffing-page": "/staffing",
   "turf-page": "/infrastructure/turf-maintenance",
   "idiq-page": "/engineering/idiq",
+  "permits-page": "/engineering/permits",
 };

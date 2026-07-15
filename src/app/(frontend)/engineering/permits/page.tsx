@@ -12,6 +12,9 @@ import {
   type Stage, type District, type PermitType, type PermitOutcome,
   type NormalizedPermit, type PermitsResponse,
 } from "@/lib/permits";
+import Prose from "@/components/Prose";
+import { usePageCopy } from "@/lib/usePageCopy";
+import { PERMITS_DEFAULTS } from "@/globals/pages/permitsPage";
 
 // ---------------------------------------------------------------------------
 // Lifecycle model for the UI.
@@ -261,6 +264,8 @@ export default function PermitsPage() {
   const procLabel     = dtPhrase ? `Avg Processing Time (${dtPhrase})` : "Avg Processing Time";
   const outcomesLabel = dtPhrase ? squish(`${dtPhrase} Permit Outcomes`) : "Permit Outcomes";
 
+  const copy = usePageCopy("permits-page", PERMITS_DEFAULTS);
+
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 py-8 space-y-5">
@@ -269,14 +274,8 @@ export default function PermitsPage() {
           <Link href="/engineering" className="inline-flex items-center gap-1.5 text-sm text-[#21355a] hover:underline mb-3">
             <ArrowLeft className="h-4 w-4" /> Back to Engineering
           </Link>
-          <h1 className="text-3xl font-bold text-[#21355a]">Permit Overview</h1>
-          <p className="mt-2 text-gray-600 max-w-3xl">
-            SLFPA-East reviews and approves permit applications for construction, encroachments, and events on or near the levee system.
-            Once a permit is submitted, FPA conducts its own engineering review -- but some steps require action from outside parties,
-            such as a Letter of No Objection from the U.S. Army Corps of Engineers or the Coastal Protection and Restoration Authority,
-            or a response from the applicant.
-            Processing time reflects the full timeline from submission to decision, including any periods outside FPA&rsquo;s control.
-          </p>
+          <h1 className="text-3xl font-bold text-[#21355a]">{copy.pageTitle}</h1>
+          <Prose className="mt-2 text-gray-600 max-w-3xl [&_p]:m-0" data={copy.intro} />
         </div>
 
         {loading ? (
@@ -386,7 +385,7 @@ export default function PermitsPage() {
 
         {/* Permit lifecycle: active-stage snapshot + terminal outcome box */}
         <div className="bg-white rounded-xl border border-gray-200 p-5">
-          <h3 className="text-sm font-semibold text-[#21355a] mb-1">Permit Lifecycle</h3>
+          <h3 className="text-sm font-semibold text-[#21355a] mb-1">{copy.lifecycleHeading}</h3>
           <p className="text-xs text-gray-500 mb-4 max-w-3xl">
             The first four boxes are a live snapshot of active permits, grouped by the stage each is waiting at right now
             (they add up to the &ldquo;Active in Pipeline&rdquo; total above). The final box, set apart at the end, is the
@@ -398,7 +397,7 @@ export default function PermitsPage() {
             <div className="flex items-start gap-2 mb-4 text-xs text-amber-800 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">
               <AlertCircle className="h-3.5 w-3.5 mt-0.5 flex-shrink-0 text-amber-600" />
               <span>
-                <span className="font-semibold">{outsideCount.toLocaleString()} permits</span> are outside FPA&rsquo;s active review queue
+                <span className="font-semibold">{outsideCount.toLocaleString()} permits</span>{" "}are outside FPA&rsquo;s active review queue
                 ({stageCounts["External Agency Review"] ?? 0} awaiting external agency sign-off,{" "}
                 {stageCounts["Awaiting Applicant"] ?? 0} awaiting applicant response).
                 FPA cannot advance these until the other party acts.

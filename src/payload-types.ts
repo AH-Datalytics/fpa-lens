@@ -102,6 +102,7 @@ export interface Config {
     'staffing-page': StaffingPage;
     'turf-page': TurfPage;
     'idiq-page': IdiqPage;
+    'permits-page': PermitsPage;
   };
   globalsSelect: {
     'site-settings': SiteSettingsSelect<false> | SiteSettingsSelect<true>;
@@ -116,6 +117,7 @@ export interface Config {
     'staffing-page': StaffingPageSelect<false> | StaffingPageSelect<true>;
     'turf-page': TurfPageSelect<false> | TurfPageSelect<true>;
     'idiq-page': IdiqPageSelect<false> | IdiqPageSelect<true>;
+    'permits-page': PermitsPageSelect<false> | PermitsPageSelect<true>;
   };
   locale: null;
   widgets: {
@@ -1618,6 +1620,43 @@ export interface IdiqPage {
   createdAt?: string | null;
 }
 /**
+ * Editable copy on the Permit Overview page.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "permits-page".
+ */
+export interface PermitsPage {
+  id: number;
+  /**
+   * Main page heading (top of the Permit Overview page).
+   */
+  pageTitle?: string | null;
+  /**
+   * Explainer paragraph beneath the page heading. Data, counts, and chart labels are not editable.
+   */
+  intro?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Heading of the lifecycle section ("Permit Lifecycle").
+   */
+  lifecycleHeading?: string | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "site-settings_select".
  */
@@ -1846,6 +1885,18 @@ export interface IdiqPageSelect<T extends boolean = true> {
   serviceGeotechnicalEngineering?: T;
   serviceConstructionMaterialsTesting?: T;
   serviceMepServices?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "permits-page_select".
+ */
+export interface PermitsPageSelect<T extends boolean = true> {
+  pageTitle?: T;
+  intro?: T;
+  lifecycleHeading?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
