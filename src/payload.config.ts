@@ -22,20 +22,50 @@ const dirname = path.dirname(filename);
 const postgresUrl =
   process.env.POSTGRES_URL || process.env.DATABASE_URL || process.env.POSTGRES_PRISMA_URL;
 
+// Canonical site origin. Local dev sets NEXT_PUBLIC_SERVER_URL; production uses
+// the custom domain. Used both for Payload's serverURL (absolute reset/invite
+// email links) and for the absolute OpenGraph image URL below (link unfurlers
+// can't resolve relative paths).
+const siteURL =
+  process.env.NEXT_PUBLIC_SERVER_URL ||
+  (process.env.VERCEL_ENV === "production" ? "https://fpalens.org" : undefined);
+
+// One-line summary shared by the browser meta description and the OG unfurl.
+const portalDescription =
+  "Staff sign-in to edit page text, staff profiles, and site settings for the SLFPA-E FPA Lens public dashboard.";
+
 export default buildConfig({
-  // Canonical URL for absolute links (password-reset / invite emails, etc.).
-  // Local dev sets NEXT_PUBLIC_SERVER_URL; production uses the custom domain.
   // Without this, Payload can't infer the host behind Vercel's proxy and emits a
   // hostname-less "http:///admin/reset/<token>" link in emails.
-  serverURL:
-    process.env.NEXT_PUBLIC_SERVER_URL ||
-    (process.env.VERCEL_ENV === "production" ? "https://fpalens.org" : undefined),
+  serverURL: siteURL,
   admin: {
     user: Users.slug,
     importMap: { baseDir: path.resolve(dirname) },
+    // Controls the browser tab title, favicon, and the card that unfurls when
+    // the /admin link is shared in Slack / iMessage / email. `robots` stays at
+    // Payload's noindex default (unfurlers still read OG tags regardless).
     meta: {
       titleSuffix: "· FPA Lens Content Portal",
-      description: "Content portal for the SLFPA-E FPA Lens dashboard.",
+      description: portalDescription,
+      // Use our branded static card instead of Payload's per-view dynamic one.
+      defaultOGImageType: "off",
+      icons: [
+        { rel: "icon", type: "image/png", url: "/favicon-32x32.png" },
+        { rel: "icon", type: "image/png", url: "/favicon-16x16.png" },
+        { rel: "apple-touch-icon", type: "image/png", url: "/apple-touch-icon.png" },
+      ],
+      openGraph: {
+        title: "FPA Lens Content Portal",
+        description: portalDescription,
+        siteName: "FPA Lens",
+        images: [
+          {
+            url: `${siteURL || "https://fpalens.org"}/admin-og.png`,
+            width: 1200,
+            height: 630,
+          },
+        ],
+      },
     },
     components: {
       graphics: {
