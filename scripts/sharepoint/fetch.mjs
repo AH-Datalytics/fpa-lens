@@ -60,6 +60,14 @@ export const CATEGORIES = {
     ext: "pdf",
     exts: ["pdf", "docx"], // SITREPs arrive as either PDF or Word
     cadence: "monthly",
+    // The Regional Director frequently uploads SITREPs under a human-readable
+    // name that doesn't match the sitrep_YYYY-MM convention (e.g.
+    // "2026.07_Regional Director's SITREP - July 2026.pdf"), and the pipeline's
+    // SharePoint app is read-only so it can't rename them. Rather than skip
+    // those files, resolve the month from anywhere in the name and canonicalize
+    // the saved filename. The SITREP folder holds only SITREPs, so this loose
+    // match is safe here without loosening the other (strict) categories.
+    flexibleMonth: true,
     dest: "data/sources/sitreps/{name}",
   },
   turf: {
@@ -78,6 +86,32 @@ function extPat(cat) {
   return es.length > 1 ? `(?:${es.join("|")})` : es[0];
 }
 
+const MONTHS_LC = [
+  "january", "february", "march", "april", "may", "june",
+  "july", "august", "september", "october", "november", "december",
+];
+
+/**
+ * Resolve a { yyyy, mm } from anywhere in a filename, tolerating the shapes a
+ * SITREP actually arrives in: "sitrep_2026-07.pdf", "2026.07_Regional
+ * Director's SITREP - July 2026.pdf", "...July 2026.pdf", "07-2026.pdf".
+ * Returns null when no month is resolvable. Used for `flexibleMonth` categories
+ * only; every other category stays on the strict descriptor_YYYY-MM regex.
+ */
+export function flexibleMonth(name) {
+  // 1. YYYY<sep?>MM anywhere (e.g. 2026-07, 2026.07, 202607). Bounded by
+  //    non-digits so it doesn't grab a slice of a longer number.
+  let m = name.match(/(?<!\d)(20\d{2})[-._ ]?(0[1-9]|1[0-2])(?!\d)/);
+  if (m) return { yyyy: m[1], mm: m[2] };
+  // 2. MonthName YYYY (e.g. "July 2026").
+  m = name.match(new RegExp(`(${MONTHS_LC.join("|")})[ ,._-]*(20\\d{2})`, "i"));
+  if (m) return { yyyy: m[2], mm: String(MONTHS_LC.indexOf(m[1].toLowerCase()) + 1).padStart(2, "0") };
+  // 3. MM<sep>YYYY (e.g. 07-2026).
+  m = name.match(/(?<!\d)(0[1-9]|1[0-2])[-._ ](20\d{2})(?!\d)/);
+  if (m) return { yyyy: m[2], mm: m[1] };
+  return null;
+}
+
 /** Build the filename regex for a category. */
 function nameRegex(cat) {
   const date =
@@ -91,14 +125,28 @@ function nameRegex(cat) {
   return new RegExp(`^${esc}_${date}\\.${ext}(?:\\.${ext})?$`, "i");
 }
 
-/** Collapse a doubled extension, e.g. foo.xlsm.xlsm -> foo.xlsm. */
-function normalizeName(name, cat) {
+/**
+ * Canonical local filename. For `flexibleMonth` categories this rewrites an
+ * off-convention SITREP name to descriptor_YYYY-MM.ext; otherwise it just
+ * collapses a doubled extension, e.g. foo.xlsm.xlsm -> foo.xlsm.
+ */
+export function normalizeName(name, cat) {
+  if (cat.flexibleMonth) {
+    const fm = flexibleMonth(name);
+    if (!fm) return name;
+    const ext = name.toLowerCase().split(".").pop();
+    return `${cat.descriptor}_${fm.yyyy}-${fm.mm}.${ext}`;
+  }
   const ext = extPat(cat);
   return name.replace(new RegExp(`(\\.${ext})\\.${ext}$`, "i"), "$1");
 }
 
 /** Parse the date in a filename into a sortable integer (YYYYMMDD), or null. */
-function dateKey(name, cat) {
+export function dateKey(name, cat) {
+  if (cat.flexibleMonth) {
+    const fm = flexibleMonth(name);
+    return fm ? Number(`${fm.yyyy}${fm.mm}01`) : null;
+  }
   const m = name.match(nameRegex(cat));
   if (!m) return null;
   const y = m[1];
@@ -152,7 +200,7 @@ if (isMain) {
           : "newest = (none yet)";
         console.log(`• ${key.padEnd(9)} ${line}`);
         if (newest && newest.name !== newest.normalizedName) {
-          console.log(`    ⚠ doubled extension "${newest.name}" -> will save as ${newest.normalizedName}`);
+          console.log(`    ⚠ off-convention name "${newest.name}" -> will save as ${newest.normalizedName}`);
         }
         if (skipped.length) console.log(`    ⚠ skipped (bad name): ${skipped.join(", ")}`);
       } catch (e) {

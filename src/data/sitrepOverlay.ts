@@ -279,6 +279,12 @@ export function applySitrep(digest: unknown, targets: SitrepTargets): ApplyResul
     if (insp.valves?.completed != null) rm.valveExercises.completed = insp.valves.completed;
     if (insp.valves?.total != null) rm.valveExercises.total = insp.valves.total;
     if (insp.valves?.note) rm.valveExercises.currentQuarterStatus = insp.valves.note;
+    // When the SITREP reports the cycle complete without an explicit count, sync
+    // the completed count to the total so the progress bar reads full instead of
+    // showing "100% complete" alongside a stale partial count (e.g. 84 of 105).
+    if (valvePct === 100 && insp.valves?.completed == null && rm.valveExercises.total != null) {
+      rm.valveExercises.completed = rm.valveExercises.total;
+    }
     changes.push(`Valve testing -> ${valvePct}%`);
   }
 

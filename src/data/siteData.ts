@@ -21,6 +21,7 @@
  */
 
 import sitrepDigest from "../../public/data/sitrep.json";
+import staffingJson from "../../public/data/staffing.json";
 import { applySitrep } from "./sitrepOverlay";
 
 // ============================================================================
@@ -100,7 +101,12 @@ export const systemReadiness = {
     {
       name: "Infrastructure Readiness",
       status: "GREEN" as StatusLevel,
-      description: "Q1 field inspections submitted to CPRA; Q2 field inspections nearing completion; all LPV, PCCP, and Complex Structures USACE inspections complete with no significant findings",
+      // Curated narrative summary of the current inspection posture. The SITREP
+      // overlay refreshes this card's status/source and the individual
+      // inspection cards' percentages, but this prose summary is hand-maintained
+      // (the SITREP extractor has no clean field for it); update it when the
+      // monthly SITREP restates inspection status.
+      description: "Q1 field inspections submitted to CPRA; Q2 field inspections completed and under Engineering review; all LPV, PCCP, and Complex Structures USACE inspections complete with no significant findings",
       source: "June 2026 SITREP",
     },
     {
@@ -944,3 +950,25 @@ applySitrep(sitrepDigest, {
   operationsData,
   financialData,
 });
+
+// ============================================================================
+// STAFFING HEADCOUNT OVERLAY
+// ============================================================================
+// The agency-wide total and vacancy count are the system of record in the
+// monthly Staffing Headcount workbook (public/data/staffing.json, produced by
+// the SharePoint pipeline), NOT the SITREP -- the SITREP only sets the staffing
+// readiness color. Overlay the workbook figures here so the vacancy count on the
+// home/infrastructure readiness cards auto-updates each refresh instead of
+// living as a hardcoded literal. Guarded: a missing value keeps the baseline.
+if (staffingJson?.headcount) {
+  const { total, vacancies } = staffingJson.headcount;
+  if (typeof total === "number") staffingData.headcount.total = total;
+  if (typeof vacancies === "number") staffingData.headcount.vacancies = vacancies;
+}
+// Point the Staffing Readiness card's provenance at the workbook that supplies
+// the vacancy count, so the source label doesn't credit the SITREP (which
+// applySitrep set above from the readiness color) for a number it didn't provide.
+if (staffingJson?.asOf) {
+  const staffCat = systemReadiness.categories.find((c) => c.name === "Staffing Readiness");
+  if (staffCat) staffCat.source = `Staffing Headcount workbook (${staffingJson.asOf})`;
+}
