@@ -130,19 +130,19 @@
       "zone": "EJ Lakefront Reach 1-5",
       "reach": "St. Charles/Jeff Parish line to 17th St. Canal on EJ side",
       "cycle1Pct": 1.0,
-      "cycle2Pct": 0.25
+      "cycle2Pct": 0.5
     },
     {
       "zone": "EJ MRL",
       "reach": "Monticello to Alliance",
       "cycle1Pct": 1.0,
-      "cycle2Pct": null
+      "cycle2Pct": 0.0
     },
     {
       "zone": "EJ MRL",
       "reach": "St. Charles/Jeff Parish line",
       "cycle1Pct": 1.0,
-      "cycle2Pct": 0.5
+      "cycle2Pct": 1.0
     },
     {
       "zone": "EJ West Return",
@@ -154,18 +154,18 @@
       "zone": "EJ East Return",
       "reach": "Along 17th St. Canal to Pinks St",
       "cycle1Pct": 1.0,
-      "cycle2Pct": null
+      "cycle2Pct": 0.0
     },
     {
       "zone": "LPV-144 through LPV-149",
       "reach": "Bayou Dupre Structure (St. Bernard side) to HWY 39 at MRL",
-      "cycle1Pct": 0.5,
+      "cycle1Pct": 0.75,
       "cycle2Pct": null
     },
     {
       "zone": "Non-Federal Back Levee/NFL",
       "reach": "40 Arpent - Orleans Parish line to Hwy 46 Reggion in Lower St Bernard",
-      "cycle1Pct": 0.0,
+      "cycle1Pct": 0.75,
       "cycle2Pct": null
     },
     {
