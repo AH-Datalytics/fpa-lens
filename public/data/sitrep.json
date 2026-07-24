@@ -23,20 +23,20 @@
   },
   "maintenanceActivities": [
     "Hurricane and River Floodgate Inspections 100% completed; no action needed until October 2026.",
-    "Seasonal storm readiness measures underway, including sandbag staging and facility preparation; crews completed filling 63 of the 100 3,000lb bags for EJ.",
-    "Crews installed a new levee access gate by Floodgate M-01.",
+    "Storm readiness underway: sandbag staging and facility preparation; crews completed filling 63 of 100 3,000-lb bags for EJ.",
+    "Installed new levee access gate by Floodgate M-01.",
     "Crews covered multiple locations of graffiti around the system.",
-    "East Jefferson – Repaired rutting at the toe of the levee between S Cumberland St and Wilker Neal Ave; jersey barriers placed at end of both streets to mitigate future damage.",
+    "East Jefferson – Repaired rutting at toe of levee between S Cumberland St and Wilker Neal Ave; jersey barriers placed at end of both streets.",
     "Lake Borgne – LPV148 (D route) earthen levee repairs continue.",
     "Q1 valve exercises 100% completed 3/9/2026; Q2 valve exercises 100% completed 6/1/2026.",
-    "Tornado caused collapse of a wall in the interior of the Franklin Facility; area secured, awaiting approval to remove undamaged equipment.",
+    "Facilities: tornado caused collapse of north wall interior; area secured; awaiting approval to remove undamaged equipment.",
     "Crews worked significant overtime during late June and early July to maintain mowing schedules despite prolonged rainfall."
   ],
   "projects": [
     {
       "name": "Foreshore Erosion Repair",
-      "status": "USACE determined a revised path forward requiring Board action; USACE schedule to advertise in July with Bid Opening August 21, 2026.",
-      "phase": "Pre-Award"
+      "status": "USACE has determined a revised path forward requiring Board action; USACE schedule to advertise in July with Bid Opening August 21, 2026. Mitigation measures being scheduled at two eroded locations.",
+      "phase": "In Bidding"
     },
     {
       "name": "West Return Wall Splash Pad",
@@ -50,7 +50,7 @@
     },
     {
       "name": "Orpheum Slope Paving",
-      "status": "Construction has begun; contractor mobilized and has begun clearing and grubbing; staged concrete pours to commence in the next few weeks.",
+      "status": "Construction has begun; contractor is mobilized and has begun clearing and grubbing; staged concrete pours to commence in the next few weeks.",
       "phase": "In Progress"
     },
     {
@@ -60,7 +60,7 @@
     },
     {
       "name": "London Avenue Canal Erosion Mitigation (Phase 1)",
-      "status": "95% Plans and Specifications submitted; CEA negotiations ongoing; will be ready to advertise and award for construction to start at end of Hurricane Season.",
+      "status": "95% Plans and Specifications submitted; CEA negotiations ongoing; will be ready to advertise and award for construction to start at end of hurricane season.",
       "phase": "In Design"
     },
     {
@@ -70,18 +70,18 @@
     },
     {
       "name": "Franklin Herbicide Vehicle Containment",
-      "status": "Informal bid yielded one above-estimate bid; design revised; readvertisement via Central Bidding planned.",
-      "phase": "Pre-Award"
+      "status": "Informal bid yielded one bid above internal estimates; design revised; readvertisement via Central Bidding planned.",
+      "phase": "In Bidding"
     },
     {
       "name": "Lakeshore Drive Flooding Warning Signs",
       "status": "Engineering reviewed, selected, and ordered warning sign systems; exploring exact locations and coordinating design for installation with IDIQ holder.",
-      "phase": "In Design"
+      "phase": "Pre-Award"
     },
     {
       "name": "Tropical Storm Arthur – Franklin Facility Damage",
       "status": "Engineering coordinating with Maintenance, Finance, Insurance Adjusters, and outside engineers for demolition and repair of the facility.",
-      "phase": "Pre-Award"
+      "phase": "In Progress"
     }
   ],
   "inspections": {
