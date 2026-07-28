@@ -27,7 +27,16 @@ function hasBio(person: Person): boolean {
   return person.bio.trim().length > 0;
 }
 
-function PersonPhoto({ image }: { image?: string }) {
+/** True for placeholder cards representing an unfilled position. */
+function isVacant(person: Person): boolean {
+  return person.name.trim().toLowerCase() === "vacant";
+}
+
+function PersonPhoto({ image, blank }: { image?: string; blank?: boolean }) {
+  // Vacant positions: a plain empty circle (no logo) so the card reads as "open".
+  if (blank) {
+    return <div className="w-24 h-24 mb-3 rounded-full bg-gray-100 flex-shrink-0" />;
+  }
   return (
     <div className="relative w-24 h-24 mb-3 rounded-full overflow-hidden bg-gray-100 flex-shrink-0 ring-2 ring-transparent group-hover:ring-[#21355a]/20 transition-all">
       {image ? (
@@ -42,12 +51,20 @@ function PersonPhoto({ image }: { image?: string }) {
 const CARD_BASE =
   "group relative bg-white rounded-lg shadow-sm border border-gray-100 p-4 flex flex-col items-center text-center transition-all duration-200";
 
+// Vacant cards: same shell but no `group`/hover/transition, so nothing reacts
+// to the cursor.
+const VACANT_CARD_BASE =
+  "relative bg-white rounded-lg shadow-sm border border-gray-100 p-4 flex flex-col items-center text-center";
+
 function PersonCard({ person, onOpen }: { person: Person; onOpen?: () => void }) {
-  // No bio -> render a non-interactive card (no "Read bio", no empty modal).
-  if (!onOpen) {
+  const vacant = isVacant(person);
+  // Vacant positions (or anyone with no bio) render a non-interactive card
+  // with no "Read bio" and no empty modal. Vacant cards also drop every hover
+  // affordance and show a blank circle instead of the logo.
+  if (vacant || !onOpen) {
     return (
-      <div className={CARD_BASE}>
-        <PersonPhoto image={person.image} />
+      <div className={vacant ? VACANT_CARD_BASE : CARD_BASE}>
+        <PersonPhoto image={person.image} blank={vacant} />
         <p className="font-semibold text-[#21355a] leading-tight">{person.name}</p>
         <p className="text-sm text-gray-600 mt-1 leading-snug">{person.title}</p>
       </div>

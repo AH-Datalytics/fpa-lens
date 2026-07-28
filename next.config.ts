@@ -26,6 +26,11 @@ const nextConfig: NextConfig = {
     // Staff headshots uploaded via the CMS are served from Vercel Blob.
     remotePatterns: [
       { protocol: "https", hostname: "*.public.blob.vercel-storage.com" },
+      // CMS headshots are proxied through the app's own domain
+      // (https://fpalens.org/api/media/file/*), so allowlist it for the
+      // image optimizer -- otherwise every uploaded headshot 400s and renders blank.
+      { protocol: "https", hostname: "fpalens.org" },
+      { protocol: "https", hostname: "www.fpalens.org" },
     ],
   },
   async headers() {
