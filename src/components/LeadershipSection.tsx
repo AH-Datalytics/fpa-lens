@@ -155,7 +155,7 @@ export default function LeadershipSection({ leaders }: { leaders?: Person[] }) {
       <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {people.map((leader) => (
           <PersonCard
-            key={leader.name}
+            key={`${leader.name}-${leader.title}`}
             person={leader}
             onOpen={hasBio(leader) ? () => setActivePerson(leader) : undefined}
           />

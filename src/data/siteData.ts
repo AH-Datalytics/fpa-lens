@@ -810,14 +810,8 @@ export const staffingData = {
       ],
     },
     {
-      name: "Carlos Metoyer",
+      name: "Vacant",
       title: "Regional Director of Maintenance",
-      bio: [
-        { heading: "Current Role", text: "Carlos Metoyer is responsible for ensuring the ongoing functionality and operational readiness of the region's flood protection infrastructure through oversight of preventive maintenance, repair, and testing of system components, structures, and turf, as well as post-storm recovery efforts." },
-        { heading: "Professional Experience", text: "Metoyer brings over 40 years of experience in construction and maintenance, including 30 years with the City of New Orleans serving as Superintendent and Director of Maintenance for the New Orleans International Airport, overseeing airfield, facilities, fleet, and heavy equipment operations. He also served as Director of Maintenance with American Building Maintenance at the University of New Orleans and as Chief Engineer with the Marriott Corporation." },
-        { heading: "Education / Credentials", text: "Metoyer completed a four-year apprenticeship with Plumbers and Steamfitters Local 60, earning a Journeyman's Plumbing License and later a Master Plumber License. He also holds certifications from Delgado Community College as a First Class Stationary Engineer and from the New Orleans Regional Institute in Air Conditioning and Refrigeration, and is a licensed Mechanical, Air Conditioning, and Refrigeration Contractor, as well as a Water Supply Protection Specialist." },
-        { heading: "Commitment to the Mission", text: "He is committed to ensuring the region's flood protection system is maintained with unwavering diligence, safety, and accountability to safeguard our communities, environment, and future." },
-      ],
     },
     {
       name: "Denise Williams",
@@ -863,28 +857,11 @@ export const staffingData = {
       ],
     },
     {
-      name: "Stacy Gilmore",
-      title: "Public Information Director",
-      bio: [
-        { heading: "Current Role", text: "Stacy Gilmore oversees media relations, stakeholder engagement, internal and external communications, marketing, social media, and public outreach for the Southeast Louisiana Flood Protection Authority - East." },
-        { heading: "Professional Experience", text: "Gilmore brings more than two decades of experience in marketing and communications across government, healthcare, hospitality, and nonprofit sectors, including work with the Louisiana Seafood Promotion & Marketing Board. She has led multi-channel campaigns and public outreach initiatives, including a statewide effort to revitalize Louisiana seafood following the Deepwater Horizon oil spill, which contributed to the sale of 1.6 million pounds of seafood and helped restore consumer confidence. She previously served as team lead for an embedded public affairs team with the U.S. Army Corps of Engineers, New Orleans District, where she managed staff, oversaw project budgets, and supported public engagement and media relations for the Hurricane and Storm Damage Risk Reduction System, including coordination with elected officials, partner agencies, and national and international media." },
-        { heading: "Education / Credentials", text: "Gilmore holds a Bachelor of Arts in Public Relations/Marketing Communications from Simmons University and is an active member of the Public Relations Society of America." },
-        { heading: "Commitment to the Mission", text: "She is committed to ensuring clear, transparent communication that supports the Authority's mission and strengthens public trust." },
-      ],
-    },
-    {
-      name: "Jamal Dortch",
+      name: "Vacant",
       title: "Safety Risk Agency Manager",
-      image: "/headshots/jamal-dortch.png",
-      bio: [
-        { heading: "Current Role", text: "Jamal Dortch leads agency-wide safety and risk management programs, supports emergency preparedness initiatives, and ensures compliance with local, state, and federal safety regulations across all divisions." },
-        { heading: "Professional Experience", text: "Dortch brings over eight years of experience in public safety, emergency management, and homeland security, including prior service as Safety & Emergency Preparedness Coordinator for the Authority, where he enhanced emergency preparedness programs and led compliance efforts. He also served seven years as a Firefighter with the New Orleans Fire Department, responding to natural disasters, medical emergencies, and hazardous incidents and supporting safety operations for large-scale public events, as well as serving with the New Orleans Office of Homeland Security and Emergency Preparedness on complex incidents." },
-        { heading: "Education / Credentials", text: "Dortch holds a Bachelor of Arts in Homeland Security from Tulane University and an Associate's Degree in Fire Science Technology from Delgado Community College, along with certifications in emergency response, OSHA instruction, hazardous materials, structural collapse, and incident command systems." },
-        { heading: "Commitment to the Mission", text: "He is committed to strengthening the Authority's culture of safety and readiness, ensuring the protection of personnel, infrastructure, and the communities served by the region's flood protection system." },
-      ],
     },
     {
-      name: "Lawrence Williams, MBA, PMP",
+      name: "Lawrence Williams",
       title: "Senior Project Manager",
       image: "/headshots/lawrence-williams.jpg",
       bio: [
