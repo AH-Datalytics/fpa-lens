@@ -23,13 +23,13 @@
   },
   "maintenanceActivities": [
     "Hurricane and River Floodgate Inspections 100% completed; no action needed until October 2026.",
-    "Storm readiness underway: sandbag staging and facility preparation; crews completed filling 63 of 100 3,000-lb bags for EJ.",
-    "Installed new levee access gate by Floodgate M-01.",
+    "Storm readiness measures underway, including sandbag staging and facility preparation; crews completed filling 63 of the 100 3,000lb bags for EJ.",
+    "Crews installed a new levee access gate by Floodgate M-01.",
     "Crews covered multiple locations of graffiti around the system.",
-    "East Jefferson – Repaired rutting at toe of levee between S Cumberland St and Wilker Neal Ave; jersey barriers placed at end of both streets.",
+    "East Jefferson – Repaired rutting at the toe of the levee between S Cumberland St and Wilker Neal Ave; jersey barriers placed at both street ends.",
     "Lake Borgne – LPV148 (D route) earthen levee repairs continue.",
     "Q1 valve exercises 100% completed 3/9/2026; Q2 valve exercises 100% completed 6/1/2026.",
-    "Facilities: tornado caused collapse of north wall interior; area secured; awaiting approval to remove undamaged equipment.",
+    "Facilities: Tornado-caused wall collapse in building interior secured; awaiting approval to remove undamaged equipment from affected area.",
     "Crews worked significant overtime during late June and early July to maintain mowing schedules despite prolonged rainfall."
   ],
   "projects": [
@@ -70,18 +70,18 @@
     },
     {
       "name": "Franklin Herbicide Vehicle Containment",
-      "status": "Informal bid yielded one bid above internal estimates; design revised; readvertisement via Central Bidding planned.",
-      "phase": "In Bidding"
+      "status": "Informal bid yielded one above-estimate bid; design revised; readvertisement via Central Bidding underway.",
+      "phase": "Pre-Award"
     },
     {
       "name": "Lakeshore Drive Flooding Warning Signs",
       "status": "Engineering reviewed, selected, and ordered warning sign systems; exploring exact locations and coordinating design for installation with IDIQ holder.",
-      "phase": "Pre-Award"
+      "phase": "In Design"
     },
     {
       "name": "Tropical Storm Arthur – Franklin Facility Damage",
       "status": "Engineering coordinating with Maintenance, Finance, Insurance Adjusters, and outside engineers for demolition and repair of the facility.",
-      "phase": "In Progress"
+      "phase": "Pre-Award"
     }
   ],
   "inspections": {

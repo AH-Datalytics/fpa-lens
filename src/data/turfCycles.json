@@ -9,13 +9,13 @@
     {
       "zone": "New Orleans East",
       "reach": "LPV-108",
-      "cycle1Pct": 0.5,
-      "cycle2Pct": null
+      "cycle1Pct": 1.0,
+      "cycle2Pct": 0.0
     },
     {
       "zone": "New Orleans East",
       "reach": "LPV-109",
-      "cycle1Pct": 0.0,
+      "cycle1Pct": 0.5,
       "cycle2Pct": null
     },
     {
@@ -27,7 +27,7 @@
     {
       "zone": "Southside MRGO & Citrus Back",
       "reach": "Southside MRGO (LPV-142/LPV-143)",
-      "cycle1Pct": 0.5,
+      "cycle1Pct": 1.0,
       "cycle2Pct": null
     },
     {
@@ -40,19 +40,19 @@
       "zone": "Lakefront & Outfall Canals",
       "reach": "Lakefront",
       "cycle1Pct": 1.0,
-      "cycle2Pct": null
+      "cycle2Pct": 0.0
     },
     {
       "zone": "Lakefront & Outfall Canals",
       "reach": "Outfall Canals (17th Street, Orleans, Bayou St. John, London)",
-      "cycle1Pct": 0.25,
+      "cycle1Pct": 1.0,
       "cycle2Pct": null
     },
     {
       "zone": "Lakefront & Outfall Canals",
       "reach": "IHNC West",
       "cycle1Pct": 1.0,
-      "cycle2Pct": 0.0
+      "cycle2Pct": 0.5
     },
     {
       "zone": "Lakefront & Outfall Canals",
@@ -64,7 +64,7 @@
       "zone": "Citrus Lakefront & Eastern Interior",
       "reach": "Citrus Lakefront",
       "cycle1Pct": 1.0,
-      "cycle2Pct": null
+      "cycle2Pct": 0.0
     },
     {
       "zone": "Citrus Lakefront & Eastern Interior",
@@ -76,7 +76,7 @@
       "zone": "Citrus Lakefront & Eastern Interior",
       "reach": "Maxent",
       "cycle1Pct": 1.0,
-      "cycle2Pct": 0.0
+      "cycle2Pct": 1.0
     },
     {
       "zone": "Citrus Lakefront & Eastern Interior",
@@ -100,31 +100,31 @@
       "zone": "Upper Protection",
       "reach": "Upper Protection (Earhart Blvd to the MRL)",
       "cycle1Pct": 1.0,
-      "cycle2Pct": null
+      "cycle2Pct": 0.0
     },
     {
       "zone": "MRL",
       "reach": "MRL (Jefferson Parish line to EB-00)",
-      "cycle1Pct": 0.5,
-      "cycle2Pct": null
+      "cycle1Pct": 1.0,
+      "cycle2Pct": 0.0
     },
     {
       "zone": "Florida Ave",
       "reach": "Florida Ave",
       "cycle1Pct": 1.0,
-      "cycle2Pct": 0.0
+      "cycle2Pct": 1.0
     },
     {
       "zone": "IHNC East",
       "reach": "IHNC East (E-01 to MRL)",
       "cycle1Pct": 1.0,
-      "cycle2Pct": null
+      "cycle2Pct": 0.0
     },
     {
       "zone": "MRL",
       "reach": "IHNC East to the St. Bernard Parish Line",
       "cycle1Pct": 1.0,
-      "cycle2Pct": 0.0
+      "cycle2Pct": 1.0
     },
     {
       "zone": "EJ Lakefront Reach 1-5",
@@ -136,7 +136,7 @@
       "zone": "EJ MRL",
       "reach": "Monticello to Alliance",
       "cycle1Pct": 1.0,
-      "cycle2Pct": 0.5
+      "cycle2Pct": 1.0
     },
     {
       "zone": "EJ MRL",
