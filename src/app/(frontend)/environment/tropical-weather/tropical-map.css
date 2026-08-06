@@ -157,22 +157,15 @@
   box-shadow: none;
 }
 
-/* The "Use ⌘ + scroll to zoom the map" overlay shown when a plain wheel
-   gesture is passed through to the page instead of zooming. */
-.tw-map-frame .maplibregl-cooperative-gesture-screen {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-  font-family: inherit;
-  font-size: 0.9375rem;
-  font-weight: 500;
-  background: rgb(15 27 40 / 0.55);
-  backdrop-filter: blur(1px);
-}
+/* MapLibre's cooperative-gestures hint ("Use ⌘ + scroll to zoom the map")
+   greys out the whole map every time someone scrolls the page past it, which
+   is most of the time. The *behavior* it announces is still on and still what
+   we want — a plain wheel scrolls the page, ⌘/ctrl + wheel zooms — but the
+   +/- buttons are the discoverable way in, so the nag earns nothing.
 
-.tw-map-frame .maplibregl-cooperative-gesture-screen .maplibregl-desktop-message,
-.tw-map-frame .maplibregl-cooperative-gesture-screen .maplibregl-mobile-message {
-  padding: 0.625rem 1rem;
-  color: #ffffff;
+   Both selectors: MapLibre toggles .maplibregl-show to fade it in, and that
+   rule carries the same specificity as a plain override. */
+.tw-map-frame .maplibregl-cooperative-gesture-screen,
+.tw-map-frame .maplibregl-cooperative-gesture-screen.maplibregl-show {
+  display: none;
 }
