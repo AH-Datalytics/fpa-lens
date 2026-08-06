@@ -10,6 +10,7 @@ import { TROPICAL_WEATHER_DEFAULTS } from "@/globals/pages/tropicalWeatherPage";
 import { AdvisoryPlayback } from "@/components/tropical/AdvisoryPlayback";
 import { IntensityPanel } from "@/components/tropical/IntensityPanel";
 import { Rail } from "@/components/tropical/Rail";
+import { PAGE_PATH } from "@/lib/tropical/config";
 import { cdtTime, formatCycle } from "@/lib/tropical/format";
 import {
   DEFAULT_LAYER_STATE,
@@ -148,8 +149,21 @@ export default function TropicalWeatherContent() {
             the compass, the options panel, the replay bar and the attribution,
             and on a phone an overlaid tag lands on top of one of them. */}
         {dashboard.demo && dashboard.demoTag && (
-          <div className="mt-6 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-[11px] font-semibold uppercase tracking-wide text-amber-900">
-            {dashboard.demoTag}
+          <div className="mt-6 flex flex-wrap items-center justify-between gap-x-3 gap-y-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2">
+            <span className="text-[11px] font-semibold uppercase tracking-wide text-amber-900">
+              {dashboard.demoTag}
+            </span>
+            {/* The only way out of a demo: the dashboard reads `?demo=` as a
+                one-shot snapshot of the URL, so this has to be a real document
+                navigation, and it has to drop every param (the replay scrubber
+                also writes `?advisory=`), not just the demo one. */}
+            <a
+              href={PAGE_PATH}
+              className="group inline-flex shrink-0 items-center gap-1.5 rounded-md border border-amber-300 bg-white px-2.5 py-1 text-xs font-medium text-amber-900 transition-colors hover:bg-amber-100"
+            >
+              <ArrowLeft className="h-3.5 w-3.5 transition-transform group-hover:-translate-x-0.5" />
+              Back to live conditions
+            </a>
           </div>
         )}
 
