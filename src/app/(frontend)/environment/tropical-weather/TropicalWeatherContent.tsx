@@ -54,8 +54,12 @@ export default function TropicalWeatherContent() {
   // Keep MapLibre and third-party basemap tiles off the critical path. The
   // rail can report live conditions as soon as the manifest resolves; the
   // interactive map follows during the browser's next idle window.
+  //
+  // "unavailable" counts as resolved: when the storm feed is down there are no
+  // overlays to draw, but the basemap and the New Orleans reference point
+  // still render, which beats a spinner that never stops.
   useEffect(() => {
-    if (dashboard.status !== "ready" || loadMap) return;
+    if (dashboard.status === "loading" || loadMap) return;
     if ("requestIdleCallback" in window) {
       const id = window.requestIdleCallback(() => setLoadMap(true), { timeout: 800 });
       return () => window.cancelIdleCallback(id);
