@@ -111,7 +111,7 @@ export default function TropicalWeatherContent() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="mx-auto max-w-[100rem] px-4 py-8 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         <Link
           href="/environment"
           className="mb-3 inline-flex items-center gap-1.5 text-sm text-[#21355a] hover:underline"
