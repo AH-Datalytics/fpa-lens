@@ -569,21 +569,26 @@ export default function StormMap({
           default. */}
       <div ref={containerRef} className="h-full w-full" />
       <CompassRose />
+      {/* Centered in the map area the options panel does NOT occupy — a plain
+          left-1/2 centering overlaps that panel once the map is narrower than
+          roughly 1000px. */}
       {noFormationExpected && (
-        <div
-          className="absolute left-1/2 top-1/2 z-10 w-[min(22rem,calc(100%-2rem))] -translate-x-1/2 -translate-y-1/2 rounded-lg bg-white/90 px-5 py-4 text-center shadow-lg backdrop-blur"
-          role="status"
-        >
-          <small className="block text-[10px] font-semibold uppercase tracking-[0.12em] text-gray-500">
-            Seven-day outlook
-          </small>
-          <b className="mt-1 block text-lg font-bold leading-snug text-[#21355a]">
-            No tropical cyclone formation expected
-          </b>
-          <span className="mt-1.5 block text-xs leading-relaxed text-gray-600">
-            The National Hurricane Center does not expect tropical cyclone development during the
-            next seven days.
-          </span>
+        <div className="pointer-events-none absolute inset-x-4 top-1/2 z-10 flex -translate-y-1/2 justify-center md:right-[17.5rem]">
+          <div
+            className="w-[min(22rem,100%)] rounded-lg bg-white/90 px-5 py-4 text-center shadow-lg backdrop-blur"
+            role="status"
+          >
+            <small className="block text-[10px] font-semibold uppercase tracking-[0.12em] text-gray-500">
+              Seven-day outlook
+            </small>
+            <b className="mt-1 block text-lg font-bold leading-snug text-[#21355a]">
+              No tropical cyclone formation expected
+            </b>
+            <span className="mt-1.5 block text-xs leading-relaxed text-gray-600">
+              The National Hurricane Center does not expect tropical cyclone development during the
+              next seven days.
+            </span>
+          </div>
         </div>
       )}
       {discussionOpen && discussion && (
