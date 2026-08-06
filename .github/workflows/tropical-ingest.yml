@@ -1,0 +1,50 @@
+name: Tropical weather ingest
+
+# Feeds /environment/tropical-weather. Polls the National Hurricane Center for
+# current storms, cone/track/watch-warning shapefiles, A-deck model guidance and
+# the Atlantic tropical weather outlook, normalizes everything to GeoJSON/JSON,
+# and uploads it (plus a manifest.json index) to the public tropical Vercel Blob
+# store. The page reads that manifest straight from the browser, so no deploy is
+# involved and nothing is committed back to the repo.
+#
+# Unlike the weekly SharePoint refresh, this writes to blob storage only. It is
+# triggered by schedule/workflow_dispatch only and consumes no event payload
+# data, so there is no untrusted input reaching any run: step.
+
+on:
+  schedule:
+    # GitHub's scheduler is best-effort and drops/delays runs at :00/:30. Four
+    # off-peak attempts per hour keep effective freshness near 15 minutes even
+    # when an individual scheduled event is skipped.
+    - cron: "7,22,37,52 * * * *"
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+concurrency:
+  group: tropical-ingest
+  cancel-in-progress: false
+
+jobs:
+  ingest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: ingest/requirements.txt
+
+      - name: Install dependencies
+        run: pip install -r ingest/requirements.txt
+
+      - name: Run ingest
+        working-directory: ingest
+        env:
+          TROPICAL_BLOB_READ_WRITE_TOKEN: ${{ secrets.TROPICAL_BLOB_READ_WRITE_TOKEN }}
+          TROPICAL_BLOB_BASE_URL: ${{ secrets.TROPICAL_BLOB_BASE_URL }}
+        run: python ingest.py
