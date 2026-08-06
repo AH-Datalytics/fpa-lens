@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Wind, Gauge, Navigation, FileText, Clock } from "lucide-react";
 import type { StormEntry } from "@/lib/tropical/types";
+import { categoryColor } from "@/lib/tropical/categoryColors";
 import { categoryFor, cdtDateTime, cdtTime, countdown, stormTypeLabel } from "@/lib/tropical/format";
 
 /** Ticks once a second so the advisory countdown stays live without a page reload. */
@@ -21,72 +21,68 @@ function catChipText(intensityMph: number): string {
   return /^\d$/.test(cat) ? `Category ${cat}` : cat;
 }
 
-/** Red for hurricane strength, amber for anything weaker. */
-function catChipClass(intensityMph: number): string {
-  return /^\d$/.test(categoryFor(intensityMph))
-    ? "bg-red-100 text-red-800"
-    : "bg-amber-100 text-amber-800";
+/** One inline figure: small label over a large value. */
+function Stat({ label, value, unit }: { label: string; value: string; unit?: string }) {
+  return (
+    <div>
+      <div className="text-[10px] font-semibold uppercase tracking-[0.08em] text-gray-500">
+        {label}
+      </div>
+      <div className="text-lg font-semibold leading-tight tabular-nums text-gray-900">
+        {value}
+        {unit && <span className="ml-1 text-xs font-normal text-gray-500">{unit}</span>}
+      </div>
+    </div>
+  );
 }
 
 export interface StormHeaderProps {
   storm: StormEntry;
 }
 
-const ROW = "flex items-center gap-2 py-1.5 border-b border-gray-100 last:border-b-0";
-const LABEL = "flex-1 text-sm text-gray-500";
-
+/**
+ * The storm's headline figures as one horizontal band: name and category on
+ * the left, the live numbers running across, advisory timing on the right.
+ *
+ * Deliberately not a card of stacked label/value rows — that shape forced a
+ * tall column beside much shorter neighbours and left the strip full of dead
+ * space. Inline groups that wrap keep it to a couple of lines at any width.
+ */
 export function StormHeader({ storm }: StormHeaderProps) {
   const now = useNow(1000);
 
   return (
-    <div>
-      <h2 className="text-2xl font-bold leading-tight text-[#21355a]">
-        {stormTypeLabel(storm.classification)} {storm.name}
-      </h2>
-      <span
-        className={`mt-2 inline-block rounded-full px-2.5 py-0.5 text-xs font-semibold ${catChipClass(
-          storm.intensityMph
-        )}`}
-      >
-        {catChipText(storm.intensityMph)}
-      </span>
+    <div className="flex flex-wrap items-center gap-x-8 gap-y-4">
+      <div className="flex items-center gap-3">
+        <span
+          className="h-10 w-1.5 shrink-0 rounded-full"
+          style={{ background: categoryColor(storm.intensityMph) }}
+          aria-hidden="true"
+        />
+        <div>
+          <h2 className="text-xl font-bold leading-tight text-[#21355a] sm:text-2xl">
+            {stormTypeLabel(storm.classification)} {storm.name}
+          </h2>
+          <div className="text-xs font-semibold uppercase tracking-wide text-gray-500">
+            {catChipText(storm.intensityMph)}
+          </div>
+        </div>
+      </div>
 
-      <div className="mt-3">
-        <div className={ROW}>
-          <Wind className="h-4 w-4 shrink-0 text-gray-400" aria-hidden="true" />
-          <span className={LABEL}>Winds</span>
-          <b className="tabular-nums text-gray-900">
-            {storm.intensityMph} <small className="font-normal text-gray-500">mph</small>
-          </b>
+      <div className="flex flex-wrap items-center gap-x-8 gap-y-3">
+        <Stat label="Winds" value={String(storm.intensityMph)} unit="mph" />
+        <Stat label="Pressure" value={String(storm.pressureMb)} unit="mb" />
+        <Stat label="Moving" value={`${storm.movementDir} ${storm.movementMph}`} unit="mph" />
+      </div>
+
+      <div className="ml-auto text-xs leading-relaxed text-gray-500">
+        <div>
+          Advisory <b className="font-semibold text-gray-700">{storm.advisoryNum}</b> ·{" "}
+          {cdtDateTime(storm.advisoryTime)}
         </div>
-        <div className={ROW}>
-          <Gauge className="h-4 w-4 shrink-0 text-gray-400" aria-hidden="true" />
-          <span className={LABEL}>Pressure</span>
-          <b className="tabular-nums text-gray-900">
-            {storm.pressureMb} <small className="font-normal text-gray-500">mb</small>
-          </b>
-        </div>
-        <div className={ROW}>
-          <Navigation className="h-4 w-4 shrink-0 text-gray-400" aria-hidden="true" />
-          <span className={LABEL}>Motion</span>
-          <b className="tabular-nums text-gray-900">
-            {storm.movementDir} at {storm.movementMph}{" "}
-            <small className="font-normal text-gray-500">mph</small>
-          </b>
-        </div>
-        <div className={`${ROW} items-start`}>
-          <FileText className="mt-0.5 h-4 w-4 shrink-0 text-gray-400" aria-hidden="true" />
-          <span className={LABEL}>Advisory</span>
-          <b className="max-w-[60%] text-right text-gray-900">
-            {storm.advisoryNum} · {cdtDateTime(storm.advisoryTime)}
-          </b>
-        </div>
-        <div className={ROW}>
-          <Clock className="h-4 w-4 shrink-0 text-gray-400" aria-hidden="true" />
-          <span className={LABEL}>Next update</span>
-          <b className="text-gray-900" title={countdown(storm.nextAdvisoryTime, now)}>
-            {cdtTime(storm.nextAdvisoryTime)}
-          </b>
+        <div title={countdown(storm.nextAdvisoryTime, now)}>
+          Next update{" "}
+          <b className="font-semibold text-gray-700">{cdtTime(storm.nextAdvisoryTime)}</b>
         </div>
       </div>
     </div>

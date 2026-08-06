@@ -2,7 +2,6 @@
 
 import { findPoint, NEW_ORLEANS_POINT, otherPoints, pointLabel } from "@/lib/tropical/probs";
 import type { ProbsEntry } from "@/lib/tropical/types";
-import { Kicker } from "./Kicker";
 
 export interface WindProbabilitiesProps {
   /** storms/{id}/probs.json for the selected storm. `null` while loading (or
@@ -11,63 +10,58 @@ export interface WindProbabilitiesProps {
   probs: ProbsEntry[] | null;
 }
 
-/** One labelled probability bar. */
+/** Threshold, bar and percentage on one line. */
 function ProbBar({ label, value, color }: { label: string; value: number; color: string }) {
   return (
-    <div className="flex items-center gap-3">
-      <span className="w-20 shrink-0 text-xs text-gray-500">{label}</span>
-      <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-gray-200">
+    <div className="flex items-center gap-2">
+      <span className="whitespace-nowrap text-xs text-gray-600">{label}</span>
+      <div className="h-1.5 w-20 overflow-hidden rounded-full bg-gray-200">
         <div className={`h-full rounded-full ${color}`} style={{ width: `${value}%` }} />
       </div>
-      <strong className="w-10 shrink-0 text-right text-sm font-semibold tabular-nums text-gray-900">
-        {value}%
-      </strong>
+      <strong className="text-sm font-semibold tabular-nums text-gray-900">{value}%</strong>
     </div>
   );
 }
 
 /**
- * Rail hero section — full-period (120h) chance of tropical-storm-force and
- * hurricane-force winds at New Orleans, plus a small table of nearby points
- * (Grand Isle, Houma, Slidell, Gulfport) when the PWS text product carries
- * them. Most advisories won't include every point — that's expected, not an
- * error (see ingest/gulfwatch/probs.py).
+ * Chance of tropical-storm-force and hurricane-force winds at New Orleans over
+ * the full 120-hour period, plus nearby points behind a disclosure when the
+ * PWS product carries them. Most advisories won't include every point — that's
+ * expected, not an error (see ingest/gulfwatch/probs.py).
+ *
+ * Laid out as one inline run so it costs a line of the storm banner rather
+ * than a column of its own.
  */
 export function WindProbabilities({ probs }: WindProbabilitiesProps) {
-  if (probs === null) {
-    return (
-      <div>
-        <Kicker>Wind probability</Kicker>
-      </div>
-    );
-  }
+  if (probs === null) return null;
 
   const nola = findPoint(probs, NEW_ORLEANS_POINT);
   const others = otherPoints(probs);
 
+  if (!nola) {
+    return (
+      <span className="text-xs text-gray-500">
+        Wind probabilities aren&apos;t available for New Orleans on this advisory.
+      </span>
+    );
+  }
+
   return (
-    <div>
-      <Kicker>Wind probability</Kicker>
-      {nola ? (
-        <>
-          <div className="mb-2.5 text-xs text-gray-500">New Orleans · next 5 days</div>
-          <div className="space-y-2">
-            <ProbBar label="≥ 39 mph" value={nola.ts34} color="bg-[#2f6fae]" />
-            <ProbBar label="≥ 74 mph" value={nola.hurricane64} color="bg-[#c0392b]" />
-          </div>
-        </>
-      ) : (
-        <p className="text-sm leading-relaxed text-gray-600">
-          Wind probability data isn&apos;t available for New Orleans on this advisory.
-        </p>
-      )}
+    <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
+      <span className="text-[10px] font-semibold uppercase tracking-[0.08em] text-[#21355a]">
+        New Orleans wind chances
+        <span className="ml-1.5 font-normal normal-case tracking-normal text-gray-500">
+          next 5 days
+        </span>
+      </span>
+      <ProbBar label="≥ 39 mph" value={nola.ts34} color="bg-[#2f6fae]" />
+      <ProbBar label="≥ 74 mph" value={nola.hurricane64} color="bg-[#c0392b]" />
       {others.length > 0 && (
-        <details className="group mt-3">
+        <details className="group">
           <summary className="cursor-pointer list-none text-xs font-medium text-[#21355a] hover:underline">
-            <span className="inline-block transition-transform group-open:rotate-90">▸</span> Wind
-            chances at nearby locations
+            <span className="inline-block transition-transform group-open:rotate-90">▸</span> Nearby
           </summary>
-          <table className="mt-2 w-full text-xs">
+          <table className="mt-2 w-full min-w-[18rem] text-xs">
             <thead>
               <tr className="border-b border-gray-200 text-left text-gray-500">
                 <th className="py-1 font-medium">Nearby</th>

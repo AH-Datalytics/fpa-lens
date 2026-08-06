@@ -3,13 +3,11 @@
 import { AlertTriangle } from "lucide-react";
 import { WW_COLORS, WW_LEGEND_ITEMS, wwKind, type WWKind } from "@/lib/tropical/mapStyle";
 import { nolaHasHurricaneWarning } from "@/lib/tropical/nhcWarnings";
-import { Kicker } from "./Kicker";
 
 /**
  * Which watch/warning kinds this advisory actually carries. Exported so the
- * summary strip can decide whether the section has anything to say *before*
- * laying out its columns — a section that renders nothing must not be handed a
- * column and a divider.
+ * banner can skip the whole run when there are none, rather than printing a
+ * heading with nothing under it.
  */
 export function coastalLegendItems(
   warnings?: GeoJSON.FeatureCollection | null
@@ -25,37 +23,38 @@ export interface CoastalAlertsLegendProps {
   publicAdvisoryText?: string | null;
 }
 
-/** Map key for the NHC watch/warning segments drawn directly along the coast. */
+/**
+ * Key for the NHC watch/warning segments drawn along the coast, as an inline
+ * run of colored labels — it is a map legend, so it should cost one line, not
+ * a column.
+ */
 export function CoastalAlertsLegend({ items, publicAdvisoryText }: CoastalAlertsLegendProps) {
   const nolaWarning = nolaHasHurricaneWarning(publicAdvisoryText);
 
   return (
-    <section aria-labelledby="coastal-alert-legend-title">
-      <Kicker id="coastal-alert-legend-title">Warning summary</Kicker>
+    <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+      <span className="text-[10px] font-semibold uppercase tracking-[0.08em] text-[#21355a]">
+        In effect
+        <span className="ml-1.5 font-normal normal-case tracking-normal text-gray-500">
+          matches the coastal lines on the map
+        </span>
+      </span>
+      {items.map((item) => (
+        <span key={item.kind} className="flex items-center gap-1.5">
+          <i
+            className="h-1 w-5 shrink-0 rounded-full"
+            style={{ background: WW_COLORS[item.kind] }}
+            aria-hidden="true"
+          />
+          <span className="whitespace-nowrap text-xs text-gray-700">{item.label}</span>
+        </span>
+      ))}
       {nolaWarning && (
-        <div className="mb-2 flex items-start gap-2 rounded-md border border-red-200 bg-red-50 p-2">
-          <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-red-600" aria-hidden="true" />
-          <div>
-            <b className="block text-sm font-semibold text-red-900">New Orleans metro area</b>
-            <span className="block text-xs text-red-800">Hurricane warning in effect</span>
-          </div>
-        </div>
+        <span className="flex items-center gap-1.5 rounded-md bg-red-50 px-2 py-1 text-xs font-semibold text-red-900">
+          <AlertTriangle className="h-3.5 w-3.5 shrink-0 text-red-600" aria-hidden="true" />
+          Hurricane warning for the New Orleans metro area
+        </span>
       )}
-      <p className="text-sm leading-relaxed text-gray-600">
-        NHC coastal alerts for this advisory. Colors match the lines on the map.
-      </p>
-      <div className="mt-2 space-y-1">
-        {items.map((item) => (
-          <div key={item.kind} className="flex items-center gap-2">
-            <i
-              className="h-1 w-6 shrink-0 rounded-full"
-              style={{ background: WW_COLORS[item.kind] }}
-              aria-hidden="true"
-            />
-            <span className="text-xs text-gray-700">{item.label}</span>
-          </div>
-        ))}
-      </div>
-    </section>
+    </div>
   );
 }

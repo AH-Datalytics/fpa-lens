@@ -15,6 +15,7 @@ import {
   type TooltipContentProps,
 } from "recharts";
 import { CATEGORY_THRESHOLDS_MPH } from "@/lib/tropical/config";
+import { CATEGORY_COLORS } from "@/lib/tropical/categoryColors";
 import { cdtTickLabel } from "@/lib/tropical/format";
 import { landfallTau } from "@/lib/tropical/landfall";
 import { DEFAULT_MODEL_COLOR, MODEL_COLORS, modelDescription } from "@/lib/tropical/modelColors";
@@ -53,19 +54,18 @@ const TICK = "#6b7280";
 const ACCENT = "#21355a";
 const ACCENT_2 = "#c2703d";
 
-// The standard Saffir-Simpson color ramp (the one NHC's own track maps and
-// every news graphic use): cyan for tropical-storm force climbing through
-// yellow and orange to red at Category 5. An earlier pale-blue-to-warm wash
-// was too low-contrast to tell the bands apart — feedback from Jeff and Ben,
-// Aug 2026. These run at full saturation with a modest fill opacity so the
+// Bands come from the shared Saffir-Simpson ramp, so the category chip on the
+// storm banner and the band a storm sits in here are the same color. An
+// earlier pale-blue-to-warm wash was too low-contrast to tell apart (Jeff and
+// Ben, Aug 2026); these run saturated with a modest fill opacity so the
 // boundaries stay crisp while the model lines still read on top.
 const CATEGORY_BANDS = [
-  { lower: CATEGORY_THRESHOLDS_MPH.TS, upper: CATEGORY_THRESHOLDS_MPH.C1, label: "TS", color: "#5ebaff" },
-  { lower: CATEGORY_THRESHOLDS_MPH.C1, upper: CATEGORY_THRESHOLDS_MPH.C2, label: "CAT 1", color: "#ffffb2" },
-  { lower: CATEGORY_THRESHOLDS_MPH.C2, upper: CATEGORY_THRESHOLDS_MPH.C3, label: "CAT 2", color: "#ffe775" },
-  { lower: CATEGORY_THRESHOLDS_MPH.C3, upper: CATEGORY_THRESHOLDS_MPH.C4, label: "CAT 3", color: "#ffc140" },
-  { lower: CATEGORY_THRESHOLDS_MPH.C4, upper: CATEGORY_THRESHOLDS_MPH.C5, label: "CAT 4", color: "#ff8f20" },
-  { lower: CATEGORY_THRESHOLDS_MPH.C5, upper: Infinity, label: "CAT 5", color: "#ff6060" },
+  { lower: CATEGORY_THRESHOLDS_MPH.TS, upper: CATEGORY_THRESHOLDS_MPH.C1, label: "TS", color: CATEGORY_COLORS.TS },
+  { lower: CATEGORY_THRESHOLDS_MPH.C1, upper: CATEGORY_THRESHOLDS_MPH.C2, label: "CAT 1", color: CATEGORY_COLORS.C1 },
+  { lower: CATEGORY_THRESHOLDS_MPH.C2, upper: CATEGORY_THRESHOLDS_MPH.C3, label: "CAT 2", color: CATEGORY_COLORS.C2 },
+  { lower: CATEGORY_THRESHOLDS_MPH.C3, upper: CATEGORY_THRESHOLDS_MPH.C4, label: "CAT 3", color: CATEGORY_COLORS.C3 },
+  { lower: CATEGORY_THRESHOLDS_MPH.C4, upper: CATEGORY_THRESHOLDS_MPH.C5, label: "CAT 4", color: CATEGORY_COLORS.C4 },
+  { lower: CATEGORY_THRESHOLDS_MPH.C5, upper: Infinity, label: "CAT 5", color: CATEGORY_COLORS.C5 },
 ] as const;
 
 function addHoursIso(iso: string, hours: number): string {

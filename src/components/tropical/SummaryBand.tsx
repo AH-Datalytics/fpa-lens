@@ -26,25 +26,23 @@ export interface SummaryBandProps {
 }
 
 const PANEL = "rounded-xl border border-gray-200 bg-white shadow-sm";
-
-// Only ever one row, so the column count has to match the number of sections
-// that actually have something to say — three fixed columns would leave a
-// third of the strip empty whenever a section drops out.
-const COLUMNS: Record<number, string> = {
-  1: "lg:grid-cols-1",
-  2: "lg:grid-cols-2",
-  3: "lg:grid-cols-3",
-};
+/** Secondary rows: same rhythm, separated by a hairline. */
+const ROW = "border-t border-gray-200 px-5 py-3";
 
 /**
- * Conditions summary as a single strip above the map.
+ * Conditions banner above the map.
  *
- * Two rounds of review shaped this. It started as a fixed-width left rail,
- * which squeezed the map; moving it overhead as three equal cards fixed that
- * but left big voids, because a grid stretches every card to the tallest one
- * and the warning/probability sections are short. So: one panel, columns
- * divided by rules, each sized to its own content, and no column at all for a
- * section with nothing to report.
+ * Three layouts were tried and rejected: a fixed left rail (squeezed the map),
+ * three equal cards, and three divided columns. Both column versions left
+ * large voids, because a row of columns is only as short as its longest
+ * member, and these sections differ wildly in length — a five-row storm
+ * readout beside a four-item legend beside two progress bars.
+ *
+ * So this is not a grid at all. Each section is a horizontal run that wraps,
+ * stacked as full-width rows: the storm's figures across the top, then the
+ * supporting lines. Nothing stretches to match anything else, so there is
+ * nothing to leave empty, and the whole banner costs ~2 lines instead of the
+ * height of its tallest column.
  */
 export function SummaryBand({
   status,
@@ -64,7 +62,7 @@ export function SummaryBand({
 
   if (status !== "ready") {
     return (
-      <div className={`${PANEL} p-5`} role={status === "unavailable" ? "alert" : "status"}>
+      <div className={`${PANEL} px-5 py-4`} role={status === "unavailable" ? "alert" : "status"}>
         <div className="text-sm font-semibold text-[#21355a]">
           {status === "loading" ? "Loading live conditions…" : "Live conditions unavailable"}
         </div>
@@ -86,95 +84,88 @@ export function SummaryBand({
     );
   }
 
-  const cells: React.ReactNode[] = [];
-
-  if (mode === "active" && storm) {
-    cells.push(<StormHeader key="storm" storm={storm} />);
-    const legendItems = coastalLegendItems(wwlines);
-    if (legendItems.length > 0) {
-      cells.push(
-        <CoastalAlertsLegend
-          key="coastal"
-          items={legendItems}
-          publicAdvisoryText={publicAdvisoryText}
-        />
-      );
-    }
-    cells.push(<WindProbabilities key="probs" probs={probs} />);
-  } else {
-    cells.push(<OutlookPanel key="outlook" outlookText={outlookText} />);
-    // Quiet mode hides the metro-alerts column entirely when there is nothing
-    // active; an "all clear" line would just be noise beside "No active
-    // systems". A feed outage still shows, because that is not an all-clear.
-    if (metroAlerts.unavailable || metroAlerts.rows.length > 0) {
-      cells.push(
-        <Alerts key="alerts" rows={metroAlerts.rows} unavailable={metroAlerts.unavailable} />
-      );
-    }
-    cells.push(
-      <div key="demo">
-        <div className="text-sm font-semibold text-[#21355a]">Explore a historical storm</div>
-        <div className="mt-1 text-sm leading-relaxed text-gray-600">
-          See Hurricane Ida&rsquo;s August 2021 forecast dashboard.
-        </div>
-        {/* Full navigation updates the URL-backed dashboard data source. */}
-        <a
-          className="mt-3 inline-flex items-center gap-1.5 rounded-md bg-[#21355a] px-3 py-1.5 text-sm font-medium text-white hover:bg-[#2c3859]"
-          href={`${PAGE_PATH}?demo=ida`}
-        >
-          View Ida demo
-          <ArrowRight className="h-4 w-4" aria-hidden="true" />
-        </a>
-      </div>
-    );
-  }
+  const activeStorm = mode === "active" && storm;
+  const legendItems = activeStorm ? coastalLegendItems(wwlines) : [];
+  const hasMetroAlerts = metroAlerts.unavailable || metroAlerts.rows.length > 0;
 
   return (
     <div className="space-y-4">
-      {mode === "active" && storm && storms.length > 1 && (
-        <div className={`${PANEL} px-5 py-4`}>
-          <Kicker>Active storms</Kicker>
-          <nav aria-label="Choose a storm" className="flex flex-wrap gap-2">
-            {storms.map((option) => {
-              const params = new URLSearchParams();
-              if (demoParam) params.set("demo", demoParam);
-              params.set("storm", option.id);
-              const selected = option.id === storm.id;
-              return (
-                // A full document navigation is intentional: the dashboard
-                // reads the query string as an external-store snapshot.
-                <a
-                  key={option.id}
-                  href={`${PAGE_PATH}?${params.toString()}`}
-                  aria-current={selected ? "page" : undefined}
-                  title={`View ${option.name}`}
-                  className={`rounded-md border px-2.5 py-1.5 text-xs ${
-                    selected
-                      ? "border-[#21355a] bg-[#21355a] text-white"
-                      : "border-gray-200 bg-white text-gray-700 hover:border-gray-300 hover:bg-gray-50"
-                  }`}
-                >
-                  <b className="block font-semibold">{option.name}</b>
-                  <span className={selected ? "text-blue-100" : "text-gray-500"}>
-                    {option.intensityMph} mph{option.inGulfBox ? " · Gulf" : ""}
-                  </span>
-                </a>
-              );
-            })}
-          </nav>
-        </div>
-      )}
+      <div className={PANEL}>
+        {activeStorm ? (
+          <>
+            <div className="px-5 py-4">
+              <StormHeader storm={storm} />
+            </div>
+            {legendItems.length > 0 && (
+              <div className={ROW}>
+                <CoastalAlertsLegend
+                  items={legendItems}
+                  publicAdvisoryText={publicAdvisoryText}
+                />
+              </div>
+            )}
+            {probs !== null && (
+              <div className={ROW}>
+                <WindProbabilities probs={probs} />
+              </div>
+            )}
+          </>
+        ) : (
+          <>
+            <div className="flex flex-wrap items-start justify-between gap-4 px-5 py-4">
+              <OutlookPanel outlookText={outlookText} />
+              {/* Full navigation updates the URL-backed dashboard data source. */}
+              <a
+                className="inline-flex shrink-0 items-center gap-1.5 rounded-md border border-gray-200 px-3 py-1.5 text-xs font-medium text-[#21355a] hover:bg-gray-50"
+                href={`${PAGE_PATH}?demo=ida`}
+              >
+                See a storm: Hurricane Ida replay
+                <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
+              </a>
+            </div>
+            {hasMetroAlerts && (
+              <div className={ROW}>
+                <Alerts rows={metroAlerts.rows} unavailable={metroAlerts.unavailable} />
+              </div>
+            )}
+          </>
+        )}
 
-      <div
-        className={`${PANEL} grid grid-cols-1 divide-y divide-gray-200 lg:divide-x lg:divide-y-0 ${
-          COLUMNS[cells.length] ?? "lg:grid-cols-3"
-        }`}
-      >
-        {cells.map((cell, i) => (
-          <div key={i} className="min-w-0 px-5 py-4">
-            {cell}
+        {activeStorm && storms.length > 1 && (
+          <div className={ROW}>
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+              <Kicker>Active storms</Kicker>
+              <nav aria-label="Choose a storm" className="flex flex-wrap gap-2">
+                {storms.map((option) => {
+                  const params = new URLSearchParams();
+                  if (demoParam) params.set("demo", demoParam);
+                  params.set("storm", option.id);
+                  const selected = option.id === storm.id;
+                  return (
+                    // A full document navigation is intentional: the dashboard
+                    // reads the query string as an external-store snapshot.
+                    <a
+                      key={option.id}
+                      href={`${PAGE_PATH}?${params.toString()}`}
+                      aria-current={selected ? "page" : undefined}
+                      title={`View ${option.name}`}
+                      className={`rounded-md border px-2.5 py-1 text-xs ${
+                        selected
+                          ? "border-[#21355a] bg-[#21355a] text-white"
+                          : "border-gray-200 bg-white text-gray-700 hover:border-gray-300 hover:bg-gray-50"
+                      }`}
+                    >
+                      <b className="font-semibold">{option.name}</b>{" "}
+                      <span className={selected ? "text-blue-100" : "text-gray-500"}>
+                        {option.intensityMph} mph{option.inGulfBox ? " · Gulf" : ""}
+                      </span>
+                    </a>
+                  );
+                })}
+              </nav>
+            </div>
           </div>
-        ))}
+        )}
       </div>
 
       {dataIssues.length > 0 && (
