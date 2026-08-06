@@ -18,6 +18,7 @@ import {
   Clock,
   Compass,
   CloudLightning,
+  ArrowRight,
 } from "lucide-react";
 import {
   ComposedChart,
@@ -382,10 +383,11 @@ export default function EnvironmentalPage() {
               cadence from the lakefront risk model on this page. */}
           <Link
             href="/environment/tropical-weather"
-            className="inline-flex shrink-0 items-center gap-2 rounded-lg bg-[#21355a] px-4 py-2.5 text-sm font-medium text-white hover:bg-[#2c3859]"
+            className="group inline-flex shrink-0 items-center gap-2 self-start whitespace-nowrap rounded-lg bg-[#21355a] px-5 py-3 text-sm font-semibold text-white shadow-md transition-all hover:bg-[#2c4470] hover:shadow-lg"
           >
             <CloudLightning className="h-4 w-4" aria-hidden="true" />
             Tropical Weather
+            <ArrowRight className="h-4 w-4 text-[#65bc7b] transition-transform group-hover:translate-x-0.5" />
           </Link>
         </div>
 
