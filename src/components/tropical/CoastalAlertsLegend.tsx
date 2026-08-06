@@ -1,38 +1,39 @@
 "use client";
 
-import { useMemo } from "react";
 import { AlertTriangle } from "lucide-react";
-import { WW_COLORS, WW_LEGEND_ITEMS, wwKind } from "@/lib/tropical/mapStyle";
+import { WW_COLORS, WW_LEGEND_ITEMS, wwKind, type WWKind } from "@/lib/tropical/mapStyle";
 import { nolaHasHurricaneWarning } from "@/lib/tropical/nhcWarnings";
-import { CARD_CLASS } from "./Card";
 import { Kicker } from "./Kicker";
 
+/**
+ * Which watch/warning kinds this advisory actually carries. Exported so the
+ * summary strip can decide whether the section has anything to say *before*
+ * laying out its columns — a section that renders nothing must not be handed a
+ * column and a divider.
+ */
+export function coastalLegendItems(
+  warnings?: GeoJSON.FeatureCollection | null
+): ReadonlyArray<{ kind: WWKind; label: string }> {
+  const present = new Set(
+    (warnings?.features ?? []).map((feature) => wwKind(feature.properties?.TCWW as string | undefined))
+  );
+  return WW_LEGEND_ITEMS.filter((item) => present.has(item.kind));
+}
+
 export interface CoastalAlertsLegendProps {
-  warnings?: GeoJSON.FeatureCollection | null;
+  items: ReadonlyArray<{ kind: WWKind; label: string }>;
   publicAdvisoryText?: string | null;
 }
 
 /** Map key for the NHC watch/warning segments drawn directly along the coast. */
-export function CoastalAlertsLegend({ warnings, publicAdvisoryText }: CoastalAlertsLegendProps) {
-  const items = useMemo(() => {
-    const present = new Set(
-      (warnings?.features ?? []).map((feature) => wwKind(feature.properties?.TCWW as string | undefined))
-    );
-    return WW_LEGEND_ITEMS.filter((item) => present.has(item.kind));
-  }, [warnings]);
-  const nolaWarning = useMemo(
-    () => nolaHasHurricaneWarning(publicAdvisoryText),
-    [publicAdvisoryText]
-  );
-
-  if (items.length === 0) return null;
+export function CoastalAlertsLegend({ items, publicAdvisoryText }: CoastalAlertsLegendProps) {
+  const nolaWarning = nolaHasHurricaneWarning(publicAdvisoryText);
 
   return (
-    <section className={CARD_CLASS} aria-labelledby="coastal-alert-legend-title">
+    <section aria-labelledby="coastal-alert-legend-title">
       <Kicker id="coastal-alert-legend-title">Warning summary</Kicker>
-      <p className="text-sm font-semibold text-gray-900">NHC coastal alerts for this advisory.</p>
       {nolaWarning && (
-        <div className="mt-2 flex items-start gap-2 rounded-md border border-red-200 bg-red-50 p-2.5">
+        <div className="mb-2 flex items-start gap-2 rounded-md border border-red-200 bg-red-50 p-2">
           <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-red-600" aria-hidden="true" />
           <div>
             <b className="block text-sm font-semibold text-red-900">New Orleans metro area</b>
@@ -40,10 +41,10 @@ export function CoastalAlertsLegend({ warnings, publicAdvisoryText }: CoastalAle
           </div>
         </div>
       )}
-      <p className="mt-2 text-xs text-gray-500">Colors match the coastal lines on the map.</p>
-      {/* One column on a phone: at 350px the four watch/warning labels wrap
-          mid-phrase in two columns. */}
-      <div className="mt-2 grid grid-cols-1 gap-x-3 gap-y-1.5 min-[420px]:grid-cols-2">
+      <p className="text-sm leading-relaxed text-gray-600">
+        NHC coastal alerts for this advisory. Colors match the lines on the map.
+      </p>
+      <div className="mt-2 space-y-1">
         {items.map((item) => (
           <div key={item.kind} className="flex items-center gap-2">
             <i
@@ -51,7 +52,7 @@ export function CoastalAlertsLegend({ warnings, publicAdvisoryText }: CoastalAle
               style={{ background: WW_COLORS[item.kind] }}
               aria-hidden="true"
             />
-            <span className="text-xs text-gray-600">{item.label}</span>
+            <span className="text-xs text-gray-700">{item.label}</span>
           </div>
         ))}
       </div>

@@ -2,7 +2,6 @@
 
 import { findPoint, NEW_ORLEANS_POINT, otherPoints, pointLabel } from "@/lib/tropical/probs";
 import type { ProbsEntry } from "@/lib/tropical/types";
-import { CARD_CLASS } from "./Card";
 import { Kicker } from "./Kicker";
 
 export interface WindProbabilitiesProps {
@@ -37,7 +36,7 @@ function ProbBar({ label, value, color }: { label: string; value: number; color:
 export function WindProbabilities({ probs }: WindProbabilitiesProps) {
   if (probs === null) {
     return (
-      <div className={CARD_CLASS}>
+      <div>
         <Kicker>Wind probability</Kicker>
       </div>
     );
@@ -47,7 +46,7 @@ export function WindProbabilities({ probs }: WindProbabilitiesProps) {
   const others = otherPoints(probs);
 
   return (
-    <div className={CARD_CLASS}>
+    <div>
       <Kicker>Wind probability</Kicker>
       {nola ? (
         <>

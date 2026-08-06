@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
+import { X } from "lucide-react";
 import {
   CartesianGrid,
   Line,
@@ -24,6 +25,8 @@ export interface IntensityPanelProps {
   storm: StormEntry;
   track?: GeoJSON.FeatureCollection;
   visibleModels: Set<string>;
+  /** Closes the pop-out (same as toggling "Intensity graph" in map options). */
+  onClose: () => void;
 }
 
 // Series with no map-toggle checkbox in ModelLegend (they're intensity-only
@@ -147,12 +150,19 @@ function IntensityTooltip({ active, payload, label, advisoryTime }: IntensityToo
 
 /**
  * Intensity guidance — each model's max-sustained-wind forecast plotted
- * against the Saffir-Simpson category ladder. Rendered as its own section
- * below the map whenever a storm is active and guidance exists; there is no
- * show/hide control, because the one that existed lived in the map options
- * panel and nobody could tell what it had done.
+ * against the Saffir-Simpson category ladder.
+ *
+ * A pop-out over the map, opened from "Intensity graph" in map options, same
+ * as the forecast discussion. It briefly lived as a section below the map
+ * instead; that made the map-options button confusing, because clicking
+ * "Open" scrolled nothing into view. Over the map, "Open" does something you
+ * can see immediately.
+ *
+ * The caller positions it: staying clear of the map options panel and of the
+ * advisory scrubber (which only exists during a replay) is knowledge the page
+ * has and this component does not.
  */
-export function IntensityPanel({ intensity, storm, track, visibleModels }: IntensityPanelProps) {
+export function IntensityPanel({ intensity, storm, track, visibleModels, onClose }: IntensityPanelProps) {
   const displayedSeries = useMemo(() => {
     const filtered = intensity.series.filter(
       (s) => ALWAYS_ON_MODELS.has(s.model) || visibleModels.has(s.model)
@@ -190,11 +200,7 @@ export function IntensityPanel({ intensity, storm, track, visibleModels }: Inten
   );
 
   return (
-    // A card below the map rather than a floating overlay: at this width the
-    // spaghetti of model lines is actually readable, it can't collide with the
-    // map options panel or the replay bar, and on a phone it stacks instead of
-    // burying the map.
-    <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+    <div className="overflow-hidden rounded-lg border border-gray-200 bg-white/95 shadow-xl backdrop-blur">
       <div className="flex items-start justify-between gap-3 border-b border-gray-200 px-4 py-2.5">
         <div>
           <div className="text-sm font-semibold text-[#21355a]">Intensity forecast</div>
@@ -213,8 +219,16 @@ export function IntensityPanel({ intensity, storm, track, visibleModels }: Inten
             <small className="block text-[11px] text-gray-500">{categoryLabel(officialPeak)}</small>
           </div>
         )}
+        <button
+          type="button"
+          className="rounded-md p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-700"
+          onClick={onClose}
+          aria-label="Close intensity forecast"
+        >
+          <X className="h-4 w-4" />
+        </button>
       </div>
-      <div className="h-64 px-2 pt-2 sm:h-72">
+      <div className="h-52 px-2 pt-2 sm:h-56">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={chartData} margin={{ top: 20, right: 46, bottom: 4, left: 4 }}>
             <XAxis

@@ -49,6 +49,7 @@ export default function TropicalWeatherContent() {
   const [layers, setLayers] = useState(DEMO_LAYER_STATE);
   const [windThreshold, setWindThreshold] = useState<WindThreshold>(39);
   const [discussionOpen, setDiscussionOpen] = useState(false);
+  const [intensityOpen, setIntensityOpen] = useState(false);
   const [loadMap, setLoadMap] = useState(false);
   const [seededLayerMode, setSeededLayerMode] = useState<boolean | null>(null);
 
@@ -104,10 +105,11 @@ export default function TropicalWeatherContent() {
     });
   }, [dashboard.geo.models, modelsKey]);
 
-  // The intensity chart is simply present whenever there is a storm and
-  // guidance to plot — no toggle to discover (Jeff/Ben, Aug 2026).
-  const showIntensity =
+  const hasIntensity =
     dashboard.mode === "active" && !!dashboard.storm && !!dashboard.intensity;
+  // The advisory scrubber occupies the bottom of the map during a replay, so
+  // the intensity pop-out has to sit above it rather than on top of it.
+  const hasReplay = dashboard.storm?.id === "al092021" && dashboard.advisories.length > 1;
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -187,12 +189,37 @@ export default function TropicalWeatherContent() {
               otherStorms={dashboard.otherStorms}
               discussion={dashboard.textProducts?.discussion ?? null}
               discussionOpen={discussionOpen}
-              onDiscussionOpenChange={setDiscussionOpen}
+              onDiscussionOpenChange={(open) => {
+                // The two pop-outs share the same corner of the map.
+                if (open) setIntensityOpen(false);
+                setDiscussionOpen(open);
+              }}
+              hasIntensity={hasIntensity}
+              intensityOpen={intensityOpen}
+              onIntensityOpenChange={(open) => {
+                if (open) setDiscussionOpen(false);
+                setIntensityOpen(open);
+              }}
             />
           ) : (
             <MapLoading />
           )}
-          {dashboard.storm?.id === "al092021" && dashboard.advisories.length > 1 && (
+          {hasIntensity && intensityOpen && dashboard.storm && dashboard.intensity && (
+            <div
+              className={`absolute inset-x-3 z-20 md:right-[17.75rem] md:max-w-[36rem] ${
+                hasReplay ? "bottom-[6.5rem]" : "bottom-3"
+              }`}
+            >
+              <IntensityPanel
+                intensity={dashboard.intensity}
+                storm={dashboard.storm}
+                track={dashboard.geo.track}
+                visibleModels={visibleModels}
+                onClose={() => setIntensityOpen(false)}
+              />
+            </div>
+          )}
+          {hasReplay && (
             <AdvisoryPlayback
               advisories={dashboard.advisories}
               currentIndex={dashboard.advisoryIndex}
@@ -200,17 +227,6 @@ export default function TropicalWeatherContent() {
             />
           )}
         </div>
-
-        {showIntensity && dashboard.storm && dashboard.intensity && (
-          <div className="mt-4">
-            <IntensityPanel
-              intensity={dashboard.intensity}
-              storm={dashboard.storm}
-              track={dashboard.geo.track}
-              visibleModels={visibleModels}
-            />
-          </div>
-        )}
 
         <p className="mt-4 text-sm text-gray-500">{copy.disclaimer}</p>
       </div>

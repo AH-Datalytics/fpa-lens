@@ -110,6 +110,10 @@ export interface StormMapProps {
   discussion: TextProduct | null;
   discussionOpen: boolean;
   onDiscussionOpenChange: (open: boolean) => void;
+  /** Whether there is intensity guidance to plot for the selected storm. */
+  hasIntensity: boolean;
+  intensityOpen: boolean;
+  onIntensityOpenChange: (open: boolean) => void;
 }
 
 const EMPTY_FC: GeoJSON.FeatureCollection = { type: "FeatureCollection", features: [] };
@@ -195,6 +199,9 @@ export default function StormMap({
   discussion,
   discussionOpen,
   onDiscussionOpenChange,
+  hasIntensity,
+  intensityOpen,
+  onIntensityOpenChange,
 }: StormMapProps) {
   const { data: windField, error: windFieldError } = useSWR<GeoJSON.FeatureCollection>(
     layers.windField ? geo.windFieldUrl ?? null : null,
@@ -636,6 +643,9 @@ export default function StormMap({
           hasDiscussion={Boolean(discussion)}
           discussionOpen={discussionOpen}
           onDiscussionToggle={() => onDiscussionOpenChange(!discussionOpen)}
+          hasIntensity={hasIntensity}
+          intensityOpen={intensityOpen}
+          onIntensityToggle={() => onIntensityOpenChange(!intensityOpen)}
           availableWindThresholds={availableWindThresholds}
           windThreshold={windThreshold}
           onWindThresholdChange={onWindThresholdChange}

@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { Wind, Gauge, Navigation, FileText, Clock } from "lucide-react";
 import type { StormEntry } from "@/lib/tropical/types";
 import { categoryFor, cdtDateTime, cdtTime, countdown, stormTypeLabel } from "@/lib/tropical/format";
-import { CARD_CLASS } from "./Card";
 
 /** Ticks once a second so the advisory countdown stays live without a page reload. */
 function useNow(intervalMs: number): Date {
@@ -33,14 +32,14 @@ export interface StormHeaderProps {
   storm: StormEntry;
 }
 
-const ROW = "flex items-center gap-2 py-2 border-b border-gray-100 last:border-b-0";
+const ROW = "flex items-center gap-2 py-1.5 border-b border-gray-100 last:border-b-0";
 const LABEL = "flex-1 text-sm text-gray-500";
 
 export function StormHeader({ storm }: StormHeaderProps) {
   const now = useNow(1000);
 
   return (
-    <div className={CARD_CLASS}>
+    <div>
       <h2 className="text-2xl font-bold leading-tight text-[#21355a]">
         {stormTypeLabel(storm.classification)} {storm.name}
       </h2>

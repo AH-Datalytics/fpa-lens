@@ -1,9 +1,8 @@
 "use client";
 
 import useSWR from "swr";
-import type { Mode } from "@/lib/tropical/types";
+import type { AlertRow } from "@/lib/tropical/alerts";
 import { ALERTS_URL, alertsFetcher, deriveAlertsState, type AlertsState } from "@/lib/tropical/alerts";
-import { CARD_CLASS } from "./Card";
 import { Kicker } from "./Kicker";
 
 const REFRESH_MS = 5 * 60 * 1000;
@@ -13,7 +12,7 @@ const REFRESH_MS = 5 * 60 * 1000;
  * every call site, so using the hook from more than one place costs one
  * network request, not two. Exposes `unavailable` (feed never loaded
  * successfully, no cached data to fall back on) so call sites can degrade
- * gracefully instead of a down feed silently rendering as "no alerts".
+ * gracefully instead of a down feed silently rendering as "all clear".
  */
 export function useMetroAlerts(): AlertsState {
   const { data, error } = useSWR(ALERTS_URL, alertsFetcher, { refreshInterval: REFRESH_MS });
@@ -21,34 +20,26 @@ export function useMetroAlerts(): AlertsState {
 }
 
 export interface AlertsProps {
-  mode: Mode;
+  rows: AlertRow[];
+  unavailable: boolean;
 }
 
 /**
- * NWS active-alerts panel for the metro parishes. Quiet mode hides the whole
- * section when there's nothing active; active mode always shows the kicker,
- * with a fallback line when there's genuinely nothing. When the feed itself is
- * down (and there's no stale cached data to show instead), both modes show a
- * visible "unavailable" line rather than looking identical to "all clear".
+ * NWS active-alerts section for the metro parishes. Presentational: the
+ * summary strip owns the fetch (via useMetroAlerts) so it can decide whether
+ * this section earns a column before laying the row out.
+ *
+ * When the feed itself is down — and there's no stale cached data to show
+ * instead — this says so, rather than looking identical to genuinely having
+ * no alerts.
  */
-export function Alerts({ mode }: AlertsProps) {
-  const { rows, unavailable } = useMetroAlerts();
-
-  if (unavailable) {
-    return (
-      <div className={CARD_CLASS}>
-        <Kicker>Warning summary</Kicker>
-        <p className="text-sm text-amber-700">Alerts unavailable — check weather.gov</p>
-      </div>
-    );
-  }
-
-  if (mode === "quiet" && rows.length === 0) return null;
-
+export function Alerts({ rows, unavailable }: AlertsProps) {
   return (
-    <div className={CARD_CLASS}>
+    <div>
       <Kicker>Warning summary</Kicker>
-      {rows.length === 0 ? (
+      {unavailable ? (
+        <p className="text-sm text-amber-700">Alerts unavailable — check weather.gov</p>
+      ) : rows.length === 0 ? (
         <p className="text-sm leading-relaxed text-gray-600">
           No active watches or warnings for the metro parishes.
         </p>

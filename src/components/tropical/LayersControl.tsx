@@ -34,6 +34,9 @@ export interface LayersControlProps {
   hasDiscussion: boolean;
   discussionOpen: boolean;
   onDiscussionToggle: () => void;
+  hasIntensity: boolean;
+  intensityOpen: boolean;
+  onIntensityToggle: () => void;
 }
 
 const WIND_THRESHOLD_LABELS: Record<WindThreshold, string> = {
@@ -79,6 +82,9 @@ export function LayersControl({
   hasDiscussion,
   discussionOpen,
   onDiscussionToggle,
+  hasIntensity,
+  intensityOpen,
+  onIntensityToggle,
 }: LayersControlProps) {
   // Collapsed on small screens: an open panel would cover most of the map.
   const [open, setOpen] = useState(() =>
@@ -258,6 +264,14 @@ export function LayersControl({
           <section className="px-4 py-3" aria-labelledby="forecast-details-heading">
             <Kicker id="forecast-details-heading">Forecast details</Kicker>
             <div className="space-y-1.5">
+              <MapActionButton
+                label="Intensity graph"
+                state={hasIntensity ? (intensityOpen ? "Close" : "Open") : "Unavailable"}
+                active={intensityOpen}
+                disabled={!hasIntensity}
+                pressed={intensityOpen}
+                onClick={onIntensityToggle}
+              />
               <MapActionButton
                 label="Forecast discussion"
                 state={discussionOpen ? "Close" : "Open"}

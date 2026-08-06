@@ -3,9 +3,8 @@
 import { ArrowRight } from "lucide-react";
 import { PAGE_PATH } from "@/lib/tropical/config";
 import type { Mode, ProbsEntry, StormEntry } from "@/lib/tropical/types";
-import { Alerts } from "./Alerts";
-import { CoastalAlertsLegend } from "./CoastalAlertsLegend";
-import { CARD_CLASS } from "./Card";
+import { Alerts, useMetroAlerts } from "./Alerts";
+import { CoastalAlertsLegend, coastalLegendItems } from "./CoastalAlertsLegend";
 import { Kicker } from "./Kicker";
 import { OutlookPanel } from "./OutlookPanel";
 import { StormHeader } from "./StormHeader";
@@ -26,17 +25,26 @@ export interface SummaryBandProps {
   publicAdvisoryText?: string | null;
 }
 
+const PANEL = "rounded-xl border border-gray-200 bg-white shadow-sm";
+
+// Only ever one row, so the column count has to match the number of sections
+// that actually have something to say — three fixed columns would leave a
+// third of the strip empty whenever a section drops out.
+const COLUMNS: Record<number, string> = {
+  1: "lg:grid-cols-1",
+  2: "lg:grid-cols-2",
+  3: "lg:grid-cols-3",
+};
+
 /**
- * Conditions summary, laid out as a row of cards ABOVE the map.
+ * Conditions summary as a single strip above the map.
  *
- * This was a fixed-width left rail until Aug 2026, when Jeff and Ben pointed
- * out it squeezed the map into too narrow a column. Moving it overhead gives
- * the map the page's full width, and the storm's headline figures read better
- * across a row than stacked in a 22rem gutter.
- *
- * Active mode: storm header, coastal watches/warnings, wind chances at New
- * Orleans. Quiet mode: "no active systems" + the seven-day outlook, metro
- * alerts, and the historical-replay callout.
+ * Two rounds of review shaped this. It started as a fixed-width left rail,
+ * which squeezed the map; moving it overhead as three equal cards fixed that
+ * but left big voids, because a grid stretches every card to the tallest one
+ * and the warning/probability sections are short. So: one panel, columns
+ * divided by rules, each sized to its own content, and no column at all for a
+ * section with nothing to report.
  */
 export function SummaryBand({
   status,
@@ -51,12 +59,12 @@ export function SummaryBand({
   wwlines,
   publicAdvisoryText,
 }: SummaryBandProps) {
+  // Hoisted above the early return so hook order stays stable across renders.
+  const metroAlerts = useMetroAlerts();
+
   if (status !== "ready") {
     return (
-      <div
-        className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm"
-        role={status === "unavailable" ? "alert" : "status"}
-      >
+      <div className={`${PANEL} p-5`} role={status === "unavailable" ? "alert" : "status"}>
         <div className="text-sm font-semibold text-[#21355a]">
           {status === "loading" ? "Loading live conditions…" : "Live conditions unavailable"}
         </div>
@@ -78,12 +86,53 @@ export function SummaryBand({
     );
   }
 
-  const activeStorm = mode === "active" && storm;
+  const cells: React.ReactNode[] = [];
+
+  if (mode === "active" && storm) {
+    cells.push(<StormHeader key="storm" storm={storm} />);
+    const legendItems = coastalLegendItems(wwlines);
+    if (legendItems.length > 0) {
+      cells.push(
+        <CoastalAlertsLegend
+          key="coastal"
+          items={legendItems}
+          publicAdvisoryText={publicAdvisoryText}
+        />
+      );
+    }
+    cells.push(<WindProbabilities key="probs" probs={probs} />);
+  } else {
+    cells.push(<OutlookPanel key="outlook" outlookText={outlookText} />);
+    // Quiet mode hides the metro-alerts column entirely when there is nothing
+    // active; an "all clear" line would just be noise beside "No active
+    // systems". A feed outage still shows, because that is not an all-clear.
+    if (metroAlerts.unavailable || metroAlerts.rows.length > 0) {
+      cells.push(
+        <Alerts key="alerts" rows={metroAlerts.rows} unavailable={metroAlerts.unavailable} />
+      );
+    }
+    cells.push(
+      <div key="demo">
+        <div className="text-sm font-semibold text-[#21355a]">Explore a historical storm</div>
+        <div className="mt-1 text-sm leading-relaxed text-gray-600">
+          See Hurricane Ida&rsquo;s August 2021 forecast dashboard.
+        </div>
+        {/* Full navigation updates the URL-backed dashboard data source. */}
+        <a
+          className="mt-3 inline-flex items-center gap-1.5 rounded-md bg-[#21355a] px-3 py-1.5 text-sm font-medium text-white hover:bg-[#2c3859]"
+          href={`${PAGE_PATH}?demo=ida`}
+        >
+          View Ida demo
+          <ArrowRight className="h-4 w-4" aria-hidden="true" />
+        </a>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-4">
-      {activeStorm && storms.length > 1 && (
-        <div className="rounded-xl border border-gray-200 bg-white px-5 py-4 shadow-sm">
+      {mode === "active" && storm && storms.length > 1 && (
+        <div className={`${PANEL} px-5 py-4`}>
           <Kicker>Active storms</Kicker>
           <nav aria-label="Choose a storm" className="flex flex-wrap gap-2">
             {storms.map((option) => {
@@ -116,33 +165,16 @@ export function SummaryBand({
         </div>
       )}
 
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {activeStorm ? (
-          <>
-            <StormHeader storm={storm} />
-            <CoastalAlertsLegend warnings={wwlines} publicAdvisoryText={publicAdvisoryText} />
-            <WindProbabilities probs={probs} />
-          </>
-        ) : (
-          <>
-            <OutlookPanel outlookText={outlookText} />
-            <Alerts mode={mode} />
-            <div className={CARD_CLASS}>
-              <div className="text-sm font-semibold text-[#21355a]">Explore a historical storm</div>
-              <div className="mt-1 text-sm leading-relaxed text-gray-600">
-                See Hurricane Ida&rsquo;s August 2021 forecast dashboard.
-              </div>
-              {/* Full navigation updates the URL-backed dashboard data source. */}
-              <a
-                className="mt-3 inline-flex items-center gap-1.5 rounded-md bg-[#21355a] px-3 py-1.5 text-sm font-medium text-white hover:bg-[#2c3859]"
-                href={`${PAGE_PATH}?demo=ida`}
-              >
-                View Ida demo
-                <ArrowRight className="h-4 w-4" aria-hidden="true" />
-              </a>
-            </div>
-          </>
-        )}
+      <div
+        className={`${PANEL} grid grid-cols-1 divide-y divide-gray-200 lg:divide-x lg:divide-y-0 ${
+          COLUMNS[cells.length] ?? "lg:grid-cols-3"
+        }`}
+      >
+        {cells.map((cell, i) => (
+          <div key={i} className="min-w-0 px-5 py-4">
+            {cell}
+          </div>
+        ))}
       </div>
 
       {dataIssues.length > 0 && (
