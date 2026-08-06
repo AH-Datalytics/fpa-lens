@@ -137,3 +137,42 @@
 .tw-map-frame .maplibregl-canvas:focus {
   outline: none;
 }
+
+/* Zoom (+/-) buttons. MapLibre's defaults are a white box with hairline
+   dividers; squared off and given the site's border color they read as part
+   of the same control set as the map options panel. */
+.tw-map-frame .maplibregl-ctrl-group {
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+}
+
+.tw-map-frame .maplibregl-ctrl-group button + button {
+  border-top: 1px solid #e5e7eb;
+}
+
+.tw-map-frame .maplibregl-ctrl-group button:focus-visible {
+  outline: 2px solid #21355a;
+  outline-offset: -2px;
+  box-shadow: none;
+}
+
+/* The "Use ⌘ + scroll to zoom the map" overlay shown when a plain wheel
+   gesture is passed through to the page instead of zooming. */
+.tw-map-frame .maplibregl-cooperative-gesture-screen {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  font-family: inherit;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  background: rgb(15 27 40 / 0.55);
+  backdrop-filter: blur(1px);
+}
+
+.tw-map-frame .maplibregl-cooperative-gesture-screen .maplibregl-desktop-message,
+.tw-map-frame .maplibregl-cooperative-gesture-screen .maplibregl-mobile-message {
+  padding: 0.625rem 1rem;
+  color: #ffffff;
+}

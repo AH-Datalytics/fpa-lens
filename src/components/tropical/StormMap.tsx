@@ -2,7 +2,15 @@
 
 import { useEffect, useRef, useState } from "react";
 import useSWR from "swr";
-import { GeoJSONSource, ImageSource, Map as MapLibreMap, Marker, RasterTileSource, setWorkerUrl } from "maplibre-gl";
+import {
+  GeoJSONSource,
+  ImageSource,
+  Map as MapLibreMap,
+  Marker,
+  NavigationControl,
+  RasterTileSource,
+  setWorkerUrl,
+} from "maplibre-gl";
 import type { FilterSpecification } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import type { LayerKey, LayerState, WindThreshold } from "@/lib/tropical/layers";
@@ -160,8 +168,9 @@ function clearMarkers(markers: Marker[]): void {
  */
 function CompassRose() {
   return (
+    // Sits below MapLibre's zoom buttons, which own the top-left corner.
     <svg
-      className="tw-compass pointer-events-none absolute left-3 top-3 z-10 h-14 w-14"
+      className="tw-compass pointer-events-none absolute left-2 top-[4.75rem] z-10 h-14 w-14"
       viewBox="0 0 60 60"
       aria-hidden="true"
     >
@@ -255,7 +264,14 @@ export default function StormMap({
       bounds: INITIAL_BOUNDS,
       fitBoundsOptions: { padding: 24 },
       attributionControl: false,
+      // The map sits inside a scrolling page, so it must not swallow the
+      // wheel: a plain scroll passes through to the page, and zooming takes
+      // ctrl/cmd + scroll (two fingers on touch). MapLibre shows its own
+      // "Use ⌘ + scroll to zoom the map" hint when it blocks a gesture, and
+      // the +/- buttons below give a way in that needs no modifier at all.
+      cooperativeGestures: true,
     });
+    map.addControl(new NavigationControl({ showCompass: false, showZoom: true }), "top-left");
     mapRef.current = map;
 
     map.on("load", () => {
