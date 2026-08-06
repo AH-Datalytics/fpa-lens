@@ -1,7 +1,6 @@
 "use client";
 
 import { useMemo } from "react";
-import { X } from "lucide-react";
 import {
   CartesianGrid,
   Line,
@@ -25,9 +24,6 @@ export interface IntensityPanelProps {
   storm: StormEntry;
   track?: GeoJSON.FeatureCollection;
   visibleModels: Set<string>;
-  /** Fully hides the panel (same effect as unchecking "Intensity graph" in
-   *  the map's options panel) — rendered as a small × in the header. */
-  onClose: () => void;
 }
 
 // Series with no map-toggle checkbox in ModelLegend (they're intensity-only
@@ -54,15 +50,19 @@ const TICK = "#6b7280";
 const ACCENT = "#21355a";
 const ACCENT_2 = "#c2703d";
 
-// Saffir-Simpson ladder wash — pale blue up through CAT 3, warm for CAT 4/5,
-// so the "this is now dangerous" transition is visible at a glance.
+// The standard Saffir-Simpson color ramp (the one NHC's own track maps and
+// every news graphic use): cyan for tropical-storm force climbing through
+// yellow and orange to red at Category 5. An earlier pale-blue-to-warm wash
+// was too low-contrast to tell the bands apart — feedback from Jeff and Ben,
+// Aug 2026. These run at full saturation with a modest fill opacity so the
+// boundaries stay crisp while the model lines still read on top.
 const CATEGORY_BANDS = [
-  { lower: CATEGORY_THRESHOLDS_MPH.TS, upper: CATEGORY_THRESHOLDS_MPH.C1, label: "TS", color: "#eef3f8" },
-  { lower: CATEGORY_THRESHOLDS_MPH.C1, upper: CATEGORY_THRESHOLDS_MPH.C2, label: "CAT 1", color: "#dee9f4" },
-  { lower: CATEGORY_THRESHOLDS_MPH.C2, upper: CATEGORY_THRESHOLDS_MPH.C3, label: "CAT 2", color: "#c7dbee" },
-  { lower: CATEGORY_THRESHOLDS_MPH.C3, upper: CATEGORY_THRESHOLDS_MPH.C4, label: "CAT 3", color: "#abc6e2" },
-  { lower: CATEGORY_THRESHOLDS_MPH.C4, upper: CATEGORY_THRESHOLDS_MPH.C5, label: "CAT 4", color: "#e98a69" },
-  { lower: CATEGORY_THRESHOLDS_MPH.C5, upper: Infinity, label: "CAT 5", color: "#d95550" },
+  { lower: CATEGORY_THRESHOLDS_MPH.TS, upper: CATEGORY_THRESHOLDS_MPH.C1, label: "TS", color: "#5ebaff" },
+  { lower: CATEGORY_THRESHOLDS_MPH.C1, upper: CATEGORY_THRESHOLDS_MPH.C2, label: "CAT 1", color: "#ffffb2" },
+  { lower: CATEGORY_THRESHOLDS_MPH.C2, upper: CATEGORY_THRESHOLDS_MPH.C3, label: "CAT 2", color: "#ffe775" },
+  { lower: CATEGORY_THRESHOLDS_MPH.C3, upper: CATEGORY_THRESHOLDS_MPH.C4, label: "CAT 3", color: "#ffc140" },
+  { lower: CATEGORY_THRESHOLDS_MPH.C4, upper: CATEGORY_THRESHOLDS_MPH.C5, label: "CAT 4", color: "#ff8f20" },
+  { lower: CATEGORY_THRESHOLDS_MPH.C5, upper: Infinity, label: "CAT 5", color: "#ff6060" },
 ] as const;
 
 function addHoursIso(iso: string, hours: number): string {
@@ -146,11 +146,13 @@ function IntensityTooltip({ active, payload, label, advisoryTime }: IntensityToo
 }
 
 /**
- * Intensity guidance panel — each model's max-sustained-wind forecast plotted
- * against the Saffir-Simpson category ladder, floating over the map in active
- * mode only.
+ * Intensity guidance — each model's max-sustained-wind forecast plotted
+ * against the Saffir-Simpson category ladder. Rendered as its own section
+ * below the map whenever a storm is active and guidance exists; there is no
+ * show/hide control, because the one that existed lived in the map options
+ * panel and nobody could tell what it had done.
  */
-export function IntensityPanel({ intensity, storm, track, visibleModels, onClose }: IntensityPanelProps) {
+export function IntensityPanel({ intensity, storm, track, visibleModels }: IntensityPanelProps) {
   const displayedSeries = useMemo(() => {
     const filtered = intensity.series.filter(
       (s) => ALWAYS_ON_MODELS.has(s.model) || visibleModels.has(s.model)
@@ -211,14 +213,6 @@ export function IntensityPanel({ intensity, storm, track, visibleModels, onClose
             <small className="block text-[11px] text-gray-500">{categoryLabel(officialPeak)}</small>
           </div>
         )}
-        <button
-          type="button"
-          className="rounded-md p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-700"
-          onClick={onClose}
-          aria-label="Close intensity forecast"
-        >
-          <X className="h-4 w-4" />
-        </button>
       </div>
       <div className="h-64 px-2 pt-2 sm:h-72">
         <ResponsiveContainer width="100%" height="100%">
@@ -258,14 +252,18 @@ export function IntensityPanel({ intensity, storm, track, visibleModels, onClose
                 y1={b.lower}
                 y2={Math.min(b.upper, yMax)}
                 fill={b.color}
-                fillOpacity={0.45}
-                stroke="none"
+                fillOpacity={0.55}
+                // A hairline in the band's own color separates neighbours
+                // cleanly instead of letting two washes blur together.
+                stroke={b.color}
+                strokeOpacity={0.9}
                 ifOverflow="visible"
                 label={{
                   value: b.label,
                   position: "insideTopRight",
-                  fill: TICK,
+                  fill: "#3f4a52",
                   fontSize: 11,
+                  fontWeight: 600,
                 }}
               />
             ))}

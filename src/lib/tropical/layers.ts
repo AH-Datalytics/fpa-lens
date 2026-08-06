@@ -3,7 +3,7 @@
 // down to StormMap/LayersControl. Pure, framework-free so it's unit
 // testable without rendering anything.
 
-export type LayerKey = "cone" | "history" | "satellite" | "models" | "windField" | "windProb" | "rain" | "radar" | "graphs";
+export type LayerKey = "cone" | "history" | "satellite" | "models" | "windField" | "windProb" | "rain" | "radar";
 export type WindThreshold = 39 | 58 | 74;
 
 export interface LayerState {
@@ -33,9 +33,12 @@ export interface LayerState {
   /** NEXRAD radar overlay (was a standalone floating button before Round 2;
    *  now one row in the unified Layers control). */
   radar: boolean;
-  /** Shows/hides the intensity guidance panel under the map. */
-  graphs: boolean;
 }
+
+// There was also a `graphs` layer toggling the intensity chart from the map
+// options panel. It was removed (Aug 2026): a "map option" that revealed a
+// panel *below* the map read as neither, and reviewers could not tell what
+// the button had done. The chart is now simply always present in active mode.
 
 export const DEFAULT_LAYER_STATE: LayerState = {
   cone: true,
@@ -46,7 +49,6 @@ export const DEFAULT_LAYER_STATE: LayerState = {
   windProb: true,
   rain: false,
   radar: false,
-  graphs: true,
 };
 
 /** Historical demos open with a quiet, readable forecast view. Technical
@@ -61,7 +63,6 @@ export const DEMO_LAYER_STATE: LayerState = {
   windProb: false,
   rain: false,
   radar: false,
-  graphs: false,
 };
 
 /** Pure toggle: flips one layer's boolean, returning a new LayerState

@@ -12,7 +12,6 @@ import { ModelLegend } from "./ModelLegend";
 export interface LayersControlProps {
   layers: LayerState;
   onToggle: (key: LayerKey) => void;
-  hasGraphs: boolean;
   hasHistory: boolean;
   hasSatellite: boolean;
   satelliteLabel?: string;
@@ -58,7 +57,6 @@ function layerRowClass(disabled?: boolean): string {
 export function LayersControl({
   layers,
   onToggle,
-  hasGraphs,
   hasHistory,
   hasSatellite,
   satelliteLabel,
@@ -260,14 +258,6 @@ export function LayersControl({
           <section className="px-4 py-3" aria-labelledby="forecast-details-heading">
             <Kicker id="forecast-details-heading">Forecast details</Kicker>
             <div className="space-y-1.5">
-              <MapActionButton
-                label="Intensity graph"
-                state={hasGraphs ? (layers.graphs ? "Close" : "Open") : "Unavailable"}
-                active={layers.graphs && hasGraphs}
-                disabled={!hasGraphs}
-                pressed={layers.graphs}
-                onClick={() => onToggle("graphs")}
-              />
               <MapActionButton
                 label="Forecast discussion"
                 state={discussionOpen ? "Close" : "Open"}

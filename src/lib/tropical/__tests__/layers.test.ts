@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { DEFAULT_LAYER_STATE, DEMO_LAYER_STATE, toggleLayer } from "../layers";
 
 describe("DEFAULT_LAYER_STATE", () => {
-  it("starts with cone/models/windProb/graphs on, rain/radar off", () => {
+  it("starts with cone/models/windProb on, rain/radar off", () => {
     expect(DEFAULT_LAYER_STATE).toEqual({
       cone: true,
       history: true,
@@ -12,7 +12,6 @@ describe("DEFAULT_LAYER_STATE", () => {
       windProb: true,
       rain: false,
       radar: false,
-      graphs: true,
     });
   });
 });
@@ -28,7 +27,6 @@ describe("DEMO_LAYER_STATE", () => {
       windProb: false,
       rain: false,
       radar: false,
-      graphs: false,
     });
   });
 });
@@ -53,8 +51,8 @@ describe("toggleLayer", () => {
   });
 
   it("toggling twice returns to the original value", () => {
-    const once = toggleLayer(DEFAULT_LAYER_STATE, "graphs");
-    const twice = toggleLayer(once, "graphs");
-    expect(twice.graphs).toBe(DEFAULT_LAYER_STATE.graphs);
+    const once = toggleLayer(DEFAULT_LAYER_STATE, "radar");
+    const twice = toggleLayer(once, "radar");
+    expect(twice.radar).toBe(DEFAULT_LAYER_STATE.radar);
   });
 });

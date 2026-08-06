@@ -100,11 +100,6 @@ export interface StormMapProps {
   onLayersToggle: (key: LayerKey) => void;
   windThreshold: WindThreshold;
   onWindThresholdChange: (threshold: WindThreshold) => void;
-  /** Whether the intensity panel actually has anything to show right now
-   *  (active mode, a selected storm, intensity data loaded) — forwarded to
-   *  LayersControl so the Graphs checkbox disables rather than lying about
-   *  what toggling it will do. */
-  hasGraphs: boolean;
   /** Full NHC outlook prose in quiet mode. Used only to surface the explicit
    * no-formation status on the map when that statement is present. */
   outlookText?: string;
@@ -195,7 +190,6 @@ export default function StormMap({
   onLayersToggle,
   windThreshold,
   onWindThresholdChange,
-  hasGraphs,
   outlookText,
   otherStorms,
   discussion,
@@ -629,7 +623,6 @@ export default function StormMap({
         <LayersControl
           layers={layers}
           onToggle={onLayersToggle}
-          hasGraphs={hasGraphs}
           hasHistory={Boolean(geo.history)}
           hasSatellite={Boolean(geo.satellite)}
           satelliteLabel={geo.satellite ? cdtDateTime(geo.satellite.issued) : undefined}

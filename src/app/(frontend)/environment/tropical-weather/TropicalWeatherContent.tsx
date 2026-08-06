@@ -9,7 +9,7 @@ import { usePageCopy } from "@/lib/usePageCopy";
 import { TROPICAL_WEATHER_DEFAULTS } from "@/globals/pages/tropicalWeatherPage";
 import { AdvisoryPlayback } from "@/components/tropical/AdvisoryPlayback";
 import { IntensityPanel } from "@/components/tropical/IntensityPanel";
-import { Rail } from "@/components/tropical/Rail";
+import { SummaryBand } from "@/components/tropical/SummaryBand";
 import { PAGE_PATH } from "@/lib/tropical/config";
 import { cdtTime, formatCycle } from "@/lib/tropical/format";
 import {
@@ -104,12 +104,14 @@ export default function TropicalWeatherContent() {
     });
   }, [dashboard.geo.models, modelsKey]);
 
-  const hasGraphs = dashboard.mode === "active" && !!dashboard.storm && !!dashboard.intensity;
-  const activeStorm = dashboard.status === "ready" && dashboard.mode === "active" && dashboard.storm;
+  // The intensity chart is simply present whenever there is a storm and
+  // guidance to plot — no toggle to discover (Jeff/Ben, Aug 2026).
+  const showIntensity =
+    dashboard.mode === "active" && !!dashboard.storm && !!dashboard.intensity;
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-[100rem] px-4 py-8 sm:px-6 lg:px-8">
         <Link
           href="/environment"
           className="mb-3 inline-flex items-center gap-1.5 text-sm text-[#21355a] hover:underline"
@@ -124,23 +126,6 @@ export default function TropicalWeatherContent() {
           <div className="mt-6 flex items-center gap-2 rounded-lg border border-amber-200 bg-amber-50 px-4 py-2.5 text-sm text-amber-900">
             <AlertTriangle className="h-4 w-4 shrink-0" aria-hidden="true" />
             Data may be delayed — last updated {cdtTime(dashboard.manifest.generated)}
-          </div>
-        )}
-
-        {/* Compact storm line for narrow screens, where the rail sits below the
-            map and the headline figures would otherwise be a scroll away. */}
-        {activeStorm && dashboard.storm && (
-          <div
-            className="mt-6 flex flex-wrap items-baseline gap-x-3 gap-y-1 rounded-lg border border-gray-200 bg-white px-4 py-2.5 lg:hidden"
-            aria-label="Current storm summary"
-          >
-            <b className="text-base font-semibold text-[#21355a]">{dashboard.storm.name}</b>
-            <span className="text-sm text-gray-600">
-              {dashboard.storm.classification} · {dashboard.storm.intensityMph} mph
-            </span>
-            <span className="text-sm text-gray-500">
-              Next advisory {cdtTime(dashboard.storm.nextAdvisoryTime)}
-            </span>
           </div>
         )}
 
@@ -167,78 +152,62 @@ export default function TropicalWeatherContent() {
           </div>
         )}
 
-        <div className="mt-6 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
-          {/* The row has no fixed height: the rail sizes to its content and the
-              map column stretches to match, with a floor of 42rem so a short
-              quiet-mode rail still leaves the map a usable size. */}
-          <div className="flex flex-col lg:flex-row lg:items-stretch">
-            {/* Map first in the DOM on mobile, left rail on desktop. */}
-            <div className="relative order-1 h-[26rem] w-full sm:h-[32rem] lg:order-2 lg:h-auto lg:min-h-[42rem] lg:flex-1">
-              {loadMap ? (
-                <StormMap
-                  geo={dashboard.geo}
-                  mode={dashboard.mode}
-                  visibleModels={visibleModels}
-                  onVisibleModelsChange={setVisibleModels}
-                  modelCycleLabel={
-                    dashboard.storm ? formatCycle(dashboard.storm.modelCycle) : undefined
-                  }
-                  layers={layers}
-                  onLayersToggle={(key) => {
-                    if (key === "graphs") setDiscussionOpen(false);
-                    setLayers((s) => toggleLayer(s, key));
-                  }}
-                  windThreshold={windThreshold}
-                  onWindThresholdChange={setWindThreshold}
-                  hasGraphs={hasGraphs}
-                  outlookText={dashboard.outlookText?.text}
-                  otherStorms={dashboard.otherStorms}
-                  discussion={dashboard.textProducts?.discussion ?? null}
-                  discussionOpen={discussionOpen}
-                  onDiscussionOpenChange={(open) => {
-                    if (open && layers.graphs) setLayers((state) => toggleLayer(state, "graphs"));
-                    setDiscussionOpen(open);
-                  }}
-                />
-              ) : (
-                <MapLoading />
-              )}
-              {dashboard.storm?.id === "al092021" && dashboard.advisories.length > 1 && (
-                <AdvisoryPlayback
-                  advisories={dashboard.advisories}
-                  currentIndex={dashboard.advisoryIndex}
-                  onSelect={dashboard.selectAdvisoryIndex}
-                />
-              )}
-            </div>
-
-            <div className="order-2 border-t border-gray-200 lg:order-1 lg:w-[22rem] lg:shrink-0 lg:border-r lg:border-t-0">
-              <Rail
-                status={dashboard.status}
-                retry={dashboard.retry}
-                dataIssues={dashboard.dataIssues}
-                mode={dashboard.mode}
-                storm={dashboard.storm}
-                outlookText={dashboard.outlookText}
-                probs={dashboard.probs}
-                storms={dashboard.storms}
-                demoParam={dashboard.demoParam}
-                wwlines={dashboard.geo.wwlines}
-                publicAdvisoryText={dashboard.textProducts?.publicAdvisory?.text}
-              />
-            </div>
-          </div>
+        <div className="mt-6">
+          <SummaryBand
+            status={dashboard.status}
+            retry={dashboard.retry}
+            dataIssues={dashboard.dataIssues}
+            mode={dashboard.mode}
+            storm={dashboard.storm}
+            outlookText={dashboard.outlookText}
+            probs={dashboard.probs}
+            storms={dashboard.storms}
+            demoParam={dashboard.demoParam}
+            wwlines={dashboard.geo.wwlines}
+            publicAdvisoryText={dashboard.textProducts?.publicAdvisory?.text}
+          />
         </div>
 
-        {/* Opened from "Intensity graph" in the map's options panel. */}
-        {hasGraphs && layers.graphs && dashboard.storm && dashboard.intensity && (
-          <div className="mt-6">
+        {/* Full page width, with the summary overhead rather than beside it. */}
+        <div className="relative mt-4 h-[26rem] overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm sm:h-[32rem] lg:h-[40rem]">
+          {loadMap ? (
+            <StormMap
+              geo={dashboard.geo}
+              mode={dashboard.mode}
+              visibleModels={visibleModels}
+              onVisibleModelsChange={setVisibleModels}
+              modelCycleLabel={
+                dashboard.storm ? formatCycle(dashboard.storm.modelCycle) : undefined
+              }
+              layers={layers}
+              onLayersToggle={(key) => setLayers((s) => toggleLayer(s, key))}
+              windThreshold={windThreshold}
+              onWindThresholdChange={setWindThreshold}
+              outlookText={dashboard.outlookText?.text}
+              otherStorms={dashboard.otherStorms}
+              discussion={dashboard.textProducts?.discussion ?? null}
+              discussionOpen={discussionOpen}
+              onDiscussionOpenChange={setDiscussionOpen}
+            />
+          ) : (
+            <MapLoading />
+          )}
+          {dashboard.storm?.id === "al092021" && dashboard.advisories.length > 1 && (
+            <AdvisoryPlayback
+              advisories={dashboard.advisories}
+              currentIndex={dashboard.advisoryIndex}
+              onSelect={dashboard.selectAdvisoryIndex}
+            />
+          )}
+        </div>
+
+        {showIntensity && dashboard.storm && dashboard.intensity && (
+          <div className="mt-4">
             <IntensityPanel
               intensity={dashboard.intensity}
               storm={dashboard.storm}
               track={dashboard.geo.track}
               visibleModels={visibleModels}
-              onClose={() => setLayers((s) => toggleLayer(s, "graphs"))}
             />
           </div>
         )}

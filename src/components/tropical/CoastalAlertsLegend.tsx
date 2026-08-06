@@ -4,6 +4,7 @@ import { useMemo } from "react";
 import { AlertTriangle } from "lucide-react";
 import { WW_COLORS, WW_LEGEND_ITEMS, wwKind } from "@/lib/tropical/mapStyle";
 import { nolaHasHurricaneWarning } from "@/lib/tropical/nhcWarnings";
+import { CARD_CLASS } from "./Card";
 import { Kicker } from "./Kicker";
 
 export interface CoastalAlertsLegendProps {
@@ -27,7 +28,7 @@ export function CoastalAlertsLegend({ warnings, publicAdvisoryText }: CoastalAle
   if (items.length === 0) return null;
 
   return (
-    <section className="border-b border-gray-200 py-4" aria-labelledby="coastal-alert-legend-title">
+    <section className={CARD_CLASS} aria-labelledby="coastal-alert-legend-title">
       <Kicker id="coastal-alert-legend-title">Warning summary</Kicker>
       <p className="text-sm font-semibold text-gray-900">NHC coastal alerts for this advisory.</p>
       {nolaWarning && (

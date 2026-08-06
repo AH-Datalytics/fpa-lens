@@ -3,6 +3,7 @@
 import useSWR from "swr";
 import type { Mode } from "@/lib/tropical/types";
 import { ALERTS_URL, alertsFetcher, deriveAlertsState, type AlertsState } from "@/lib/tropical/alerts";
+import { CARD_CLASS } from "./Card";
 import { Kicker } from "./Kicker";
 
 const REFRESH_MS = 5 * 60 * 1000;
@@ -35,7 +36,7 @@ export function Alerts({ mode }: AlertsProps) {
 
   if (unavailable) {
     return (
-      <div className="border-b border-gray-200 py-4">
+      <div className={CARD_CLASS}>
         <Kicker>Warning summary</Kicker>
         <p className="text-sm text-amber-700">Alerts unavailable — check weather.gov</p>
       </div>
@@ -45,7 +46,7 @@ export function Alerts({ mode }: AlertsProps) {
   if (mode === "quiet" && rows.length === 0) return null;
 
   return (
-    <div className="border-b border-gray-200 py-4">
+    <div className={CARD_CLASS}>
       <Kicker>Warning summary</Kicker>
       {rows.length === 0 ? (
         <p className="text-sm leading-relaxed text-gray-600">
