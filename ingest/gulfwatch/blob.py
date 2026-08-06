@@ -1,7 +1,7 @@
 """Vercel Blob REST client for the tropical-weather ingest.
 
 Writes go through the Vercel Blob REST PUT endpoint using
-`TROPICAL_BLOB_READ_WRITE_TOKEN`; reads go directly against the public store
+`TROPICAL_READ_WRITE_TOKEN`; reads go directly against the public store
 base URL (`TROPICAL_BLOB_BASE_URL`) since everything this pipeline uploads is
 public-read -- the dashboard fetches it straight from the browser.
 
@@ -49,9 +49,9 @@ def _with_retry(operation):
 
 
 def _token() -> str:
-    token = os.environ.get("TROPICAL_BLOB_READ_WRITE_TOKEN")
+    token = os.environ.get("TROPICAL_READ_WRITE_TOKEN")
     if not token:
-        raise RuntimeError("TROPICAL_BLOB_READ_WRITE_TOKEN is not set")
+        raise RuntimeError("TROPICAL_READ_WRITE_TOKEN is not set")
     return token
 
 

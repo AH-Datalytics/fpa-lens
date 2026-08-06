@@ -35,19 +35,22 @@ Two variables, both deliberately prefixed so they can never be confused with the
 repo's other two blob stores (`BLOB_READ_WRITE_TOKEN` is the lakefront forecast
 store; `CMS_MEDIA_BLOB_TOKEN` is Payload media). Do not point them at each other.
 
-- `TROPICAL_BLOB_READ_WRITE_TOKEN` — read/write token for the tropical store
+- `TROPICAL_READ_WRITE_TOKEN` — read/write token for the tropical store
 - `TROPICAL_BLOB_BASE_URL` — that store's public base URL
 
-They live in GitHub Actions secrets. The frontend separately needs
-`NEXT_PUBLIC_TROPICAL_BLOB_BASE_URL` (same value as `TROPICAL_BLOB_BASE_URL`) in
-Vercel, since the browser fetches the manifest itself.
+Both are set as GitHub Actions secrets on `AH-Datalytics/fpa-lens`. The store is
+`fpa-tropical` (`store_yAYQazt9SKO3Nvio`), served from
+`https://yayqazt9sko3nvio.public.blob.vercel-storage.com`.
+
+The frontend separately needs `NEXT_PUBLIC_TROPICAL_BLOB_BASE_URL` (same value)
+in Vercel, since the browser fetches the manifest itself.
 
 ## Running locally
 
 ```bash
 pip install -r ingest/requirements.txt
 cd ingest
-TROPICAL_BLOB_READ_WRITE_TOKEN=... TROPICAL_BLOB_BASE_URL=... python ingest.py
+TROPICAL_READ_WRITE_TOKEN=... TROPICAL_BLOB_BASE_URL=... python ingest.py
 ```
 
 It prints one summary line (`mode`, storm count, error count).

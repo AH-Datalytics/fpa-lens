@@ -22,7 +22,7 @@ def no_real_sleep(monkeypatch):
 
 @pytest.fixture(autouse=True)
 def blob_env(monkeypatch):
-    monkeypatch.setenv("TROPICAL_BLOB_READ_WRITE_TOKEN", "fake-token")
+    monkeypatch.setenv("TROPICAL_READ_WRITE_TOKEN", "fake-token")
     monkeypatch.setenv("TROPICAL_BLOB_BASE_URL", "https://fake.public.blob.vercel-storage.com")
 
 

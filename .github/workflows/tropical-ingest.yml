@@ -45,6 +45,6 @@ jobs:
       - name: Run ingest
         working-directory: ingest
         env:
-          TROPICAL_BLOB_READ_WRITE_TOKEN: ${{ secrets.TROPICAL_BLOB_READ_WRITE_TOKEN }}
+          TROPICAL_READ_WRITE_TOKEN: ${{ secrets.TROPICAL_READ_WRITE_TOKEN }}
           TROPICAL_BLOB_BASE_URL: ${{ secrets.TROPICAL_BLOB_BASE_URL }}
         run: python ingest.py
