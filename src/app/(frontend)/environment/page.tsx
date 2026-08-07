@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback, useRef } from "react";
+import Link from "next/link";
 import {
   Wind,
   Waves,
@@ -16,6 +17,8 @@ import {
   Camera,
   Clock,
   Compass,
+  CloudLightning,
+  ArrowRight,
 } from "lucide-react";
 import {
   ComposedChart,
@@ -368,11 +371,25 @@ export default function EnvironmentalPage() {
   return (
     <div className="py-12">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <SectionHeader
-          title={copy.pageTitle}
-          subtitle={copy.pageSubtitle}
-          source={`NOAA Station ${data.stationId} (${data.stationName}) & NWS`}
-        />
+        <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+          <div className="[&>div]:mb-0">
+            <SectionHeader
+              title={copy.pageTitle}
+              subtitle={copy.pageSubtitle}
+              source={`NOAA Station ${data.stationId} (${data.stationName}) & NWS`}
+            />
+          </div>
+          {/* Sibling page: NHC tropical tracking. Separate feed and separate
+              cadence from the lakefront risk model on this page. */}
+          <Link
+            href="/environment/tropical-weather"
+            className="group inline-flex shrink-0 items-center gap-2 self-start whitespace-nowrap rounded-lg bg-[#21355a] px-5 py-3 text-sm font-semibold text-white shadow-md transition-all hover:bg-[#2c4470] hover:shadow-lg"
+          >
+            <CloudLightning className="h-4 w-4" aria-hidden="true" />
+            Tropical Weather
+            <ArrowRight className="h-4 w-4 text-[#65bc7b] transition-transform group-hover:translate-x-0.5" />
+          </Link>
+        </div>
 
         {/* Stale data warning */}
         {error && data && (

@@ -78,3 +78,7 @@ cms-media/
 
 # CMS deploy secret (local only)
 .cms-payload-secret
+
+# Python bytecode (ingest/)
+__pycache__/
+*.py[cod]

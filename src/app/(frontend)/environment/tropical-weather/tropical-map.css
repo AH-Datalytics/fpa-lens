@@ -1,0 +1,171 @@
+/*
+ * Map-internal chrome for /environment/tropical-weather.
+ *
+ * Everything the viewer can see as *page UI* (rail panels, map options,
+ * intensity panel, replay bar) is Tailwind, like the rest of FPA Lens. This
+ * file covers only the things Tailwind can't reach: MapLibre `Marker`
+ * elements, which StormMap.tsx builds with document.createElement and hands to
+ * MapLibre outside React, plus a couple of MapLibre's own injected classes.
+ *
+ * Every label here sits on top of dark satellite imagery, so all of them are
+ * white with a dark halo rather than site-palette colors — legibility over
+ * imagery beats palette consistency here, and it matches how NHC's own
+ * graphics label their maps. Imported by page.tsx, so it ships only with this
+ * route's CSS chunk.
+ */
+
+.tmap-label {
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.tmap-graticule {
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.85);
+  text-shadow: 0 0 3px rgba(0, 0, 0, 0.7);
+}
+
+.tmap-track-label {
+  font-size: 11.5px;
+  font-weight: 500;
+  color: #ffffff;
+  text-shadow:
+    0 0 3px rgba(0, 0, 0, 0.8),
+    0 0 6px rgba(0, 0, 0, 0.6);
+}
+
+/* Non-selected storms: same treatment as the selected storm's track labels,
+   slightly dimmer since these storms carry no other detail on the map. */
+.tmap-storm-label {
+  font-size: 11.5px;
+  color: rgba(255, 255, 255, 0.85);
+  text-shadow:
+    0 0 3px rgba(0, 0, 0, 0.8),
+    0 0 6px rgba(0, 0, 0, 0.6);
+}
+
+.tmap-outlook-label {
+  font-weight: 700;
+  font-size: 13px;
+  text-align: center;
+  color: #ffffff;
+  text-shadow:
+    0 0 4px rgba(0, 0, 0, 0.8),
+    0 0 7px rgba(0, 0, 0, 0.6);
+}
+
+/* New Orleans reference point. The dot uses the warm accent (#c2703d) rather
+   than site navy: navy disappears against dark water at this size. */
+.tmap-nola {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  pointer-events: none;
+}
+
+.tmap-nola-dot {
+  flex: none;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #c2703d;
+  box-shadow: 0 0 0 4px rgba(194, 112, 61, 0.35);
+}
+
+.tmap-nola-label {
+  font-weight: 600;
+  font-size: 12.5px;
+  color: #ffffff;
+  text-shadow:
+    0 0 3px rgba(0, 0, 0, 0.8),
+    0 0 6px rgba(0, 0, 0, 0.6);
+}
+
+/* Current-position storm symbol: the standard NHC-style cyclone glyph, with
+   an eye dot added for hurricane strength and a plain disc for a depression. */
+.tmap-storm-icon {
+  position: relative;
+  width: 36px;
+  height: 36px;
+  pointer-events: none;
+  filter: drop-shadow(0 0 1.5px rgba(255, 255, 255, 0.95))
+    drop-shadow(0 2px 4px rgba(0, 0, 0, 0.75));
+}
+
+.tmap-storm-icon::before {
+  position: absolute;
+  inset: 0;
+  content: "";
+}
+
+.tmap-symbol-ts::before,
+.tmap-symbol-hu::before {
+  background: url("/tropical/hurricane-symbol-white.png") center / contain no-repeat;
+}
+
+.tmap-symbol-hu::after {
+  position: absolute;
+  top: 39%;
+  left: 39%;
+  width: 22%;
+  height: 22%;
+  border-radius: 50%;
+  content: "";
+  background: #ffffff;
+}
+
+.tmap-symbol-td::before {
+  inset: 25%;
+  border-radius: 50%;
+  background: #ffffff;
+}
+
+@media (max-width: 640px) {
+  .tmap-storm-icon {
+    width: 32px;
+    height: 32px;
+  }
+}
+
+.tw-compass {
+  filter: drop-shadow(0 0 3px rgba(0, 0, 0, 0.7));
+}
+
+/* MapLibre injects its own canvas wrapper; suppress the focus ring it draws
+   on click (keyboard focus still reaches the zoom controls and our own
+   buttons, which keep their Tailwind focus styles). */
+.tw-map-frame .maplibregl-canvas:focus {
+  outline: none;
+}
+
+/* Zoom (+/-) buttons. MapLibre's defaults are a white box with hairline
+   dividers; squared off and given the site's border color they read as part
+   of the same control set as the map options panel. */
+.tw-map-frame .maplibregl-ctrl-group {
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+}
+
+.tw-map-frame .maplibregl-ctrl-group button + button {
+  border-top: 1px solid #e5e7eb;
+}
+
+.tw-map-frame .maplibregl-ctrl-group button:focus-visible {
+  outline: 2px solid #21355a;
+  outline-offset: -2px;
+  box-shadow: none;
+}
+
+/* MapLibre's cooperative-gestures hint ("Use ⌘ + scroll to zoom the map")
+   greys out the whole map every time someone scrolls the page past it, which
+   is most of the time. The *behavior* it announces is still on and still what
+   we want — a plain wheel scrolls the page, ⌘/ctrl + wheel zooms — but the
+   +/- buttons are the discoverable way in, so the nag earns nothing.
+
+   Both selectors: MapLibre toggles .maplibregl-show to fade it in, and that
+   rule carries the same specificity as a plain override. */
+.tw-map-frame .maplibregl-cooperative-gesture-screen,
+.tw-map-frame .maplibregl-cooperative-gesture-screen.maplibregl-show {
+  display: none;
+}

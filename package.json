@@ -5,11 +5,12 @@
   "type": "module",
   "scripts": {
     "dev": "next dev",
-    "prebuild": "eslint",
+    "prebuild": "node scripts/check-maplibre-worker-sync.mjs && eslint",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "vitest run"
+    "test": "vitest run",
+    "predev": "node scripts/check-maplibre-worker-sync.mjs"
   },
   "dependencies": {
     "@payloadcms/db-postgres": "^3.85.2",
@@ -24,6 +25,7 @@
     "html-to-image": "^1.11.13",
     "leaflet": "^1.9.4",
     "lucide-react": "^1.11.0",
+    "maplibre-gl": "^6.2.0",
     "next": "16.2.9",
     "payload": "^3.85.2",
     "proj4": "^2.20.9",
@@ -34,6 +36,7 @@
     "resend": "^6.14.0",
     "shapefile": "^0.6.6",
     "sharp": "^0.35.3",
+    "swr": "^2.5.0",
     "zod": "^4.4.3"
   },
   "devDependencies": {

@@ -103,6 +103,7 @@ export interface Config {
     'turf-page': TurfPage;
     'idiq-page': IdiqPage;
     'permits-page': PermitsPage;
+    'tropical-weather-page': TropicalWeatherPage;
   };
   globalsSelect: {
     'site-settings': SiteSettingsSelect<false> | SiteSettingsSelect<true>;
@@ -118,6 +119,7 @@ export interface Config {
     'turf-page': TurfPageSelect<false> | TurfPageSelect<true>;
     'idiq-page': IdiqPageSelect<false> | IdiqPageSelect<true>;
     'permits-page': PermitsPageSelect<false> | PermitsPageSelect<true>;
+    'tropical-weather-page': TropicalWeatherPageSelect<false> | TropicalWeatherPageSelect<true>;
   };
   locale: null;
   widgets: {
@@ -1657,6 +1659,47 @@ export interface PermitsPage {
   createdAt?: string | null;
 }
 /**
+ * Editable copy on the Tropical Weather page.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "tropical-weather-page".
+ */
+export interface TropicalWeatherPage {
+  id: number;
+  /**
+   * Main page heading (top of the Tropical Weather page).
+   */
+  pageTitle?: string | null;
+  /**
+   * One-line subtitle beneath the page heading.
+   */
+  pageSubtitle?: string | null;
+  /**
+   * Explainer paragraph above the map. Storm data, map labels, and legends are not editable.
+   */
+  intro?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Standing note beneath the map. Keep the pointer to the National Hurricane Center and NWS.
+   */
+  disclaimer?: string | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "site-settings_select".
  */
@@ -1897,6 +1940,19 @@ export interface PermitsPageSelect<T extends boolean = true> {
   pageTitle?: T;
   intro?: T;
   lifecycleHeading?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "tropical-weather-page_select".
+ */
+export interface TropicalWeatherPageSelect<T extends boolean = true> {
+  pageTitle?: T;
+  pageSubtitle?: T;
+  intro?: T;
+  disclaimer?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;

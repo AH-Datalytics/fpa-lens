@@ -29,7 +29,11 @@ const navigation: NavItem[] = [
   },
   { name: "Safety", href: "/safety" },
   { name: "Staffing", href: "/staffing" },
-  { name: "Environment", href: "/environment" },
+  {
+    name: "Environment",
+    href: "/environment",
+    submenu: [{ name: "Tropical Weather", href: "/environment/tropical-weather" }],
+  },
   { name: "Protection", href: "/protection" },
   { name: "About Us", href: "/about" },
 ];
