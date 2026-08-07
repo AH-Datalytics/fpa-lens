@@ -52,8 +52,8 @@
       "noFault": 9,
       "lostTime": 0,
       "injuries": 7,
-      "propertyDamageFpa": 33,
-      "propertyDamagePrivate": 18
+      "propertyDamageFpa": 36,
+      "propertyDamagePrivate": 20
     }
   ],
   "monthlyData": [
@@ -434,6 +434,13 @@
       "accidents": 0,
       "incidents": 3,
       "noFault": 0
+    },
+    {
+      "year": 2026,
+      "month": 7,
+      "accidents": 0,
+      "incidents": 5,
+      "noFault": 0
     }
   ],
   "eventTypes": [
@@ -481,9 +488,9 @@
     },
     {
       "type": "Mobile Equipment",
-      "count": 47,
+      "count": 51,
       "accidents": 1,
-      "incidents": 39,
+      "incidents": 43,
       "noFault": 7
     },
     {
@@ -495,9 +502,9 @@
     },
     {
       "type": "Slip/Trip/Fall",
-      "count": 25,
+      "count": 26,
       "accidents": 13,
-      "incidents": 12,
+      "incidents": 13,
       "noFault": 0
     },
     {
@@ -509,6 +516,66 @@
     }
   ],
   "recentEvents": [
+    {
+      "date": "2026-07-28",
+      "month": "July",
+      "year": 2026,
+      "eventType": "Mobile Equipment",
+      "classification": "damage",
+      "isAtFault": true,
+      "isLostTime": false,
+      "hasInjury": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": true
+    },
+    {
+      "date": "2026-07-27",
+      "month": "July",
+      "year": 2026,
+      "eventType": "Mobile Equipment",
+      "classification": "damage",
+      "isAtFault": true,
+      "isLostTime": false,
+      "hasInjury": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2026-07-24",
+      "month": "July",
+      "year": 2026,
+      "eventType": "Mobile Equipment",
+      "classification": "damage",
+      "isAtFault": true,
+      "isLostTime": false,
+      "hasInjury": false,
+      "hasDamage": false,
+      "hasPrivatePropertyDamage": true
+    },
+    {
+      "date": "2026-07-09",
+      "month": "July",
+      "year": 2026,
+      "eventType": "Slip/Trip/Fall",
+      "classification": "other",
+      "isAtFault": true,
+      "isLostTime": false,
+      "hasInjury": false,
+      "hasDamage": false,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2026-07-07",
+      "month": "July",
+      "year": 2026,
+      "eventType": "Mobile Equipment",
+      "classification": "damage",
+      "isAtFault": true,
+      "isLostTime": false,
+      "hasInjury": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": false
+    },
     {
       "date": "2026-06-24",
       "month": "June",
