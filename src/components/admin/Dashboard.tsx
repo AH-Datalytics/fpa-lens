@@ -23,6 +23,8 @@ const PAGE_CARDS: CardDef[] = [
   { title: "Staffing", description: "Page intro, section headings, and section descriptions.", href: "/admin/globals/staffing-page" },
   { title: "Turf Maintenance", description: "Page intro, the operational note, and the how-to-read text.", href: "/admin/globals/turf-page" },
   { title: "IDIQ Contracts", description: "Landing intro, the Key Takeaway note, and service descriptions.", href: "/admin/globals/idiq-page" },
+  { title: "Permits", description: "Page heading, intro, and the life-of-a-permit heading.", href: "/admin/globals/permits-page" },
+  { title: "Tropical Weather", description: "Page heading, subtitle, intro, and the forecast disclaimer.", href: "/admin/globals/tropical-weather-page" },
 ];
 
 const SITE_CARDS: CardDef[] = [
