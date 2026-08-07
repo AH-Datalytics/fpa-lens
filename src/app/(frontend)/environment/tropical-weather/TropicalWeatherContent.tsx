@@ -206,7 +206,7 @@ export default function TropicalWeatherContent() {
           )}
           {hasIntensity && intensityOpen && dashboard.storm && dashboard.intensity && (
             <div
-              className={`absolute inset-x-3 z-20 md:right-[17.75rem] md:max-w-[36rem] ${
+              className={`absolute inset-x-3 z-20 md:right-[17.75rem] ${
                 hasReplay ? "bottom-[6.5rem]" : "bottom-3"
               }`}
             >

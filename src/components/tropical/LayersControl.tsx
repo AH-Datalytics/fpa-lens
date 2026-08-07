@@ -47,10 +47,13 @@ const WIND_THRESHOLD_LABELS: Record<WindThreshold, string> = {
 
 const CHECKBOX =
   "h-3.5 w-3.5 shrink-0 rounded border-gray-300 text-[#21355a] focus:ring-1 focus:ring-[#21355a] disabled:cursor-not-allowed";
-const STATUS_NOTE = "mt-1 pl-5 text-[11px] text-gray-500";
+const STATUS_NOTE = "mt-0.5 pl-5 text-[11px] text-gray-500";
+/** Shared section padding — tuned so the whole panel clears a 40rem map
+ *  without an inner scrollbar on a laptop (Jeff, Aug 2026). */
+const SECTION = "border-b border-gray-200 px-3.5 py-2.5";
 
 function layerRowClass(disabled?: boolean): string {
-  return `flex items-center gap-2 py-1 text-sm ${
+  return `flex items-center gap-2 py-0.5 text-xs ${
     disabled ? "cursor-not-allowed text-gray-400" : "cursor-pointer text-gray-700"
   }`;
 }
@@ -96,7 +99,7 @@ export function LayersControl({
     <div className="flex max-h-full w-64 flex-col overflow-hidden rounded-lg border border-gray-200 bg-white shadow-lg">
       <button
         type="button"
-        className="flex w-full shrink-0 items-center justify-between gap-2 bg-[#21355a] px-4 py-2.5 text-left text-white"
+        className="flex w-full shrink-0 items-center justify-between gap-2 bg-[#21355a] px-3.5 py-2 text-left text-white"
         onClick={() => setOpen((value) => !value)}
         aria-expanded={open}
       >
@@ -121,10 +124,7 @@ export function LayersControl({
             />
           )}
 
-          <section
-            className="border-b border-gray-200 px-4 py-3"
-            aria-labelledby="weather-overlays-heading"
-          >
+          <section className={SECTION} aria-labelledby="weather-overlays-heading">
             <Kicker id="weather-overlays-heading">Weather overlays</Kicker>
             <label className={layerRowClass()}>
               <input
@@ -143,7 +143,7 @@ export function LayersControl({
                   checked={layers.history}
                   onChange={() => onToggle("history")}
                 />
-                Past track <small className="text-[10px] uppercase text-gray-400">observed</small>
+                Past track <small className="text-[9px] uppercase text-gray-400">observed</small>
               </label>
             )}
             {hasSatellite && (
@@ -261,9 +261,9 @@ export function LayersControl({
             )}
           </section>
 
-          <section className="px-4 py-3" aria-labelledby="forecast-details-heading">
+          <section className="px-3.5 py-2.5" aria-labelledby="forecast-details-heading">
             <Kicker id="forecast-details-heading">Forecast details</Kicker>
-            <div className="space-y-1.5">
+            <div className="space-y-1">
               <MapActionButton
                 label="Intensity graph"
                 state={hasIntensity ? (intensityOpen ? "Close" : "Open") : "Unavailable"}
@@ -306,7 +306,7 @@ function MapActionButton({
   return (
     <button
       type="button"
-      className={`flex w-full items-center justify-between gap-2 rounded-md border px-3 py-2 text-left text-sm ${
+      className={`flex w-full items-center justify-between gap-2 rounded-md border px-2.5 py-1.5 text-left text-xs ${
         disabled
           ? "cursor-not-allowed border-gray-200 bg-gray-50 text-gray-400"
           : active

@@ -24,7 +24,7 @@ export interface ModelLegendProps {
 const CHECKBOX =
   "h-3.5 w-3.5 shrink-0 rounded border-gray-300 text-[#21355a] focus:ring-1 focus:ring-[#21355a]";
 const MODEL_ROW =
-  "flex cursor-help items-center gap-2 py-1 text-xs text-gray-700 hover:text-gray-900";
+  "flex cursor-help items-center gap-2 py-0.5 text-[11px] text-gray-700 hover:text-gray-900";
 
 /** Forecast-track choices embedded in Map options. Primary choices use
  * plain language; technical model codes stay behind Advanced. */
@@ -79,7 +79,7 @@ export function ModelLegend({
   }
 
   function choiceClass(selected: boolean): string {
-    return `flex w-full items-center justify-between gap-2 rounded-md border px-3 py-2 text-left ${
+    return `flex w-full items-center justify-between gap-2 rounded-md border px-2.5 py-1.5 text-left ${
       selected
         ? "border-[#21355a] bg-[#21355a]/5"
         : "border-gray-200 bg-white hover:border-gray-300 hover:bg-gray-50"
@@ -87,26 +87,26 @@ export function ModelLegend({
   }
 
   return (
-    <section className="border-b border-gray-200 px-4 py-3" aria-labelledby="forecast-track-heading">
+    <section className="border-b border-gray-200 px-3.5 py-2.5" aria-labelledby="forecast-track-heading">
       <Kicker id="forecast-track-heading">Forecast track</Kicker>
-      <p className="mb-2 text-xs leading-relaxed text-gray-500">
+      <p className="mb-1.5 text-[11px] leading-relaxed text-gray-500">
         The official NHC track is always visible. Model tracks show possible scenarios.
       </p>
-      <div className="space-y-1.5">
+      <div className="space-y-1">
         <button type="button" className={choiceClass(!enabled)} onClick={() => choose([])}>
-          <b className="text-sm font-semibold text-gray-900">Official forecast</b>
+          <b className="text-xs font-semibold text-gray-900">Official forecast</b>
           {!enabled && <Check className="h-4 w-4 shrink-0 text-[#21355a]" aria-hidden="true" />}
         </button>
         <button type="button" className={choiceClass(allSelected)} onClick={() => choose(allCodes)}>
           <span>
-            <b className="block text-sm font-semibold text-gray-900">Forecast model tracks</b>
-            <small className="block text-xs text-gray-500">Show other projected paths</small>
+            <b className="block text-xs font-semibold text-gray-900">Forecast model tracks</b>
+            <small className="block text-[11px] text-gray-500">Show other projected paths</small>
           </span>
           {allSelected && <Check className="h-4 w-4 shrink-0 text-[#21355a]" aria-hidden="true" />}
         </button>
       </div>
       <details className="group mt-2">
-        <summary className="cursor-pointer list-none text-xs font-medium text-[#21355a] hover:underline">
+        <summary className="cursor-pointer list-none text-[11px] font-medium text-[#21355a] hover:underline">
           <span className="inline-block transition-transform group-open:rotate-90">▸</span> Choose
           individual models
         </summary>
