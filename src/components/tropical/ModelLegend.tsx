@@ -89,9 +89,6 @@ export function ModelLegend({
   return (
     <section className="border-b border-gray-200 px-3.5 py-2.5" aria-labelledby="forecast-track-heading">
       <Kicker id="forecast-track-heading">Forecast track</Kicker>
-      <p className="mb-1.5 text-[11px] leading-relaxed text-gray-500">
-        The official NHC track is always visible. Model tracks show possible scenarios.
-      </p>
       <div className="space-y-1">
         <button type="button" className={choiceClass(!enabled)} onClick={() => choose([])}>
           <b className="text-xs font-semibold text-gray-900">Official forecast</b>
