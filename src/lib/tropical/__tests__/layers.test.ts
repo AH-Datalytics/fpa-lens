@@ -2,14 +2,15 @@ import { describe, expect, it } from "vitest";
 import { DEFAULT_LAYER_STATE, DEMO_LAYER_STATE, toggleLayer } from "../layers";
 
 describe("DEFAULT_LAYER_STATE", () => {
-  it("starts with cone/models/windProb on, rain/radar off", () => {
+  it("starts with cone/history/models on, every wash overlay off", () => {
     expect(DEFAULT_LAYER_STATE).toEqual({
       cone: true,
       history: true,
       satellite: false,
       models: true,
       windField: false,
-      windProb: true,
+      // Off since Aug 2026 -- the 39 kt wash covered the cone and track.
+      windProb: false,
       rain: false,
       radar: false,
     });
@@ -38,9 +39,11 @@ describe("toggleLayer", () => {
     expect(next).not.toBe(DEFAULT_LAYER_STATE); // new object, no mutation
   });
 
+  // Asserts the flip relative to the default rather than a literal, so changing
+  // which overlays ship on by default cannot break a test about toggle mechanics.
   it("toggleLayer('windProb') flips just that key", () => {
     const next = toggleLayer(DEFAULT_LAYER_STATE, "windProb");
-    expect(next.windProb).toBe(false);
+    expect(next.windProb).toBe(!DEFAULT_LAYER_STATE.windProb);
     expect(next.cone).toBe(DEFAULT_LAYER_STATE.cone);
   });
 

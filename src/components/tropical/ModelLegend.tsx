@@ -53,6 +53,8 @@ export function ModelLegend({
   const allCodes = [...deterministic, ...ensemble].map((row) => row.code);
   const selectedCount = allCodes.filter((code) => visibleModels.has(code)).length;
   const allSelected = enabled && allCodes.length > 0 && selectedCount === allCodes.length;
+  const allEnsembleSelected =
+    enabled && ensembleCodes.length > 0 && ensembleCodes.every((code) => visibleModels.has(code));
 
   function choose(codes: string[]) {
     onChange(new Set(codes));
@@ -110,7 +112,7 @@ export function ModelLegend({
         {cycleLabel && (
           <div className="mt-2 text-[11px] text-gray-500">Guidance cycle: {cycleLabel}</div>
         )}
-        <div className="mt-2 flex gap-2" aria-label="Model selection actions">
+        <div className="mt-2 flex flex-wrap gap-2" aria-label="Model selection actions">
           <button
             type="button"
             onClick={() => choose(allCodes)}
@@ -127,6 +129,20 @@ export function ModelLegend({
           >
             Clear all
           </button>
+          {/* The ensembles are the bulk of the list -- dozens of members across GEFS,
+              ECMWF and the strays -- so clearing them in one action is the difference
+              between a readable spread and a hairball. Individual members stay
+              available below. */}
+          {ensembleCodes.length > 0 && (
+            <button
+              type="button"
+              onClick={() => toggleModelSet(ensembleCodes)}
+              aria-pressed={allEnsembleSelected}
+              className="rounded border border-gray-200 px-2 py-1 text-[11px] text-gray-700 hover:bg-gray-50"
+            >
+              {allEnsembleSelected ? "Ensembles off" : "Ensembles on"} ({ensembleCodes.length})
+            </button>
+          )}
         </div>
         <div className="mt-2 max-h-52 overflow-y-auto pr-1">
           {deterministic.length > 0 && (

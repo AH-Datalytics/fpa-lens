@@ -1,8 +1,7 @@
 // Self-contained MapLibre cartography for the tropical weather map. The
 // basemap is real satellite imagery (Esri World Imagery raster tiles + an Esri
-// reference-label overlay); the graticule is generated in-code, with no
-// dependency on any land geometry. Colors come from MAP_COLORS below, except
-// the watch/warning line colors, which are four fixed NHC-adjacent hex values.
+// reference-label overlay). Colors come from MAP_COLORS below, except the
+// watch/warning line colors, which are four fixed NHC-adjacent hex values.
 
 import type { ExpressionSpecification, StyleSpecification } from "maplibre-gl";
 
@@ -31,8 +30,6 @@ export const ESRI_ATTRIBUTION = "Esri, Maxar, Earthstar Geographics";
 // ---------------------------------------------------------------------------
 
 export interface ModeColors {
-  grid: string;
-  gridLabel: string;
   accent: string;
   accent2: string;
   warnHw: string;
@@ -46,10 +43,9 @@ export interface ModeColors {
  * Cartography palette, tuned to the FPA Lens design system: `accent` is the
  * site navy (#21355a) used for the official forecast track and the New
  * Orleans reference point, `accent2` the warm contrast used for landfall
- * markers. Graticule white stays white — it sits over dark satellite imagery,
- * where site chrome colors would be illegible.
+ * markers.
  *
- * In the standalone Gulf Watch these nine values were read off `<html>` with
+ * In the standalone Gulf Watch these values were read off `<html>` with
  * getComputedStyle so a quiet/active theme swap could repaint the map. That
  * swap no longer exists (both modes resolved to the same tokens), and reading
  * :root here would have meant leaking nine generically-named custom properties
@@ -57,8 +53,6 @@ export interface ModeColors {
  * plain constant does the same job with no global surface.
  */
 const MAP_COLORS: ModeColors = {
-  grid: "rgba(255, 255, 255, 0.45)",
-  gridLabel: "rgba(255, 255, 255, 0.92)",
   accent: "#21355a",
   accent2: "#c2703d",
   warnHw: "#c0392b",
@@ -270,91 +264,6 @@ export function mergeFeatureCollections(
 }
 
 // ---------------------------------------------------------------------------
-// Graticule (2-degree lat/lon grid, generated — no basemap tiles involved)
-// ---------------------------------------------------------------------------
-
-export interface GraticuleLabel {
-  lon: number;
-  lat: number;
-  text: string;
-  axis: "meridian" | "parallel";
-}
-
-export interface Graticule {
-  lines: GeoJSON.FeatureCollection;
-  labels: GraticuleLabel[];
-}
-
-// Lines are generated across a wide box (matching the clipped land extent) so
-// panning has margin; labels, though, are pinned near the south/west edge of
-// the *initial view* (INITIAL_BOUNDS is lon -95.5..-80 lat 19..32) rather than
-// the wider line bbox, so they land inside the default viewport instead of
-// off-screen past its edge.
-const GRATICULE_BBOX = { lonMin: -100, lonMax: -72, latMin: 15, latMax: 33 };
-const GRATICULE_STEP = 2;
-const LABEL_LAT_EDGE = 19.4;
-const LABEL_LON_EDGE = -95.1;
-
-/** Generates a 2-degree lon/lat grid as GeoJSON LineStrings, plus label points along the south/west edges. */
-export function buildGraticule(
-  bbox = GRATICULE_BBOX,
-  step = GRATICULE_STEP,
-  labelLatEdge = LABEL_LAT_EDGE,
-  labelLonEdge = LABEL_LON_EDGE
-): Graticule {
-  const features: GeoJSON.Feature[] = [];
-  const labels: GraticuleLabel[] = [];
-
-  const firstLon = Math.ceil(bbox.lonMin / step) * step;
-  for (let lon = firstLon; lon <= bbox.lonMax; lon += step) {
-    features.push({
-      type: "Feature",
-      properties: {},
-      geometry: {
-        type: "LineString",
-        coordinates: [
-          [lon, bbox.latMin],
-          [lon, bbox.latMax],
-        ],
-      },
-    });
-    if (lon > bbox.lonMin && lon < bbox.lonMax) {
-      labels.push({
-        lon,
-        lat: labelLatEdge,
-        text: `${Math.abs(lon)}°W`,
-        axis: "meridian",
-      });
-    }
-  }
-
-  const firstLat = Math.ceil(bbox.latMin / step) * step;
-  for (let lat = firstLat; lat <= bbox.latMax; lat += step) {
-    features.push({
-      type: "Feature",
-      properties: {},
-      geometry: {
-        type: "LineString",
-        coordinates: [
-          [bbox.lonMin, lat],
-          [bbox.lonMax, lat],
-        ],
-      },
-    });
-    if (lat > bbox.latMin && lat < bbox.latMax) {
-      labels.push({
-        lon: labelLonEdge,
-        lat,
-        text: `${lat}°N`,
-        axis: "parallel",
-      });
-    }
-  }
-
-  return { lines: { type: "FeatureCollection", features }, labels };
-}
-
-// ---------------------------------------------------------------------------
 // Track point labels — real NHC track.geojson pts fields vs. demo fixture
 // ---------------------------------------------------------------------------
 
@@ -459,7 +368,6 @@ export const LAYER_IDS = {
   imagery: "gw-imagery",
   satellite: "gw-weather-satellite",
   labels: "gw-labels",
-  graticule: "gw-graticule",
   outlookFill: "gw-outlook-fill",
   outlookLine: "gw-outlook-line",
   coneFill: "gw-cone-fill",
@@ -489,7 +397,6 @@ export const SOURCE_IDS = {
   imagery: "gw-imagery",
   satellite: "gw-weather-satellite",
   labels: "gw-labels",
-  graticule: "gw-graticule",
   outlook: "gw-outlook",
   cone: "gw-cone",
   otherCones: "gw-other-cones",
@@ -560,12 +467,9 @@ const WIND_FIELD_COLOR: ExpressionSpecification = [
   "#8a94a3",
 ];
 
-/** Builds the initial (empty dynamic-source) MapLibre style. Colors are seeded from
- * whatever mode is current at build time; applyModeColors() re-syncs them on mode change. */
+/** Builds the initial (empty dynamic-source) MapLibre style. Every layer defined
+ * here paints from constants, so there is nothing to re-sync after construction. */
 export function buildInitialStyle(): StyleSpecification {
-  const c = readModeColors();
-  const graticule = buildGraticule();
-
   return {
     version: 8,
     sources: {
@@ -591,7 +495,6 @@ export function buildInitialStyle(): StyleSpecification {
         tileSize: 256,
         attribution: ESRI_ATTRIBUTION,
       },
-      [SOURCE_IDS.graticule]: { type: "geojson", data: graticule.lines },
       [SOURCE_IDS.outlook]: { type: "geojson", data: EMPTY_FC },
       [SOURCE_IDS.cone]: { type: "geojson", data: EMPTY_FC },
       [SOURCE_IDS.otherCones]: { type: "geojson", data: EMPTY_FC },
@@ -634,12 +537,6 @@ export function buildInitialStyle(): StyleSpecification {
         id: LAYER_IDS.labels,
         type: "raster",
         source: SOURCE_IDS.labels,
-      },
-      {
-        id: LAYER_IDS.graticule,
-        type: "line",
-        source: SOURCE_IDS.graticule,
-        paint: { "line-color": c.grid, "line-width": 1 },
       },
       {
         id: LAYER_IDS.outlookFill,
@@ -866,6 +763,6 @@ export function buildInitialStyle(): StyleSpecification {
 }
 
 // The standalone build also exported applyModeColors(map), which re-read the
-// CSS tokens and repainted the graticule whenever the quiet/active theme
+// CSS tokens and repainted map layers whenever the quiet/active theme
 // swapped. MAP_COLORS is a constant now, so buildInitialStyle() already paints
 // every layer its final color and there is nothing left to re-sync.
