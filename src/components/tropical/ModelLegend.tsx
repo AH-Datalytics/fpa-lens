@@ -53,8 +53,14 @@ export function ModelLegend({
   const allCodes = [...deterministic, ...ensemble].map((row) => row.code);
   const selectedCount = allCodes.filter((code) => visibleModels.has(code)).length;
   const allSelected = enabled && allCodes.length > 0 && selectedCount === allCodes.length;
+  // Deliberately NOT gated on `enabled`, matching both the per-ensemble
+  // checkboxes below and toggleModelSet's own `allOn` test. Gating it on the
+  // models layer made the label describe layer visibility while the click acted
+  // on selection: with the layer off but every member still selected, the button
+  // read "Ensembles on" and turning it off was what a click actually did. A
+  // toggle's label has to state what pressing it will do.
   const allEnsembleSelected =
-    enabled && ensembleCodes.length > 0 && ensembleCodes.every((code) => visibleModels.has(code));
+    ensembleCodes.length > 0 && ensembleCodes.every((code) => visibleModels.has(code));
 
   function choose(codes: string[]) {
     onChange(new Set(codes));
