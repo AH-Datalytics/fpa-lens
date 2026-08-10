@@ -129,15 +129,16 @@ export function resolvedManifestUrl(demoParam: string | null | undefined): strin
  * Map-corner demo tag text for a given `?demo=` value — `null` when not in
  * demo mode at all. `demo=bertha` is a real archived advisory, so its tag
  * reads "ARCHIVED DATA" rather than "SIMULATED"; `demo=ida` (or any other
- * non-"quiet" demo value, now that Solene is retired) is a real historical
- * sample and reads "HISTORICAL SAMPLE"; `demo=quiet` is the only remaining
- * fictional/simulated variant.
+ * non-"quiet" demo value, now that Solene is retired) replays real advisories
+ * in sequence and reads "HISTORICAL REPLAY" — "sample" undersold it as an
+ * excerpt when the view actually steps through the advisories as they were
+ * issued; `demo=quiet` is the only remaining fictional/simulated variant.
  */
 export function demoTag(demoParam: string | null): string | null {
   if (demoParam === null) return null;
   if (demoParam === "bertha") return "ARCHIVED DATA — TS BERTHA · ADV 016 · JUL 23 2026";
   if (demoParam === "quiet") return "SIMULATED STORM — DEMO DATA";
-  return "HISTORICAL SAMPLE — HURRICANE IDA · AUG 27–28 2021";
+  return "HISTORICAL REPLAY — HURRICANE IDA · AUG 27–28 2021";
 }
 
 /** Strongest inGulfBox storm, else strongest storm overall, else null. */

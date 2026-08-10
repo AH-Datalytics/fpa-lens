@@ -46,7 +46,11 @@ export const DEFAULT_LAYER_STATE: LayerState = {
   satellite: false,
   models: true,
   windField: false,
-  windProb: true,
+  // Off on first load (Aug 2026). Wind probability is a broad translucent wash
+  // that covers most of the basin at the 39 kt threshold, so switching it on by
+  // default buried the cone and track -- the two things a visitor came for --
+  // under a haze. It stays one click away in Map options.
+  windProb: false,
   rain: false,
   radar: false,
 };

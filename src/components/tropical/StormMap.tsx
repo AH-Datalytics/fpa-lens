@@ -19,7 +19,6 @@ import type { OtherStorm } from "@/lib/tropical/useDashboard";
 import { ForecastDiscussion } from "./ForecastDiscussion";
 import { LayersControl } from "./LayersControl";
 import {
-  buildGraticule,
   buildInitialStyle,
   ESRI_ATTRIBUTION,
   excludeOfficialModel,
@@ -247,7 +246,6 @@ export default function StormMap({
       "tropical cyclone formation is not expected during the next 7 days"
     );
 
-  const graticuleMarkersRef = useRef<Marker[]>([]);
   const trackMarkersRef = useRef<Marker[]>([]);
   const outlookMarkersRef = useRef<Marker[]>([]);
   const otherStormMarkersRef = useRef<Marker[]>([]);
@@ -265,28 +263,19 @@ export default function StormMap({
       bounds: INITIAL_BOUNDS,
       fitBoundsOptions: { padding: 24 },
       attributionControl: false,
-      // The map sits inside a scrolling page, so it must not swallow the
-      // wheel: a plain scroll passes through to the page, and zooming takes
-      // ctrl/cmd + scroll (two fingers on touch). MapLibre shows its own
-      // "Use ⌘ + scroll to zoom the map" hint when it blocks a gesture, and
-      // the +/- buttons below give a way in that needs no modifier at all.
-      cooperativeGestures: true,
+      // Plain wheel and pinch zoom the map (MapLibre's defaults). This was
+      // previously cooperativeGestures, which reserved the wheel for page
+      // scrolling and demanded ctrl/cmd + scroll to zoom -- correct in theory,
+      // but it reads as a broken map, because nothing about a map suggests it
+      // needs a modifier key. The +/- buttons stay for anyone who prefers them.
+      // Trade-off accepted deliberately: scrolling the page with the cursor
+      // over the map now zooms instead, so the map is sized to leave page
+      // margin either side on desktop and the rail is scrollable past it.
     });
     map.addControl(new NavigationControl({ showCompass: false, showZoom: true }), "top-left");
     mapRef.current = map;
 
     map.on("load", () => {
-      // Graticule labels are static (position + text never change with props),
-      // so they're created once here rather than in a props-driven effect.
-      const { labels } = buildGraticule();
-      const markers = labels.map((l) => {
-        const el = document.createElement("div");
-        el.className = `tmap-label tmap-graticule tmap-graticule-${l.axis}`;
-        el.textContent = l.text;
-        return new Marker({ element: el, anchor: "center" }).setLngLat([l.lon, l.lat]).addTo(map);
-      });
-      graticuleMarkersRef.current = markers;
-
       const nolaEl = document.createElement("div");
       nolaEl.className = "tmap-nola";
       nolaEl.innerHTML = '<span class="tmap-nola-dot"></span><span class="tmap-nola-label">New Orleans</span>';
@@ -296,7 +285,6 @@ export default function StormMap({
     });
 
     return () => {
-      clearMarkers(graticuleMarkersRef.current);
       clearMarkers(trackMarkersRef.current);
       clearMarkers(outlookMarkersRef.current);
       clearMarkers(otherStormMarkersRef.current);

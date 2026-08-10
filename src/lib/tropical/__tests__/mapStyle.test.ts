@@ -1,7 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
   allModelCodes,
-  buildGraticule,
   excludeOfficialModel,
   hasAiGuidance,
   mergeFeatureCollections,
@@ -35,8 +34,6 @@ function line(properties: GeoJSON.GeoJsonProperties): GeoJSON.Feature {
 // diverge from --outlook-low/--outlook-high (rather than only ever matching
 // by coincidence).
 const QUIET_COLORS: ModeColors = {
-  grid: "rgba(255, 255, 255, 0.45)",
-  gridLabel: "rgba(255, 255, 255, 0.92)",
   accent: "#1f3a5f",
   accent2: "#c2703d",
   warnHw: "#c0392b",
@@ -47,8 +44,6 @@ const QUIET_COLORS: ModeColors = {
 };
 
 const ACTIVE_COLORS: ModeColors = {
-  grid: "#14213a",
-  gridLabel: "#5f7495",
   accent: "#e9c46a",
   accent2: "#ff9a5c",
   warnHw: "#d94141",
@@ -206,23 +201,6 @@ describe("polygonLabelPoint", () => {
   });
 });
 
-describe("buildGraticule", () => {
-  it("generates evenly spaced meridian and parallel lines", () => {
-    const { lines } = buildGraticule({ lonMin: -96, lonMax: -92, latMin: 20, latMax: 24 }, 2);
-    // Meridians at -96, -94, -92 (3) + parallels at 20, 22, 24 (3) = 6 lines.
-    expect(lines.features).toHaveLength(6);
-  });
-
-  it("keeps labels strictly inside the generation bbox (no edge-clipped labels)", () => {
-    const { labels } = buildGraticule({ lonMin: -96, lonMax: -92, latMin: 20, latMax: 24 }, 2, 21, -95);
-    for (const l of labels) {
-      if (l.axis === "meridian") {
-        expect(l.lon).toBeGreaterThan(-96);
-        expect(l.lon).toBeLessThan(-92);
-      }
-    }
-  });
-});
 
 describe("withColor", () => {
   it("injects a _color property computed per feature", () => {

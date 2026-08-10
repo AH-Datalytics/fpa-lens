@@ -19,12 +19,6 @@
   white-space: nowrap;
 }
 
-.tmap-graticule {
-  font-size: 10px;
-  color: rgba(255, 255, 255, 0.85);
-  text-shadow: 0 0 3px rgba(0, 0, 0, 0.7);
-}
-
 .tmap-track-label {
   font-size: 11.5px;
   font-weight: 500;

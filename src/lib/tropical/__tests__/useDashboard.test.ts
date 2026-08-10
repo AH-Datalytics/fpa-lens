@@ -71,7 +71,7 @@ describe("demoTag", () => {
   });
 
   it("?demo=ida uses the historical-sample tag", () => {
-    expect(demoTag("ida")).toBe("HISTORICAL SAMPLE — HURRICANE IDA · AUG 27–28 2021");
+    expect(demoTag("ida")).toBe("HISTORICAL REPLAY — HURRICANE IDA · AUG 27–28 2021");
   });
 
   it("?demo=quiet uses the simulated-storm tag (unchanged from before Task 12)", () => {
@@ -85,7 +85,7 @@ describe("demoTag", () => {
   });
 
   it("?demo=1 (formerly Solene) now uses the Ida historical-sample tag", () => {
-    expect(demoTag("1")).toBe("HISTORICAL SAMPLE — HURRICANE IDA · AUG 27–28 2021");
+    expect(demoTag("1")).toBe("HISTORICAL REPLAY — HURRICANE IDA · AUG 27–28 2021");
   });
 });
 
