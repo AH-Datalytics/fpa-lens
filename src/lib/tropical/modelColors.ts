@@ -2,7 +2,7 @@
 // dark-navy-background palette (docs/superpowers/specs/two-moods-v2-mockup.html)
 // so every line stays legible against BOTH a white rail/chart panel and
 // satellite imagery on the map — the old palette's pure white OFCL/TVCA and
-// several pale pastels (HFSB, AIFS, DMWL) were only readable on a dark
+// several pale pastels (HFSB, AIFS, GDMN) were only readable on a dark
 // background and would vanish on the new light theme.
 //
 // Keys are AID (a-deck / models.geojson "model" property) codes from the
@@ -25,7 +25,7 @@ export const MODEL_COLORS: Record<string, string> = {
   TVCA: "#2a2f36", // Consensus — near-black, meant to stand out
   OFCL: "#1f3a5f", // Official — navy accent
   AIFS: "#0e8fa3", // AIFS (ECMWF) — AI guidance
-  DMWL: "#c2478f", // DeepMind WL — AI guidance
+  GDMN: "#c2478f", // Google DeepMind ensemble mean — AI guidance
   // Intensity-only models (SHIPS/LGEM statistical guidance, + IVCN intensity
   // consensus which structurally has no track) — no map track, so these
   // appear only in the intensity panel, never in the map's model legend.
@@ -77,7 +77,10 @@ export const MODEL_DESCRIPTIONS: Record<string, string> = {
   CTCX: "COAMPS-TC — the Navy's hurricane-specific model.",
   COTC: "COAMPS-TC, shifted to line up with the current advisory time.",
   AIFS: "AIFS — ECMWF's AI-based model.",
-  DMWL: "WeatherLab — Google DeepMind's AI-based model.",
+  GDMN:
+    "Google DeepMind Ensemble Mean — the average of 50 runs of Google's AI model. "
+    + "An average track is smoother than any single run, so it shows the middle of the "
+    + "guidance rather than a worst case.",
   TVCA: "A consensus: several models averaged together. Consensus aids usually beat any single model.",
   TVCN: "A consensus of whichever major models were available for this cycle.",
   HCCA: "A consensus corrected for each model's known biases.",

@@ -235,3 +235,42 @@ def test_ivcn_zero_position_still_yields_intensity():
     assert ivcn_series is not None
     assert [p["tauH"] for p in ivcn_series["points"]] == [0, 12]
     assert ivcn_series["points"][0]["mph"] == round(70 * KT_TO_MPH)
+
+
+# --- Google DeepMind AI guidance (2026-08-10) ---
+
+
+def test_google_deepmind_recognized_as_ai_guidance():
+    """GDMN is Google's DeepMind ensemble mean, per NHC's model summary table.
+
+    Rows below are the real a-deck shape (verified against the live
+    aid_public decks for AL02/EP06/EP07 on 2026-08-10, where GDMN tracked
+    GFS/AVNO cycle-for-cycle).
+    """
+    text = (
+        "AL, 09, 2026072200, 03, OFCL,   0, 255N,  875W,  85,  970, HU\n"
+        "AL, 09, 2026072200, 03, GDMN,   0, 256N,  876W,  80,  975, HU\n"
+        "AL, 09, 2026072200, 03, GDMN,  12, 259N,  881W,  90,  965, HU\n"
+    )
+    result = parse_adeck(text)
+    gdmn = feature_for(result, "GDMN")
+    assert gdmn is not None, "GDMN must be whitelisted, not skipped as unknown tech"
+    # kind "ai" is what earns the dashed AI-guidance line style on the map.
+    assert gdmn["properties"]["kind"] == "ai"
+    # Grouped "deterministic" even though it is an ensemble MEAN: the frontend
+    # only renders toggles for "deterministic"/"ensemble" rows, so "consensus"
+    # would draw the track with no way to turn it off.
+    assert gdmn["properties"]["group"] == "deterministic"
+    assert gdmn["properties"]["label"] == "Google DeepMind Ensemble Mean"
+    assert len(gdmn["geometry"]["coordinates"]) == 2
+
+
+def test_google_deepmind_has_a_colour_and_a_plain_english_gloss():
+    """The frontend previously carried colour/description under "DMWL", which is
+    not a real ATCF code -- so nothing ever matched it. Pin the real one."""
+    import pathlib
+
+    src = (pathlib.Path(__file__).resolve().parents[2]
+           / "src" / "lib" / "tropical" / "modelColors.ts").read_text(encoding="utf-8")
+    assert "GDMN:" in src, "GDMN needs a colour + description entry"
+    assert "DMWL" not in src, "DMWL is not a real ATCF tech code; it must not reappear"
