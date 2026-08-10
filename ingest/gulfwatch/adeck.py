@@ -57,6 +57,21 @@ MODELS = {
     "HMON": ("HMON", "physics", "deterministic"),
     "HWRF": ("HWRF", "physics", "deterministic"),
     "EGRI": ("UKMET (interpolated)", "physics", "deterministic"),
+    # AI/ML guidance. NHC's model summary table lists Google's models under
+    # GDMN/GDMI (DeepMind), GENC/GENI (GenCast) and GRPH/GRPI (GraphCast); only
+    # GDM* was present in every a-deck sampled (2026-08-10: AL01, AL02, EP06,
+    # EP07), where GDMN matched GFS/AVNO cycle-for-cycle and tau-for-tau, so it
+    # is the one worth drawing. GDMI is its interpolated sibling and GDM2 a
+    # sparse variant (1-2 cycles); both left out until asked for.
+    #
+    # Classified group "deterministic" DESPITE being an ensemble mean, because
+    # that is the group the frontend actually renders a toggle for -- see
+    # ModelLegend, which lists only "deterministic" and "ensemble" rows, and
+    # mapStyle.resolveGroup's documented contract that kind "ai" maps to group
+    # "deterministic". Filing it as "consensus" (where GFEX, the GFS ensemble
+    # mean, sits) would draw the track but leave it with no way to turn it off.
+    # kind "ai" is what earns it the dashed AI-guidance line style.
+    "GDMN": ("Google DeepMind Ensemble Mean", "ai", "deterministic"),
     # Consensus aids (beyond TVCA above).
     "TVCN": ("TVCN Consensus", "consensus", "consensus"),
     "GFEX": ("GFS Ensemble Mean", "consensus", "consensus"),
