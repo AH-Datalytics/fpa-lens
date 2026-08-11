@@ -34,7 +34,8 @@ Dashboard for the Southeast Louisiana Flood Protection Authority (FPA). Built fo
 
 ### Staffing (/staffing)
 - Removed individual recent hires (names/positions) -- too much detail for public dashboard
-- Keep vacancy count (45) for now since that's all the data we have
+- Headcount is pipeline-driven from `public/data/staffing.json` (SharePoint `staffing_<YYYY-MM>.xlsx` via the daily refresh), overlaid onto the curated structure by `src/lib/staffingOverlay.ts` in `siteData.ts`. Do not hardcode a vacancy number here or in the page; the live figure moves on its own. The old "keep vacancy count (45)" note predated the pipeline and was stale by 27. The `vacancies: 50` literal in `siteData.ts` is only the fallback baseline the overlay writes over -- editing it does not change the live page.
+- The Aug 2026 workbook moved a lot: total budgeted positions 300 -> 317, filled 250 -> 245, vacancies 50 -> 72 (Police 15 -> 27 vacant on a 63 -> 75 budget, Executive 2 -> 8). Reads as a budgeted-position restructure more than 22 departures, but it is unconfirmed -- worth checking with the Director before treating the jump as a real attrition signal.
 - Revisit detail level when the Director provides more detailed staffing info
 
 ### Financial (/finance)
