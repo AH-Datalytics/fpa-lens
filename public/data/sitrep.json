@@ -1,6 +1,6 @@
 {
-  "reportMonth": "July 2026",
-  "executiveSummary": "The Authority remains operationally ready for the 2026 hurricane season, with no identified threats to overall system integrity. Routine inspections, maintenance, and storm-readiness activities remain underway across the system. Q2 field inspections have been completed and are under Engineering review, and all PCCP stations remain operational and mission ready.",
+  "reportMonth": "August 2026",
+  "executiveSummary": "The Authority remains operationally ready for the 2026 hurricane season, with no identified threats to overall system integrity. LPV-111 remains a major leadership focus, with interim sand/HESCO basket protection installed following identification of existing landside levee slides, and USACE confirming the levee remains capable of performing as designed prior to overtopping. Safety remains Green with zero recordable accidents in July, staffing remains Amber with 45 vacancies, and the media environment remains Amber due to increased attention on agency operations and governance.",
   "readiness": {
     "infrastructure": "Green",
     "staffing": "Amber",
@@ -8,13 +8,13 @@
     "media": "Amber"
   },
   "permits": {
-    "issued": 32,
-    "period": "June 2026",
+    "issued": 33,
+    "period": "July 2026",
     "type": "Levee Safety"
   },
   "safety": {
     "accidents": 0,
-    "incidents": 5
+    "incidents": 6
   },
   "staffing": {
     "vacancies": 45,
@@ -22,66 +22,63 @@
     "unclassifiedHeadcount": null
   },
   "maintenanceActivities": [
-    "Hurricane and River Floodgate Inspections 100% completed; no action needed until October 2026.",
-    "Seasonal storm readiness measures underway, including sandbag staging and facility preparation; crews completed filling 63 of the 100 3,000-lb bags for EJ.",
-    "Installed a new levee access gate by Floodgate M-01.",
-    "Crews covered multiple locations of graffiti around the system.",
-    "East Jefferson – Repaired rutting at the toe of the levee between S Cumberland St and Wilker Neal Ave; jersey barriers placed at end of both streets to mitigate future damage.",
-    "Lake Borgne – LPV148 (D route) earthen levee repairs continue.",
-    "Q1 valve exercises 100% completed on 3/9/2026; Q2 valve exercises 100% completed on 6/1/2026.",
-    "Critical facilities, generators, and support infrastructure remain operational; tornado caused wall collapse at Franklin Facility — area secured, awaiting approval to remove undamaged equipment.",
-    "Levee turf maintenance: crews worked significant overtime during late June and early July to maintain mowing schedules despite prolonged rainfall."
+    "Routine levee, floodwall, floodgate, valve, facility, and equipment maintenance continued with no impacts to system readiness.",
+    "Annual floodgate inspections remain up to date; Q3 valve inspections and exercises are underway and progressing on schedule.",
+    "Field safety checks, required training, facility preparation, and seasonal readiness activities continue during hurricane season.",
+    "Facility repairs, warehouse system maintenance, and support infrastructure improvements remain ongoing.",
+    "Levee turf maintenance is slightly behind due to recent rain but catching up as weather conditions improve; no readiness impacts reported.",
+    "Interim sand/HESCO basket protection along the crown of the levee at the LPV-111 slide locations installed."
   ],
   "projects": [
     {
       "name": "Foreshore Erosion Repair",
-      "status": "USACE determined revised path forward requiring Board action; scheduled to advertise in July with Bid Opening August 21, 2026. Mitigation measures being scheduled at two eroded locations.",
+      "status": "Board approved CEA with Pontchartrain Levee District for Right of Entry for borrow stockpile; USACE schedule to advertise in July with Bid Opening August 21, 2026; mitigation measures being scheduled at two eroded locations.",
       "phase": "In Bidding"
     },
     {
       "name": "West Return Wall Splash Pad",
-      "status": "Construction is substantially complete. Project in closeout phase.",
+      "status": "Construction is substantially complete; project in closeout phase.",
       "phase": "In Progress"
     },
     {
       "name": "LPV Access Bridge",
-      "status": "Construction has begun. Contractor is mobilizing. RFI / shop drawings submittals underway.",
+      "status": "Construction has begun; contractor is mobilizing; RFI/shop drawings submittals underway.",
       "phase": "In Progress"
     },
     {
       "name": "Orpheum Slope Paving",
-      "status": "Construction has begun. Contractor is mobilized and has begun clearing and grubbing. Staged concrete pours to commence in the next few weeks.",
+      "status": "Construction has begun; staged concrete pours are underway.",
       "phase": "In Progress"
     },
     {
       "name": "Franklin Ave. Vault 4 – Final",
-      "status": "Bid opened May 26, 2026. Contract executed / recorded.",
-      "phase": "Awarded"
+      "status": "Construction ongoing.",
+      "phase": "In Progress"
     },
     {
       "name": "London Avenue Canal Erosion Mitigation (Phase 1)",
-      "status": "95% Plans and Specifications submitted. CEA negotiations ongoing regarding contractor canal access. Will be ready to advertise and award for construction to start at end of Hurricane Season.",
-      "phase": "In Design"
+      "status": "Currently advertising with a bid opening of August 11, 2026; construction award and CEA with City of New Orleans to be presented to Board for approval during August meeting.",
+      "phase": "In Bidding"
     },
     {
       "name": "40 Arpent Sheet Pile Rehabilitation (Phase 2)",
-      "status": "Design and Survey Task Orders have been executed.",
+      "status": "Survey has been completed and design underway.",
       "phase": "In Design"
     },
     {
       "name": "Franklin Herbicide Vehicle Containment",
-      "status": "Informal Bid Request yielded one bid above internal estimates. Design was revised. Readvertisement via Central Bidding planned.",
-      "phase": "In Bidding"
-    },
-    {
-      "name": "Lakeshore Drive Flooding Warning Signs",
-      "status": "Engineering reviewed, selected, and ordered warning sign systems. Currently exploring exact locations and coordinating design for installation with IDIQ holder.",
+      "status": "Readvertisement yielded 3 quotes; project initiation underway.",
       "phase": "Pre-Award"
     },
     {
+      "name": "Lakeshore Drive Flooding Warning Signs",
+      "status": "IDIQ holder engaged for design; currently exploring exact locations and coordinating design for installation with IDIQ holder.",
+      "phase": "In Design"
+    },
+    {
       "name": "Tropical Storm Arthur – Franklin Facility Damage",
-      "status": "Engineering coordinating with Maintenance, Finance, Insurance Adjusters, and outside engineers for demolition and repair of the facility.",
-      "phase": "In Progress"
+      "status": "Engineering accepted bids for removal of damaged areas; demolition work to begin August 10, 2026, with a contract duration of 45 days.",
+      "phase": "Awarded"
     }
   ],
   "inspections": {
@@ -90,16 +87,16 @@
       "note": null
     },
     "usace": {
-      "status": "complete",
-      "note": "With the exception of Bayou St John Sector Gate, all annual inspections completed with no findings impacting system readiness"
+      "status": "not-reported",
+      "note": null
     },
     "valves": {
-      "status": "complete",
+      "status": "on-track",
       "completed": null,
       "total": null,
-      "note": "Q1 100% completed 3/9/2026; Q2 100% completed 6/1/2026"
+      "note": "Q3 valve inspections and exercises are underway and progressing on schedule"
     }
   },
-  "source": "sitrep_2026-07.pdf",
+  "source": "sitrep_2026-08.pdf",
   "generatedFrom": "Claude claude-sonnet-4-6"
 }
