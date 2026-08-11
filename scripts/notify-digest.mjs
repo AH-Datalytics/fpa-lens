@@ -1,8 +1,13 @@
 /**
- * Send a digest email for every weekly data-refresh run via the Resend HTTP API
- * (no npm deps). Consolidates what used to be two conditional emails (failure
- * alert + SITREP-roll heads-up) into a single message sent on EVERY run so the
- * data-ops contact can track the pipeline without checking GitHub.
+ * Send a digest email for a data-refresh run via the Resend HTTP API (no npm
+ * deps). Consolidates what used to be two conditional emails (failure alert +
+ * SITREP-roll heads-up) into a single message.
+ *
+ * Sends only when the run is worth reading about — data actually published, a
+ * source failed, or the run was triggered by hand (see `shouldSend`). The job
+ * went from weekly to daily M-F in August 2026; emailing every run would have
+ * meant five mostly-empty "no changes" messages a week, which trains you to
+ * ignore the one that matters.
  *
  * It reports three things:
  *   1. Data changes published this run (finance period rolled, turf month
@@ -17,7 +22,8 @@
  * exported for unit testing (scripts/notify-digest.test.mjs).
  *
  * Env: RESEND_API_KEY (required to actually send), RUN_URL (link to the logs),
- *      REFRESH_OUTCOME ("success"/"failure" of the refresh step), SITE_URL.
+ *      REFRESH_OUTCOME ("success"/"failure" of the refresh step), SITE_URL,
+ *      FORCE_DIGEST ("1" to send even on a quiet run — set for manual runs).
  */
 import { readFileSync, existsSync } from "node:fs";
 import { execFileSync } from "node:child_process";
@@ -98,6 +104,18 @@ export function summarizeChange(path, oldObj, newObj) {
   return `${base}: updated`;
 }
 
+/**
+ * Is this run worth an email? Yes when data published, when a source failed or
+ * the run errored outright, or when a human triggered it and wants the
+ * confirmation. A clean run that found nothing new stays silent.
+ */
+export function shouldSend({ changes = [], results = [], runFailed = false, force = false }) {
+  if (force) return true;
+  if (runFailed) return true;
+  if (changes.length > 0) return true;
+  return results.some((r) => r.status === "FAILED");
+}
+
 /** Compose the digest {subject, text} from parsed results and change lines. */
 export function buildDigest({
   results = [],
@@ -127,7 +145,7 @@ export function buildDigest({
     statusPhrase = "— no changes";
   }
 
-  const lines = [`Weekly FPA Lens data refresh completed ${statusPhrase}.`, ""];
+  const lines = [`FPA Lens data refresh completed ${statusPhrase}.`, ""];
 
   lines.push("Updates published this run:");
   if (changes.length > 0) {
@@ -223,6 +241,11 @@ async function main() {
     runUrl: process.env.RUN_URL || "(local run)",
     siteUrl: process.env.SITE_URL || "https://fpalens.org",
   });
+
+  if (!shouldSend({ changes, results, runFailed, force: process.env.FORCE_DIGEST === "1" })) {
+    console.log("Quiet run (no changes, no failures); digest not sent.");
+    process.exit(0);
+  }
 
   const KEY = process.env.RESEND_API_KEY;
   if (!KEY) {

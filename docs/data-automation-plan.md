@@ -1,6 +1,6 @@
 # FPA Lens — Automated Data Refresh Pipeline
 
-**Goal:** A weekly (Friday) GitHub Action that pulls the newest source files from the
+**Goal:** A weekday-morning GitHub Action that pulls the newest source files from the
 SharePoint `LensRepository`, regenerates the dashboard JSON, commits the changes, and lets
 Vercel auto-deploy. Full-auto for every recurring category, including SITREP via Claude.
 
@@ -18,7 +18,7 @@ Friday cron; the first manual run publishes the SharePoint data.
 | SITREP | PDF → Claude digest → engineering maintenance list (narrative only) | folder empty — activates on first upload |
 | Turf | newer-month overlay onto `grassCutting` (no regression) | folder empty — activates on first upload |
 
-- Friday cron `0 13 * * 5`, `workflow_dispatch`, commit-only-what-changed, **per-run digest email to Oscar** (`scripts/notify-digest.mjs`: changes published, per-source status, failures; sent every run).
+- Weekday cron `0 13 * * 1-5` (was Fridays-only until Aug 11 2026), `workflow_dispatch`, commit-only-what-changed, **digest email to Oscar** (`scripts/notify-digest.mjs`: changes published, per-source status, failures). Sent when data publishes, when a source fails, or on a manual run; quiet runs stay silent so the daily cadence doesn't bury the signal.
 - SITREP feeds narrative only; readiness/financial/safety come from their own pipelines.
 - Turf/SITREP overlay safely: unmatched/older data falls back to curated values.
 - `Engineering/` SharePoint folder is empty/unused (IDIQ lives in `Finance/IDIQ/`).
@@ -72,7 +72,7 @@ they change rarely and stay manual.
   if any category errors (so GitHub flags the run).
 - **SITREP** — `scripts/extractSitrep.mjs`: download PDF → Claude API with a strict structured-output
   schema + prompt caching → `public/data/sitrep.json`. Full-auto per Oscar.
-- **`.github/workflows/refresh-data.yml`** — `cron: '0 13 * * 5'` (Fri ~7–8am Central; UTC, no DST).
+- **`.github/workflows/refresh-data.yml`** — `cron: '0 13 * * 1-5'` (Mon–Fri ~7–8am Central; UTC, no DST).
   Setup Python + Node, run orchestrator, commit changed `public/data/` (+ archived sources), push.
 
 ## 5. Secrets (GitHub Actions)

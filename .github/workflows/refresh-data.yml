@@ -1,13 +1,14 @@
-name: Weekly data refresh
+name: Daily data refresh
 
 # Pulls the newest source files from the SharePoint LensRepository, regenerates
 # the dashboard JSON in public/data/, commits whatever changed (which triggers a
-# Vercel deploy), and emails the data-ops contact if any category fails. Runs
-# Fridays; can also be triggered manually. Fully hands-off otherwise.
+# Vercel deploy), and emails the data-ops contact when data publishes or a
+# category fails. Runs weekday mornings; can also be triggered manually. Fully
+# hands-off otherwise.
 
 on:
   schedule:
-    - cron: "0 13 * * 5" # Fridays ~07:00-08:00 America/Chicago (UTC, no DST shift)
+    - cron: "0 13 * * 1-5" # Mon-Fri ~07:00-08:00 America/Chicago (UTC, no DST shift)
   workflow_dispatch: {}
 
 permissions:
@@ -47,16 +48,19 @@ jobs:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: node scripts/refresh-data.mjs
 
-      # Always email a single digest of the run: what data changed this week,
-      # per-source pull status, and any failures. Runs before the commit step so
-      # it can diff the working tree against HEAD to describe the changes. Never
-      # fails the run (always exits 0).
+      # Email a digest of the run: what data changed, per-source pull status, and
+      # any failures. Runs before the commit step so it can diff the working tree
+      # against HEAD to describe the changes. Since the schedule went daily, the
+      # script stays silent on runs with nothing to report; a manual run always
+      # emails (FORCE_DIGEST) so you get confirmation you asked for. Never fails
+      # the run (always exits 0).
       - name: Email refresh digest
         if: always()
         env:
           RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
           REFRESH_OUTCOME: ${{ steps.refresh.outcome }}
+          FORCE_DIGEST: ${{ github.event_name == 'workflow_dispatch' && '1' || '0' }}
         run: node scripts/notify-digest.mjs
 
       # Commit even on partial failure so categories that DID update still publish.
@@ -69,6 +73,6 @@ jobs:
           if git diff --staged --quiet; then
             echo "No data changes this run."
           else
-            git commit -m "chore: weekly data refresh [skip ci]"
+            git commit -m "chore: data refresh [skip ci]"
             git push
           fi

@@ -1,5 +1,5 @@
 import { describe, test, expect } from "vitest";
-import { parseSummary, summarizeChange, buildDigest } from "./notify-digest.mjs";
+import { parseSummary, summarizeChange, buildDigest, shouldSend } from "./notify-digest.mjs";
 
 describe("parseSummary", () => {
   test("parses the per-category status lines written by refresh-data.mjs", () => {
@@ -112,5 +112,35 @@ describe("buildDigest", () => {
     const { subject, text } = buildDigest({ results: [], changes: [], runFailed: true });
     expect(subject).toBe("FPA Lens data refresh: ⚠ run errored");
     expect(text).toContain("errored before");
+  });
+});
+
+describe("shouldSend", () => {
+  const current = [{ status: "REFRESHED", key: "finance", detail: "f.xlsm" }];
+
+  test("a quiet run (sources pulled, nothing changed) stays silent", () => {
+    expect(shouldSend({ results: current, changes: [] })).toBe(false);
+  });
+
+  test("published changes send", () => {
+    expect(shouldSend({ results: current, changes: ["Finance: A → B"] })).toBe(true);
+  });
+
+  test("a failed source sends even with no changes", () => {
+    expect(
+      shouldSend({ results: [{ status: "FAILED", key: "idiq", detail: "bad tab" }], changes: [] }),
+    ).toBe(true);
+  });
+
+  test("a hard run failure sends", () => {
+    expect(shouldSend({ results: [], changes: [], runFailed: true })).toBe(true);
+  });
+
+  test("force sends a quiet run (manual dispatch wants confirmation)", () => {
+    expect(shouldSend({ results: current, changes: [], force: true })).toBe(true);
+  });
+
+  test("defaults to silence when handed nothing", () => {
+    expect(shouldSend({})).toBe(false);
   });
 });
