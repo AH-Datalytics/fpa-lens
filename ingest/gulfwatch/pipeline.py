@@ -128,7 +128,28 @@ def _storm_paths(stormid: str) -> dict:
         "intensity": f"{base}/intensity.json",
         "text": f"{base}/text.json",
         "probs": f"{base}/probs.json",
+        # Products the Ida replay always had but live storms did not, so the
+        # live map showed fewer options than the demo (Aug 2026).
+        "history": f"{base}/history.geojson",
+        "windprob": f"{base}/windprob.geojson",
+        "windprob50": f"{base}/windprob-58mph.geojson",
+        "windprob64": f"{base}/windprob-74mph.geojson",
     }
+
+
+# Observed track so far, from NHC's per-storm GIS best-track archive. Published
+# for storms while they are active, not only after post-analysis (verified
+# 2026-08-10: al012026/al022026/ep062026 all 200).
+BEST_TRACK_URL = "https://www.nhc.noaa.gov/gis/best_track/{stormid}_best_track.zip"
+
+# Wind speed probabilities, latest issuance. Only published while a system is
+# active, so a 404 here is the ordinary off-season case, not a failure worth
+# shouting about (see _process_windprob).
+WSP_LATEST_URL = "https://www.nhc.noaa.gov/gis/wsp_120hr5km_latest.zip"
+
+# The WSP zip carries one layer per wind threshold; these are the layer-name
+# fragments and the manifest keys they feed.
+WSP_THRESHOLDS = {"windprob": "wsp34", "windprob50": "wsp50", "windprob64": "wsp64"}
 
 
 _GIS_PREDICATES = {
@@ -190,6 +211,74 @@ def _process_gis(storm, paths, fetch, store, errors):
             track_fc = fc
 
     return track_fc
+
+
+def build_history(best_track: dict, lon: float, lat: float) -> dict:
+    """Observed track so far, as one LineString plus the individual fixes.
+
+    Every point in the best-track product is by definition already observed, so
+    unlike the Ida replay (which had to truncate at the advisory being replayed)
+    a live storm needs no cutoff -- it takes the whole thing and appends the
+    current analysed position, which is newer than the last archived fix.
+
+    Points are ordered by DTG rather than trusted in file order: the shapefile
+    is not guaranteed to be sorted, and an out-of-order fix would draw the past
+    track doubling back on itself.
+    """
+    points = [
+        f
+        for f in best_track.get("features", [])
+        if (f.get("geometry") or {}).get("type") == "Point"
+    ]
+
+    def _dtg(feature):
+        raw = (feature.get("properties") or {}).get("DTG")
+        try:
+            return int(raw)
+        except (TypeError, ValueError):
+            return 0
+
+    points.sort(key=_dtg)
+    coordinates = [f["geometry"]["coordinates"] for f in points]
+    current = [lon, lat]
+    if not coordinates or coordinates[-1] != current:
+        coordinates.append(current)
+
+    features = []
+    # A single-fix storm has no line to draw; emitting a 1-point LineString
+    # would be invalid GeoJSON-ish and renders as nothing anyway.
+    if len(coordinates) >= 2:
+        features.append(
+            {
+                "type": "Feature",
+                "properties": {
+                    "kind": "observed-history",
+                    "source": "NHC GIS Best Track",
+                },
+                "geometry": {"type": "LineString", "coordinates": coordinates},
+            }
+        )
+    features.extend(points)
+    return {"type": "FeatureCollection", "features": features}
+
+
+def _process_history(storm, paths, fetch, store, errors):
+    """Fetch + upload the observed past track. Returns True when it lands.
+
+    Its own try/except so a missing or malformed best-track product costs only
+    the "Past track" layer, never the advisory refresh around it.
+    """
+    try:
+        resp = _fetch_with_retry(fetch, BEST_TRACK_URL.format(stormid=storm.id))
+        best_track = shp.zip_to_geojson(resp.content)
+        history = build_history(best_track, storm.lon, storm.lat)
+        if not history["features"]:
+            return False
+        store.put_json(paths["history"], history)
+        return True
+    except Exception as exc:  # noqa: BLE001 - recorded, never fatal
+        errors.append({"product": f"{storm.id}.history", "message": str(exc)})
+        return False
 
 
 def _process_text_products(storm, paths, fetch, store, errors):
@@ -320,9 +409,14 @@ def _process_storm(storm, prev_storm_state, fetch, store, errors):
 
     advisory_changed = storm.advisory_num != prev_advisory
     fresh_track_fc = None
+    has_history = prev_storm_state.get("history", False)
     if advisory_changed:
         fresh_track_fc = _process_gis(storm, paths, fetch, store, errors)
         _process_text_products(storm, paths, fetch, store, errors)
+        # Refreshed per advisory like the GIS products. The previous run's
+        # result carries forward on an unchanged advisory so an already-good
+        # past track keeps its manifest key instead of blinking out.
+        has_history = _process_history(storm, paths, fetch, store, errors)
 
     new_cycle = _process_adeck(storm, paths, prev_cycle, fetch, store, errors)
 
@@ -355,9 +449,17 @@ def _process_storm(storm, prev_storm_state, fetch, store, errors):
             "text": paths["text"],
             "probs": paths["probs"],
             **({"windfield": paths["windfield"]} if storm.gis_urls.get("windfield") else {}),
+            # Only advertise the past track once it is actually on the store --
+            # a manifest key pointing at a missing blob is a 404 in the browser,
+            # which is worse than the layer being unavailable.
+            **({"history": paths["history"]} if has_history else {}),
         },
     }
-    next_state = {"advisory": storm.advisory_num, "cycle": new_cycle}
+    next_state = {
+        "advisory": storm.advisory_num,
+        "cycle": new_cycle,
+        "history": has_history,
+    }
     return manifest_entry, next_state
 
 
