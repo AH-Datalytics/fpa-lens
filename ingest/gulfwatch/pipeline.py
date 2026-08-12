@@ -149,6 +149,10 @@ BEST_TRACK_URL = "https://www.nhc.noaa.gov/gis/best_track/{stormid}_best_track.z
 WSP_LATEST_URL = "https://www.nhc.noaa.gov/gis/forecast/archive/wsp_120hr5km_latest.zip"
 
 
+# Bump when the meaning of state.json's "gis" list changes, so stale entries
+# are re-derived rather than trusted.
+_GIS_STATE_VERSION = 2
+
 _GIS_PREDICATES = {
     "cone": _is_cone,
     "track": _is_track,
@@ -452,12 +456,16 @@ def _process_storm(storm, prev_storm_state, fetch, store, errors, wsp_fc=None, o
 
     advisory_changed = storm.advisory_num != prev_advisory
     fresh_track_fc = None
-    # No recorded gis state means this storm predates that bookkeeping, so we
-    # do not know which optional layers exist -- rebuild once to find out
-    # rather than assume. Assuming "all of them" is what kept advertising a
-    # wwlines blob that had never been written; assuming "none" would drop a
-    # working wind field for hours.
-    prev_gis = prev_storm_state.get("gis")
+    # Which optional GIS layers are known to exist. A record is trusted only if
+    # it was written by the current logic: an earlier build defaulted the
+    # unknown case to "every layer landed" and persisted that, so entries from
+    # it keep advertising a wwlines blob that was never written. The version
+    # marker forces those to be re-derived once instead of believed.
+    prev_gis = (
+        prev_storm_state.get("gis")
+        if prev_storm_state.get("gisVersion") == _GIS_STATE_VERSION
+        else None
+    )
     gis_keys = set(prev_gis) if prev_gis is not None else set()
     if advisory_changed or prev_gis is None:
         fresh_track_fc, gis_keys = _process_gis(storm, paths, fetch, store, errors)
@@ -522,6 +530,7 @@ def _process_storm(storm, prev_storm_state, fetch, store, errors, wsp_fc=None, o
         "history": has_history,
         "windprob": sorted(windprob_keys),
         "gis": sorted(gis_keys),
+        "gisVersion": _GIS_STATE_VERSION,
     }
     return manifest_entry, next_state
 

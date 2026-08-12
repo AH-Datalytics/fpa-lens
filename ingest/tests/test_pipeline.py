@@ -294,6 +294,7 @@ def test_active_path_all_five_storm_files_uploaded_and_state_advanced():
         # advisory keeps advertising exactly what exists (NHC 404s a storm's
         # WW zip when no watches or warnings are in effect).
         "gis": ["cone", "track", "windfield", "wwlines"],
+        "gisVersion": 2,
     }
 
     # cone/track/wwlines share one bundled zip in this fixture -- must be
@@ -323,6 +324,7 @@ def test_no_change_path_same_advisory_and_cycle_skips_storm_uploads():
                 # would trigger a one-off rebuild to establish it, which is a
                 # different scenario from this test's unchanged advisory.
                 "gis": ["cone", "track", "wwlines", "windfield"],
+                "gisVersion": 2,
             }
         },
         "outlook_issued": OUTLOOK_ISSUED,  # unchanged too, isolates this test's assertion
