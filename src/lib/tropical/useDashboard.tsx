@@ -332,7 +332,7 @@ function useDashboardSource(): DashboardData {
   const coneUrl = storm ? stormFileUrl(storm.files.cone) : null;
   const trackUrl = storm ? stormFileUrl(storm.files.track) : null;
   const historyUrl = storm?.files.history ? stormFileUrl(storm.files.history) : null;
-  const wwlinesUrl = storm ? stormFileUrl(storm.files.wwlines) : null;
+  const wwlinesUrl = storm?.files.wwlines ? stormFileUrl(storm.files.wwlines) : null;
   const modelsUrl = storm ? stormFileUrl(storm.files.models) : null;
   const intensityUrl = storm ? stormFileUrl(storm.files.intensity) : null;
   const probsUrl = storm ? stormFileUrl(storm.files.probs) : null;
@@ -399,7 +399,7 @@ function useDashboardSource(): DashboardData {
     addMissing("Forecast cone", cone, coneError);
     addMissing("Forecast track", track, trackError);
     if (historyUrl) addMissing("Observed storm history", history, historyError);
-    addMissing("Watches and warnings", wwlines, wwlinesError);
+    if (wwlinesUrl) addMissing("Watches and warnings", wwlines, wwlinesError);
     addMissing("Model guidance", models, modelsError);
     addMissing("Intensity guidance", intensity, intensityError);
     addMissing("Local wind probabilities", probs, probsError);
@@ -415,7 +415,7 @@ function useDashboardSource(): DashboardData {
   }, [
     cone, coneError, intensity, intensityError, manifest?.errors, models, modelsError,
     outlookGeo, outlookGeoError, outlookText, outlookTextError, probs, probsError,
-    history, historyError, historyUrl, textProducts, textError, track, trackError, wwlines, wwlinesError,
+    history, historyError, historyUrl, textProducts, textError, track, trackError, wwlines, wwlinesError, wwlinesUrl,
   ]);
 
   const mode: Mode = manifest?.mode ?? "quiet";

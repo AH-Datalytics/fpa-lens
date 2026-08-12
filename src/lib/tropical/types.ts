@@ -17,7 +17,11 @@ export interface StormEntry {
   nextAdvisoryTime: string;
   inGulfBox: boolean;
   modelCycle: string;
-  files: Record<"cone" | "track" | "wwlines" | "models" | "intensity" | "text" | "probs", string> & {
+  files: Record<"cone" | "track" | "models" | "intensity" | "text" | "probs", string> & {
+    /** Coastal watch/warning lines. NHC publishes a storm's WW product only
+     * while watches or warnings are actually in effect, so a storm with none
+     * omits the key rather than pointing at a blob that was never written. */
+    wwlines?: string;
     /** Observed/pre-advisory storm path, when available. Kept separate from
      * the forecast track so the map can distinguish history from guidance. */
     history?: string;

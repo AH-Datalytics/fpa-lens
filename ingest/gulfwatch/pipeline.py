@@ -171,9 +171,13 @@ def _process_gis(storm, paths, fetch, store, errors):
     exception, if its URL's fetch failed) -- so one bad *upload* still
     can't take out the others, even when their downloads succeeded.
 
-    Returns the freshly-built track FeatureCollection (or None if the
-    track product's own fetch/convert/upload failed), for the
-    storm_in_gulf check.
+    Returns (track FeatureCollection or None for the storm_in_gulf check,
+    set of product keys that actually landed on the store). The caller
+    advertises only the keys that landed: NHC publishes {ID}_WW_latest.zip
+    only while watches or warnings are in effect and 404s otherwise, so a
+    storm with none -- a fish storm in the open Atlantic -- was leaving the
+    manifest pointing at a wwlines blob that had never been written, and
+    every page load 404'd on it.
     """
     active_products = {
         key: predicate
@@ -191,6 +195,7 @@ def _process_gis(storm, paths, fetch, store, errors):
             fetch_errors[url] = exc
 
     track_fc = None
+    landed: set[str] = set()
     for key, predicate in active_products.items():
         url = storm.gis_urls[key]
         if url in fetch_errors:
@@ -204,10 +209,11 @@ def _process_gis(storm, paths, fetch, store, errors):
         except Exception as exc:
             errors.append({"product": f"{storm.id}.{key}", "message": str(exc)})
             continue
+        landed.add(key)
         if key == "track":
             track_fc = fc
 
-    return track_fc
+    return track_fc, landed
 
 
 def build_history(best_track: dict, lon: float, lat: float) -> dict:
@@ -446,8 +452,9 @@ def _process_storm(storm, prev_storm_state, fetch, store, errors, wsp_fc=None, o
 
     advisory_changed = storm.advisory_num != prev_advisory
     fresh_track_fc = None
+    gis_keys = set(prev_storm_state.get("gis", _GIS_PREDICATES.keys()))
     if advisory_changed:
-        fresh_track_fc = _process_gis(storm, paths, fetch, store, errors)
+        fresh_track_fc, gis_keys = _process_gis(storm, paths, fetch, store, errors)
         _process_text_products(storm, paths, fetch, store, errors)
 
     # History and wind probability refresh on a new advisory like everything
@@ -487,12 +494,14 @@ def _process_storm(storm, prev_storm_state, fetch, store, errors, wsp_fc=None, o
         "files": {
             "cone": paths["cone"],
             "track": paths["track"],
-            "wwlines": paths["wwlines"],
             "models": paths["models"],
             "intensity": paths["intensity"],
             "text": paths["text"],
             "probs": paths["probs"],
-            **({"windfield": paths["windfield"]} if storm.gis_urls.get("windfield") else {}),
+            # Advertise the optional GIS layers only once they exist on the
+            # store -- see _process_gis.
+            **({"wwlines": paths["wwlines"]} if "wwlines" in gis_keys else {}),
+            **({"windfield": paths["windfield"]} if "windfield" in gis_keys else {}),
             # Only advertise the past track once it is actually on the store --
             # a manifest key pointing at a missing blob is a 404 in the browser,
             # which is worse than the layer being unavailable.
@@ -505,6 +514,7 @@ def _process_storm(storm, prev_storm_state, fetch, store, errors, wsp_fc=None, o
         "cycle": new_cycle,
         "history": has_history,
         "windprob": sorted(windprob_keys),
+        "gis": sorted(gis_keys),
     }
     return manifest_entry, next_state
 

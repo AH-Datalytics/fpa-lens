@@ -290,6 +290,10 @@ def test_active_path_all_five_storm_files_uploaded_and_state_advanced():
         # No windprob layers landed: the sample zip's layers are not named
         # wsp34/50/64, so attribution finds nothing to attribute.
         "windprob": [],
+        # Which optional GIS layers actually reached the store, so an unchanged
+        # advisory keeps advertising exactly what exists (NHC 404s a storm's
+        # WW zip when no watches or warnings are in effect).
+        "gis": ["cone", "track", "windfield", "wwlines"],
     }
 
     # cone/track/wwlines share one bundled zip in this fixture -- must be
@@ -757,3 +761,30 @@ def test_build_history_ignores_non_point_geometry():
     out = build_history(best, -84.0, 24.0)
     assert out["features"][0]["geometry"]["coordinates"] == [[-80.0, 20.0], [-84.0, 24.0]]
     assert all(f["geometry"]["type"] == "Point" for f in out["features"][1:])
+
+
+def test_wwlines_is_not_advertised_when_nhc_has_no_watches_or_warnings():
+    """NHC publishes {ID}_WW_latest.zip only while watches/warnings are in
+    effect and 404s otherwise. Advertising the key regardless left the manifest
+    pointing at a blob that was never written, so every page load 404'd and the
+    rail claimed products were "temporarily unavailable" for a storm that simply
+    had no warnings. Observed live on Cristobal (al032026), 2026-08-12.
+    """
+    routes = {
+        nhc.CURRENT_STORMS_URL: FakeResponse(json_data=CURRENT_STORMS_JSON),
+        BERTHA_GIS_URL: FakeResponse(content=SAMPLE_CONE_ZIP),
+        BERTHA_ADECK_URL: FakeResponse(content=_adeck_gz(BERTHA_ADECK_TEXT)),
+    }
+    routes.update(_outlook_routes())
+    routes.update(_bertha_text_product_routes())
+    # The storm's own WW zip is the one product NHC is not serving.
+    fetch = FakeFetch(routes, raising={BERTHA_GIS_URL})
+    store = FakeStore()
+
+    manifest = run(fetch=fetch, store=store)
+    files = manifest["storms"][0]["files"]
+
+    assert "wwlines" not in files, "must not advertise a blob that was never written"
+    assert "storms/al022026/wwlines.geojson" not in store.put_calls
+    # The failure is still reported -- silence would hide a real NHC outage.
+    assert any(e["product"] == "al022026.wwlines" for e in manifest["errors"])
