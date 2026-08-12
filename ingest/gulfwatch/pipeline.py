@@ -92,6 +92,14 @@ def _iso_z_now() -> str:
 # ---------------------------------------------------------------------------
 
 
+def _is_not_found(exc: Exception) -> bool:
+    """True for an HTTP 404, however the fetch layer reported it."""
+    response = getattr(exc, "response", None)
+    if response is not None and getattr(response, "status_code", None) == 404:
+        return True
+    return "404" in str(exc)
+
+
 def _select_features(geojson: dict, predicate) -> dict:
     features = [
         f
@@ -203,9 +211,15 @@ def _process_gis(storm, paths, fetch, store, errors):
     for key, predicate in active_products.items():
         url = storm.gis_urls[key]
         if url in fetch_errors:
-            errors.append(
-                {"product": f"{storm.id}.{key}", "message": str(fetch_errors[url])}
-            )
+            # NHC serves a storm's WW zip only while watches or warnings are in
+            # effect, so a 404 there is the documented "none in effect" signal,
+            # not an outage. Recording it as an error told visitors safety
+            # products were unavailable for a storm that simply had no warnings.
+            # Any other failure -- 5xx, timeout, DNS -- is still a real error.
+            if not (key == "wwlines" and _is_not_found(fetch_errors[url])):
+                errors.append(
+                    {"product": f"{storm.id}.{key}", "message": str(fetch_errors[url])}
+                )
             continue
         try:
             fc = _select_features(fetched[url], predicate)
@@ -367,7 +381,7 @@ def _process_text_products(storm, paths, fetch, store, errors):
         errors.append({"product": f"{storm.id}.probs", "message": str(exc)})
 
 
-def _process_adeck(storm, paths, prev_cycle, fetch, store, errors):
+def _process_adeck(storm, paths, prev_cycle, fetch, store, errors, force=False):
     """Fetch+decompress+parse this storm's a-deck, re-uploading
     models.geojson/intensity.json only if the parsed cycle differs from the
     prior known cycle (state.json). The a-deck is fetched every run
@@ -395,10 +409,16 @@ def _process_adeck(storm, paths, prev_cycle, fetch, store, errors):
         parsed = adeck.parse_adeck(text)
     except Exception as exc:
         errors.append({"product": f"{storm.id}.adeck", "message": str(exc)})
-        return prev_cycle
+        return prev_cycle, None
 
     new_cycle = parsed["cycle"]
-    if new_cycle != prev_cycle:
+    landed: set[str] | None = None
+    # `force` covers the case where we have no record of which model products
+    # exist -- rebuild once to establish it rather than assume, the same rule
+    # the GIS layers follow. Without it a storm carried across this change
+    # would silently lose its model guidance until the next a-deck cycle.
+    if new_cycle != prev_cycle or force:
+        landed = set()
         # AIFS (ECMWF's AI model) is an optional, independently-cycled
         # product (see aifs.py) -- concatenated onto the a-deck-derived
         # models.geojson here rather than uploaded separately. It gets its
@@ -425,13 +445,15 @@ def _process_adeck(storm, paths, prev_cycle, fetch, store, errors):
         # rather than blaming both on "models" if only one put fails.
         try:
             store.put_json(paths["models"], models_geojson)
+            landed.add("models")
         except Exception as exc:
             errors.append({"product": f"{storm.id}.models", "message": str(exc)})
         try:
             store.put_json(paths["intensity"], parsed["intensity"])
+            landed.add("intensity")
         except Exception as exc:
             errors.append({"product": f"{storm.id}.intensity", "message": str(exc)})
-    return new_cycle
+    return new_cycle, landed
 
 
 def _resolve_track_for_gulf_check(advisory_changed, fresh_track_fc, track_path, store):
@@ -484,7 +506,17 @@ def _process_storm(storm, prev_storm_state, fetch, store, errors, wsp_fc=None, o
     if advisory_changed or not windprob_keys:
         windprob_keys = _process_windprob(storm, paths, wsp_fc, others or [], store, errors)
 
-    new_cycle = _process_adeck(storm, paths, prev_cycle, fetch, store, errors)
+    prev_adeck = (
+        prev_storm_state.get("adeck")
+        if prev_storm_state.get("gisVersion") == _GIS_STATE_VERSION
+        else None
+    )
+    new_cycle, fresh_adeck = _process_adeck(
+        storm, paths, prev_cycle, fetch, store, errors, force=prev_adeck is None
+    )
+    # None means nothing was uploaded this run (cycle unchanged, or the a-deck
+    # itself failed), so carry forward what a prior run confirmed.
+    adeck_keys = set(fresh_adeck) if fresh_adeck is not None else set(prev_adeck or [])
 
     track_for_check = _resolve_track_for_gulf_check(
         advisory_changed, fresh_track_fc, paths["track"], store
@@ -509,10 +541,13 @@ def _process_storm(storm, prev_storm_state, fetch, store, errors, wsp_fc=None, o
         "files": {
             "cone": paths["cone"],
             "track": paths["track"],
-            "models": paths["models"],
-            "intensity": paths["intensity"],
             "text": paths["text"],
             "probs": paths["probs"],
+            # Model guidance depends on the a-deck, which can fail or simply
+            # not exist yet for a freshly-formed storm -- advertise each only
+            # once it is on the store, same rule as the GIS layers.
+            **({"models": paths["models"]} if "models" in adeck_keys else {}),
+            **({"intensity": paths["intensity"]} if "intensity" in adeck_keys else {}),
             # Advertise the optional GIS layers only once they exist on the
             # store -- see _process_gis.
             **({"wwlines": paths["wwlines"]} if "wwlines" in gis_keys else {}),
@@ -530,6 +565,7 @@ def _process_storm(storm, prev_storm_state, fetch, store, errors, wsp_fc=None, o
         "history": has_history,
         "windprob": sorted(windprob_keys),
         "gis": sorted(gis_keys),
+        "adeck": sorted(adeck_keys),
         "gisVersion": _GIS_STATE_VERSION,
     }
     return manifest_entry, next_state

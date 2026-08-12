@@ -17,7 +17,12 @@ export interface StormEntry {
   nextAdvisoryTime: string;
   inGulfBox: boolean;
   modelCycle: string;
-  files: Record<"cone" | "track" | "models" | "intensity" | "text" | "probs", string> & {
+  files: Record<"cone" | "track" | "text" | "probs", string> & {
+    /** Model guidance, from the a-deck. Absent for a freshly-formed storm with
+     * no a-deck yet, or when that fetch failed -- the key is omitted rather
+     * than pointing at a blob that was never written. */
+    models?: string;
+    intensity?: string;
     /** Coastal watch/warning lines. NHC publishes a storm's WW product only
      * while watches or warnings are actually in effect, so a storm with none
      * omits the key rather than pointing at a blob that was never written. */

@@ -333,8 +333,8 @@ function useDashboardSource(): DashboardData {
   const trackUrl = storm ? stormFileUrl(storm.files.track) : null;
   const historyUrl = storm?.files.history ? stormFileUrl(storm.files.history) : null;
   const wwlinesUrl = storm?.files.wwlines ? stormFileUrl(storm.files.wwlines) : null;
-  const modelsUrl = storm ? stormFileUrl(storm.files.models) : null;
-  const intensityUrl = storm ? stormFileUrl(storm.files.intensity) : null;
+  const modelsUrl = storm?.files.models ? stormFileUrl(storm.files.models) : null;
+  const intensityUrl = storm?.files.intensity ? stormFileUrl(storm.files.intensity) : null;
   const probsUrl = storm ? stormFileUrl(storm.files.probs) : null;
   const textUrl = storm ? stormFileUrl(storm.files.text) : null;
   const windProbUrls = useMemo<Partial<Record<WindThreshold, string>>>(() => {
@@ -400,8 +400,8 @@ function useDashboardSource(): DashboardData {
     addMissing("Forecast track", track, trackError);
     if (historyUrl) addMissing("Observed storm history", history, historyError);
     if (wwlinesUrl) addMissing("Watches and warnings", wwlines, wwlinesError);
-    addMissing("Model guidance", models, modelsError);
-    addMissing("Intensity guidance", intensity, intensityError);
+    if (modelsUrl) addMissing("Model guidance", models, modelsError);
+    if (intensityUrl) addMissing("Intensity guidance", intensity, intensityError);
     addMissing("Local wind probabilities", probs, probsError);
     addMissing("Forecast discussion", textProducts, textError);
     addMissing("Seven-day outlook map", outlookGeo, outlookGeoError);
@@ -416,6 +416,7 @@ function useDashboardSource(): DashboardData {
     cone, coneError, intensity, intensityError, manifest?.errors, models, modelsError,
     outlookGeo, outlookGeoError, outlookText, outlookTextError, probs, probsError,
     history, historyError, historyUrl, textProducts, textError, track, trackError, wwlines, wwlinesError, wwlinesUrl,
+    modelsUrl, intensityUrl,
   ]);
 
   const mode: Mode = manifest?.mode ?? "quiet";
