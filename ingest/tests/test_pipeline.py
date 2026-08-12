@@ -31,6 +31,7 @@ BERTHA_PWS_SHTML = (FIXTURES / "bertha_pws.shtml").read_text(encoding="utf-8")
 # bundled "5day" zip -- see task-nhc.py's own tests for the raw values.
 BERTHA_GIS_URL = "https://www.nhc.noaa.gov/gis/forecast/archive/al022026_5day_014A.zip"
 BERTHA_WIND_FIELD_URL = "https://www.nhc.noaa.gov/gis/forecast/archive/al022026_fcst_014A.zip"
+BERTHA_BEST_TRACK_URL = "https://www.nhc.noaa.gov/gis/best_track/al022026_best_track.zip"
 BERTHA_ADECK_URL = ADECK_URL_TEMPLATE.format(stormid="al022026")
 
 # Bertha's text-product URLs, from the current_storms.json fixture's
@@ -148,6 +149,17 @@ def _bertha_text_product_routes():
         # The sample zip has no initialradii member, but it exercises the
         # independent fetch/convert/upload path without adding a binary fixture.
         BERTHA_WIND_FIELD_URL: FakeResponse(content=SAMPLE_CONE_ZIP),
+        # Same trick for the observed past track. The bundled 5day zip carries
+        # forecast-track *points*, which stand in for best-track fixes well
+        # enough to exercise fetch -> build_history -> upload; they are not real
+        # observed positions, so assert only on the shape, never the geometry.
+        BERTHA_BEST_TRACK_URL: FakeResponse(content=SAMPLE_CONE_ZIP),
+        # Basin-wide wind probabilities, fetched once per run whenever any
+        # storm is active. The sample zip's layers are not named wsp34/50/64,
+        # so attribution finds nothing and no windprob key is advertised --
+        # which is exactly the "product absent" path we want covered by
+        # default. Attribution itself is unit-tested in test_windprob.py.
+        pipeline_module.WSP_LATEST_URL: FakeResponse(content=SAMPLE_CONE_ZIP),
     }
 
 
@@ -232,6 +244,9 @@ def test_active_path_all_five_storm_files_uploaded_and_state_advanced():
         "intensity": "storms/al022026/intensity.json",
         "text": "storms/al022026/text.json",
         "probs": "storms/al022026/probs.json",
+        # Observed past track, added Aug 2026 so live storms get the same
+        # "Past track" option the Ida replay always had.
+        "history": "storms/al022026/history.geojson",
     }
 
     for path in bertha["files"].values():
@@ -269,6 +284,12 @@ def test_active_path_all_five_storm_files_uploaded_and_state_advanced():
     assert store.data["state.json"]["storms"]["al022026"] == {
         "advisory": "014a",
         "cycle": "2026072200",
+        # Carried forward so an already-built past track keeps its manifest key
+        # on a run where the advisory did not change.
+        "history": True,
+        # No windprob layers landed: the sample zip's layers are not named
+        # wsp34/50/64, so attribution finds nothing to attribute.
+        "windprob": [],
     }
 
     # cone/track/wwlines share one bundled zip in this fixture -- must be
@@ -656,3 +677,72 @@ def test_text_product_missing_url_field_records_error_not_crash():
     # discussion_url is empty for this storm -- must never even attempt to
     # fetch it.
     assert BERTHA_DISCUSSION_URL not in fetch.calls
+
+
+# --- Observed past track (Aug 2026) -------------------------------------------
+
+
+def _pt(lon, lat, dtg):
+    return {
+        "type": "Feature",
+        "properties": {"DTG": dtg},
+        "geometry": {"type": "Point", "coordinates": [lon, lat]},
+    }
+
+
+def test_build_history_lines_up_fixes_and_appends_current_position():
+    from gulfwatch.pipeline import build_history
+
+    best = {"type": "FeatureCollection", "features": [_pt(-80.0, 20.0, 2026081000),
+                                                      _pt(-82.0, 22.0, 2026081006)]}
+    out = build_history(best, -84.0, 24.0)
+    line = out["features"][0]
+    assert line["geometry"]["type"] == "LineString"
+    assert line["properties"]["kind"] == "observed-history"
+    # the live current position is newer than the last archived fix
+    assert line["geometry"]["coordinates"] == [[-80.0, 20.0], [-82.0, 22.0], [-84.0, 24.0]]
+    # the individual fixes are kept alongside the line
+    assert len(out["features"]) == 3
+
+
+def test_build_history_sorts_out_of_order_fixes():
+    """An unsorted shapefile would otherwise draw the past track doubling back."""
+    from gulfwatch.pipeline import build_history
+
+    best = {"type": "FeatureCollection", "features": [_pt(-82.0, 22.0, 2026081006),
+                                                      _pt(-80.0, 20.0, 2026081000)]}
+    coords = build_history(best, -84.0, 24.0)["features"][0]["geometry"]["coordinates"]
+    assert coords == [[-80.0, 20.0], [-82.0, 22.0], [-84.0, 24.0]]
+
+
+def test_build_history_does_not_duplicate_the_current_position():
+    from gulfwatch.pipeline import build_history
+
+    best = {"type": "FeatureCollection", "features": [_pt(-80.0, 20.0, 2026081000),
+                                                      _pt(-84.0, 24.0, 2026081006)]}
+    coords = build_history(best, -84.0, 24.0)["features"][0]["geometry"]["coordinates"]
+    assert coords == [[-80.0, 20.0], [-84.0, 24.0]]
+
+
+def test_build_history_emits_no_line_for_a_single_fix():
+    """One fix plus the current position is a line; zero fixes is not."""
+    from gulfwatch.pipeline import build_history
+
+    out = build_history({"type": "FeatureCollection", "features": []}, -84.0, 24.0)
+    assert out["features"] == []
+
+
+def test_build_history_ignores_non_point_geometry():
+    from gulfwatch.pipeline import build_history
+
+    best = {
+        "type": "FeatureCollection",
+        "features": [
+            {"type": "Feature", "properties": {},
+             "geometry": {"type": "LineString", "coordinates": [[-80, 20], [-81, 21]]}},
+            _pt(-80.0, 20.0, 2026081000),
+        ],
+    }
+    out = build_history(best, -84.0, 24.0)
+    assert out["features"][0]["geometry"]["coordinates"] == [[-80.0, 20.0], [-84.0, 24.0]]
+    assert all(f["geometry"]["type"] == "Point" for f in out["features"][1:])
