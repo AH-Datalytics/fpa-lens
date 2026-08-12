@@ -135,32 +135,35 @@ export function LayersControl({
               />
               Forecast cone
             </label>
-            {hasHistory && (
-              <label className={layerRowClass()}>
-                <input
-                  type="checkbox"
-                  className={CHECKBOX}
-                  checked={layers.history}
-                  onChange={() => onToggle("history")}
-                />
-                Past track <small className="text-[9px] uppercase text-gray-400">observed</small>
-              </label>
-            )}
-            {hasSatellite && (
-              <>
-                <label className={layerRowClass()}>
-                  <input
-                    type="checkbox"
-                    className={CHECKBOX}
-                    checked={layers.satellite}
-                    onChange={() => onToggle("satellite")}
-                  />
-                  Satellite imagery
-                </label>
-                {layers.satellite && (
-                  <div className={STATUS_NOTE}>GOES-16 · {satelliteLabel}</div>
-                )}
-              </>
+            {/* Past track and satellite stay VISIBLE-BUT-DISABLED when their
+                product is missing, the same as wind field and wind probability
+                below. Hiding them made the panel change shape between the
+                replay (which ships every product) and a live storm (which does
+                not yet), so the live map looked like it had fewer features
+                rather than fewer feeds. A greyed row says "not available right
+                now"; a missing row says nothing at all. */}
+            <label className={layerRowClass(!hasHistory)}>
+              <input
+                type="checkbox"
+                className={CHECKBOX}
+                checked={layers.history}
+                disabled={!hasHistory}
+                onChange={() => onToggle("history")}
+              />
+              Past track <small className="text-[9px] uppercase text-gray-400">observed</small>
+            </label>
+            <label className={layerRowClass(!hasSatellite)}>
+              <input
+                type="checkbox"
+                className={CHECKBOX}
+                checked={layers.satellite}
+                disabled={!hasSatellite}
+                onChange={() => onToggle("satellite")}
+              />
+              Satellite imagery
+            </label>
+            {hasSatellite && layers.satellite && (
+              <div className={STATUS_NOTE}>GOES-16 · {satelliteLabel}</div>
             )}
             <label className={layerRowClass(!hasWindField)}>
               <input
