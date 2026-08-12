@@ -319,6 +319,10 @@ def test_no_change_path_same_advisory_and_cycle_skips_storm_uploads():
                 # unchanged advisory rather than about a backfill.
                 "history": True,
                 "windprob": ["windprob"],
+                # Which optional GIS layers a prior run confirmed. Absent state
+                # would trigger a one-off rebuild to establish it, which is a
+                # different scenario from this test's unchanged advisory.
+                "gis": ["cone", "track", "wwlines", "windfield"],
             }
         },
         "outlook_issued": OUTLOOK_ISSUED,  # unchanged too, isolates this test's assertion

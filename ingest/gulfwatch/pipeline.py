@@ -452,9 +452,16 @@ def _process_storm(storm, prev_storm_state, fetch, store, errors, wsp_fc=None, o
 
     advisory_changed = storm.advisory_num != prev_advisory
     fresh_track_fc = None
-    gis_keys = set(prev_storm_state.get("gis", _GIS_PREDICATES.keys()))
-    if advisory_changed:
+    # No recorded gis state means this storm predates that bookkeeping, so we
+    # do not know which optional layers exist -- rebuild once to find out
+    # rather than assume. Assuming "all of them" is what kept advertising a
+    # wwlines blob that had never been written; assuming "none" would drop a
+    # working wind field for hours.
+    prev_gis = prev_storm_state.get("gis")
+    gis_keys = set(prev_gis) if prev_gis is not None else set()
+    if advisory_changed or prev_gis is None:
         fresh_track_fc, gis_keys = _process_gis(storm, paths, fetch, store, errors)
+    if advisory_changed:
         _process_text_products(storm, paths, fetch, store, errors)
 
     # History and wind probability refresh on a new advisory like everything
