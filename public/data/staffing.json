@@ -2,15 +2,15 @@
   "asOf": "August 2026",
   "source": "staffing_2026-08.xlsx",
   "headcount": {
-    "total": 317,
+    "total": 315,
     "filled": 245,
-    "vacancies": 72
+    "vacancies": 70
   },
   "departments": {
     "Maintenance": {
       "filled": 124,
-      "vacant": 20,
-      "total": 144
+      "vacant": 18,
+      "total": 142
     },
     "Operations": {
       "filled": 28,
