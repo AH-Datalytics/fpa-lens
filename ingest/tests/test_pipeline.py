@@ -305,7 +305,18 @@ def test_active_path_all_five_storm_files_uploaded_and_state_advanced():
 
 def test_no_change_path_same_advisory_and_cycle_skips_storm_uploads():
     initial_state = {
-        "storms": {"al022026": {"advisory": "014a", "cycle": "2026072200"}},
+        "storms": {
+            "al022026": {
+                "advisory": "014a",
+                "cycle": "2026072200",
+                # Already built by a prior run. History and wind probability
+                # also rebuild when MISSING, not only on a new advisory, so a
+                # steady state needs them present for this test to be about an
+                # unchanged advisory rather than about a backfill.
+                "history": True,
+                "windprob": ["windprob"],
+            }
+        },
         "outlook_issued": OUTLOOK_ISSUED,  # unchanged too, isolates this test's assertion
     }
     # A prior run's track.geojson, already showing Bertha's position inside

@@ -446,17 +446,21 @@ def _process_storm(storm, prev_storm_state, fetch, store, errors, wsp_fc=None, o
 
     advisory_changed = storm.advisory_num != prev_advisory
     fresh_track_fc = None
-    has_history = prev_storm_state.get("history", False)
     if advisory_changed:
         fresh_track_fc = _process_gis(storm, paths, fetch, store, errors)
         _process_text_products(storm, paths, fetch, store, errors)
-        # Refreshed per advisory like the GIS products. The previous run's
-        # result carries forward on an unchanged advisory so an already-good
-        # past track keeps its manifest key instead of blinking out.
+
+    # History and wind probability refresh on a new advisory like everything
+    # else, but ALSO build when they are simply missing. Without that second
+    # condition a storm already active when this shipped would show neither
+    # layer until its next advisory -- up to six hours of a map that is missing
+    # options for no reason the viewer can see.
+    has_history = prev_storm_state.get("history", False)
+    windprob_keys = set(prev_storm_state.get("windprob", []))
+    if advisory_changed or not has_history:
         has_history = _process_history(storm, paths, fetch, store, errors)
+    if advisory_changed or not windprob_keys:
         windprob_keys = _process_windprob(storm, paths, wsp_fc, others or [], store, errors)
-    else:
-        windprob_keys = set(prev_storm_state.get("windprob", []))
 
     new_cycle = _process_adeck(storm, paths, prev_cycle, fetch, store, errors)
 
@@ -581,12 +585,15 @@ def run(fetch=requests.get, store=blob) -> dict:
     # per run -- and only when some storm's advisory actually changed, matching
     # how the GIS products refresh. Fetching it every 15 minutes regardless
     # would re-download the whole basin to rebuild fields nothing had moved.
-    any_advisory_changed = any(
+    needs_wsp = any(
         s.id.startswith("al")
-        and s.advisory_num != prev_storms_state.get(s.id, {}).get("advisory")
+        and (
+            s.advisory_num != prev_storms_state.get(s.id, {}).get("advisory")
+            or not prev_storms_state.get(s.id, {}).get("windprob")
+        )
         for s in all_storms
     )
-    wsp_fc = _fetch_windprob(fetch, errors) if any_advisory_changed else None
+    wsp_fc = _fetch_windprob(fetch, errors) if needs_wsp else None
     # Attribution needs EVERY active system, Atlantic and eastern Pacific
     # alike: the file merges both basins, so a Pacific storm left out of the
     # comparison would have its field handed to an Atlantic one.
