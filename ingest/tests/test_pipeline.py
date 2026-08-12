@@ -154,6 +154,12 @@ def _bertha_text_product_routes():
         # enough to exercise fetch -> build_history -> upload; they are not real
         # observed positions, so assert only on the shape, never the geometry.
         BERTHA_BEST_TRACK_URL: FakeResponse(content=SAMPLE_CONE_ZIP),
+        # Basin-wide wind probabilities, fetched once per run whenever any
+        # storm is active. The sample zip's layers are not named wsp34/50/64,
+        # so attribution finds nothing and no windprob key is advertised --
+        # which is exactly the "product absent" path we want covered by
+        # default. Attribution itself is unit-tested in test_windprob.py.
+        pipeline_module.WSP_LATEST_URL: FakeResponse(content=SAMPLE_CONE_ZIP),
     }
 
 
@@ -281,6 +287,9 @@ def test_active_path_all_five_storm_files_uploaded_and_state_advanced():
         # Carried forward so an already-built past track keeps its manifest key
         # on a run where the advisory did not change.
         "history": True,
+        # No windprob layers landed: the sample zip's layers are not named
+        # wsp34/50/64, so attribution finds nothing to attribute.
+        "windprob": [],
     }
 
     # cone/track/wwlines share one bundled zip in this fixture -- must be

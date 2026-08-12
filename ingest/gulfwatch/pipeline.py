@@ -27,7 +27,7 @@ from datetime import datetime, timezone
 
 import requests
 
-from gulfwatch import adeck, aifs, blob, nhc, outlook, probs, shp, text
+from gulfwatch import adeck, aifs, blob, nhc, outlook, probs, shp, text, windprob
 
 FETCH_TIMEOUT_S = 30
 RETRY_BACKOFF_S = 10
@@ -142,14 +142,11 @@ def _storm_paths(stormid: str) -> dict:
 # 2026-08-10: al012026/al022026/ep062026 all 200).
 BEST_TRACK_URL = "https://www.nhc.noaa.gov/gis/best_track/{stormid}_best_track.zip"
 
-# Wind speed probabilities, latest issuance. Only published while a system is
-# active, so a 404 here is the ordinary off-season case, not a failure worth
-# shouting about (see _process_windprob).
-WSP_LATEST_URL = "https://www.nhc.noaa.gov/gis/wsp_120hr5km_latest.zip"
-
-# The WSP zip carries one layer per wind threshold; these are the layer-name
-# fragments and the manifest keys they feed.
-WSP_THRESHOLDS = {"windprob": "wsp34", "windprob50": "wsp50", "windprob64": "wsp64"}
+# Wind speed probabilities, latest issuance. NHC's GIS index lists this under
+# forecast/archive/ (not /gis/ directly) and states plainly that it is a
+# basin-wide forecast-cycle product, not per-storm -- hence the geographic
+# attribution in gulfwatch.windprob.
+WSP_LATEST_URL = "https://www.nhc.noaa.gov/gis/forecast/archive/wsp_120hr5km_latest.zip"
 
 
 _GIS_PREDICATES = {
@@ -281,6 +278,46 @@ def _process_history(storm, paths, fetch, store, errors):
         return False
 
 
+def _fetch_windprob(fetch, errors):
+    """The basin-wide WSP field, fetched ONCE per run.
+
+    One file covers every active system, so fetching it per storm would pull
+    the same megabytes several times during a busy Atlantic. Returns None on
+    failure; every storm then simply skips the layer.
+    """
+    try:
+        resp = _fetch_with_retry(fetch, WSP_LATEST_URL)
+        return shp.zip_to_geojson(resp.content)
+    except Exception as exc:  # noqa: BLE001 - recorded once, never fatal
+        errors.append({"product": "windprob", "message": str(exc)})
+        return None
+
+
+def _process_windprob(storm, paths, wsp_fc, others, store, errors):
+    """Cut this storm's field out of the basin-wide product and upload one
+    file per wind threshold. Returns the manifest keys that landed.
+
+    Each threshold is independent so a failure on one does not cost the others,
+    and a threshold with no nearby component is skipped rather than uploaded
+    empty -- a legend with nothing behind it is worse than an absent layer.
+    """
+    if wsp_fc is None:
+        return set()
+    landed = set()
+    for key, fragment in windprob.THRESHOLD_LAYERS.items():
+        try:
+            fc = windprob.features_for_storm(
+                wsp_fc, fragment, (storm.lon, storm.lat), others
+            )
+            if not fc["features"]:
+                continue
+            store.put_json(paths[key], fc)
+            landed.add(key)
+        except Exception as exc:  # noqa: BLE001 - recorded per threshold
+            errors.append({"product": f"{storm.id}.{key}", "message": str(exc)})
+    return landed
+
+
 def _process_text_products(storm, paths, fetch, store, errors):
     """Fetch+build+upload text.json (Forecast Discussion + Public Advisory)
     and probs.json (wind speed probabilities) for one storm whose advisory
@@ -400,7 +437,7 @@ def _resolve_track_for_gulf_check(advisory_changed, fresh_track_fc, track_path, 
         return None
 
 
-def _process_storm(storm, prev_storm_state, fetch, store, errors):
+def _process_storm(storm, prev_storm_state, fetch, store, errors, wsp_fc=None, others=None):
     """Process one Atlantic storm: conditionally refresh its GIS + a-deck
     products, then build its manifest entry and next state.json entry."""
     paths = _storm_paths(storm.id)
@@ -417,6 +454,9 @@ def _process_storm(storm, prev_storm_state, fetch, store, errors):
         # result carries forward on an unchanged advisory so an already-good
         # past track keeps its manifest key instead of blinking out.
         has_history = _process_history(storm, paths, fetch, store, errors)
+        windprob_keys = _process_windprob(storm, paths, wsp_fc, others or [], store, errors)
+    else:
+        windprob_keys = set(prev_storm_state.get("windprob", []))
 
     new_cycle = _process_adeck(storm, paths, prev_cycle, fetch, store, errors)
 
@@ -453,12 +493,14 @@ def _process_storm(storm, prev_storm_state, fetch, store, errors):
             # a manifest key pointing at a missing blob is a 404 in the browser,
             # which is worse than the layer being unavailable.
             **({"history": paths["history"]} if has_history else {}),
+            **{key: paths[key] for key in sorted(windprob_keys)},
         },
     }
     next_state = {
         "advisory": storm.advisory_num,
         "cycle": new_cycle,
         "history": has_history,
+        "windprob": sorted(windprob_keys),
     }
     return manifest_entry, next_state
 
@@ -535,12 +577,29 @@ def run(fetch=requests.get, store=blob) -> dict:
     new_storms_state: dict = {}
     manifest_storms = []
 
+    # One basin-wide wind-probability file serves every storm, so fetch it once
+    # per run -- and only when some storm's advisory actually changed, matching
+    # how the GIS products refresh. Fetching it every 15 minutes regardless
+    # would re-download the whole basin to rebuild fields nothing had moved.
+    any_advisory_changed = any(
+        s.id.startswith("al")
+        and s.advisory_num != prev_storms_state.get(s.id, {}).get("advisory")
+        for s in all_storms
+    )
+    wsp_fc = _fetch_windprob(fetch, errors) if any_advisory_changed else None
+    # Attribution needs EVERY active system, Atlantic and eastern Pacific
+    # alike: the file merges both basins, so a Pacific storm left out of the
+    # comparison would have its field handed to an Atlantic one.
+    storm_positions = {s.id: (s.lon, s.lat) for s in all_storms}
+
     for storm in all_storms:
         if not storm.id.startswith("al"):
             continue  # Atlantic basin only, per task brief
         try:
+            others = [pos for sid, pos in storm_positions.items() if sid != storm.id]
             entry, next_state = _process_storm(
-                storm, prev_storms_state.get(storm.id, {}), fetch, store, errors
+                storm, prev_storms_state.get(storm.id, {}), fetch, store, errors,
+                wsp_fc=wsp_fc, others=others,
             )
             manifest_storms.append(entry)
             new_storms_state[storm.id] = next_state
