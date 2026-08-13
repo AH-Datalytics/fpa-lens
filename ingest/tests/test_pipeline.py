@@ -313,7 +313,7 @@ def test_active_path_all_five_storm_files_uploaded_and_state_advanced():
         # Model guidance that reached the store, so an unchanged cycle keeps
         # advertising exactly what exists.
         "adeck": ["intensity", "models"],
-        "gisVersion": 2,
+        "gisVersion": 3,
     }
 
     # cone/track/wwlines share one bundled zip in this fixture -- must be
@@ -344,7 +344,7 @@ def test_no_change_path_same_advisory_and_cycle_skips_storm_uploads():
                 # different scenario from this test's unchanged advisory.
                 "gis": ["cone", "track", "wwlines", "windfield"],
                 "adeck": ["models", "intensity"],
-                "gisVersion": 2,
+                "gisVersion": 3,
             }
         },
         "outlook_issued": OUTLOOK_ISSUED,  # unchanged too, isolates this test's assertion

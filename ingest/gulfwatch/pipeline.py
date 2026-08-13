@@ -161,9 +161,16 @@ BEST_TRACK_URL = "https://www.nhc.noaa.gov/gis/best_track/{stormid}_best_track.z
 WSP_LATEST_URL = "https://www.nhc.noaa.gov/gis/forecast/archive/wsp_120hr5km_latest.zip"
 
 
-# Bump when the meaning of state.json's "gis" list changes, so stale entries
-# are re-derived rather than trusted.
-_GIS_STATE_VERSION = 2
+# Bump when the meaning of state.json's "gis", "adeck" or "windprob" records
+# changes, so stale entries are re-derived rather than trusted.
+#
+# 3 (2026-08-13): model tracks are now clipped to the advisory time, and the
+# wind-probability record gained the cycle its field came from. Both are computed
+# only when their product is rebuilt, and a rebuild normally waits for a new
+# advisory or cycle -- so a storm already active at deploy time would have kept
+# serving unclipped tracks and no probability cycle for up to six hours. Same
+# shape as the bug that left Cristobal with no history/windprob layers at all.
+_GIS_STATE_VERSION = 3
 
 _GIS_PREDICATES = {
     "cone": _is_cone,
@@ -615,7 +622,16 @@ def _process_storm(storm, prev_storm_state, fetch, store, errors, wsp_fc=None, o
     # layer until its next advisory -- up to six hours of a map that is missing
     # options for no reason the viewer can see.
     has_history = prev_storm_state.get("history", False)
-    windprob_keys = set(prev_storm_state.get("windprob", []))
+    # Version-gated like "gis" and "adeck": a record written before the pairing
+    # existed carries no cycle, and trusting it would leave the layer on screen
+    # with nothing to label it. Gating forces exactly one rebuild, which derives
+    # the cycle -- and then stops, because the fresh record matches the version.
+    prev_windprob = (
+        prev_storm_state.get("windprob")
+        if prev_storm_state.get("gisVersion") == _GIS_STATE_VERSION
+        else None
+    )
+    windprob_keys = set(prev_windprob) if prev_windprob is not None else set()
     if advisory_changed or not has_history:
         has_history = _process_history(storm, paths, fetch, store, errors)
     # Which cycle the probabilities on screen actually came from. Persisted like
