@@ -16,7 +16,8 @@ import {
 } from "recharts";
 import { CATEGORY_THRESHOLDS_MPH } from "@/lib/tropical/config";
 import { CATEGORY_COLORS } from "@/lib/tropical/categoryColors";
-import { cdtTickLabel } from "@/lib/tropical/format";
+import { PAGE_PATH } from "@/lib/tropical/config";
+import { cdtTickLabel, stormTypeLabel } from "@/lib/tropical/format";
 import { landfallTau } from "@/lib/tropical/landfall";
 import { DEFAULT_MODEL_COLOR, MODEL_COLORS, modelDescription } from "@/lib/tropical/modelColors";
 import type { IntensitySeries, StormEntry } from "@/lib/tropical/types";
@@ -26,6 +27,11 @@ export interface IntensityPanelProps {
   storm: StormEntry;
   track?: GeoJSON.FeatureCollection;
   visibleModels: Set<string>;
+  /** Every active storm, so the pop-out can name the one it is charting and
+   * offer a way to switch when more than one is up. */
+  storms?: StormEntry[];
+  /** Preserved across a storm switch so a demo replay stays a demo. */
+  demoParam?: string | null;
   /** Closes the pop-out (same as toggling "Intensity graph" in map options). */
   onClose: () => void;
 }
@@ -162,7 +168,15 @@ function IntensityTooltip({ active, payload, label, advisoryTime }: IntensityToo
  * advisory scrubber (which only exists during a replay) is knowledge the page
  * has and this component does not.
  */
-export function IntensityPanel({ intensity, storm, track, visibleModels, onClose }: IntensityPanelProps) {
+export function IntensityPanel({
+  intensity,
+  storm,
+  track,
+  visibleModels,
+  storms,
+  demoParam,
+  onClose,
+}: IntensityPanelProps) {
   const displayedSeries = useMemo(() => {
     const filtered = intensity.series.filter(
       (s) => ALWAYS_ON_MODELS.has(s.model) || visibleModels.has(s.model)
@@ -170,6 +184,13 @@ export function IntensityPanel({ intensity, storm, track, visibleModels, onClose
     // OFCL drawn last so its line stacks on top of the spaghetti.
     return [...filtered.filter((s) => s.model !== "OFCL"), ...filtered.filter((s) => s.model === "OFCL")];
   }, [intensity.series, visibleModels]);
+
+  // A switcher is only meaningful when there is somewhere else to switch TO.
+  // One storm gets its name stated plainly instead of a one-option dropdown.
+  const otherStorms = useMemo(
+    () => (storms ?? []).filter((option) => option.id !== storm.id),
+    [storms, storm.id]
+  );
 
   const [, yMax] = useMemo(() => yDomain(intensity.series), [intensity.series]);
   const maxTauH = useMemo(() => maxTau(intensity.series), [intensity.series]);
@@ -202,8 +223,46 @@ export function IntensityPanel({ intensity, storm, track, visibleModels, onClose
   return (
     <div className="overflow-hidden rounded-lg border border-gray-200 bg-white/95 shadow-xl backdrop-blur">
       <div className="flex items-start justify-between gap-3 border-b border-gray-200 px-4 py-2.5">
-        <div>
-          <div className="text-sm font-semibold text-[#21355a]">Intensity forecast</div>
+        <div className="min-w-0">
+          {/* Name the storm being charted. The pop-out floats over the map with
+              its own legend and peak figure, so without this the reader has to
+              infer whose forecast it is from the panel behind it -- and with
+              several systems up, that is a guess. */}
+          <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
+            <span className="text-sm font-semibold text-[#21355a]">Intensity forecast</span>
+            {otherStorms.length === 0 && (
+              <span className="text-sm text-gray-600">
+                {stormTypeLabel(storm.classification)} {storm.name}
+              </span>
+            )}
+          </div>
+          {/* With more than one system active, switching storms here changes the
+              PAGE's selected storm, not just this chart. A chart-only switch
+              would leave the map drawing another storm's cone and this panel's
+              landfall marker keyed to that other storm's track. */}
+          {otherStorms.length > 0 && (
+            <label className="mt-1 flex items-center gap-1.5 text-xs text-gray-600">
+              <span className="sr-only">Storm</span>
+              <select
+                value={storm.id}
+                onChange={(event) => {
+                  const params = new URLSearchParams();
+                  if (demoParam) params.set("demo", demoParam);
+                  params.set("storm", event.target.value);
+                  // Full document navigation: the dashboard reads the query
+                  // string as a one-shot snapshot (see SummaryBand's switcher).
+                  window.location.href = `${PAGE_PATH}?${params.toString()}`;
+                }}
+                className="max-w-[14rem] rounded border border-gray-200 bg-white px-1.5 py-1 text-xs text-gray-700"
+              >
+                {(storms ?? []).map((option) => (
+                  <option value={option.id} key={option.id}>
+                    {stormTypeLabel(option.classification)} {option.name}
+                  </option>
+                ))}
+              </select>
+            </label>
+          )}
           <div className="text-xs text-gray-500">
             Maximum sustained winds · next {maxTauH} hours
           </div>

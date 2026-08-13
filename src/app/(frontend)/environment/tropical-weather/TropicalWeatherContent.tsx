@@ -241,6 +241,8 @@ export default function TropicalWeatherContent() {
                 storm={dashboard.storm}
                 track={dashboard.geo.track}
                 visibleModels={visibleModels}
+                storms={dashboard.storms}
+                demoParam={dashboard.demoParam}
                 onClose={() => setIntensityOpen(false)}
               />
             </div>
