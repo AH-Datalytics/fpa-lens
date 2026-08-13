@@ -8,6 +8,7 @@ import {
   Map as MapLibreMap,
   Marker,
   NavigationControl,
+  Popup,
   RasterTileSource,
   setWorkerUrl,
 } from "maplibre-gl";
@@ -40,7 +41,7 @@ import {
   wwColor,
 } from "@/lib/tropical/mapStyle";
 import { DEFAULT_MODEL_COLOR, ENSEMBLE_COLOR, MODEL_COLORS } from "@/lib/tropical/modelColors";
-import { cdtDateTime } from "@/lib/tropical/format";
+import { categoryFor, cdtDateTime, stormTypeLabel } from "@/lib/tropical/format";
 import { radarValidTime, RADAR_METADATA_URL } from "@/lib/tropical/radar";
 
 // maplibre-gl resolves its worker script relative to its own module's
@@ -86,6 +87,18 @@ export interface StormMapProps {
       sourceUrl: string;
       bounds: [[number, number], [number, number]];
     };
+  };
+  /** The selected storm's headline facts, for the click-through popup on its
+   *  current-position icon. Undefined in quiet mode (no storm to describe). */
+  stormSummary?: {
+    name: string;
+    classification: string;
+    intensityMph: number;
+    pressureMb: number;
+    movementDir: string;
+    movementMph: number;
+    advisoryNum: string;
+    advisoryTime: string;
   };
   mode: Mode;
   visibleModels: Set<string>;
@@ -185,6 +198,7 @@ function CompassRose() {
 
 export default function StormMap({
   geo,
+  stormSummary,
   mode,
   visibleModels,
   onVisibleModelsChange,
@@ -347,9 +361,27 @@ export default function StormMap({
         icon.className = `tmap-storm-icon tmap-symbol-${symbol}`;
         icon.setAttribute("aria-label", `${trackPointLabel(f.properties)} current position`);
         icon.setAttribute("role", "img");
-        markers.push(
-          new Marker({ element: icon, anchor: "center" }).setLngLat([lon, lat]).addTo(map)
-        );
+        const marker = new Marker({ element: icon, anchor: "center" }).setLngLat([lon, lat]);
+        // Click-through detail. Everything here is already on screen somewhere
+        // in the rail, but the icon is the thing a reader points at first, and
+        // on a map with several systems it is the only place that says WHICH
+        // storm this one is. Times are the advisory's, not "now" -- the icon
+        // marks an analysed position, not a live observation.
+        if (stormSummary) {
+          const category = categoryFor(stormSummary.intensityMph);
+          const categoryLine =
+            category === "TD" || category === "TS" ? "" : `<div>Category ${category}</div>`;
+          marker.setPopup(
+            new Popup({ offset: 16, closeButton: true, className: "tmap-storm-popup" }).setHTML(
+              `<div class="tmap-popup-name">${stormTypeLabel(stormSummary.classification)} ${stormSummary.name}</div>` +
+                `<div class="tmap-popup-wind">${stormSummary.intensityMph} mph sustained winds</div>` +
+                categoryLine +
+                `<div>Moving ${stormSummary.movementDir} at ${stormSummary.movementMph} mph &middot; ${stormSummary.pressureMb} mb</div>` +
+                `<div class="tmap-popup-time">Advisory ${stormSummary.advisoryNum} &middot; ${cdtDateTime(stormSummary.advisoryTime)}</div>`
+            )
+          );
+        }
+        markers.push(marker.addTo(map));
       }
       const el = document.createElement("div");
       el.className = "tmap-label tmap-track-label";
@@ -363,7 +395,7 @@ export default function StormMap({
       );
     }
     trackMarkersRef.current = markers;
-  }, [geo.track, layers.satellite, layers.windField, loaded]);
+  }, [geo.track, layers.satellite, layers.windField, loaded, stormSummary]);
 
   // --- observed storm history, kept separate from the official forecast ---
   useEffect(() => {

@@ -81,7 +81,11 @@
   position: relative;
   width: 36px;
   height: 36px;
-  pointer-events: none;
+  /* Clickable, unlike every label in this file: the icon opens the storm's
+     detail popup, so it has to receive the click. Labels stay pointer-events:
+     none so they never swallow a drag on the map beneath them. */
+  pointer-events: auto;
+  cursor: pointer;
   filter: drop-shadow(0 0 1.5px rgba(255, 255, 255, 0.95))
     drop-shadow(0 2px 4px rgba(0, 0, 0, 0.75));
 }
@@ -162,4 +166,39 @@
 .tw-map-frame .maplibregl-cooperative-gesture-screen,
 .tw-map-frame .maplibregl-cooperative-gesture-screen.maplibregl-show {
   display: none;
+}
+
+/* Click-through detail on the storm's current-position icon. MapLibre builds
+   the popup shell itself, so these rules reach it through its own class names
+   rather than Tailwind, same reason as every other rule in this file. */
+.tmap-storm-popup .maplibregl-popup-content {
+  padding: 9px 11px;
+  border-radius: 6px;
+  font-size: 12px;
+  line-height: 1.45;
+  color: #334155;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.18);
+}
+
+.tmap-storm-popup .maplibregl-popup-content > div + div {
+  margin-top: 1px;
+}
+
+.tmap-popup-name {
+  font-weight: 600;
+  font-size: 13px;
+  color: #21355a;
+}
+
+.tmap-popup-wind {
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.tmap-popup-time {
+  margin-top: 4px;
+  padding-top: 4px;
+  border-top: 1px solid #e2e8f0;
+  font-size: 11px;
+  color: #64748b;
 }

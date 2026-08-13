@@ -175,6 +175,20 @@ export default function TropicalWeatherContent() {
           {loadMap ? (
             <StormMap
               geo={dashboard.geo}
+              stormSummary={
+                dashboard.storm
+                  ? {
+                      name: dashboard.storm.name,
+                      classification: dashboard.storm.classification,
+                      intensityMph: dashboard.storm.intensityMph,
+                      pressureMb: dashboard.storm.pressureMb,
+                      movementDir: dashboard.storm.movementDir,
+                      movementMph: dashboard.storm.movementMph,
+                      advisoryNum: dashboard.storm.advisoryNum,
+                      advisoryTime: dashboard.storm.advisoryTime,
+                    }
+                  : undefined
+              }
               mode={dashboard.mode}
               visibleModels={visibleModels}
               onVisibleModelsChange={setVisibleModels}
