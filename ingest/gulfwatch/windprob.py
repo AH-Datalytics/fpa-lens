@@ -20,12 +20,125 @@ cannot generalise to a storm anywhere else in the basin.
 
 from __future__ import annotations
 
+import re
+from datetime import datetime, timedelta, timezone
+
 # Douglas-Peucker tolerance in degrees. The raw 5 km contours are far denser
 # than a web map can show; without this a single cycle is several MB.
 SIMPLIFY_DEGREES = 0.025
 
 # Layer-name fragment per manifest key, as they appear in the WSP zip.
 THRESHOLD_LAYERS = {"windprob": "wsp34", "windprob50": "wsp50", "windprob64": "wsp64"}
+
+
+# ---------------------------------------------------------------------------
+# Advisory pairing
+# ---------------------------------------------------------------------------
+#
+# The cone, track and wind field are fetched from advisory-NUMBERED urls, so
+# they are the same advisory package by construction. Wind probability is not:
+# it is fetched as wsp_120hr5km_latest.zip, which carries a forecast CYCLE and
+# no advisory number. So "the probabilities on screen belong to the advisory on
+# screen" has to be checked, not assumed.
+#
+# The cycle IS recoverable at no cost: every member of the zip is named
+# "<cycle>_wsp34knt120hr_5km.*", and shp.zip_to_geojson already copies that
+# basename onto each feature as `shapefile`.
+#
+# WSP cycles are the four synoptic hours 00/06/12/18z, and advisories are issued
+# at 03/09/15/21z -- so a cycle pairs with the advisory 3h AFTER it.
+#
+# VERIFIED 2026-08-13 by publication time (HTTP Last-Modified on the archived
+# cycle-stamped zips), across 5 storms and 5 seasons -- Ida 2021, Nora 2021
+# (concurrent, eastern Pacific), Ian 2022, Idalia 2023, Milton 2024 and
+# Cristobal 2026: cycle C's file appears on NHC's server at C+3.38h to C+3.40h
+# in 20 of 21 cycles sampled, with one late run at C+4.20h. That is NHC posting
+# each cycle's probabilities as the C+3h advisory goes out, which is the pairing
+# this encodes. (The earlier note in memory had this confirmed on one storm.)
+#
+# Two consequences the measurement makes concrete:
+#
+# 1. FLOOR to the synoptic grid; do not just subtract 3h. INTERMEDIATE
+#    advisories ("014a" -- the shape of our own test fixture) are issued at
+#    00/06/12/18z, so issuance-3h lands on 21/03/09/15z, which are never WSP
+#    cycles. A bare -3h rule would demand a cycle that has never existed and
+#    suppress a perfectly good layer. Flooring returns the newest cycle that
+#    can actually be on the server, which the posting times confirm: at a 06z
+#    intermediate advisory the 06z field is still ~3h away, and 00z is current.
+#
+# 2. There is a real mispairing WINDOW, ~20-25 minutes wide (longer for a late
+#    run). The 09z Cristobal advisory was public at 09:00z while its matching
+#    06z field only finished uploading at 09:22z -- and ingest runs at :07,
+#    :22, :37, :52. So a run CAN legitimately see a fresh advisory alongside the
+#    previous cycle's probabilities. That is why a mismatch is reported and
+#    labelled rather than suppressed: the older field is still valid guidance,
+#    and dropping it would blank a safety layer to fix a caption.
+WSP_CYCLE_HOURS = 6
+ADVISORY_TO_CYCLE_LAG_HOURS = 3
+
+_CYCLE_RE = re.compile(r"^(\d{10})_")
+
+
+def cycle_from_features(fc: dict | None) -> str | None:
+    """The forecast cycle a parsed WSP FeatureCollection actually came from,
+    read off the shapefile basenames. None if the names carry no cycle stamp
+    (an unrecognised product layout -- caller should treat the pairing as
+    unknown rather than broken)."""
+    if not fc:
+        return None
+    stamps = set()
+    for feature in fc.get("features", []):
+        name = str((feature.get("properties") or {}).get("shapefile") or "")
+        match = _CYCLE_RE.match(name)
+        if match:
+            stamps.add(match.group(1))
+    if not stamps:
+        return None
+    # One cycle per file in practice; if a future product ever bundles more,
+    # the newest is the one the advisory could be paired with.
+    return max(stamps)
+
+
+def expected_cycle(advisory_time: str | None) -> str | None:
+    """The WSP cycle that belongs with an advisory issued at `advisory_time`
+    (ISO 8601 UTC): the newest synoptic cycle at or before issuance - 3h.
+
+    None if the time is missing or unparseable -- unknown, not mismatched.
+    """
+    if not advisory_time:
+        return None
+    try:
+        issued = datetime.fromisoformat(str(advisory_time).replace("Z", "+00:00"))
+    except (AttributeError, TypeError, ValueError):
+        return None
+    if issued.tzinfo is None:
+        issued = issued.replace(tzinfo=timezone.utc)
+    issued = issued.astimezone(timezone.utc)
+
+    basis = issued - timedelta(hours=ADVISORY_TO_CYCLE_LAG_HOURS)
+    floored = basis.replace(
+        hour=(basis.hour // WSP_CYCLE_HOURS) * WSP_CYCLE_HOURS,
+        minute=0,
+        second=0,
+        microsecond=0,
+    )
+    return floored.strftime("%Y%m%d%H")
+
+
+def cycles_behind(actual_cycle: str | None, expected: str | None) -> int | None:
+    """How many 6-hourly cycles `actual_cycle` lags `expected` by. 0 means
+    paired, a positive number means the probabilities predate the advisory, a
+    negative number means they are newer than it. None if either is unknown.
+    """
+    if not actual_cycle or not expected:
+        return None
+    try:
+        actual_dt = datetime.strptime(actual_cycle, "%Y%m%d%H")
+        expected_dt = datetime.strptime(expected, "%Y%m%d%H")
+    except (TypeError, ValueError):
+        return None
+    hours = (expected_dt - actual_dt).total_seconds() / 3600
+    return int(hours // WSP_CYCLE_HOURS)
 
 
 # ---------------------------------------------------------------------------

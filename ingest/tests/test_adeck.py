@@ -36,7 +36,13 @@ def test_constants():
 
 
 def test_top_level_shape(result):
-    assert set(result.keys()) == {"models_geojson", "intensity", "cycle"}
+    assert set(result.keys()) == {
+        "models_geojson",
+        "intensity",
+        "cycle",
+        "dropped_stale",
+        "dropped_elapsed",
+    }
     assert result["models_geojson"]["type"] == "FeatureCollection"
     assert result["intensity"]["cycle"] == result["cycle"]
 
@@ -278,3 +284,139 @@ def test_google_deepmind_has_a_colour_and_a_plain_english_gloss():
            / "src" / "lib" / "tropical" / "modelColors.ts").read_text(encoding="utf-8")
     assert "GDMN:" in src, "GDMN needs a colour + description entry"
     assert "DMWL" not in src, "DMWL is not a real ATCF tech code; it must not reappear"
+
+
+# --- Track clipping (reference_time) -----------------------------------------
+#
+# Models initialise on the synoptic grid (00/06/12/18z) but advisories are
+# issued at 03/09/15/21z, so a model's tau=0 sits ~3h -- about a degree --
+# behind the storm position the map plots, and a model a cycle or two old
+# starts further back still. Passing the advisory's issuance time as
+# reference_time drops each run's already-elapsed leg.
+
+
+def test_clip_drops_the_elapsed_leg_and_starts_at_the_reference_time():
+    # AVNO initialised 12z with points at tau 0/6/12; the advisory was issued
+    # 15z, i.e. 3h in -- halfway between tau 0 and tau 6.
+    text = (
+        "AL, 03, 2026081212, 03, AVNO,   0, 250N,  800W,  60,  990, TS\n"
+        "AL, 03, 2026081212, 03, AVNO,   6, 260N,  810W,  60,  990, TS\n"
+        "AL, 03, 2026081212, 03, AVNO,  12, 270N,  820W,  60,  990, TS\n"
+    )
+    result = parse_adeck(text, reference_time="2026-08-12T15:00:00Z")
+    coords = feature_for(result, "AVNO")["geometry"]["coordinates"]
+    # The tau=0 position (-80.0, 25.0) is in the past and must be gone.
+    assert [-80.0, 25.0] not in coords
+    # Track starts at the interpolated 15z position, not at tau=6.
+    assert coords[0] == [-80.5, 25.5]
+    assert coords[1:] == [[-81.0, 26.0], [-82.0, 27.0]]
+
+
+def test_clip_interpolates_across_a_sparse_output_gap():
+    """The jump this avoids is largest for sparse models: without an
+    interpolated start, a 24-hourly run would begin a full day downstream of
+    the storm rather than 6h in."""
+    text = (
+        "AL, 03, 2026081212, 03, EMXI,   0, 250N,  800W,  60,  990, TS\n"
+        "AL, 03, 2026081212, 03, EMXI,  24, 290N,  840W,  60,  990, TS\n"
+    )
+    result = parse_adeck(text, reference_time="2026-08-12T18:00:00Z")
+    coords = feature_for(result, "EMXI")["geometry"]["coordinates"]
+    # 6h into a 24h gap = a quarter of the way along it.
+    assert coords == [[-81.0, 26.0], [-84.0, 29.0]]
+
+
+def test_clip_keeps_guidance_newer_than_the_advisory_whole():
+    """A model initialised AFTER the advisory has nothing elapsed to clip. The
+    controller's explicit call is that newer guidance stays."""
+    text = (
+        "AL, 03, 2026081218, 03, AVNO,   0, 250N,  800W,  60,  990, TS\n"
+        "AL, 03, 2026081218, 03, AVNO,   6, 260N,  810W,  60,  990, TS\n"
+    )
+    result = parse_adeck(text, reference_time="2026-08-12T15:00:00Z")
+    coords = feature_for(result, "AVNO")["geometry"]["coordinates"]
+    assert coords == [[-80.0, 25.0], [-81.0, 26.0]]
+
+
+def test_clip_drops_a_run_whose_every_hour_is_already_past():
+    # CMC's last forecast hour (12z + tau 6 = 18z) is behind a 21z advisory,
+    # so there is nothing left to draw -- no feature, and no picker row.
+    text = (
+        "AL, 03, 2026081212, 03, CMC,    0, 250N,  800W,  60,  990, TS\n"
+        "AL, 03, 2026081212, 03, CMC,    6, 260N,  810W,  60,  990, TS\n"
+        "AL, 03, 2026081212, 03, AVNO,   0, 250N,  800W,  60,  990, TS\n"
+        "AL, 03, 2026081212, 03, AVNO, 120, 350N,  900W,  60,  990, TS\n"
+    )
+    result = parse_adeck(text, reference_time="2026-08-12T21:00:00Z")
+    assert feature_for(result, "CMC") is None
+    assert feature_for(result, "AVNO") is not None
+    # Reported, not silent -- this is also the only signal for an a-deck where
+    # EVERY model has gone stale, which the staleness cap cannot see (it
+    # measures models against the dominant cycle, which would be stale too).
+    assert result["dropped_elapsed"] == ["CMC"]
+    assert result["dropped_stale"] == []
+
+
+def test_no_reference_time_emits_tracks_whole(result):
+    """Clipping is opt-in: the module fixture parses without a reference time
+    and must keep every point, including tau=0."""
+    coords = feature_for(result, "HFSA")["geometry"]["coordinates"]
+    assert coords[0] == [-89.7, 26.5]
+
+
+def test_unparseable_reference_time_degrades_to_no_clipping():
+    text = (
+        "AL, 03, 2026081212, 03, AVNO,   0, 250N,  800W,  60,  990, TS\n"
+        "AL, 03, 2026081212, 03, AVNO,   6, 260N,  810W,  60,  990, TS\n"
+    )
+    result = parse_adeck(text, reference_time="not a timestamp")
+    coords = feature_for(result, "AVNO")["geometry"]["coordinates"]
+    assert coords == [[-80.0, 25.0], [-81.0, 26.0]]
+
+
+# --- Staleness cap ------------------------------------------------------------
+
+
+def test_staleness_cap_refuses_guidance_far_behind_the_dominant_cycle():
+    """NAVGEM 18h behind the dominant cycle was the long line running off the
+    west edge of the live map. Clipping alone cannot make a three-cycle-old
+    initialisation current, so it is refused outright -- from the intensity
+    chart as well as the map."""
+    text = (
+        "AL, 03, 2026081218, 03, AVNO,   0, 250N,  800W,  60,  990, TS\n"
+        "AL, 03, 2026081218, 03, AVNO,  12, 260N,  810W,  60,  990, TS\n"
+        "AL, 03, 2026081218, 03, HFSA,   0, 250N,  800W,  60,  990, TS\n"
+        "AL, 03, 2026081218, 03, HFSA,  12, 260N,  810W,  60,  990, TS\n"
+        "AL, 03, 2026081218, 03, CMC,    0, 250N,  800W,  60,  990, TS\n"
+        "AL, 03, 2026081218, 03, CMC,   12, 260N,  810W,  60,  990, TS\n"
+        "AL, 03, 2026081200, 03, NVGM,   0, 250N,  885W,  60,  990, TS\n"
+        "AL, 03, 2026081200, 03, NVGM,  12, 260N,  895W,  60,  990, TS\n"
+    )
+    result = parse_adeck(text)
+    assert result["cycle"] == "2026081218"
+    assert feature_for(result, "NVGM") is None
+    assert series_for(result, "NVGM") is None
+    assert result["dropped_stale"] == ["NVGM"]
+    # The current models are untouched.
+    assert feature_for(result, "AVNO") is not None
+    assert feature_for(result, "CMC") is not None
+
+
+def test_staleness_cap_keeps_a_model_a_full_twelve_hours_behind():
+    """The cap is 12h, not one 6-hourly cycle, precisely so this case survives:
+    ECMWF posts 00z/12z only, so once the dominant cycle reaches 18z its newest
+    run is 6h back -- and at 00z, a full 12h back. A 6h cap would drop the most
+    useful model in the file roughly half the time."""
+    text = (
+        "AL, 03, 2026081300, 03, AVNO,   0, 250N,  800W,  60,  990, TS\n"
+        "AL, 03, 2026081300, 03, AVNO,  12, 260N,  810W,  60,  990, TS\n"
+        "AL, 03, 2026081300, 03, HFSA,   0, 250N,  800W,  60,  990, TS\n"
+        "AL, 03, 2026081300, 03, HFSA,  12, 260N,  810W,  60,  990, TS\n"
+        "AL, 03, 2026081212, 03, EMXI,   0, 250N,  805W,  60,  990, TS\n"
+        "AL, 03, 2026081212, 03, EMXI,  12, 260N,  815W,  60,  990, TS\n"
+    )
+    result = parse_adeck(text)
+    assert result["cycle"] == "2026081300"
+    assert result["dropped_stale"] == []
+    assert feature_for(result, "EMXI") is not None
+    assert series_for(result, "EMXI") is not None

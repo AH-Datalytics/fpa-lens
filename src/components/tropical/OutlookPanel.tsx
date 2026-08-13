@@ -40,7 +40,14 @@ export function OutlookPanel({ outlookText }: OutlookPanelProps) {
             className="h-2.5 w-2.5 rounded-full bg-green-500 animate-status-pulse"
             aria-hidden="true"
           />
-          No active systems
+          {/* "Gulf", not "systems", because that is the claim this panel can
+              actually support. It renders whenever `mode` is not "active", and
+              `mode` means "a storm is inside the Gulf box" -- NOT "a storm
+              exists". A named Atlantic storm outside the box left this reading
+              "No active systems" while that storm was live and fully loaded on
+              the map. Still accurate in the ordinary case where nothing is
+              spinning anywhere, and appropriately scoped for a Gulf authority. */}
+          No active Gulf systems
         </div>
         {outlookText && (
           <span className="text-xs text-gray-500">

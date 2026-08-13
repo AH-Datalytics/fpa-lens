@@ -321,6 +321,27 @@ def _fetch_windprob(fetch, errors):
         return None
 
 
+def _windprob_pairing(storm, wsp_fc):
+    """Check the basin-wide WSP product against this storm's advisory.
+
+    Returns (actual_cycle, cycles_behind) -- either may be None when unknown.
+    A mismatch is NEVER a reason to drop the layer (see windprob.py: NHC posts
+    a cycle ~20 minutes after the advisory it belongs to, so a run can honestly
+    hold the previous cycle). It is reported so the map can say which cycle the
+    probabilities came from instead of implying they match the cone.
+    """
+    actual = windprob.cycle_from_features(wsp_fc)
+    behind = windprob.cycles_behind(actual, windprob.expected_cycle(storm.advisory_time))
+    if behind:
+        direction = "behind" if behind > 0 else "ahead of"
+        print(
+            f"gulf-watch ingest: {storm.id} wind probability cycle {actual} is "
+            f"{abs(behind)} cycle(s) {direction} advisory {storm.advisory_num} "
+            f"({storm.advisory_time}) -- layer kept, labelled with its own cycle"
+        )
+    return actual, behind
+
+
 def _process_windprob(storm, paths, wsp_fc, others, store, errors):
     """Cut this storm's field out of the basin-wide product and upload one
     file per wind threshold. Returns the manifest keys that landed.
@@ -450,7 +471,7 @@ def _process_text_products(storm, paths, fetch, store, errors):
         errors.append({"product": f"{storm.id}.probs", "message": str(exc)})
 
 
-def _process_adeck(storm, paths, prev_cycle, fetch, store, errors, force=False):
+def _process_adeck(storm, paths, prev_cycle, fetch, store, errors, force=False, rebuild=False):
     """Fetch+decompress+parse this storm's a-deck, re-uploading
     models.geojson/intensity.json only if the parsed cycle differs from the
     prior known cycle (state.json). The a-deck is fetched every run
@@ -467,6 +488,15 @@ def _process_adeck(storm, paths, prev_cycle, fetch, store, errors, force=False):
     guarantee and is exercised directly in test_pipeline.py by monkeypatching
     a raising fetch_aifs_tracks.
 
+    Model tracks are clipped to the storm's advisory time (see
+    adeck.parse_adeck's `reference_time`) so they start at the plotted storm
+    rather than behind it. That makes models.geojson depend on the ADVISORY as
+    well as the a-deck cycle, which is why `rebuild` exists: advisories are
+    issued at 03/09/15/21z and models initialise at 00/06/12/18z, so a new
+    advisory routinely arrives while the cycle is unchanged. Without rebuilding
+    on it, tracks would stay clipped to the PREVIOUS advisory and drift back
+    behind the storm by up to six hours -- the exact defect this fixes.
+
     Returns the (possibly unchanged) cycle to persist in state.json.
     """
     url = ADECK_URL_TEMPLATE.format(stormid=storm.id)
@@ -475,10 +505,26 @@ def _process_adeck(storm, paths, prev_cycle, fetch, store, errors, force=False):
         # A-decks can contain odd/non-UTF-8 bytes -- decode latin-1 per
         # shared-contracts.md.
         text = gzip.decompress(resp.content).decode("latin-1")
-        parsed = adeck.parse_adeck(text)
+        parsed = adeck.parse_adeck(text, reference_time=storm.advisory_time)
     except Exception as exc:
         errors.append({"product": f"{storm.id}.adeck", "message": str(exc)})
         return prev_cycle, None
+
+    # Guidance disappearing from the map must never be silent -- that is how a
+    # wrong staleness rule, or an a-deck that quietly stopped updating, would go
+    # unnoticed until someone spotted an empty model picker.
+    if parsed.get("dropped_stale"):
+        print(
+            f"gulf-watch ingest: {storm.id} refused guidance more than "
+            f"{adeck.MAX_STALENESS_HOURS}h behind cycle {parsed['cycle']}: "
+            f"{', '.join(parsed['dropped_stale'])}"
+        )
+    if parsed.get("dropped_elapsed"):
+        print(
+            f"gulf-watch ingest: {storm.id} dropped guidance with no forecast "
+            f"hours left after {storm.advisory_time}: "
+            f"{', '.join(parsed['dropped_elapsed'])}"
+        )
 
     new_cycle = parsed["cycle"]
     landed: set[str] | None = None
@@ -486,7 +532,7 @@ def _process_adeck(storm, paths, prev_cycle, fetch, store, errors, force=False):
     # exist -- rebuild once to establish it rather than assume, the same rule
     # the GIS layers follow. Without it a storm carried across this change
     # would silently lose its model guidance until the next a-deck cycle.
-    if new_cycle != prev_cycle or force:
+    if new_cycle != prev_cycle or rebuild or force:
         landed = set()
         # AIFS (ECMWF's AI model) is an optional, independently-cycled
         # product (see aifs.py) -- concatenated onto the a-deck-derived
@@ -572,8 +618,15 @@ def _process_storm(storm, prev_storm_state, fetch, store, errors, wsp_fc=None, o
     windprob_keys = set(prev_storm_state.get("windprob", []))
     if advisory_changed or not has_history:
         has_history = _process_history(storm, paths, fetch, store, errors)
+    # Which cycle the probabilities on screen actually came from. Persisted like
+    # windprob_keys so it survives the runs that don't rebuild the layer -- a
+    # stale label would be as misleading as no label.
+    windprob_cycle = prev_storm_state.get("windprobCycle")
+    windprob_behind = prev_storm_state.get("windprobCyclesBehind")
     if advisory_changed or not windprob_keys:
         windprob_keys = _process_windprob(storm, paths, wsp_fc, others or [], store, errors)
+        if wsp_fc is not None:
+            windprob_cycle, windprob_behind = _windprob_pairing(storm, wsp_fc)
 
     prev_adeck = (
         prev_storm_state.get("adeck")
@@ -581,7 +634,16 @@ def _process_storm(storm, prev_storm_state, fetch, store, errors, wsp_fc=None, o
         else None
     )
     new_cycle, fresh_adeck = _process_adeck(
-        storm, paths, prev_cycle, fetch, store, errors, force=prev_adeck is None
+        storm,
+        paths,
+        prev_cycle,
+        fetch,
+        store,
+        errors,
+        force=prev_adeck is None,
+        # Tracks are clipped to the advisory time, so a new advisory needs a
+        # rebuild even when the a-deck cycle hasn't moved -- see _process_adeck.
+        rebuild=advisory_changed,
     )
     # None means nothing was uploaded this run (cycle unchanged, or the a-deck
     # itself failed), so carry forward what a prior run confirmed.
@@ -607,6 +669,20 @@ def _process_storm(storm, prev_storm_state, fetch, store, errors, wsp_fc=None, o
         "nextAdvisoryTime": storm.next_advisory_time,
         "inGulfBox": in_gulf,
         "modelCycle": new_cycle,
+        # Wind probability is the one storm layer NOT fetched from an
+        # advisory-numbered url, so it is the one that can silently disagree with
+        # the cone. Advertise its cycle (and how far it lags the advisory)
+        # alongside the layer, only when there is a layer to describe.
+        **(
+            {"windprobCycle": windprob_cycle}
+            if windprob_keys and windprob_cycle
+            else {}
+        ),
+        **(
+            {"windprobCyclesBehind": windprob_behind}
+            if windprob_keys and windprob_cycle and windprob_behind
+            else {}
+        ),
         "files": {
             "cone": paths["cone"],
             "track": paths["track"],
@@ -635,6 +711,10 @@ def _process_storm(storm, prev_storm_state, fetch, store, errors, wsp_fc=None, o
         "cycle": new_cycle,
         "history": has_history,
         "windprob": sorted(windprob_keys),
+        # Recorded only once known, so state.json doesn't carry a pair of nulls
+        # for every storm whose product simply hasn't been read yet.
+        **({"windprobCycle": windprob_cycle} if windprob_cycle else {}),
+        **({"windprobCyclesBehind": windprob_behind} if windprob_behind else {}),
         "gis": sorted(gis_keys),
         "adeck": sorted(adeck_keys),
         "gisVersion": _GIS_STATE_VERSION,

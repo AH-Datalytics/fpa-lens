@@ -25,6 +25,11 @@ export interface LayersControlProps {
   cycleLabel?: string;
   windProbLoading?: boolean;
   windProbError?: boolean;
+  /** The cycle the probability field came from, and how far it lags the current
+   * advisory. Shown so the layer never silently implies it matches the cone --
+   * see Storm.windprobCycle. */
+  windProbCycleLabel?: string;
+  windProbCyclesBehind?: number;
   windFieldLoading?: boolean;
   windFieldError?: boolean;
   radarValid?: string;
@@ -76,6 +81,8 @@ export function LayersControl({
   cycleLabel,
   windProbLoading,
   windProbError,
+  windProbCycleLabel,
+  windProbCyclesBehind,
   windFieldLoading,
   windFieldError,
   radarValid,
@@ -234,6 +241,22 @@ export function LayersControl({
                 )}
                 {windProbError && (
                   <div className="mt-1 text-[11px] text-amber-700">Probability map unavailable</div>
+                )}
+                {/* Wind probability is the only storm layer NOT fetched from an
+                    advisory-numbered url, and NHC posts each cycle about 20
+                    minutes after the advisory it belongs to. When the two do
+                    not line up, say so plainly instead of dropping a working
+                    safety layer to fix a caption. */}
+                {windProbCycleLabel && windProbCyclesBehind ? (
+                  <div className="mt-1 text-[11px] text-amber-700">
+                    From the {windProbCycleLabel} cycle — issued before this advisory
+                  </div>
+                ) : (
+                  windProbCycleLabel && (
+                    <div className="mt-1 text-[11px] text-gray-500">
+                      {windProbCycleLabel} cycle
+                    </div>
+                  )
                 )}
                 <div className="mt-1.5">
                   <div className="flex h-2 overflow-hidden rounded-sm">

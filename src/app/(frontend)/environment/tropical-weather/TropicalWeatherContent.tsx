@@ -105,8 +105,14 @@ export default function TropicalWeatherContent() {
     });
   }, [dashboard.geo.models, modelsKey]);
 
-  const hasIntensity =
-    dashboard.mode === "active" && !!dashboard.storm && !!dashboard.intensity;
+  // Gated on the guidance EXISTING, not on `mode`. `mode === "active"` means
+  // "a storm is inside the Gulf box" -- not "there is a storm" -- so an
+  // Atlantic storm anywhere else lost its intensity chart entirely while every
+  // other panel drew, and the map reported it UNAVAILABLE with the data sitting
+  // right there in storms/<id>/intensity.json. Same gate, same fix, as the
+  // model picker in StormMap. intensity.json is already per-storm, so nothing
+  // further is needed to scope it to the selected storm.
+  const hasIntensity = !!dashboard.storm && !!dashboard.intensity;
   // The advisory scrubber occupies the bottom of the map during a replay, so
   // the intensity pop-out has to sit above it rather than on top of it.
   const hasReplay = dashboard.storm?.id === "al092021" && dashboard.advisories.length > 1;
@@ -195,6 +201,12 @@ export default function TropicalWeatherContent() {
               modelCycleLabel={
                 dashboard.storm ? formatCycle(dashboard.storm.modelCycle) : undefined
               }
+              windProbCycleLabel={
+                dashboard.storm?.windprobCycle
+                  ? formatCycle(dashboard.storm.windprobCycle)
+                  : undefined
+              }
+              windProbCyclesBehind={dashboard.storm?.windprobCyclesBehind}
               layers={layers}
               onLayersToggle={(key) => setLayers((s) => toggleLayer(s, key))}
               windThreshold={windThreshold}

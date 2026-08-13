@@ -12,8 +12,30 @@ Pure function, no network I/O.
 from __future__ import annotations
 
 import re
+from datetime import datetime, timezone
 
 KT_TO_MPH = 1.15078
+
+# How far behind the dominant cycle a model's own latest run may be before its
+# guidance is refused outright (track AND intensity series).
+#
+# This is the BACKSTOP to track clipping, not the primary fix. Clipping (see
+# _clip_track) makes a stale run start at the storm rather than behind it, but
+# it cannot make an old initialisation current: NAVGEM 18h behind was drawing a
+# line halfway across the basin from where the storm actually was, and even
+# clipped, its remaining forecast came off a run three cycles old.
+#
+# 12 hours, NOT one 6-hourly cycle. ECMWF/EMXI posts at 00z/12z only, so the
+# moment the dominant cycle advances to 00z (before ECMWF's own 00z run lands)
+# ECMWF legitimately sits a full 12h back -- a 6h cap would drop the single most
+# useful model in the file roughly half the time. 12h keeps every model that is
+# merely on a slower schedule and refuses only genuinely stale runs (NAVGEM at
+# -18h in the 2026081218 Cristobal deck).
+#
+# Applies only to models BEHIND the dominant cycle. Models AHEAD of the advisory
+# are deliberately kept -- newer guidance is useful, and that is the controller's
+# explicit call (see the modelCycle "dominant, not max()" note in pipeline.py).
+MAX_STALENESS_HOURS = 12
 
 # Named model whitelist: ATCF tech code -> (display label, kind, group).
 #
@@ -135,8 +157,108 @@ def _decode_coord(raw: str) -> float:
     return round(value, 1)
 
 
-def parse_adeck(text: str) -> dict:
+def _parse_cycle(cycle: str) -> datetime | None:
+    """Decode an ATCF cycle stamp ('YYYYMMDDHH') to an aware UTC datetime, or
+    None if it isn't one. None disables the time-based logic (clipping,
+    staleness) for that model rather than raising -- a malformed cycle should
+    cost one model's refinement, not the whole storm's guidance."""
+    try:
+        return datetime.strptime(cycle, "%Y%m%d%H").replace(tzinfo=timezone.utc)
+    except (TypeError, ValueError):
+        return None
+
+
+def _parse_reference_time(value: str | None) -> datetime | None:
+    """Decode the caller's reference time (ISO 8601 UTC, e.g.
+    '2026-08-12T21:00:00Z' -- Storm.advisory_time's format) to an aware UTC
+    datetime. None/unparseable means "don't clip", which degrades to the
+    pre-clipping behaviour instead of failing the a-deck product."""
+    if not value:
+        return None
+    try:
+        parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
+    except (AttributeError, TypeError, ValueError):
+        return None
+    if parsed.tzinfo is None:
+        return parsed.replace(tzinfo=timezone.utc)
+    return parsed.astimezone(timezone.utc)
+
+
+def _clip_track(
+    points: dict[int, list],
+    cycle_dt: datetime | None,
+    reference_dt: datetime | None,
+) -> list[list]:
+    """Drop the already-elapsed leg of one model's track.
+
+    `points` is {tau: [lon, lat]} for a single model, `cycle_dt` that model's
+    OWN initialisation time, and `reference_dt` the moment the track should
+    begin (the advisory's issuance time -- i.e. the time the storm icon on the
+    map represents).
+
+    Why this exists: tau is hours from each model's own cycle, and the cycles
+    are not aligned with each other or with the advisory. Models initialise on
+    the synoptic grid (00/06/12/18z) while advisories are issued at 03/09/15/21z,
+    so even a perfectly current model's tau=0 point sits ~3h -- about a degree --
+    behind the plotted storm. A run a cycle or two old starts further back still,
+    which is what put spaghetti west of the cone on the live map.
+
+    Every point still in the future is kept unchanged. Where the reference time
+    falls BETWEEN two forecast points, a position is linearly interpolated at
+    exactly that time and prepended, so the line starts at the storm instead of
+    jumping forward to the model's next available tau -- which matters most for
+    the sparse-output models (12- or 24-hourly beyond tau 72), where that jump
+    would be the largest.
+
+    Returns the ordered coordinate list. An empty list means the whole run is
+    already in the past (nothing left to draw). Clipping is skipped entirely
+    when either time is unknown.
+    """
+    taus = sorted(points)
+    if cycle_dt is None or reference_dt is None:
+        return [points[tau] for tau in taus]
+
+    # Hours from this model's own cycle to the reference time. Negative when the
+    # model initialised AFTER the advisory (guidance newer than the advisory),
+    # in which case nothing has elapsed and the run is drawn whole.
+    reference_tau = (reference_dt - cycle_dt).total_seconds() / 3600.0
+
+    future = [tau for tau in taus if tau >= reference_tau]
+    if len(future) == len(taus):
+        return [points[tau] for tau in taus]
+    if not future:
+        return []
+
+    coords = [points[tau] for tau in future]
+    first = future[0]
+    if first > reference_tau:
+        previous = max(tau for tau in taus if tau < reference_tau)
+        fraction = (reference_tau - previous) / (first - previous)
+        start_lon, start_lat = points[previous]
+        end_lon, end_lat = points[first]
+        # 2dp: the source is tenths of a degree, so rounding the interpolated
+        # point back to 1dp could snap it onto the elapsed point we just
+        # dropped, reintroducing the offset this is here to remove.
+        coords.insert(0, [
+            round(start_lon + (end_lon - start_lon) * fraction, 2),
+            round(start_lat + (end_lat - start_lat) * fraction, 2),
+        ])
+    return coords
+
+
+def parse_adeck(text: str, reference_time: str | None = None) -> dict:
     """Parse ATCF a-deck text into the models.geojson + intensity.json shapes.
+
+    `reference_time` (ISO 8601 UTC -- pass the storm's advisory issuance time)
+    is the moment every drawn track should begin. Given it, each model's
+    already-elapsed leg is clipped off and a position interpolated at exactly
+    that time (see _clip_track), so tracks start at the storm rather than
+    trailing behind it. Omitted, tracks are emitted whole, as before.
+
+    Independently, guidance whose own cycle is more than MAX_STALENESS_HOURS
+    behind the dominant cycle is refused outright -- dropped from both the map
+    and the intensity series, and reported in the returned "dropped_stale" list.
+    Models AHEAD of the advisory are always kept.
 
     Each whitelisted model (named in MODELS, or a dynamically-recognized
     GEFS/ECMWF ensemble member -- see _model_meta) is filtered independently
@@ -164,7 +286,16 @@ def parse_adeck(text: str) -> dict:
     Returns:
         {"models_geojson": <FeatureCollection dict>,
          "intensity": <intensity.json dict>,
-         "cycle": "YYYYMMDDHH"}
+         "cycle": "YYYYMMDDHH",
+         "dropped_stale": [<tech>, ...],
+         "dropped_elapsed": [<tech>, ...]}
+
+    The two dropped_* lists exist so that guidance disappearing from the map is
+    never silent. They are disjoint and mean different things: "stale" was
+    refused by the cap, "elapsed" had every forecast hour already in the past by
+    `reference_time` (which is also the only thing that catches an a-deck where
+    ALL models are old -- the cap measures models against the dominant cycle, so
+    it cannot see a wholesale stale file).
     """
     rows = []
     for line in text.splitlines():
@@ -200,6 +331,25 @@ def parse_adeck(text: str) -> dict:
             counts[cycle_value] = counts.get(cycle_value, 0) + 1
         newest_cycle = max(counts, key=lambda c: (counts[c], c))
 
+    # Refuse guidance too far behind the dominant cycle (see
+    # MAX_STALENESS_HOURS). Done here, after the dominant cycle is known but
+    # before any row is read, so a refused model contributes to neither the map
+    # nor the intensity chart. Dropping only models BEHIND the dominant cannot
+    # change which cycle is dominant, so newest_cycle stands.
+    dropped_stale: list[str] = []
+    dominant_dt = _parse_cycle(newest_cycle) if newest_cycle else None
+    if dominant_dt is not None:
+        for tech, cycle_value in sorted(latest_cycle_by_model.items()):
+            cycle_dt = _parse_cycle(cycle_value)
+            if cycle_dt is None:
+                continue
+            hours_behind = (dominant_dt - cycle_dt).total_seconds() / 3600.0
+            if hours_behind > MAX_STALENESS_HOURS:
+                dropped_stale.append(tech)
+                del latest_cycle_by_model[tech]
+
+    reference_dt = _parse_reference_time(reference_time)
+
     # tech -> {tau: [lon, lat]}
     track_points: dict[str, dict[int, list]] = {}
     # tech -> {tau: mph}
@@ -209,6 +359,8 @@ def parse_adeck(text: str) -> dict:
         tech = fields[4].upper()
         if _model_meta(tech) is None:
             continue
+        if tech not in latest_cycle_by_model:
+            continue  # refused as stale above
         if fields[2] != latest_cycle_by_model[tech]:
             continue
 
@@ -244,12 +396,27 @@ def parse_adeck(text: str) -> dict:
 
     features = []
     series = []
+    dropped_elapsed: list[str] = []
     for tech in latest_cycle_by_model:
         label, kind, group = _model_meta(tech)  # type: ignore[misc]
 
         pts = track_points.get(tech)
         if pts and tech not in INTENSITY_ONLY:
-            coords = [pts[t] for t in sorted(pts)]
+            coords = _clip_track(pts, _parse_cycle(latest_cycle_by_model[tech]), reference_dt)
+            if not coords:
+                dropped_elapsed.append(tech)
+        else:
+            coords = []
+        # Clipping can leave nothing at all -- a run whose every forecast hour
+        # is already in the past. That model contributes no track (and so no row
+        # in the model picker, which derives from what is actually DRAWN).
+        #
+        # A single surviving point still emits a one-coordinate LineString,
+        # which is invalid GeoJSON and draws nothing. That predates clipping
+        # (any model with one usable row did it -- see
+        # test_missing_vmax_skips_entire_row, which asserts it) so it is left
+        # alone here rather than changed as a side effect of this fix.
+        if coords:
             features.append({
                 "type": "Feature",
                 "geometry": {"type": "LineString", "coordinates": coords},
@@ -279,4 +446,6 @@ def parse_adeck(text: str) -> dict:
         "models_geojson": {"type": "FeatureCollection", "features": features},
         "intensity": {"cycle": newest_cycle, "series": series},
         "cycle": newest_cycle,
+        "dropped_stale": dropped_stale,
+        "dropped_elapsed": sorted(dropped_elapsed),
     }

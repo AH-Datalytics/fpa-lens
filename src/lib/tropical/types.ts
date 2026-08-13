@@ -17,6 +17,20 @@ export interface StormEntry {
   nextAdvisoryTime: string;
   inGulfBox: boolean;
   modelCycle: string;
+  /** The forecast cycle the wind-probability field actually came from, read
+   * from the product's own shapefile names by the ingest.
+   *
+   * Every other storm layer is fetched from an advisory-numbered url and so
+   * matches the cone by construction. This one is not: it is a basin-wide,
+   * cycle-stamped product, and NHC posts a cycle roughly 20 minutes AFTER the
+   * advisory it belongs to. So the map can legitimately hold a fresh cone
+   * beside the previous cycle's probabilities, and says which cycle it has
+   * rather than implying they match. Absent when unknown. */
+  windprobCycle?: string;
+  /** How many 6-hourly cycles `windprobCycle` lags the current advisory.
+   * Omitted when paired (the normal case) or unknown; positive means the
+   * probabilities predate the advisory, negative means they are newer. */
+  windprobCyclesBehind?: number;
   files: Record<"cone" | "track" | "text" | "probs", string> & {
     /** Model guidance, from the a-deck. Absent for a freshly-formed storm with
      * no a-deck yet, or when that fetch failed -- the key is omitted rather

@@ -104,6 +104,11 @@ export interface StormMapProps {
   visibleModels: Set<string>;
   onVisibleModelsChange: (next: Set<string>) => void;
   modelCycleLabel?: string;
+  /** Which cycle the wind-probability field came from, and how far it lags the
+   * current advisory (see Storm.windprobCycle -- it is the one layer that can
+   * disagree with the cone, so it is labelled rather than assumed to match). */
+  windProbCycleLabel?: string;
+  windProbCyclesBehind?: number;
   /** Unified map-layers control state (v2 addendum Round 2) — lifted to
    *  page.tsx; the LayersControl panel rendered here is a controlled/
    *  presentational component only (see lib/layers.ts). Replaces the old
@@ -203,6 +208,8 @@ export default function StormMap({
   visibleModels,
   onVisibleModelsChange,
   modelCycleLabel,
+  windProbCycleLabel,
+  windProbCyclesBehind,
   layers,
   onLayersToggle,
   windThreshold,
@@ -684,6 +691,8 @@ export default function StormMap({
           cycleLabel={modelCycleLabel}
           windProbLoading={layers.windProb && Boolean(selectedWindProbUrl) && !windProb && !windProbError}
           windProbError={Boolean(windProbError)}
+          windProbCycleLabel={windProbCycleLabel}
+          windProbCyclesBehind={windProbCyclesBehind}
         />
       </div>
     </div>

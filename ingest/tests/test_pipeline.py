@@ -45,8 +45,12 @@ BERTHA_PROBS_URL = "https://www.nhc.noaa.gov/text/MIAPWSAT2.shtml"
 OUTLOOK_ISSUED = "2026-07-23T00:00:00Z"
 
 BERTHA_ADECK_TEXT = (
-    "AL, 02, 2026072200, 03, OFCL,   0, 295N,  905W,  40, 1002, TS\n"
-    "AL, 02, 2026072200, 03, OFCL,  12, 296N,  913W,  40, 1000, TS\n"
+    # Cycle 18z against Bertha's 2026-07-23T00:00:00Z advisory: model tracks are
+    # clipped to the advisory time, so the cycle has to sit a REALISTIC few hours
+    # behind it. At the previous 00z the whole run was already 24h elapsed by the
+    # advisory and clipping (rightly) left nothing to draw.
+    "AL, 02, 2026072218, 03, OFCL,   0, 295N,  905W,  40, 1002, TS\n"
+    "AL, 02, 2026072218, 03, OFCL,  12, 296N,  913W,  40, 1000, TS\n"
 )
 
 
@@ -246,7 +250,7 @@ def test_active_path_all_five_storm_files_uploaded_and_state_advanced():
     assert bertha["advisoryTime"] == "2026-07-23T00:00:00Z"
     assert bertha["nextAdvisoryTime"] == "2026-07-23T06:00:00Z"
     assert bertha["inGulfBox"] is True
-    assert bertha["modelCycle"] == "2026072200"
+    assert bertha["modelCycle"] == "2026072218"
     assert bertha["files"] == {
         "cone": "storms/al022026/cone.geojson",
         "track": "storms/al022026/track.geojson",
@@ -295,7 +299,7 @@ def test_active_path_all_five_storm_files_uploaded_and_state_advanced():
 
     assert store.data["state.json"]["storms"]["al022026"] == {
         "advisory": "014a",
-        "cycle": "2026072200",
+        "cycle": "2026072218",
         # Carried forward so an already-built past track keeps its manifest key
         # on a run where the advisory did not change.
         "history": True,
@@ -328,7 +332,7 @@ def test_no_change_path_same_advisory_and_cycle_skips_storm_uploads():
         "storms": {
             "al022026": {
                 "advisory": "014a",
-                "cycle": "2026072200",
+                "cycle": "2026072218",
                 # Already built by a prior run. History and wind probability
                 # also rebuild when MISSING, not only on a new advisory, so a
                 # steady state needs them present for this test to be about an
@@ -378,7 +382,7 @@ def test_no_change_path_same_advisory_and_cycle_skips_storm_uploads():
     assert manifest["errors"] == []
     bertha = manifest["storms"][0]
     assert bertha["advisoryNum"] == "014a"
-    assert bertha["modelCycle"] == "2026072200"
+    assert bertha["modelCycle"] == "2026072218"
     assert bertha["inGulfBox"] is True
 
     storm_upload_paths = {

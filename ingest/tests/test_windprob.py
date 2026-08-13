@@ -6,7 +6,13 @@ the 2021082818 archive cycle, when Ida and Nora were both active), so getting
 this wrong shows one storm's wind probabilities on another storm's map.
 """
 
-from gulfwatch.windprob import features_for_storm, simplify_ring
+from gulfwatch.windprob import (
+    cycle_from_features,
+    cycles_behind,
+    expected_cycle,
+    features_for_storm,
+    simplify_ring,
+)
 
 
 def _square(cx, cy, half=1.0):
@@ -25,6 +31,79 @@ def _band(layer, percentage, polygons):
         "properties": {"shapefile": layer, "PERCENTAGE": percentage},
         "geometry": {"type": "MultiPolygon", "coordinates": polygons},
     }
+
+
+# --- advisory pairing ---------------------------------------------------------
+#
+# Wind probability is the only storm layer not fetched from an advisory-numbered
+# url, so it is the only one that can silently disagree with the cone. The offset
+# encoded here (cycle = newest synoptic hour at or before issuance - 3h) was
+# verified against publication times for Ida 2021, Nora 2021, Ian 2022, Idalia
+# 2023, Milton 2024 and Cristobal 2026 -- see windprob.py.
+
+
+def test_cycle_read_from_the_shapefile_basenames():
+    fc = {"features": [
+        _band("2026081306_wsp34knt120hr_5km", "20%", _square(-90, 27)),
+        _band("2026081306_wsp50knt120hr_5km", "10%", _square(-90, 27)),
+    ]}
+    assert cycle_from_features(fc) == "2026081306"
+
+
+def test_cycle_unknown_when_names_carry_no_stamp():
+    """An unrecognised product layout must read as "pairing unknown", not as a
+    mismatch -- the difference between saying nothing and crying wolf."""
+    fc = {"features": [_band("wsp34knt120hr_5km", "20%", _square(-90, 27))]}
+    assert cycle_from_features(fc) is None
+    assert cycle_from_features(None) is None
+    assert cycle_from_features({"features": []}) is None
+
+
+def test_expected_cycle_for_a_main_advisory():
+    # Main advisories go out at 03/09/15/21z; 3h back is exactly a synoptic hour.
+    assert expected_cycle("2026-08-13T09:00:00Z") == "2026081306"
+    assert expected_cycle("2026-08-13T21:00:00Z") == "2026081318"
+    assert expected_cycle("2026-08-13T03:00:00Z") == "2026081300"
+
+
+def test_expected_cycle_for_an_intermediate_advisory_floors_to_a_real_cycle():
+    """The trap a bare "issuance - 3h" rule falls into.
+
+    Intermediate advisories (advNum "014a" -- the shape of our own pipeline
+    fixture) are issued at 00/06/12/18z, so issuance-3h lands on 21/03/09/15z,
+    which are NEVER WSP cycles. Demanding one of those would find nothing on the
+    server and suppress a good layer. Flooring returns the newest cycle that can
+    actually exist -- and the measured publication times agree: at a 06z
+    intermediate advisory, the 06z field is still ~3h from being posted, so 00z
+    is the current one.
+    """
+    assert expected_cycle("2026-08-13T06:00:00Z") == "2026081300"
+    assert expected_cycle("2026-08-13T00:00:00Z") == "2026081218"
+    assert expected_cycle("2026-08-13T12:00:00Z") == "2026081306"
+    assert expected_cycle("2026-08-13T18:00:00Z") == "2026081312"
+
+
+def test_expected_cycle_unknown_for_missing_or_malformed_times():
+    assert expected_cycle(None) is None
+    assert expected_cycle("") is None
+    assert expected_cycle("not a timestamp") is None
+
+
+def test_cycles_behind_counts_the_lag():
+    # Paired: the 09z advisory's own field.
+    assert cycles_behind("2026081306", expected_cycle("2026-08-13T09:00:00Z")) == 0
+    # The ~20-minute window after an advisory, before its field finishes
+    # uploading: one cycle behind, layer still valid guidance.
+    assert cycles_behind("2026081300", expected_cycle("2026-08-13T09:00:00Z")) == 1
+    assert cycles_behind("2026081218", expected_cycle("2026-08-13T09:00:00Z")) == 2
+    # Newer than the advisory (NHC posted the next cycle first).
+    assert cycles_behind("2026081312", expected_cycle("2026-08-13T09:00:00Z")) == -1
+
+
+def test_cycles_behind_unknown_when_either_side_is():
+    assert cycles_behind(None, "2026081306") is None
+    assert cycles_behind("2026081306", None) is None
+    assert cycles_behind("garbage", "2026081306") is None
 
 
 GULF = (-90.0, 27.0)
