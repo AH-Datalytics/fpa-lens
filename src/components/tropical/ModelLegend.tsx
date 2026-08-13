@@ -51,16 +51,22 @@ export function ModelLegend({
   // Consensus aids usually sit close to the official forecast and add clutter
   // without presenting a meaningfully distinct scenario to general users.
   const allCodes = [...deterministic, ...ensemble].map((row) => row.code);
-  const selectedCount = allCodes.filter((code) => visibleModels.has(code)).length;
-  const allSelected = enabled && allCodes.length > 0 && selectedCount === allCodes.length;
-  // Deliberately NOT gated on `enabled`, matching both the per-ensemble
-  // checkboxes below and toggleModelSet's own `allOn` test. Gating it on the
-  // models layer made the label describe layer visibility while the click acted
-  // on selection: with the layer off but every member still selected, the button
-  // read "Ensembles on" and turning it off was what a click actually did. A
-  // toggle's label has to state what pressing it will do.
+  // What is actually DRAWN, which is what every control in this panel should
+  // describe. `visibleModels` is the selection and `enabled` is the layer's
+  // visibility, and the two can disagree: with models off by default but every
+  // code still selected, each checkbox rendered ticked while the map drew
+  // nothing. Deriving from the drawn set keeps a tick meaning "this is on the
+  // map", and makes the first click on a model turn on exactly that model
+  // rather than silently revealing the other thirty-nine.
+  const EMPTY: Set<string> = new Set();
+  const shown = enabled ? visibleModels : EMPTY;
+  const selectedCount = allCodes.filter((code) => shown.has(code)).length;
+  const allSelected = allCodes.length > 0 && selectedCount === allCodes.length;
+  // Reads from the drawn set for the same reason, so the label still states
+  // what pressing it will do: with the layer off nothing is drawn, so the
+  // button offers to turn the ensembles ON.
   const allEnsembleSelected =
-    ensembleCodes.length > 0 && ensembleCodes.every((code) => visibleModels.has(code));
+    ensembleCodes.length > 0 && ensembleCodes.every((code) => shown.has(code));
 
   function choose(codes: string[]) {
     onChange(new Set(codes));
@@ -68,7 +74,7 @@ export function ModelLegend({
   }
 
   function toggle(code: string) {
-    const next = new Set([...visibleModels].filter((selected) => allCodes.includes(selected)));
+    const next = new Set([...shown].filter((selected) => allCodes.includes(selected)));
     if (next.has(code)) next.delete(code);
     else next.add(code);
     onChange(next);
@@ -76,8 +82,8 @@ export function ModelLegend({
   }
 
   function toggleModelSet(codes: string[]) {
-    const allOn = codes.length > 0 && codes.every((code) => visibleModels.has(code));
-    const next = new Set([...visibleModels].filter((selected) => allCodes.includes(selected)));
+    const allOn = codes.length > 0 && codes.every((code) => shown.has(code));
+    const next = new Set([...shown].filter((selected) => allCodes.includes(selected)));
     for (const code of codes) {
       if (allOn) next.delete(code);
       else next.add(code);
@@ -168,7 +174,7 @@ export function ModelLegend({
                   <input
                     type="checkbox"
                     className={CHECKBOX}
-                    checked={visibleModels.has(model.code)}
+                    checked={shown.has(model.code)}
                     onChange={() => toggle(model.code)}
                   />
                   <span
@@ -194,7 +200,7 @@ export function ModelLegend({
                   <input
                     type="checkbox"
                     className={CHECKBOX}
-                    checked={gefsCodes.every((code) => visibleModels.has(code))}
+                    checked={gefsCodes.every((code) => shown.has(code))}
                     onChange={() => toggleModelSet(gefsCodes)}
                   />
                   <span
@@ -209,7 +215,7 @@ export function ModelLegend({
                   <input
                     type="checkbox"
                     className={CHECKBOX}
-                    checked={ecmwfCodes.every((code) => visibleModels.has(code))}
+                    checked={ecmwfCodes.every((code) => shown.has(code))}
                     onChange={() => toggleModelSet(ecmwfCodes)}
                   />
                   <span
@@ -224,7 +230,7 @@ export function ModelLegend({
                   <input
                     type="checkbox"
                     className={CHECKBOX}
-                    checked={otherEnsembleCodes.every((code) => visibleModels.has(code))}
+                    checked={otherEnsembleCodes.every((code) => shown.has(code))}
                     onChange={() => toggleModelSet(otherEnsembleCodes)}
                   />
                   <span
