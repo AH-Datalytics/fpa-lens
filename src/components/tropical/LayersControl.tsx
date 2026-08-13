@@ -163,7 +163,7 @@ export function LayersControl({
               Satellite imagery
             </label>
             {hasSatellite && layers.satellite && (
-              <div className={STATUS_NOTE}>GOES-16 · {satelliteLabel}</div>
+              <div className={STATUS_NOTE}>{satelliteLabel}</div>
             )}
             <label className={layerRowClass(!hasWindField)}>
               <input

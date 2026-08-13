@@ -169,6 +169,18 @@ def no_real_sleep(monkeypatch):
     monkeypatch.setattr("gulfwatch.pipeline.time.sleep", lambda seconds: None)
 
 
+@pytest.fixture(autouse=True)
+def no_satellite(monkeypatch):
+    """Skip the GOES overlay in tests that are not about imagery.
+
+    Its S3 keys are partitioned by year/day-of-year/hour, so the listing URL
+    changes with the wall clock -- routing it in every test would pin those
+    tests to the hour they were written. Imagery is covered by its own pure
+    unit tests (test_satellite.py).
+    """
+    monkeypatch.setattr(pipeline_module, "_process_satellite", lambda *a, **k: None)
+
+
 # ---------------------------------------------------------------------------
 # Quiet path: no storms -> outlook refreshed, mode == "quiet"
 # ---------------------------------------------------------------------------

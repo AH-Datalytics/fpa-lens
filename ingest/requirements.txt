@@ -1,2 +1,10 @@
 requests>=2,<3
 pyshp>=2,<3
+
+# Satellite overlay (scripts/build_goes_overlay.py). Only exercised while a
+# storm is active, but installed every run -- the workflow caches pip against
+# this file, so the cost is one cache miss per change, not one per run.
+numpy>=1.26,<3
+rasterio>=1.3,<2
+pyproj>=3.6,<4
+Pillow>=10,<12

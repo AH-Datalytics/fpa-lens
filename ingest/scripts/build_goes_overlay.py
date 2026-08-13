@@ -19,13 +19,30 @@ from rasterio.transform import from_bounds
 from rasterio.warp import reproject
 
 
+def resolve_band(dataset_path: Path, band: str) -> str:
+    """The variable name for `band` in this file.
+
+    The multi-band product (ABI-L2-MCMIPC) names its variables CMI_C01..C16.
+    The single-band product (ABI-L2-CMIPC) carries one band and simply calls it
+    CMI -- and for infrared that file is 3.9 MB against the multi-band file's
+    52 MB, which is why the live ingest uses it. Accept either.
+    """
+    with rasterio.open(str(dataset_path)) as source:
+        names = {s.rsplit(":", 1)[-1] for s in (source.subdatasets or [])}
+    if band in names:
+        return band
+    if "CMI" in names:
+        return "CMI"
+    return band
+
+
 def read_band(
     dataset_path: Path,
     band: str,
     destination_shape: tuple[int, int],
     destination_transform: rasterio.Affine,
 ) -> np.ndarray:
-    subdataset = f"netcdf:{dataset_path}:{band}"
+    subdataset = f"netcdf:{dataset_path}:{resolve_band(dataset_path, band)}"
     with rasterio.open(subdataset) as source:
         raw = source.read(1).astype("float32")
         nodata = source.nodata

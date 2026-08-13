@@ -22,12 +22,16 @@ take down the whole run.
 from __future__ import annotations
 
 import gzip
+import subprocess
+import sys
+import tempfile
 import time
 from datetime import datetime, timezone
+from pathlib import Path
 
 import requests
 
-from gulfwatch import adeck, aifs, blob, nhc, outlook, probs, shp, text, windprob
+from gulfwatch import adeck, aifs, blob, nhc, outlook, probs, satellite, shp, text, windprob
 
 FETCH_TIMEOUT_S = 30
 RETRY_BACKOFF_S = 10
@@ -342,6 +346,71 @@ def _process_windprob(storm, paths, wsp_fc, others, store, errors):
     return landed
 
 
+def _process_satellite(fetch, store, errors, now=None):
+    """Fetch the newest GOES-19 infrared scene and upload a Gulf overlay.
+
+    Built once per run and shared by every storm: the crop is a fixed Gulf box,
+    not a per-storm frame, so there is nothing storm-specific to rebuild.
+    Returns the manifest satellite object, or None -- imagery is the most
+    optional product here, and a failure must cost only that layer.
+    """
+    now = now or datetime.now(timezone.utc)
+    key = None
+    for prefix in satellite.hour_prefixes(now):
+        try:
+            resp = _fetch_with_retry(
+                fetch,
+                f"{satellite.GOES_BUCKET_URL}?list-type=2&prefix={prefix}&max-keys=600",
+            )
+        except Exception as exc:  # noqa: BLE001 - recorded once below
+            errors.append({"product": "satellite", "message": str(exc)})
+            return None
+        key = satellite.latest_band_key(resp.text)
+        if key:
+            break
+    if not key:
+        errors.append({"product": "satellite", "message": "no GOES scene in the lookback window"})
+        return None
+
+    issued = satellite.scan_started_at(key)
+    if not issued:
+        errors.append({"product": "satellite", "message": f"unparseable scan time: {key}"})
+        return None
+
+    path = satellite.image_path(issued)
+    raw = None
+    try:
+        resp = _fetch_with_retry(fetch, f"{satellite.GOES_BUCKET_URL}/{key}")
+        raw = Path(tempfile.gettempdir()) / Path(key).name
+        raw.write_bytes(resp.content)
+        out = Path(tempfile.gettempdir()) / "goes-overlay.webp"
+        west, south = satellite.SATELLITE_BOUNDS[0]
+        east, north = satellite.SATELLITE_BOUNDS[1]
+        script = Path(__file__).resolve().parent.parent / "scripts" / "build_goes_overlay.py"
+        result = subprocess.run(
+            [sys.executable, str(script), str(raw), str(out),
+             "--bounds", str(west), str(south), str(east), str(north), "--infrared"],
+            capture_output=True, text=True,
+        )
+        if result.returncode != 0:
+            raise RuntimeError((result.stderr or "").strip()[-400:] or "overlay build failed")
+        store.put_bytes(path, out.read_bytes(), "image/webp")
+    except Exception as exc:  # noqa: BLE001 - imagery never blocks a run
+        errors.append({"product": "satellite", "message": str(exc)})
+        return None
+    finally:
+        if raw is not None:
+            raw.unlink(missing_ok=True)
+
+    return {
+        "image": path,
+        "issued": issued,
+        "sourceLabel": satellite.GOES_SOURCE_LABEL,
+        "sourceUrl": satellite.GOES_SOURCE_URL,
+        "bounds": satellite.SATELLITE_BOUNDS,
+    }
+
+
 def _process_text_products(storm, paths, fetch, store, errors):
     """Fetch+build+upload text.json (Forecast Discussion + Public Advisory)
     and probs.json (wind speed probabilities) for one storm whose advisory
@@ -469,7 +538,7 @@ def _resolve_track_for_gulf_check(advisory_changed, fresh_track_fc, track_path, 
         return None
 
 
-def _process_storm(storm, prev_storm_state, fetch, store, errors, wsp_fc=None, others=None):
+def _process_storm(storm, prev_storm_state, fetch, store, errors, wsp_fc=None, others=None, sat=None):
     """Process one Atlantic storm: conditionally refresh its GIS + a-deck
     products, then build its manifest entry and next state.json entry."""
     paths = _storm_paths(storm.id)
@@ -559,6 +628,8 @@ def _process_storm(storm, prev_storm_state, fetch, store, errors, wsp_fc=None, o
             **{key: paths[key] for key in sorted(windprob_keys)},
         },
     }
+    if sat:
+        manifest_entry["satellite"] = sat
     next_state = {
         "advisory": storm.advisory_num,
         "cycle": new_cycle,
@@ -656,6 +727,12 @@ def run(fetch=requests.get, store=blob) -> dict:
         for s in all_storms
     )
     wsp_fc = _fetch_windprob(fetch, errors) if needs_wsp else None
+    # Imagery is fetched only while something is active: it is the one product
+    # with nothing to show in a quiet season, and skipping it keeps the
+    # every-15-minutes off-season run exactly as cheap as it was.
+    sat = _process_satellite(fetch, store, errors) if any(
+        s.id.startswith("al") for s in all_storms
+    ) else None
     # Attribution needs EVERY active system, Atlantic and eastern Pacific
     # alike: the file merges both basins, so a Pacific storm left out of the
     # comparison would have its field handed to an Atlantic one.
@@ -668,7 +745,7 @@ def run(fetch=requests.get, store=blob) -> dict:
             others = [pos for sid, pos in storm_positions.items() if sid != storm.id]
             entry, next_state = _process_storm(
                 storm, prev_storms_state.get(storm.id, {}), fetch, store, errors,
-                wsp_fc=wsp_fc, others=others,
+                wsp_fc=wsp_fc, others=others, sat=sat,
             )
             manifest_storms.append(entry)
             new_storms_state[storm.id] = next_state

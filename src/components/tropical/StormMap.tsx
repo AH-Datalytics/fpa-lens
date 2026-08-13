@@ -609,7 +609,7 @@ export default function StormMap({
           target="_blank"
           rel="noreferrer"
         >
-          GOES-16 · {cdtDateTime(geo.satellite.issued)} · {geo.satellite.sourceLabel}
+          {geo.satellite.sourceLabel} · {cdtDateTime(geo.satellite.issued)}
         </a>
       )}
       {/* inset-y-3 + max-h-full on the panel keeps a long options list inside
@@ -620,7 +620,11 @@ export default function StormMap({
           onToggle={onLayersToggle}
           hasHistory={Boolean(geo.history)}
           hasSatellite={Boolean(geo.satellite)}
-          satelliteLabel={geo.satellite ? cdtDateTime(geo.satellite.issued) : undefined}
+          satelliteLabel={
+            geo.satellite
+              ? `${geo.satellite.sourceLabel} · ${cdtDateTime(geo.satellite.issued)}`
+              : undefined
+          }
           hasWindField={Boolean(geo.windFieldUrl)}
           windFieldLoading={layers.windField && Boolean(geo.windFieldUrl) && !windField && !windFieldError}
           windFieldError={Boolean(windFieldError)}
