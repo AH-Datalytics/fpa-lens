@@ -2,12 +2,13 @@ import { describe, expect, it } from "vitest";
 import { DEFAULT_LAYER_STATE, DEMO_LAYER_STATE, toggleLayer } from "../layers";
 
 describe("DEFAULT_LAYER_STATE", () => {
-  it("starts with cone/history/models on, every wash overlay off", () => {
+  it("opens on the official forecast: cone and past track only", () => {
     expect(DEFAULT_LAYER_STATE).toEqual({
       cone: true,
       history: true,
       satellite: false,
-      models: true,
+      // Off since Aug 2026 -- 40+ model tracks buried the cone on first load.
+      models: false,
       windField: false,
       // Off since Aug 2026 -- the 39 kt wash covered the cone and track.
       windProb: false,

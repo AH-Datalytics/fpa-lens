@@ -44,7 +44,11 @@ export const DEFAULT_LAYER_STATE: LayerState = {
   cone: true,
   history: true,
   satellite: false,
-  models: true,
+  // Off on first load (Aug 2026). The model spread can be 40+ tracks; opening
+  // on it buries the official forecast cone under spaghetti before a visitor
+  // has read anything. "Official forecast" is the first choice in the panel,
+  // and the spread is one click away.
+  models: false,
   windField: false,
   // Off on first load (Aug 2026). Wind probability is a broad translucent wash
   // that covers most of the basin at the 39 kt threshold, so switching it on by
