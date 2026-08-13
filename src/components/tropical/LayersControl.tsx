@@ -160,7 +160,11 @@ export function LayersControl({
                 disabled={!hasSatellite}
                 onChange={() => onToggle("satellite")}
               />
-              Satellite imagery
+              {/* "Gulf satellite", not "Satellite imagery": the overlay is a
+                  fixed Gulf crop that refreshes every few minutes on its own
+                  clock, not a frame that follows the selected storm. Sitting
+                  in a storm's layer list, the plainer name implied it did. */}
+              Gulf satellite
             </label>
             {hasSatellite && layers.satellite && (
               <div className={STATUS_NOTE}>{satelliteLabel}</div>

@@ -615,6 +615,11 @@ export default function StormMap({
       {/* inset-y-3 + max-h-full on the panel keeps a long options list inside
           the map instead of overflowing past its bottom edge. */}
       <div className="absolute bottom-3 right-3 top-3 z-10 flex flex-col items-end">
+        {/* `models` is gated on the guidance existing, NOT on mode. `mode` is
+            "active" only when a storm sits inside the Gulf box, so an Atlantic
+            storm anywhere else lost the whole forecast-track section -- official
+            track, model spread and the individual-model picker -- while its
+            cone, past track, wind field and probabilities all still drew. */}
         <LayersControl
           layers={layers}
           onToggle={onLayersToggle}
@@ -643,7 +648,7 @@ export default function StormMap({
           onWindThresholdChange={onWindThresholdChange}
           visibleModels={visibleModels}
           onVisibleModelsChange={onVisibleModelsChange}
-          models={mode === "active" ? geo.models : null}
+          models={geo.models ?? null}
           cycleLabel={modelCycleLabel}
           windProbLoading={layers.windProb && Boolean(selectedWindProbUrl) && !windProb && !windProbError}
           windProbError={Boolean(windProbError)}
