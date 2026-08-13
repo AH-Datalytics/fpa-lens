@@ -145,7 +145,7 @@ def parse_adeck(text: str) -> dict:
     GFS/AVNO every 6h vs. ECMWF/EMXI only at 00z/12z), so a global-latest
     filter would silently drop a model entirely whenever some other model
     has a newer run in the file. The top-level "cycle" (and intensity.json's
-    "cycle") reflect the newest cycle across all whitelisted models.
+    "cycle") reflect the cycle most of those models are on -- see below.
 
     Within each model's own latest cycle, per (tech, tau) duplicate rows
     (one per wind-radii threshold) are deduped, keeping the first. Rows with
@@ -186,8 +186,19 @@ def parse_adeck(text: str) -> dict:
         if tech not in latest_cycle_by_model or cycle > latest_cycle_by_model[tech]:
             latest_cycle_by_model[tech] = cycle
 
-    # Top-level cycle: newest cycle across all whitelisted models present.
-    newest_cycle = max(latest_cycle_by_model.values()) if latest_cycle_by_model else None
+    # Top-level cycle: the cycle MOST of the drawn guidance is on, not the
+    # newest one present. Taking the max let a couple of consensus aids that
+    # post early set the headline: with 39 of 43 tracks on 18Z and only HCCA
+    # and TVCN on 00Z, the panel advertised "guidance cycle 00Z" for a spread
+    # that was overwhelmingly 18Z -- a label describing nothing on the map.
+    # Ties break to the newer cycle. Models genuinely ahead of the advisory
+    # are still drawn; they just no longer speak for the whole set.
+    newest_cycle = None
+    if latest_cycle_by_model:
+        counts: dict[str, int] = {}
+        for cycle_value in latest_cycle_by_model.values():
+            counts[cycle_value] = counts.get(cycle_value, 0) + 1
+        newest_cycle = max(counts, key=lambda c: (counts[c], c))
 
     # tech -> {tau: [lon, lat]}
     track_points: dict[str, dict[int, list]] = {}

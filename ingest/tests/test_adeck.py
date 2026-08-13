@@ -133,10 +133,14 @@ def test_per_model_latest_cycle(result):
     assert avno is not None
     assert avno["properties"]["cycle"] == "2026072218"
 
-    # The top-level cycle (and intensity.json's cycle) reflect the newest
-    # cycle across all models, not any single model's cycle.
-    assert result["cycle"] == "2026072218"
-    assert result["intensity"]["cycle"] == "2026072218"
+    # The top-level cycle is the one MOST models are on, not the newest one
+    # present. Live on Cristobal (2026-08-12) two consensus aids posted their
+    # 00Z run while 39 of 43 tracks were still 18Z, and taking the max made the
+    # panel advertise a cycle nothing on the map was drawn from. Models ahead of
+    # the advisory are still drawn -- they just no longer speak for the set.
+    assert result["cycle"] == "2026072212"
+    # intensity.json plots the same guidance, so it reports the same cycle.
+    assert result["intensity"]["cycle"] == "2026072212"
 
 
 def test_malformed_vmax_row_skipped_not_raised():
