@@ -1,6 +1,6 @@
 {
   "reportMonth": "August 2026",
-  "executiveSummary": "The Authority remains operationally ready for the 2026 hurricane season, with no identified threats to overall system integrity. Infrastructure readiness remains Green, with Q3 field inspections approximately 70% complete, all PCCP stations operational and mission ready, and all complex structures prepared for hurricane season. LPV-111 remains a major leadership focus, with interim sand/HESCO basket protection installed and USACE confirming the levee remains capable of performing as designed prior to overtopping for the 2026 hurricane season.",
+  "executiveSummary": "The Authority remains operationally ready for the 2026 hurricane season, with no identified threats to overall system integrity. LPV-111 remains a major leadership focus, with interim sand/HESCO basket protection installed following identification of landside levee slide progression, and USACE confirming the levee remains capable of performing as designed prior to overtopping. Safety remains Green with zero recordable accidents, staffing remains Amber with 45 vacancies, and the media environment remains Amber due to increased attention on agency operations and governance.",
   "readiness": {
     "infrastructure": "Green",
     "staffing": "Amber",
@@ -26,13 +26,13 @@
     "Annual floodgate inspections remain up to date; Q3 valve inspections and exercises are underway and progressing on schedule.",
     "Field safety checks, required training, facility preparation, and seasonal readiness activities continue during hurricane season.",
     "Facility repairs, warehouse system maintenance, and support infrastructure improvements remain ongoing.",
-    "Levee turf maintenance is slightly behind due to recent rain but catching up as weather conditions improve; no readiness impacts reported.",
-    "Interim sand/HESCO basket protection along the crown of the levee at the LPV-111 slide locations installed by Maintenance Department."
+    "Turf maintenance is slightly behind due to recent rain but catching up as weather conditions improve; no readiness impacts reported.",
+    "Interim sand/HESCO basket protection along the crown of the levee at LPV-111 slide locations has been installed."
   ],
   "projects": [
     {
       "name": "Foreshore Erosion Repair",
-      "status": "Board approved CEA with Pontchartrain Levee District for Right of Entry; USACE scheduled to advertise in July with Bid Opening August 21, 2026; mitigation measures being scheduled at two eroded locations.",
+      "status": "Board approved CEA with Pontchartrain Levee District; USACE schedule to advertise in July with Bid Opening August 21, 2026.",
       "phase": "In Bidding"
     },
     {
@@ -57,7 +57,7 @@
     },
     {
       "name": "London Avenue Canal Erosion Mitigation (Phase 1)",
-      "status": "Currently advertising with a bid opening of August 11, 2026; construction award and CEA with City of New Orleans to be presented to Board for approval during August meeting.",
+      "status": "Currently advertising with a bid opening of August 11, 2026; construction award to be presented to the Board in August.",
       "phase": "In Bidding"
     },
     {
@@ -72,13 +72,13 @@
     },
     {
       "name": "Lakeshore Drive Flooding Warning Signs",
-      "status": "IDIQ holder engaged for design; currently exploring exact locations and coordinating design for installation.",
+      "status": "IDIQ holder engaged; currently exploring exact locations and coordinating design for installation.",
       "phase": "In Design"
     },
     {
       "name": "Tropical Storm Arthur – Franklin Facility Damage",
       "status": "Engineering accepted bids for removal of damaged areas; demolition work to begin August 10, 2026, with a 45-day contract duration.",
-      "phase": "In Progress"
+      "phase": "Awarded"
     }
   ],
   "inspections": {
@@ -87,8 +87,8 @@
       "note": null
     },
     "usace": {
-      "status": "not-reported",
-      "note": null
+      "status": "on-track",
+      "note": "All annual complex structure inspections complete except Bayou St John Sector Gate, anticipated week of August 17, 2026"
     },
     "valves": {
       "status": "on-track",
