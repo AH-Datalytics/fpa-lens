@@ -5,9 +5,8 @@
  *
  * Sends only when the run is worth reading about — data actually published, a
  * source failed, or the run was triggered by hand (see `shouldSend`). The job
- * went from weekly to daily M-F in August 2026; emailing every run would have
- * meant five mostly-empty "no changes" messages a week, which trains you to
- * ignore the one that matters.
+ * runs Tuesdays and Fridays; emailing every run would mean mostly-empty "no
+ * changes" messages, which trains you to ignore the one that matters.
  *
  * It reports three things:
  *   1. Data changes published this run (finance period rolled, turf month

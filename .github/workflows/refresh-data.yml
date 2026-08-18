@@ -1,14 +1,14 @@
-name: Daily data refresh
+name: Twice-weekly data refresh
 
 # Pulls the newest source files from the SharePoint LensRepository, regenerates
 # the dashboard JSON in public/data/, commits whatever changed (which triggers a
 # Vercel deploy), and emails the data-ops contact when data publishes or a
-# category fails. Runs weekday mornings; can also be triggered manually. Fully
-# hands-off otherwise.
+# category fails. Runs Tuesday and Friday mornings; can also be triggered
+# manually. Fully hands-off otherwise.
 
 on:
   schedule:
-    - cron: "0 13 * * 1-5" # Mon-Fri ~07:00-08:00 America/Chicago (UTC, no DST shift)
+    - cron: "0 13 * * 2,5" # Tue + Fri ~07:00-08:00 America/Chicago (UTC, no DST shift)
   workflow_dispatch: {}
 
 permissions:
@@ -50,8 +50,8 @@ jobs:
 
       # Email a digest of the run: what data changed, per-source pull status, and
       # any failures. Runs before the commit step so it can diff the working tree
-      # against HEAD to describe the changes. Since the schedule went daily, the
-      # script stays silent on runs with nothing to report; a manual run always
+      # against HEAD to describe the changes. The script stays silent on runs
+      # with nothing to report; a manual run always
       # emails (FORCE_DIGEST) so you get confirmation you asked for. Never fails
       # the run (always exits 0).
       - name: Email refresh digest

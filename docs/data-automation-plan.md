@@ -1,6 +1,6 @@
 # FPA Lens — Automated Data Refresh Pipeline
 
-**Goal:** A weekday-morning GitHub Action that pulls the newest source files from the
+**Goal:** A twice-weekly morning GitHub Action that pulls the newest source files from the
 SharePoint `LensRepository`, regenerates the dashboard JSON, commits the changes, and lets
 Vercel auto-deploy. Full-auto for every recurring category, including SITREP via Claude.
 
@@ -18,7 +18,7 @@ Friday cron; the first manual run publishes the SharePoint data.
 | SITREP | PDF → Claude digest → engineering maintenance list (narrative only) | folder empty — activates on first upload |
 | Turf | newer-month overlay onto `grassCutting` (no regression) | folder empty — activates on first upload |
 
-- Weekday cron `0 13 * * 1-5` (was Fridays-only until Aug 11 2026), `workflow_dispatch`, commit-only-what-changed, **digest email to Oscar** (`scripts/notify-digest.mjs`: changes published, per-source status, failures). Sent when data publishes, when a source fails, or on a manual run; quiet runs stay silent so the daily cadence doesn't bury the signal.
+- Tue/Fri cron `0 13 * * 2,5` (Fridays-only until Aug 11 2026, then weekday-daily until Aug 18 2026), `workflow_dispatch`, commit-only-what-changed, **digest email to Oscar** (`scripts/notify-digest.mjs`: changes published, per-source status, failures). Sent when data publishes, when a source fails, or on a manual run; quiet runs stay silent so the cadence doesn't bury the signal.
 - SITREP feeds narrative only; readiness/financial/safety come from their own pipelines.
 - SITREP is the only paid extractor (Claude API). The orchestrator skips it when the newest SharePoint file matches both the `source` and `sourceModified` recorded in `public/data/sitrep.json`: the canonicalized `sitrep_YYYY-MM.<ext>` name plus the upload timestamp, so a corrected re-upload of the same month still gets re-parsed. Use `--force` (or run `scripts/extractSitrep.mjs` directly) to force a re-parse.
 - Turf/SITREP overlay safely: unmatched/older data falls back to curated values.
