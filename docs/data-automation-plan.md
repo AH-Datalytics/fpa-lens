@@ -20,6 +20,7 @@ Friday cron; the first manual run publishes the SharePoint data.
 
 - Weekday cron `0 13 * * 1-5` (was Fridays-only until Aug 11 2026), `workflow_dispatch`, commit-only-what-changed, **digest email to Oscar** (`scripts/notify-digest.mjs`: changes published, per-source status, failures). Sent when data publishes, when a source fails, or on a manual run; quiet runs stay silent so the daily cadence doesn't bury the signal.
 - SITREP feeds narrative only; readiness/financial/safety come from their own pipelines.
+- SITREP is the only paid extractor (Claude API). The orchestrator skips it when the newest SharePoint file matches both the `source` and `sourceModified` recorded in `public/data/sitrep.json`: the canonicalized `sitrep_YYYY-MM.<ext>` name plus the upload timestamp, so a corrected re-upload of the same month still gets re-parsed. Use `--force` (or run `scripts/extractSitrep.mjs` directly) to force a re-parse.
 - Turf/SITREP overlay safely: unmatched/older data falls back to curated values.
 - `Engineering/` SharePoint folder is empty/unused (IDIQ lives in `Finance/IDIQ/`).
 

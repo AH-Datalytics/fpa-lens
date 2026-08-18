@@ -6,6 +6,12 @@
  * tool schema + prompt caching. It extracts only what is explicitly stated;
  * anything absent is returned null rather than guessed.
  *
+ * Every invocation calls the Claude API. There is no guard here, on purpose:
+ * running this by hand means you want a re-parse. The pipeline's "don't pay to
+ * re-parse a file we already published" check lives upstream in
+ * refresh-data.mjs (`alreadyPublished`), which compares the newest SharePoint
+ * file against the `source` + `sourceModified` recorded below.
+ *
  * Usage:
  *   node scripts/extractSitrep.mjs <path-to-sitrep.pdf>
  *   SITREP_INPUT=<path> node scripts/extractSitrep.mjs
@@ -216,7 +222,16 @@ async function main() {
   const tool = json.content?.find((c) => c.type === "tool_use");
   if (!tool) throw new Error(`No tool_use in response: ${JSON.stringify(json).slice(0, 500)}`);
 
-  const digest = { ...tool.input, source: basename(path), generatedFrom: "Claude " + MODEL };
+  // `sourceModified` is the SharePoint upload timestamp, passed in by
+  // refresh-data.mjs. Recording it lets the next run tell a re-uploaded
+  // correction of the same month apart from the file we already parsed; null
+  // when run by hand, which simply makes that next check fall back to the name.
+  const digest = {
+    ...tool.input,
+    source: basename(path),
+    sourceModified: process.env.REFRESH_SOURCE_MODIFIED || null,
+    generatedFrom: "Claude " + MODEL,
+  };
   mkdirSync(dirname(OUTPUT_PATH), { recursive: true });
   writeFileSync(OUTPUT_PATH, JSON.stringify(digest, null, 2));
   console.log(`Wrote ${OUTPUT_PATH}`);
