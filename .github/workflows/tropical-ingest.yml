@@ -13,10 +13,26 @@ name: Tropical weather ingest
 
 on:
   schedule:
-    # GitHub's scheduler is best-effort and drops/delays runs at :00/:30. Four
-    # off-peak attempts per hour keep effective freshness near 15 minutes even
-    # when an individual scheduled event is skipped.
-    - cron: "7,22,37,52 * * * *"
+    # Hourly at :17 -- deliberately off the top and half hour, where GitHub's
+    # best-effort scheduler drops and delays events most.
+    #
+    # COST, not freshness, sets this cadence, and the arithmetic is not obvious:
+    # Actions bills each job rounded UP to a whole minute, while this one
+    # finishes in ~20s. So making the run faster saves NOTHING -- the only lever
+    # is fewer runs. At the previous 4/hour it billed 96 min/day = ~2,880/month,
+    # i.e. this single workflow consumed effectively the whole 3,000-minute Team
+    # allowance shared by every repo in the org. Hourly is ~720/month.
+    #
+    # Nothing polled here moves faster than that anyway: advisories every 6h
+    # (3h once intermediates are being issued), a-deck cycles and wind
+    # probability on the 6-hourly synoptic grid, the outlook 4x/day.
+    #
+    # Accepted tradeoff: a new advisory can take up to an hour to reach the page,
+    # and up to two if the scheduler drops a run. That is visible rather than
+    # silent -- the page states the advisory time and warns when data is stale.
+    # GOES satellite is the one product with a minutes-scale clock; it now
+    # refreshes hourly too, which the controller signed off on.
+    - cron: "17 * * * *"
   workflow_dispatch: {}
 
 permissions:
