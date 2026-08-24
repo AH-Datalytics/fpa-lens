@@ -39,7 +39,7 @@ src/
   lib/                    # Pure logic modules (lakefrontRisk.ts risk engine)
 public/data/              # JSON data files loaded at runtime
 scripts/                  # Data extraction scripts (Python, Node.js)
-data-sources/             # Raw source files (Excel, KMZ, shapefiles, SITREPs)
+data/sources/             # Raw source files (Excel, KMZ, shapefiles, SITREPs)
 ```
 
 ---
@@ -62,7 +62,7 @@ The site pulls from four types of source data:
 
 **What it is:** The Regional Director's monthly SITREP is the single most important data source. It contains staffing numbers, inspection progress, capital project updates, safety KPIs, maintenance activities, and system readiness status.
 
-**Where raw files go:** `data-sources/sitreps/`
+**Where raw files go:** `data/sources/sitreps/`
 
 **What gets updated (and where in the code):**
 
@@ -92,7 +92,7 @@ All fields referenced above are in `src/data/siteData.ts`. Each field has a `sou
 
 **What it is:** The FY26 Adopted Budget Summary, broken down by 4 districts (OLD, EJLD, LBBLD, FPAE) and 9 expense categories.
 
-**Source file:** `data-sources/budget/Budget Summary w Projects FY26.xlsx`
+**Source file:** `data/sources/budget/Budget Summary w Projects FY26.xlsx`
 
 **Extraction script:** `scripts/extractBudgetData.py`
 
@@ -101,7 +101,7 @@ All fields referenced above are in `src/data/siteData.ts`. Each field has a `sou
 **Displayed on:** `/finance`
 
 **How to update:**
-1. Place the new budget Excel file in `data-sources/budget/`
+1. Place the new budget Excel file in `data/sources/budget/`
 2. Update the filename in `scripts/extractBudgetData.py` if it changed
 3. Run: `python3 scripts/extractBudgetData.py`
 4. Verify the output JSON totals match the spreadsheet
@@ -111,7 +111,7 @@ All fields referenced above are in `src/data/siteData.ts`. Each field has a `sou
 
 **What it is:** Year-to-date actual expenditures vs budget from the FPA Dashboard Reports workbook, produced by Finance. Shows spending by category and department for each district. O&M expenses are separated from Projects per Regional Director's guidance.
 
-**Source file:** `data-sources/budget/Dashboard_Reports through MM.DD.YY.xlsm`
+**Source file:** `data/sources/budget/Dashboard_Reports through MM.DD.YY.xlsm`
 
 **Extraction script:** `scripts/extractActualsData.py`
 
@@ -120,7 +120,7 @@ All fields referenced above are in `src/data/siteData.ts`. Each field has a `sou
 **Displayed on:** `/finance` (Budget vs Actuals section: KPI cards, category charts, department tables)
 
 **How to update:**
-1. Place the new Dashboard Reports file in `data-sources/budget/`
+1. Place the new Dashboard Reports file in `data/sources/budget/`
 2. Update the `FILENAME` variable in `scripts/extractActualsData.py` to match the new file name
 3. Run: `python3 scripts/extractActualsData.py`
 4. Review the summary output to confirm totals look right
@@ -132,13 +132,13 @@ All fields referenced above are in `src/data/siteData.ts`. Each field has a `sou
 - Amber: 15-25%
 - Red: >25%
 
-See `data-sources/budget/UPDATE-GUIDE.md` for detailed instructions to share with the Finance team.
+See `data/sources/budget/UPDATE-GUIDE.md` for detailed instructions to share with the Finance team.
 
 ### Source 3: Safety Event Logs
 
 **What it is:** Annual Excel workbooks with individual safety event records (date, type, description, whether it involved lost time, etc.). Events are anonymized before display.
 
-**Source files:** `data-sources/safety-event-logs/` (one file per calendar year, e.g., `2026 Event Log.xlsx`)
+**Source files:** `data/sources/safety-event-logs/` (one file per calendar year, e.g., `2026 Event Log.xlsx`)
 
 **Extraction script:** `scripts/extractSafetyData.py`
 
@@ -147,7 +147,7 @@ See `data-sources/budget/UPDATE-GUIDE.md` for detailed instructions to share wit
 **Displayed on:** `/safety`
 
 **How to update:**
-1. Place the new/updated event log Excel file in `data-sources/safety-event-logs/`
+1. Place the new/updated event log Excel file in `data/sources/safety-event-logs/`
 2. Run: `python3 scripts/extractSafetyData.py`
 3. The script reads all year files, anonymizes events, and outputs combined JSON
 4. The safety page loads this JSON at runtime
@@ -159,8 +159,8 @@ See `data-sources/budget/UPDATE-GUIDE.md` for detailed instructions to share wit
 **What it is:** Geographic data for the interactive system map. Per-district counts are sourced from the Regional Director (Apr 2026): 192 miles of levee/floodwall, 244 land-based flood gates, 8 navigable floodgates, 3 Permanent Canal Closures and Pumps, 3,530 acres of turf maintenance area, 103 valves. The map geometry still comes from the KMZ/shapefiles below.
 
 **Source files:**
-- `data-sources/kmz/` - KMZ files (Floodgates.kmz, Valves.kmz, PCCP.kmz, Complex Structures.kmz, Levee Centerline.kmz)
-- `data-sources/shapefiles/` - System shapefiles (Complex_Structures, FPA_Levee_Centerline, PCCPs) plus per-district turf-maintenance shapefiles (`OLD_Centerline`, `OLD_Mowing_Area`, `EJLD_Centerline`, `EJLD_Mowing_Area`, `LBBLD_Centerline`, `LBBLD_Mowing_Area`) supplied by Kory
+- `data/sources/kmz/` - KMZ files (Floodgates.kmz, Valves.kmz, PCCP.kmz, Complex Structures.kmz, Levee Centerline.kmz)
+- `data/sources/shapefiles/` - System shapefiles (Complex_Structures, FPA_Levee_Centerline, PCCPs) plus per-district turf-maintenance shapefiles (`OLD_Centerline`, `OLD_Mowing_Area`, `EJLD_Centerline`, `EJLD_Mowing_Area`, `LBBLD_Centerline`, `LBBLD_Mowing_Area`) supplied by Kory
 
 **Extraction scripts:**
 - `scripts/convertKmz.mjs` - Converts KMZ to GeoJSON
@@ -170,7 +170,7 @@ See `data-sources/budget/UPDATE-GUIDE.md` for detailed instructions to share wit
 
 **Displayed on:** `/infrastructure` (system map), `/infrastructure/turf-maintenance` (per-district turf zones)
 
-**How to update:** These change infrequently. If Engineering provides updated KMZ or shapefiles, place them in the appropriate `data-sources/` folder and run `node scripts/convertShapefiles.mjs`.
+**How to update:** These change infrequently. If Engineering provides updated KMZ or shapefiles, place them in the appropriate `data/sources/` folder and run `node scripts/convertShapefiles.mjs`.
 
 ### Source 5: Real-Time Environmental Data (Lakefront Flood Risk)
 
@@ -217,7 +217,7 @@ Either condition (wind OR surge) alone can trigger a level. Forecast escalation:
 
 When a new SITREP arrives:
 
-1. Save the SITREP file to `data-sources/sitreps/`
+1. Save the SITREP file to `data/sources/sitreps/`
 2. Open `src/data/siteData.ts` and update the following. Each SITREP section maps to specific fields (see the table above for exact field names):
    - [ ] `siteConfig.lastUpdated` (e.g., "April 2026")
    - [ ] `systemReadiness.lastUpdated`, `.overallStatus`, `.categories`, `.alerts`
@@ -242,7 +242,7 @@ When a new SITREP arrives:
 ## Monthly/Quarterly Updates
 
 - **Spending actuals:** When Finance provides an updated Dashboard Reports file:
-  1. Save the new `.xlsm` file to `data-sources/budget/`
+  1. Save the new `.xlsm` file to `data/sources/budget/`
   2. Update the `FILENAME` in `scripts/extractActualsData.py`
   3. Run: `python3 scripts/extractActualsData.py`
   4. Update the homepage O&M numbers in `src/app/page.tsx` (search for `omActual`, `omAnnualBudget`, `omDataDate`)
@@ -250,8 +250,8 @@ When a new SITREP arrives:
 
 ## Annual Updates
 
-- **New fiscal year budget:** New Excel file in `data-sources/budget/`, run `scripts/extractBudgetData.py`
-- **New safety event log year:** New Excel file in `data-sources/safety-event-logs/`, run `scripts/extractSafetyData.py`
+- **New fiscal year budget:** New Excel file in `data/sources/budget/`, run `scripts/extractBudgetData.py`
+- **New safety event log year:** New Excel file in `data/sources/safety-event-logs/`, run `scripts/extractSafetyData.py`
 - **Infrastructure changes:** New KMZ/shapefiles from Engineering, run conversion scripts
 
 ## Tech Stack
