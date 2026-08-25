@@ -203,7 +203,7 @@
       "zone": "EJ East Return",
       "reach": "Along 17th St. Canal to Pinks St",
       "cycle1Pct": 1.0,
-      "cycle2Pct": 0.0,
+      "cycle2Pct": 1.0,
       "c1CompletedOn": null,
       "c2CompletedOn": null
     },
