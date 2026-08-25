@@ -29,7 +29,7 @@ wants more. No separate options-presentation step.
   - `editor` — edit content only. FPA Director.
   Invite / password-reset emails go through the existing Resend key (`@payloadcms/email-resend`).
 - **Initial editor list (seed):** (confirmed 2026-07-06)
-  - `jwilliams@slfpae.gov` — Director, role `admin` (was `editor`; promoted 2026-07-06 per Oscar)
+  - the FPA Regional Director — role `admin` (promoted from `editor` 2026-07-06)
   - `oboochever@ahdatalytics.com` — role `admin`
   - `jasher@ahdatalytics.com` — role `admin`
   - `bhorwitz@ahdatalytics.com` — role `admin`

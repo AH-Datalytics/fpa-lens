@@ -43,7 +43,7 @@ the manual steps.
 - SharePoint app creds already in Vercel: `SHAREPOINT_HOST/SITE/LIBRARY/TENANT_ID/CLIENT_ID/CLIENT_SECRET`.
 - `gh` CLI authed as Oscar with `repo` scope → can set Actions secrets.
 - Existing GH Action `collect-forecasts.yml` proves the cron+secrets pattern.
-- Site `slfpae.sharepoint.com/sites/SLFPAE-Lens`, library `LensRepository`, root folder `FPA Lens Data`.
+- Site host, site name, and library come from the `SHAREPOINT_HOST` / `SHAREPOINT_SITE` / `SHAREPOINT_LIBRARY` secrets (they are stored as secrets, so do not hardcode or document the literal values here).
 
 ## 3. SharePoint layout + category map
 

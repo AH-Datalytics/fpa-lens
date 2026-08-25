@@ -16,7 +16,7 @@ Public transparency dashboard for the Southeast Louisiana Flood Protection Autho
 | `/finance` | FY26 budget by category/district, budget vs actuals (monthly YTD refresh), capital projects |
 | `/staffing` | Staffing: leadership, headcount, vacancies, department status |
 | `/environment` | Real-time lakefront flood risk indicator with KNEW fallback wind source (see below) |
-| `/protection` | Infrastructure Protection Operations: 24/7 field protection of the flood system, activity stats, JP pump-theft anecdote |
+| `/protection` | Infrastructure Protection Operations: 24/7 field protection of the flood system, activity stats, illustrative case example |
 | `/about/what-we-do` | About Us: organization overview |
 
 ## Getting Started
@@ -47,6 +47,13 @@ data/sources/             # Raw source files (Excel, KMZ, shapefiles, SITREPs)
 ## Data Sources and Update Guide
 
 This section documents where each piece of data on the site comes from and how to update it. This is the reference for ongoing maintenance.
+
+> **Note on `data/sources/`:** the raw source files FPA provides (Excel workbooks, SITREP PDFs, KMZ,
+> shapefiles) are **not** in this repository. `data/` is gitignored. Some of those files contain
+> personnel information — the safety event logs in particular hold named employees with injury
+> detail — so they stay out of version control, and the extraction scripts anonymize and aggregate
+> before anything is written to `public/data/`. The committed JSON contains no personal data.
+> Maintainers with access obtain the source files from FPA's SharePoint directly.
 
 ### Overview
 
@@ -136,7 +143,7 @@ See `data/sources/budget/UPDATE-GUIDE.md` for detailed instructions to share wit
 
 ### Source 3: Safety Event Logs
 
-**What it is:** Annual Excel workbooks with individual safety event records (date, type, description, whether it involved lost time, etc.). Events are anonymized before display.
+**What it is:** Annual Excel workbooks with individual safety event records. **These source workbooks identify individual employees and include injury detail, so they are never committed** — they stay local and gitignored. `extractSafetyData.py` is the anonymization boundary: it emits only date, event type, and boolean flags, and the resulting JSON contains no names, descriptions, or body-part fields.
 
 **Source files:** `data/sources/safety-event-logs/` (one file per calendar year, e.g., `2026 Event Log.xlsx`)
 
@@ -160,7 +167,7 @@ See `data/sources/budget/UPDATE-GUIDE.md` for detailed instructions to share wit
 
 **Source files:**
 - `data/sources/kmz/` - KMZ files (Floodgates.kmz, Valves.kmz, PCCP.kmz, Complex Structures.kmz, Levee Centerline.kmz)
-- `data/sources/shapefiles/` - System shapefiles (Complex_Structures, FPA_Levee_Centerline, PCCPs) plus per-district turf-maintenance shapefiles (`OLD_Centerline`, `OLD_Mowing_Area`, `EJLD_Centerline`, `EJLD_Mowing_Area`, `LBBLD_Centerline`, `LBBLD_Mowing_Area`) supplied by Kory
+- `data/sources/shapefiles/` - System shapefiles (Complex_Structures, FPA_Levee_Centerline, PCCPs) plus per-district turf-maintenance shapefiles (`OLD_Centerline`, `OLD_Mowing_Area`, `EJLD_Centerline`, `EJLD_Mowing_Area`, `LBBLD_Centerline`, `LBBLD_Mowing_Area`) supplied by FPA Engineering/GIS
 
 **Extraction scripts:**
 - `scripts/convertKmz.mjs` - Converts KMZ to GeoJSON
@@ -207,7 +214,7 @@ Either condition (wind OR surge) alone can trigger a level. Forecast escalation:
 **Status:** Live on `main`. Deployed to production.
 
 **Open calibration work:**
-- Current thresholds (15/25/35 kt wind, 0.5/1.0/1.5 ft surge) are starting points accepted by the Director as a starting point in March 2026. Chief Rondeno is gathering a historical closure log (~10-15 cold-front events since Nov/Dec 2025) for backtesting against NOAA historical data. Adjust in `RISK_THRESHOLDS` in `src/lib/lakefrontRisk.ts` once backtesting is done.
+- Current thresholds (15/25/35 kt wind, 0.5/1.0/1.5 ft surge) are starting points accepted by FPA in March 2026. FPA operations is compiling a historical closure log (~10-15 cold-front events since Nov/Dec 2025) for backtesting against NOAA historical data. Adjust in `RISK_THRESHOLDS` in `src/lib/lakefrontRisk.ts` once backtesting is done.
 - Onshore wind direction range (NW through NE, 315-045°) confirmed by the Director.
 - Yellow-tier sensitivity may need to be tightened after backtesting if it fires too often on routine north wind events.
 
@@ -303,14 +310,14 @@ above.
   administration (Users) group is admin-only.
 - **Roles:** `admin` (AH Datalytics accounts, who manage the editor roster + all content) and
   `editor` (content only). The Users collection is hidden from editors (`admin.hidden`), so they
-  don't see the roster in the nav and manage their own login from the Account page. Jeff Williams
-  (`jwilliams@slfpae.gov`) is an admin.
+  don't see the roster in the nav and manage their own login from the Account page. The FPA Regional
+  Director holds an `admin` account; the live roster lives in the production database.
 - **Structure:** `src/payload.config.ts`, `src/collections/` (Users, Media, StaffMembers),
   `src/globals/` (SiteSettings, HomeContent, and `pages/`), and the `src/app/(payload)/` admin route
   group. The public site lives in `src/app/(frontend)/`.
 - **Seed / utilities:** `scripts/seed-cms.ts` (idempotent; content + editors from `siteData.ts`,
-  seeding Jeff Williams as `admin` and re-enforcing each user's role on re-run),
-  `scripts/set-password.ts` (grant initial access), `scripts/set-role.ts` (set a user's role).
+  re-enforcing each user's role on re-run; new accounts get a random password and must use the reset
+  flow), `scripts/set-password.ts` (grant initial access), `scripts/set-role.ts` (set a user's role).
 
 ### Running the CMS locally
 
@@ -324,9 +331,12 @@ DATABASE_URI=file:./cms-dev.db
 Then seed and run:
 
 ```bash
-SEED_DEV_ADMIN=1 npx payload run scripts/seed-cms.ts   # seeds content + a dev@fpalens.local / devpassword123 admin
+SEED_DEV_ADMIN=1 npx payload run scripts/seed-cms.ts   # seeds content + a local-only dev admin
 npm run dev                                             # portal at http://localhost:3000/admin
 ```
+
+`SEED_DEV_ADMIN` creates a convenience admin on a non-routable `.local` address for local development
+only. Its credentials are in `scripts/seed-cms.ts`. **Never set this variable against production.**
 
 Production uses Neon Postgres (`POSTGRES_URL`) and a public Vercel Blob store for photos
 (`CMS_MEDIA_BLOB_TOKEN`), all set in Vercel. Full operational notes are in `docs/cms-notes.md`.

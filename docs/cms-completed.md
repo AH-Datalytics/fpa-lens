@@ -43,7 +43,7 @@ checked off and removed from `cms-checklist.md`. Reasoning and context live in `
     HTTP 200; live `/finance` still renders its headings + the now-inlined data-notes; the finance
     global serves the reduced 5 fields; home = just `heroHeading`). Branch deleted; Playwright
     screenshots cleaned up.
-  - **Jeff Williams promoted to `admin` in the prod Neon DB** via a direct SQL `UPDATE` (confirmed
+  - **The FPA Regional Director promoted to `admin` in the prod Neon DB** via a direct SQL `UPDATE` (confirmed
     `editor` → `admin`). Note: `payload run scripts/set-role.ts` against prod **hangs on the dev
     schema-push `(y/N)` prompt** because prod Neon still has the removed columns — the orphaned columns
     are harmless (Payload ignores columns not in the config), but for one-off prod DB edits use direct
@@ -60,7 +60,7 @@ checked off and removed from `cms-checklist.md`. Reasoning and context live in `
   2. **Real-time Live Preview.** `usePageCopy` now layers in `@payloadcms/live-preview-react`'s `useLivePreview`, so the admin preview iframe updates **as you type, before Save** (not just on save). Converted the 3 server-rendered surfaces to client so they get it too: Protection → client; About → server shell (`getStaffMembers`) + `AboutContent` client; home hero → new client `HomeHero`. Verified live-typing updates on Finance, About, and Home.
   3. **Custom admin dashboard.** Replaced Payload's bare default card grid with a branded `Dashboard` view (`admin.components.views.dashboard`): a welcome header, the How-to guide, and grouped **described** cards (Website pages / People, home & settings / Portal administration). Fixed the `**edit**from` JSX spacing bug in HowToUse. (Gotcha: `RootPage` already wraps the dashboard view in `DefaultTemplate` — wrapping again double-rendered the header/nav; the view must render content only.)
   4. **Editor role hardening.** Users collection now `admin.hidden` for non-admins, so editors don't see the user roster in the nav (they manage their own login via the Account page); the dashboard's "Portal administration" section is admin-only. Verified as a test editor: content + staff + media editable, Users hidden, no admin section.
-  5. **Jeff Williams → admin (code).** Seed `EDITORS` now lists `jwilliams@slfpae.gov` as `admin` and the seed idempotently **enforces roles** on re-run; added `scripts/set-role.ts`. **Prod DB change still pending** (blocked — see checklist).
+  5. **Director → admin (code).** Seed `EDITORS` now lists the FPA Regional Director as `admin` and the seed idempotently **enforces roles** on re-run; added `scripts/set-role.ts`. **Prod DB change still pending** (blocked — see checklist).
   - Verified: real-browser Playwright pass (admin + editor), `next build` clean (20 pages), tsc + eslint clean, 36/36 vitest. Live-preview test edits were never saved (unsaved-changes guard). **No live copy changed** — every remaining field defaults to its current wording.
 - **2026-07-06 19:58 EDT** — **Merged the CMS polish + editable page copy to `main` and deployed.**
   Per Oscar: the *code* (editable-copy feature + fixes) ships; the *test content edits* never do
@@ -123,7 +123,7 @@ checked off and removed from `cms-checklist.md`. Reasoning and context live in `
   - Verified: `next build` passes, staff photos + footer + live preview all render from the CMS.
 - **2026-07-06 13:57 EDT** — Phase C: seeded content + editors and wired the first page.
   - Idempotent seed (`scripts/seed-cms.ts`, run via `payload run`): HomeContent, SiteSettings, 12
-    StaffMembers (from `siteData.leadership`), and the 4 editor users (jwilliams editor; the three
+    StaffMembers (from `siteData.leadership`), and the 4 editor users (the Director as editor; the three
     AHD accounts admin; created with temp passwords, they reset via Resend email).
   - Home hero heading now reads from the `HomeContent` global via a resilient server helper
     (`src/lib/cms.ts`, falls back to `siteData` on any error); page is ISR (`revalidate = 60`).
