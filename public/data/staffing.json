@@ -1,46 +1,46 @@
 {
-  "asOf": "August 2026",
-  "source": "staffing_2026-08.xlsx",
+  "asOf": "September 2026",
+  "source": "staffing_2026-09.xlsx",
   "headcount": {
-    "total": 315,
-    "filled": 245,
-    "vacancies": 70
+    "total": 312,
+    "filled": 250,
+    "vacancies": 62
   },
   "departments": {
     "Maintenance": {
       "filled": 124,
-      "vacant": 18,
-      "total": 142
+      "vacant": 20,
+      "total": 144
     },
     "Operations": {
-      "filled": 28,
-      "vacant": 6,
-      "total": 34
+      "filled": 26,
+      "vacant": 2,
+      "total": 28
     },
     "Engineering": {
       "filled": 14,
-      "vacant": 4,
-      "total": 18
+      "vacant": 2,
+      "total": 16
     },
     "Police": {
-      "filled": 48,
+      "filled": 51,
       "vacant": 27,
-      "total": 75
+      "total": 78
     },
     "Executive": {
-      "filled": 6,
-      "vacant": 8,
-      "total": 14
+      "filled": 9,
+      "vacant": 6,
+      "total": 15
     },
     "Finance": {
-      "filled": 15,
-      "vacant": 2,
+      "filled": 16,
+      "vacant": 1,
       "total": 17
     },
     "Human Resources": {
       "filled": 6,
-      "vacant": 3,
-      "total": 9
+      "vacant": 2,
+      "total": 8
     },
     "Information Technology": {
       "filled": 4,
