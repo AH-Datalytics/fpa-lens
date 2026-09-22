@@ -1,0 +1,700 @@
+{
+  "generatedAt": "2026-09-22T19:39:41+00:00",
+  "source": "police-activity_2026-06.xlsx",
+  "sourceModified": null,
+  "latestMonth": "2026-06",
+  "fiscalYearStartMonth": 7,
+  "fields": [
+    {
+      "key": "gateChecks",
+      "label": "Flood gate checks"
+    },
+    {
+      "key": "pumpStationChecks",
+      "label": "Pump station / reach checks"
+    },
+    {
+      "key": "riverBattureChecks",
+      "label": "River batture checks"
+    },
+    {
+      "key": "polderChecks",
+      "label": "Polder checks"
+    },
+    {
+      "key": "gaugeReadings",
+      "label": "Gauge readings"
+    },
+    {
+      "key": "bayouBienvenueChecks",
+      "label": "Bayou Bienvenue checks"
+    },
+    {
+      "key": "leveeInspections",
+      "label": "Levee inspections / condition checks"
+    },
+    {
+      "key": "shelterChecks",
+      "label": "Shelter checks"
+    },
+    {
+      "key": "marinaChecks",
+      "label": "Marina checks"
+    },
+    {
+      "key": "facilityChecks",
+      "label": "Franklin Ave / East Jefferson facility checks"
+    },
+    {
+      "key": "neighborhoodPatrol",
+      "label": "Neighborhood patrol / checks"
+    },
+    {
+      "key": "trafficControl",
+      "label": "Traffic control during maintenance / gate exercises"
+    },
+    {
+      "key": "fpaEscorts",
+      "label": "FPA maintenance escorts"
+    }
+  ],
+  "months": [
+    {
+      "month": "2025-07",
+      "label": "July 2025",
+      "source": "police-activity_2025-07.xlsx",
+      "total": 8985,
+      "agency": {
+        "gateChecks": 3220,
+        "pumpStationChecks": 1328,
+        "riverBattureChecks": 280,
+        "polderChecks": 1006,
+        "gaugeReadings": 231,
+        "bayouBienvenueChecks": 206,
+        "leveeInspections": 34,
+        "shelterChecks": 872,
+        "marinaChecks": 651,
+        "facilityChecks": 398,
+        "neighborhoodPatrol": 707,
+        "trafficControl": 46,
+        "fpaEscorts": 6
+      },
+      "districts": {
+        "EJLDPD": {
+          "gateChecks": 1108,
+          "pumpStationChecks": 1094,
+          "riverBattureChecks": 278,
+          "polderChecks": 1001,
+          "gaugeReadings": 27,
+          "bayouBienvenueChecks": 0,
+          "leveeInspections": 12,
+          "shelterChecks": 126,
+          "marinaChecks": 505,
+          "facilityChecks": 224,
+          "neighborhoodPatrol": 344,
+          "trafficControl": 4,
+          "fpaEscorts": 0
+        },
+        "OLDPD": {
+          "gateChecks": 2112,
+          "pumpStationChecks": 234,
+          "riverBattureChecks": 2,
+          "polderChecks": 5,
+          "gaugeReadings": 204,
+          "bayouBienvenueChecks": 206,
+          "leveeInspections": 22,
+          "shelterChecks": 746,
+          "marinaChecks": 146,
+          "facilityChecks": 174,
+          "neighborhoodPatrol": 363,
+          "trafficControl": 42,
+          "fpaEscorts": 6
+        }
+      }
+    },
+    {
+      "month": "2025-08",
+      "label": "August 2025",
+      "source": "police-activity_2025-08.xlsx",
+      "total": 10411,
+      "agency": {
+        "gateChecks": 4132,
+        "pumpStationChecks": 1535,
+        "riverBattureChecks": 315,
+        "polderChecks": 1047,
+        "gaugeReadings": 244,
+        "bayouBienvenueChecks": 248,
+        "leveeInspections": 46,
+        "shelterChecks": 1020,
+        "marinaChecks": 685,
+        "facilityChecks": 393,
+        "neighborhoodPatrol": 681,
+        "trafficControl": 63,
+        "fpaEscorts": 2
+      },
+      "districts": {
+        "EJLDPD": {
+          "gateChecks": 1103,
+          "pumpStationChecks": 1205,
+          "riverBattureChecks": 315,
+          "polderChecks": 1041,
+          "gaugeReadings": 2,
+          "bayouBienvenueChecks": 0,
+          "leveeInspections": 15,
+          "shelterChecks": 113,
+          "marinaChecks": 531,
+          "facilityChecks": 212,
+          "neighborhoodPatrol": 267,
+          "trafficControl": 4,
+          "fpaEscorts": 1
+        },
+        "OLDPD": {
+          "gateChecks": 3029,
+          "pumpStationChecks": 330,
+          "riverBattureChecks": 0,
+          "polderChecks": 6,
+          "gaugeReadings": 242,
+          "bayouBienvenueChecks": 248,
+          "leveeInspections": 31,
+          "shelterChecks": 907,
+          "marinaChecks": 154,
+          "facilityChecks": 181,
+          "neighborhoodPatrol": 414,
+          "trafficControl": 59,
+          "fpaEscorts": 1
+        }
+      }
+    },
+    {
+      "month": "2025-09",
+      "label": "September 2025",
+      "source": "police-activity_2025-09.xlsx",
+      "total": 8386,
+      "agency": {
+        "gateChecks": 3025,
+        "pumpStationChecks": 1187,
+        "riverBattureChecks": 221,
+        "polderChecks": 945,
+        "gaugeReadings": 250,
+        "bayouBienvenueChecks": 235,
+        "leveeInspections": 36,
+        "shelterChecks": 809,
+        "marinaChecks": 644,
+        "facilityChecks": 337,
+        "neighborhoodPatrol": 654,
+        "trafficControl": 42,
+        "fpaEscorts": 1
+      },
+      "districts": {
+        "EJLDPD": {
+          "gateChecks": 1002,
+          "pumpStationChecks": 964,
+          "riverBattureChecks": 221,
+          "polderChecks": 938,
+          "gaugeReadings": 0,
+          "bayouBienvenueChecks": 0,
+          "leveeInspections": 23,
+          "shelterChecks": 112,
+          "marinaChecks": 532,
+          "facilityChecks": 181,
+          "neighborhoodPatrol": 320,
+          "trafficControl": 3,
+          "fpaEscorts": 1
+        },
+        "OLDPD": {
+          "gateChecks": 2023,
+          "pumpStationChecks": 223,
+          "riverBattureChecks": 0,
+          "polderChecks": 7,
+          "gaugeReadings": 250,
+          "bayouBienvenueChecks": 235,
+          "leveeInspections": 13,
+          "shelterChecks": 697,
+          "marinaChecks": 112,
+          "facilityChecks": 156,
+          "neighborhoodPatrol": 334,
+          "trafficControl": 39,
+          "fpaEscorts": 0
+        }
+      }
+    },
+    {
+      "month": "2025-10",
+      "label": "October 2025",
+      "source": "police-activity_2025-10.xlsx",
+      "total": 7411,
+      "agency": {
+        "gateChecks": 2472,
+        "pumpStationChecks": 1258,
+        "riverBattureChecks": 272,
+        "polderChecks": 816,
+        "gaugeReadings": 179,
+        "bayouBienvenueChecks": 172,
+        "leveeInspections": 25,
+        "shelterChecks": 712,
+        "marinaChecks": 571,
+        "facilityChecks": 319,
+        "neighborhoodPatrol": 578,
+        "trafficControl": 35,
+        "fpaEscorts": 2
+      },
+      "districts": {
+        "EJLDPD": {
+          "gateChecks": 858,
+          "pumpStationChecks": 1032,
+          "riverBattureChecks": 270,
+          "polderChecks": 807,
+          "gaugeReadings": 0,
+          "bayouBienvenueChecks": 0,
+          "leveeInspections": 6,
+          "shelterChecks": 61,
+          "marinaChecks": 484,
+          "facilityChecks": 162,
+          "neighborhoodPatrol": 308,
+          "trafficControl": 1,
+          "fpaEscorts": 1
+        },
+        "OLDPD": {
+          "gateChecks": 1614,
+          "pumpStationChecks": 226,
+          "riverBattureChecks": 2,
+          "polderChecks": 9,
+          "gaugeReadings": 179,
+          "bayouBienvenueChecks": 172,
+          "leveeInspections": 19,
+          "shelterChecks": 651,
+          "marinaChecks": 87,
+          "facilityChecks": 157,
+          "neighborhoodPatrol": 270,
+          "trafficControl": 34,
+          "fpaEscorts": 1
+        }
+      }
+    },
+    {
+      "month": "2025-11",
+      "label": "November 2025",
+      "source": "police-activity_2025-11.xlsx",
+      "total": 8828,
+      "agency": {
+        "gateChecks": 3073,
+        "pumpStationChecks": 1402,
+        "riverBattureChecks": 265,
+        "polderChecks": 890,
+        "gaugeReadings": 219,
+        "bayouBienvenueChecks": 220,
+        "leveeInspections": 12,
+        "shelterChecks": 892,
+        "marinaChecks": 645,
+        "facilityChecks": 340,
+        "neighborhoodPatrol": 817,
+        "trafficControl": 49,
+        "fpaEscorts": 4
+      },
+      "districts": {
+        "EJLDPD": {
+          "gateChecks": 1023,
+          "pumpStationChecks": 1078,
+          "riverBattureChecks": 265,
+          "polderChecks": 881,
+          "gaugeReadings": 0,
+          "bayouBienvenueChecks": 0,
+          "leveeInspections": 3,
+          "shelterChecks": 60,
+          "marinaChecks": 478,
+          "facilityChecks": 148,
+          "neighborhoodPatrol": 381,
+          "trafficControl": 1,
+          "fpaEscorts": 2
+        },
+        "OLDPD": {
+          "gateChecks": 2050,
+          "pumpStationChecks": 324,
+          "riverBattureChecks": 0,
+          "polderChecks": 9,
+          "gaugeReadings": 219,
+          "bayouBienvenueChecks": 220,
+          "leveeInspections": 9,
+          "shelterChecks": 832,
+          "marinaChecks": 167,
+          "facilityChecks": 192,
+          "neighborhoodPatrol": 436,
+          "trafficControl": 48,
+          "fpaEscorts": 2
+        }
+      }
+    },
+    {
+      "month": "2025-12",
+      "label": "December 2025",
+      "source": "police-activity_2025-12.xlsx",
+      "total": 5441,
+      "agency": {
+        "gateChecks": 2011,
+        "pumpStationChecks": 716,
+        "riverBattureChecks": 284,
+        "polderChecks": 605,
+        "gaugeReadings": 96,
+        "bayouBienvenueChecks": 96,
+        "leveeInspections": 5,
+        "shelterChecks": 400,
+        "marinaChecks": 374,
+        "facilityChecks": 222,
+        "neighborhoodPatrol": 629,
+        "trafficControl": 2,
+        "fpaEscorts": 1
+      },
+      "districts": {
+        "EJLDPD": {
+          "gateChecks": 589,
+          "pumpStationChecks": 621,
+          "riverBattureChecks": 284,
+          "polderChecks": 605,
+          "gaugeReadings": 0,
+          "bayouBienvenueChecks": 0,
+          "leveeInspections": 0,
+          "shelterChecks": 31,
+          "marinaChecks": 329,
+          "facilityChecks": 142,
+          "neighborhoodPatrol": 436,
+          "trafficControl": 2,
+          "fpaEscorts": 0
+        },
+        "OLDPD": {
+          "gateChecks": 1422,
+          "pumpStationChecks": 95,
+          "riverBattureChecks": 0,
+          "polderChecks": 0,
+          "gaugeReadings": 96,
+          "bayouBienvenueChecks": 96,
+          "leveeInspections": 5,
+          "shelterChecks": 369,
+          "marinaChecks": 45,
+          "facilityChecks": 80,
+          "neighborhoodPatrol": 193,
+          "trafficControl": 0,
+          "fpaEscorts": 1
+        }
+      }
+    },
+    {
+      "month": "2026-01",
+      "label": "January 2026",
+      "source": "police-activity_2026-01.xlsx",
+      "total": 8500,
+      "agency": {
+        "gateChecks": 2851,
+        "pumpStationChecks": 1226,
+        "riverBattureChecks": 292,
+        "polderChecks": 910,
+        "gaugeReadings": 124,
+        "bayouBienvenueChecks": 125,
+        "leveeInspections": 7,
+        "shelterChecks": 764,
+        "marinaChecks": 623,
+        "facilityChecks": 354,
+        "neighborhoodPatrol": 1185,
+        "trafficControl": 38,
+        "fpaEscorts": 1
+      },
+      "districts": {
+        "EJLDPD": {
+          "gateChecks": 829,
+          "pumpStationChecks": 978,
+          "riverBattureChecks": 291,
+          "polderChecks": 903,
+          "gaugeReadings": 0,
+          "bayouBienvenueChecks": 0,
+          "leveeInspections": 0,
+          "shelterChecks": 59,
+          "marinaChecks": 468,
+          "facilityChecks": 197,
+          "neighborhoodPatrol": 550,
+          "trafficControl": 0,
+          "fpaEscorts": 0
+        },
+        "OLDPD": {
+          "gateChecks": 2022,
+          "pumpStationChecks": 248,
+          "riverBattureChecks": 1,
+          "polderChecks": 7,
+          "gaugeReadings": 124,
+          "bayouBienvenueChecks": 125,
+          "leveeInspections": 7,
+          "shelterChecks": 705,
+          "marinaChecks": 155,
+          "facilityChecks": 157,
+          "neighborhoodPatrol": 635,
+          "trafficControl": 38,
+          "fpaEscorts": 1
+        }
+      }
+    },
+    {
+      "month": "2026-02",
+      "label": "February 2026",
+      "source": "police-activity_2026-02.xlsx",
+      "total": 7525,
+      "agency": {
+        "gateChecks": 2621,
+        "pumpStationChecks": 1171,
+        "riverBattureChecks": 257,
+        "polderChecks": 845,
+        "gaugeReadings": 161,
+        "bayouBienvenueChecks": 161,
+        "leveeInspections": 76,
+        "shelterChecks": 599,
+        "marinaChecks": 561,
+        "facilityChecks": 382,
+        "neighborhoodPatrol": 654,
+        "trafficControl": 36,
+        "fpaEscorts": 1
+      },
+      "districts": {
+        "EJLDPD": {
+          "gateChecks": 1025,
+          "pumpStationChecks": 885,
+          "riverBattureChecks": 255,
+          "polderChecks": 837,
+          "gaugeReadings": 0,
+          "bayouBienvenueChecks": 0,
+          "leveeInspections": 1,
+          "shelterChecks": 71,
+          "marinaChecks": 453,
+          "facilityChecks": 181,
+          "neighborhoodPatrol": 331,
+          "trafficControl": 15,
+          "fpaEscorts": 1
+        },
+        "OLDPD": {
+          "gateChecks": 1596,
+          "pumpStationChecks": 286,
+          "riverBattureChecks": 2,
+          "polderChecks": 8,
+          "gaugeReadings": 161,
+          "bayouBienvenueChecks": 161,
+          "leveeInspections": 75,
+          "shelterChecks": 528,
+          "marinaChecks": 108,
+          "facilityChecks": 201,
+          "neighborhoodPatrol": 323,
+          "trafficControl": 21,
+          "fpaEscorts": 0
+        }
+      }
+    },
+    {
+      "month": "2026-03",
+      "label": "March 2026",
+      "source": "police-activity_2026-03.xlsx",
+      "total": 8375,
+      "agency": {
+        "gateChecks": 2149,
+        "pumpStationChecks": 1568,
+        "riverBattureChecks": 257,
+        "polderChecks": 1199,
+        "gaugeReadings": 226,
+        "bayouBienvenueChecks": 226,
+        "leveeInspections": 29,
+        "shelterChecks": 663,
+        "marinaChecks": 706,
+        "facilityChecks": 407,
+        "neighborhoodPatrol": 903,
+        "trafficControl": 16,
+        "fpaEscorts": 26
+      },
+      "districts": {
+        "EJLDPD": {
+          "gateChecks": 1059,
+          "pumpStationChecks": 1275,
+          "riverBattureChecks": 257,
+          "polderChecks": 1193,
+          "gaugeReadings": 0,
+          "bayouBienvenueChecks": 0,
+          "leveeInspections": 16,
+          "shelterChecks": 195,
+          "marinaChecks": 599,
+          "facilityChecks": 251,
+          "neighborhoodPatrol": 559,
+          "trafficControl": 0,
+          "fpaEscorts": 2
+        },
+        "OLDPD": {
+          "gateChecks": 1090,
+          "pumpStationChecks": 293,
+          "riverBattureChecks": 0,
+          "polderChecks": 6,
+          "gaugeReadings": 226,
+          "bayouBienvenueChecks": 226,
+          "leveeInspections": 13,
+          "shelterChecks": 468,
+          "marinaChecks": 107,
+          "facilityChecks": 156,
+          "neighborhoodPatrol": 344,
+          "trafficControl": 16,
+          "fpaEscorts": 24
+        }
+      }
+    },
+    {
+      "month": "2026-04",
+      "label": "April 2026",
+      "source": "police-activity_2026-04.xlsx",
+      "total": 8179,
+      "agency": {
+        "gateChecks": 2396,
+        "pumpStationChecks": 1398,
+        "riverBattureChecks": 326,
+        "polderChecks": 1048,
+        "gaugeReadings": 251,
+        "bayouBienvenueChecks": 257,
+        "leveeInspections": 34,
+        "shelterChecks": 608,
+        "marinaChecks": 690,
+        "facilityChecks": 358,
+        "neighborhoodPatrol": 794,
+        "trafficControl": 14,
+        "fpaEscorts": 5
+      },
+      "districts": {
+        "EJLDPD": {
+          "gateChecks": 929,
+          "pumpStationChecks": 1074,
+          "riverBattureChecks": 326,
+          "polderChecks": 1042,
+          "gaugeReadings": 2,
+          "bayouBienvenueChecks": 2,
+          "leveeInspections": 13,
+          "shelterChecks": 158,
+          "marinaChecks": 555,
+          "facilityChecks": 205,
+          "neighborhoodPatrol": 387,
+          "trafficControl": 3,
+          "fpaEscorts": 1
+        },
+        "OLDPD": {
+          "gateChecks": 1467,
+          "pumpStationChecks": 324,
+          "riverBattureChecks": 0,
+          "polderChecks": 6,
+          "gaugeReadings": 249,
+          "bayouBienvenueChecks": 255,
+          "leveeInspections": 21,
+          "shelterChecks": 450,
+          "marinaChecks": 135,
+          "facilityChecks": 153,
+          "neighborhoodPatrol": 407,
+          "trafficControl": 11,
+          "fpaEscorts": 4
+        }
+      }
+    },
+    {
+      "month": "2026-05",
+      "label": "May 2026",
+      "source": "police-activity_2026-05.xlsx",
+      "total": 6519,
+      "agency": {
+        "gateChecks": 1845,
+        "pumpStationChecks": 1250,
+        "riverBattureChecks": 108,
+        "polderChecks": 814,
+        "gaugeReadings": 216,
+        "bayouBienvenueChecks": 239,
+        "leveeInspections": 37,
+        "shelterChecks": 591,
+        "marinaChecks": 517,
+        "facilityChecks": 330,
+        "neighborhoodPatrol": 562,
+        "trafficControl": 6,
+        "fpaEscorts": 4
+      },
+      "districts": {
+        "EJLDPD": {
+          "gateChecks": 884,
+          "pumpStationChecks": 869,
+          "riverBattureChecks": 108,
+          "polderChecks": 708,
+          "gaugeReadings": 0,
+          "bayouBienvenueChecks": 0,
+          "leveeInspections": 2,
+          "shelterChecks": 142,
+          "marinaChecks": 441,
+          "facilityChecks": 195,
+          "neighborhoodPatrol": 224,
+          "trafficControl": 0,
+          "fpaEscorts": 1
+        },
+        "OLDPD": {
+          "gateChecks": 961,
+          "pumpStationChecks": 381,
+          "riverBattureChecks": 0,
+          "polderChecks": 106,
+          "gaugeReadings": 216,
+          "bayouBienvenueChecks": 239,
+          "leveeInspections": 35,
+          "shelterChecks": 449,
+          "marinaChecks": 76,
+          "facilityChecks": 135,
+          "neighborhoodPatrol": 338,
+          "trafficControl": 6,
+          "fpaEscorts": 3
+        }
+      }
+    },
+    {
+      "month": "2026-06",
+      "label": "June 2026",
+      "source": "police-activity_2026-06.xlsx",
+      "total": 7268,
+      "agency": {
+        "gateChecks": 2080,
+        "pumpStationChecks": 1198,
+        "riverBattureChecks": 329,
+        "polderChecks": 897,
+        "gaugeReadings": 178,
+        "bayouBienvenueChecks": 188,
+        "leveeInspections": 22,
+        "shelterChecks": 584,
+        "marinaChecks": 618,
+        "facilityChecks": 411,
+        "neighborhoodPatrol": 742,
+        "trafficControl": 17,
+        "fpaEscorts": 4
+      },
+      "districts": {
+        "EJLDPD": {
+          "gateChecks": 1011,
+          "pumpStationChecks": 930,
+          "riverBattureChecks": 329,
+          "polderChecks": 786,
+          "gaugeReadings": 0,
+          "bayouBienvenueChecks": 0,
+          "leveeInspections": 4,
+          "shelterChecks": 88,
+          "marinaChecks": 501,
+          "facilityChecks": 259,
+          "neighborhoodPatrol": 428,
+          "trafficControl": 0,
+          "fpaEscorts": 0
+        },
+        "OLDPD": {
+          "gateChecks": 1069,
+          "pumpStationChecks": 268,
+          "riverBattureChecks": 0,
+          "polderChecks": 111,
+          "gaugeReadings": 178,
+          "bayouBienvenueChecks": 188,
+          "leveeInspections": 18,
+          "shelterChecks": 496,
+          "marinaChecks": 117,
+          "facilityChecks": 152,
+          "neighborhoodPatrol": 314,
+          "trafficControl": 17,
+          "fpaEscorts": 4
+        }
+      }
+    }
+  ],
+  "warnings": []
+}

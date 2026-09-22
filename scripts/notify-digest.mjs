@@ -95,6 +95,14 @@ export function summarizeChange(path, oldObj, newObj) {
         ? `IDIQ: contract tracker updated (${n} contracts)`
         : "IDIQ: contract tracker updated";
     }
+    if (base === "police-activity.json") {
+      const o = oldObj?.latestMonth;
+      const n = newObj?.latestMonth;
+      const count = newObj?.months?.length;
+      const span = count != null ? ` (${count} months in series)` : "";
+      if (o && n && o !== n) return `Police activity: series extended ${o} → ${n}${span}`;
+      return `Police activity: monthly figures updated${n ? ` through ${n}` : ""}${span}`;
+    }
     if (base === "safety-events.json") {
       return "Safety: event log updated";
     }

@@ -47,3 +47,27 @@ describe("sitrep category (flexibleMonth)", () => {
     expect(dateKey("Regional Director SITREP.pdf", sitrep)).toBeNull();
   });
 });
+
+describe("police category (flexibleMonth + all)", () => {
+  const police = CATEGORIES.police;
+
+  it("resolves the Police Department's own filenames to a month", () => {
+    expect(normalizeName("AGENCY PLATOON MONTHLY OFFICER  STATS APRIL 2026.xlsx", police))
+      .toBe("police-activity_2026-04.xlsx");
+    expect(normalizeName("JCOMBINED PLATOON MONTHLY TO YEARLY OFFICER  STATS  October 2025.xlsx", police))
+      .toBe("police-activity_2025-10.xlsx");
+  });
+
+  it("accepts the pipeline convention unchanged", () => {
+    expect(normalizeName("police-activity_2026-07.xlsx", police)).toBe("police-activity_2026-07.xlsx");
+    expect(dateKey("police-activity_2026-07.xlsx", police)).toBe(20260701);
+  });
+
+  it("orders months chronologically across the fiscal-year boundary", () => {
+    expect(dateKey("STATS DECEMBER 2025.xlsx", police)).toBeLessThan(dateKey("STATS January 2026.xlsx", police));
+  });
+
+  it("is flagged as a whole-folder (series) category", () => {
+    expect(police.all).toBe(true);
+  });
+});

@@ -23,7 +23,7 @@
  */
 import { execFileSync } from "node:child_process";
 import { writeFileSync, readFileSync } from "node:fs";
-import { inspectCategory, fetchCategory } from "./sharepoint/fetch.mjs";
+import { CATEGORIES, inspectCategory, fetchCategory, fetchCategoryAll } from "./sharepoint/fetch.mjs";
 import { loadLocalEnv } from "./sharepoint/graph.mjs";
 
 // Category key (must match fetch.mjs CATEGORIES) -> Python extractor.
@@ -40,6 +40,9 @@ import { loadLocalEnv } from "./sharepoint/graph.mjs";
 const WIRED = {
   finance: { script: "scripts/extractActualsData.py" },
   idiq: { script: "scripts/extractIdiqData.py" },
+  // `all` category (fetch.mjs): every monthly workbook in the folder is passed
+  // to the extractor, which rebuilds the month-by-month series.
+  police: { script: "scripts/extractPoliceData.py" },
   safety: { script: "scripts/extractSafetyData.py" },
   sitrep: {
     runner: "node",
@@ -114,16 +117,27 @@ for (const key of keys) {
         continue;
       }
     }
-    const fetched = await fetchCategory(key);
-    console.log(`  fetched ${fetched.name}`);
+    let inputs;
+    let detail;
+    if (CATEGORIES[key].all) {
+      const fetched = await fetchCategoryAll(key);
+      console.log(`  fetched ${fetched.length} file(s), newest ${newest.normalizedName}`);
+      inputs = fetched.map((f) => f.dest);
+      detail = `${fetched.length} monthly file(s), newest ${newest.normalizedName}`;
+    } else {
+      const fetched = await fetchCategory(key);
+      console.log(`  fetched ${fetched.name}`);
+      inputs = [fetched.dest];
+      detail = fetched.name;
+    }
     const runner = WIRED[key].runner || "python3";
     // Hand the extractor the upload timestamp so it can record which exact
     // revision of the file this output came from.
-    execFileSync(runner, [WIRED[key].script, fetched.dest], {
+    execFileSync(runner, [WIRED[key].script, ...inputs], {
       stdio: "inherit",
       env: { ...process.env, REFRESH_SOURCE_MODIFIED: newest.lastModified || "" },
     });
-    results.push({ key, status: "refreshed", detail: fetched.name });
+    results.push({ key, status: "refreshed", detail });
   } catch (e) {
     console.error(`  FAILED: ${e.message}`);
     results.push({ key, status: "failed", detail: e.message });

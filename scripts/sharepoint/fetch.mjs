@@ -70,6 +70,22 @@ export const CATEGORIES = {
     flexibleMonth: true,
     dest: "data/sources/sitreps/{name}",
   },
+  police: {
+    folder: `${ROOT}/Police`,
+    descriptor: "police-activity",
+    ext: "xlsx",
+    cadence: "monthly",
+    // The Levee District Police upload their monthly officer-stats workbook
+    // under names like "AGENCY PLATOON MONTHLY OFFICER STATS APRIL 2026.xlsx".
+    // The folder holds only these workbooks, so resolve the month from anywhere
+    // in the name and canonicalize to police-activity_YYYY-MM.xlsx, as SITREP does.
+    flexibleMonth: true,
+    // The Protection page shows a month-by-month series, so EVERY month in the
+    // folder is an input, not just the newest. The orchestrator downloads them
+    // all and the extractor rebuilds the series from whatever is there.
+    all: true,
+    dest: "data/sources/police/{name}",
+  },
   turf: {
     folder: `${ROOT}/Turf`,
     descriptor: "turf-maintenance",
@@ -172,6 +188,31 @@ export async function inspectCategory(key) {
     String(b.lastModified).localeCompare(String(a.lastModified)),
   );
   return { cat, newest: matched[0] ?? null, matched, skipped };
+}
+
+/**
+ * Download EVERY convention-matching file for a category (used by `all`
+ * categories, whose output is a series rather than a snapshot). When two
+ * uploads resolve to the same month (e.g. a corrected re-upload saved as a
+ * copy), only the most recently modified one is kept. Returns [{name, dest,
+ * normalizedName, lastModified}] sorted oldest -> newest, or [] when the
+ * folder has no matching file.
+ */
+export async function fetchCategoryAll(key) {
+  const { cat, matched } = await inspectCategory(key);
+  const byMonth = new Map();
+  for (const f of matched) {
+    const prev = byMonth.get(f.normalizedName);
+    if (!prev || String(f.lastModified) > String(prev.lastModified)) byMonth.set(f.normalizedName, f);
+  }
+  const files = [...byMonth.values()].sort((a, b) => a.dateKey - b.dateKey);
+  const out = [];
+  for (const f of files) {
+    const dest = cat.dest.replace("{name}", f.normalizedName);
+    await downloadTo(f, dest);
+    out.push({ name: f.name, dest, normalizedName: f.normalizedName, lastModified: f.lastModified });
+  }
+  return out;
 }
 
 /** Download the newest file for a category to its local dest. Returns the path, or null. */
