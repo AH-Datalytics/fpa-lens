@@ -17,12 +17,14 @@ Friday cron; the first manual run publishes the SharePoint data.
 | Staffing | current-counts overlay; capacity/thresholds stay policy | yes |
 | SITREP | PDF → Claude digest → engineering maintenance list (narrative only) | folder empty — activates on first upload |
 | Turf | newer-month overlay onto `grassCutting` (no regression) | folder empty — activates on first upload |
+| Police | **all** monthly `police-activity_YYYY-MM.xlsx` in `Police/` (flexible names), merged into a month-by-month series for `/protection` | folder does not exist yet (Sep 2026) — FPA to create; FY2026 backfilled locally |
 
 - Tue/Fri cron `0 13 * * 2,5` (Fridays-only until Aug 11 2026, then weekday-daily until Aug 18 2026), `workflow_dispatch`, commit-only-what-changed, **digest email to `admin@ahdatalytics.com`** (`scripts/notify-digest.mjs`: changes published, per-source status, failures). Sent when data publishes, when a source fails, or on a manual run; quiet runs stay silent so the cadence doesn't bury the signal.
 - SITREP feeds narrative only; readiness/financial/safety come from their own pipelines.
 - SITREP is the only paid extractor (Claude API). The orchestrator skips it when the newest SharePoint file matches both the `source` and `sourceModified` recorded in `public/data/sitrep.json`: the canonicalized `sitrep_YYYY-MM.<ext>` name plus the upload timestamp, so a corrected re-upload of the same month still gets re-parsed. Use `--force` (or run `scripts/extractSitrep.mjs` directly) to force a re-parse.
 - Turf/SITREP overlay safely: unmatched/older data falls back to curated values.
 - `Engineering/` SharePoint folder is empty/unused (IDIQ lives in `Finance/IDIQ/`).
+- **Police (added Sep 22 2026)** is the first `all` category: `fetchCategoryAll()` downloads every convention-matching file in the folder (deduping same-month re-uploads by last-modified) and the orchestrator passes them all to `scripts/extractPoliceData.py`, which merges into `public/data/police-activity.json` (months in the inputs replace prior values, months absent from the folder are kept). Only the 13 infrastructure fields on `/protection` are extracted; enforcement rows and per-platoon columns are never read. Requested by FPA after the Louisiana Legislative Auditor asked how often the Police figures update. Full notes in `CLAUDE.md` → Protection.
 
 ---
 
