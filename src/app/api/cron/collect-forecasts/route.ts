@@ -19,7 +19,7 @@ import { decideRiskAlert } from "@/lib/riskAlertDecision";
 export const dynamic = "force-dynamic";
 
 const ALERT_TO = "police@leveepolice.org";
-const ALERT_BCC = "oboochever@ahdatalytics.com";
+const ALERT_BCC = "admin@ahdatalytics.com";
 const ALERT_FROM = "FPA Lens Alerts <alerts@fpalens.org>";
 const DASHBOARD_URL = "https://fpalens.org/environment";
 
@@ -29,7 +29,7 @@ function getResend() {
   return resend;
 }
 
-const PREVIEW_TO = "oboochever@ahdatalytics.com";
+const PREVIEW_TO = "admin@ahdatalytics.com";
 
 type RiskInfo = {
   trending: "improving" | "stable" | "worsening";

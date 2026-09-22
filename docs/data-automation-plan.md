@@ -18,7 +18,7 @@ Friday cron; the first manual run publishes the SharePoint data.
 | SITREP | PDF → Claude digest → engineering maintenance list (narrative only) | folder empty — activates on first upload |
 | Turf | newer-month overlay onto `grassCutting` (no regression) | folder empty — activates on first upload |
 
-- Tue/Fri cron `0 13 * * 2,5` (Fridays-only until Aug 11 2026, then weekday-daily until Aug 18 2026), `workflow_dispatch`, commit-only-what-changed, **digest email to Oscar** (`scripts/notify-digest.mjs`: changes published, per-source status, failures). Sent when data publishes, when a source fails, or on a manual run; quiet runs stay silent so the cadence doesn't bury the signal.
+- Tue/Fri cron `0 13 * * 2,5` (Fridays-only until Aug 11 2026, then weekday-daily until Aug 18 2026), `workflow_dispatch`, commit-only-what-changed, **digest email to `admin@ahdatalytics.com`** (`scripts/notify-digest.mjs`: changes published, per-source status, failures). Sent when data publishes, when a source fails, or on a manual run; quiet runs stay silent so the cadence doesn't bury the signal.
 - SITREP feeds narrative only; readiness/financial/safety come from their own pipelines.
 - SITREP is the only paid extractor (Claude API). The orchestrator skips it when the newest SharePoint file matches both the `source` and `sourceModified` recorded in `public/data/sitrep.json`: the canonicalized `sitrep_YYYY-MM.<ext>` name plus the upload timestamp, so a corrected re-upload of the same month still gets re-parsed. Use `--force` (or run `scripts/extractSitrep.mjs` directly) to force a re-parse.
 - Turf/SITREP overlay safely: unmatched/older data falls back to curated values.
@@ -84,9 +84,10 @@ they change rarely and stay manual.
 ## 6. Notifications & failure handling
 
 - **Per-run digest email** (`scripts/notify-digest.mjs`, `if: always()` before the commit step):
-  one Resend email to Oscar on *every* run with (a) data changes published this run (diffed from
-  the working tree vs HEAD), (b) per-source pull status (REFRESHED/SKIPPED/FAILED), and (c) any
-  failures. Sends on no-change weeks too, so a green run is always confirmed. Never fails the job
+  one Resend email to `admin@ahdatalytics.com` with (a) data changes published this run (diffed
+  from the working tree vs HEAD), (b) per-source pull status (REFRESHED/SKIPPED/FAILED), and (c) any
+  failures. Sends when data publishes, when a source fails, or on a manual run (`FORCE_DIGEST`);
+  quiet scheduled runs stay silent (`shouldSend`, Aug 2026). Never fails the job
   (always exits 0). Consolidates + replaces the old failure-only and SITREP-roll-only emails
   (July 2026). Pure logic unit-tested in `notify-digest.test.mjs`.
 - Orchestrator exits non-zero on any category error → GitHub marks the run failed; the digest still

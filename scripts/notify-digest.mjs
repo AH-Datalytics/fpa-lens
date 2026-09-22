@@ -31,7 +31,8 @@ import { pathToFileURL } from "node:url";
 const SUMMARY_PATH = "refresh-summary.txt";
 // Output files the refresh writes; used to detect what actually changed.
 const TRACKED_OUTPUTS = ["public/data", "src/data/turfCycles.json"];
-const RECIPIENTS = ["oboochever@ahdatalytics.com"];
+// Shared AHD data-ops inbox, so the digest survives any one person's absence.
+const RECIPIENTS = ["admin@ahdatalytics.com"];
 
 // ---------------------------------------------------------------------------
 // Pure helpers (exported for tests).
