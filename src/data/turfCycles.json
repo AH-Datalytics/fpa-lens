@@ -98,7 +98,7 @@
     {
       "zone": "Citrus Lakefront & Eastern Interior",
       "reach": "Maxent",
-      "cycle1Pct": 0.0,
+      "cycle1Pct": 1.0,
       "cycle2Pct": null,
       "c1CompletedOn": null,
       "c2CompletedOn": null
