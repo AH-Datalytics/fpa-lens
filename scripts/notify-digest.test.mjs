@@ -33,6 +33,24 @@ describe("summarizeChange", () => {
     );
   });
 
+  test("police reports the series extending to a new month", () => {
+    const s = summarizeChange(
+      "public/data/police-activity.json",
+      { latestMonth: "2026-06", months: new Array(12) },
+      { latestMonth: "2026-07", months: new Array(13) },
+    );
+    expect(s).toBe("Police activity: series extended 2026-06 → 2026-07 (13 months in series)");
+  });
+
+  test("police reports a same-month correction", () => {
+    const s = summarizeChange(
+      "public/data/police-activity.json",
+      { latestMonth: "2026-07", months: new Array(13) },
+      { latestMonth: "2026-07", months: new Array(13) },
+    );
+    expect(s).toBe("Police activity: monthly figures updated through 2026-07 (13 months in series)");
+  });
+
   test("turf reports the reporting-month roll", () => {
     const s = summarizeChange(
       "src/data/turfCycles.json",

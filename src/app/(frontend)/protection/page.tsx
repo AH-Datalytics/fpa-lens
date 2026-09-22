@@ -206,7 +206,8 @@ export default function ProtectionPage() {
                 ~{formatNumber(perDay)}
               </div>
               <div className="text-xs text-gray-500 mt-1">
-                continuous 24/7 field activity across {data.districtsCovered} police districts (OLDPD &amp; EJLDPD)
+                continuous 24/7 field activity across {data.districtsCovered}{" "}
+                police districts (OLDPD &amp; EJLDPD)
               </div>
             </div>
             <div className="bg-white rounded-xl shadow-md border border-gray-100 p-5">
@@ -397,7 +398,7 @@ export default function ProtectionPage() {
                         </ResponsiveContainer>
                       </div>
                     </div>
-                    <div className="text-[10px] text-gray-400 text-right -mt-1 mb-3">by month</div>
+                    <div className="text-[10px] text-gray-400 text-right mt-0.5 mb-3">by month</div>
                     <p className="text-xs text-gray-600 leading-snug mb-3">
                       {cat.description}
                     </p>
@@ -418,7 +419,8 @@ export default function ProtectionPage() {
           </div>
 
           <p className="text-xs text-gray-500 mt-4 leading-relaxed">
-            <span className="font-semibold text-gray-600">About this data.</span> Counts come from the
+            <span className="font-semibold text-gray-600">About this data.</span>{" "}
+            Counts come from the
             Levee District Police monthly activity summaries for the Orleans and East Jefferson police
             departments. Each officer records activity on a Daily Activity Sheet; platoon supervisors
             compile those into a monthly platoon summary, and the district Captains combine the platoons

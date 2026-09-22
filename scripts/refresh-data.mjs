@@ -27,7 +27,8 @@ import { CATEGORIES, inspectCategory, fetchCategory, fetchCategoryAll } from "./
 import { loadLocalEnv } from "./sharepoint/graph.mjs";
 
 // Category key (must match fetch.mjs CATEGORIES) -> Python extractor.
-// The downloaded file path is passed as argv[1] to each extractor.
+// The downloaded file path is passed as argv[1] to each extractor (every
+// downloaded path, for `all` categories such as police).
 //
 // `published` (optional) returns the provenance the category recorded in its
 // last published output: { source, sourceModified }. When it matches the newest
