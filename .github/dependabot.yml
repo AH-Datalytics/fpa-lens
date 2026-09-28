@@ -14,6 +14,24 @@ updates:
         update-types:
           - "minor"
           - "patch"
+    # Majors that are blocked upstream (checked Sep 28 2026). Each one failed
+    # its Vercel preview; lift the ignore once the blocker ships support.
+    ignore:
+      # Payload (3.90.2) peer-requires graphql ^16.8.1; 17 fails npm install.
+      - dependency-name: "graphql"
+        update-types: ["version-update:semver-major"]
+      # typescript-eslint (8.71, via eslint-config-next) supports TS <6.1 and
+      # throws "does not support TS 7.0" during lint.
+      - dependency-name: "typescript"
+        update-types: ["version-update:semver-major"]
+      # eslint-plugin-react (7.37.5, via eslint-config-next) supports eslint
+      # <=9; eslint 10 crashes it ("getFilename is not a function").
+      - dependency-name: "eslint"
+        update-types: ["version-update:semver-major"]
+      # Keep @types/node on the Vercel runtime's Node major (24.x); bump it
+      # by hand when the project's Node version changes, not ahead of it.
+      - dependency-name: "@types/node"
+        update-types: ["version-update:semver-major"]
     labels:
       - "dependencies"
     commit-message:
