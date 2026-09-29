@@ -19,14 +19,14 @@
       "zone": "New Orleans East",
       "reach": "LPV-109",
       "cycle1Pct": 1.0,
-      "cycle2Pct": 0.25,
+      "cycle2Pct": 0.75,
       "c1CompletedOn": null,
       "c2CompletedOn": null
     },
     {
       "zone": "New Orleans East",
       "reach": "LPV-111",
-      "cycle1Pct": 0.75,
+      "cycle1Pct": 1.0,
       "cycle2Pct": 0.0,
       "c1CompletedOn": null,
       "c2CompletedOn": null
@@ -43,7 +43,7 @@
       "zone": "Southside MRGO & Citrus Back",
       "reach": "Citrus Back Levee - LPV-115 (Paris Rd. Bridge to Jourdan Rd)",
       "cycle1Pct": 1.0,
-      "cycle2Pct": 0.25,
+      "cycle2Pct": 1.0,
       "c1CompletedOn": null,
       "c2CompletedOn": null
     },
@@ -75,7 +75,7 @@
       "zone": "Lakefront & Outfall Canals",
       "reach": "IHNC East (E-13 to N-01)",
       "cycle1Pct": 1.0,
-      "cycle2Pct": 0.0,
+      "cycle2Pct": 1.0,
       "c1CompletedOn": null,
       "c2CompletedOn": null
     },
@@ -131,7 +131,7 @@
       "zone": "Upper Protection",
       "reach": "Upper Protection (Earhart Blvd to the MRL)",
       "cycle1Pct": 1.0,
-      "cycle2Pct": 0.0,
+      "cycle2Pct": 1.0,
       "c1CompletedOn": null,
       "c2CompletedOn": null
     },
@@ -139,7 +139,7 @@
       "zone": "MRL",
       "reach": "MRL (Jefferson Parish line to EB-00)",
       "cycle1Pct": 1.0,
-      "cycle2Pct": 0.0,
+      "cycle2Pct": 1.0,
       "c1CompletedOn": null,
       "c2CompletedOn": null
     },
