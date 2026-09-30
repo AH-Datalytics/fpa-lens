@@ -71,7 +71,8 @@ export const CATEGORIES = {
     dest: "data/sources/sitreps/{name}",
   },
   police: {
-    folder: `${ROOT}/Police`,
+    // Folder name is FPA's choice (created Sep 30 2026), not the category name.
+    folder: `${ROOT}/Levee Police - Protection`,
     descriptor: "police-activity",
     ext: "xlsx",
     cadence: "monthly",
