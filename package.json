@@ -21,6 +21,7 @@
     "@payloadcms/richtext-lexical": "^3.90.2",
     "@payloadcms/storage-vercel-blob": "^3.90.2",
     "@payloadcms/ui": "^3.90.2",
+    "@vercel/analytics": "^2.0.1",
     "@vercel/blob": "^2.8.0",
     "graphql": "^16.14.2",
     "html-to-image": "^1.11.13",
