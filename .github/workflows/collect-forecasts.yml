@@ -4,6 +4,9 @@ name: Collect Forecast Snapshots
 # Fetches directly from NOAA/NWS and writes to Vercel Blob store.
 # Independent of app deployment — works while laptop is closed.
 
+# Schedule owner: AH Datalytics. Re-committed 2026-09-25 so the cron is not
+# attributed to a departed account (GitHub ties scheduled runs to whoever last
+# modified the workflow).
 on:
   schedule:
     - cron: '17 */3 * * *'
@@ -19,9 +22,9 @@ jobs:
     timeout-minutes: 10
     steps:
       - name: Set up Node.js
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v7
         with:
-          node-version: '20'
+          node-version: '24'
 
       - name: Install Vercel Blob SDK
         run: npm install @vercel/blob

@@ -52,7 +52,6 @@ const HERO_HEADING = "Protecting Greater New Orleans";
 
 const EDITORS: { email: string; name: string; role: "admin" | "editor" }[] = [
   { email: "jwilliams@slfpae.gov", name: "L. Jeff Williams", role: "admin" },
-  { email: "oboochever@ahdatalytics.com", name: "Oscar Boochever", role: "admin" },
   { email: "jasher@ahdatalytics.com", name: "Asher", role: "admin" },
   { email: "bhorwitz@ahdatalytics.com", name: "Ben Horwitz", role: "admin" },
 ];
