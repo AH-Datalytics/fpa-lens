@@ -38,8 +38,6 @@ import {
   sumAll,
   daysCovered,
   shortMonthLabel,
-  DISTRICT_NAMES,
-  type DistrictKey,
 } from "@/lib/policeActivity";
 import { usePageCopy } from "@/lib/usePageCopy";
 import { PROTECTION_DEFAULTS } from "@/globals/pages/protectionPage";
@@ -60,11 +58,6 @@ const categoryColor: Record<string, string> = {
   FPA_FACILITIES: "#65bc7b",
   PATROL_COVERAGE: "#9ca3af",
   ENG_MAINT_SUPPORT: "#f59e0b",
-};
-
-const districtColor: Record<DistrictKey, string> = {
-  OLDPD: "#21355a",
-  EJLDPD: "#2FA4A9",
 };
 
 const fieldLabel = Object.fromEntries(policeActivity.fields.map((f) => [f.key, f.label]));
@@ -107,12 +100,6 @@ export default function ProtectionPage() {
   // Per-category sparkline: monthly totals over the selected period.
   const sparkline = (items: typeof data.activityCategories[number]["items"]) =>
     months.map((m) => ({ month: shortMonthLabel(m.month), v: sumKeys([m], items) }));
-
-  const districtTotals = (Object.keys(DISTRICT_NAMES) as DistrictKey[]).map((d) => ({
-    key: d,
-    name: DISTRICT_NAMES[d],
-    total: sumAll(months, d),
-  }));
 
   const periodPhrase = period ? `${period.label} (${period.range})` : "";
   const dataThrough = latest ? latest.label : "";
@@ -253,69 +240,35 @@ export default function ProtectionPage() {
             title="Monthly infrastructure activity"
             subtitle="Field activities logged each month, grouped by the part of the flood-protection system they cover"
           />
-          <div className="grid lg:grid-cols-3 gap-6">
-            <DataCard
-              title="Activities by month"
-              className="lg:col-span-2"
-              source="Levee District Police monthly activity summaries"
-            >
-              <div className="h-80">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={trendData} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                    <XAxis dataKey="month" tick={{ fontSize: 11 }} interval={0} angle={-35} textAnchor="end" height={50} />
-                    <YAxis tick={{ fontSize: 11 }} tickFormatter={(v: number) => v.toLocaleString()} width={56} />
-                    <Tooltip
-                      formatter={(value, name) => [formatNumber(Number(value)), String(name)]}
-                      labelStyle={{ fontWeight: 600 }}
+          <DataCard
+            title="Activities by month"
+            source="Levee District Police monthly activity summaries"
+          >
+            <div className="h-80">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={trendData} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                  <XAxis dataKey="month" tick={{ fontSize: 11 }} interval={0} angle={-35} textAnchor="end" height={50} />
+                  <YAxis tick={{ fontSize: 11 }} tickFormatter={(v: number) => v.toLocaleString()} width={56} />
+                  <Tooltip
+                    formatter={(value, name) => [formatNumber(Number(value)), String(name)]}
+                    labelStyle={{ fontWeight: 600 }}
+                  />
+                  <Legend wrapperStyle={{ fontSize: 11 }} />
+                  {data.activityCategories.map((cat, i) => (
+                    <Bar
+                      key={cat.key}
+                      dataKey={cat.key}
+                      name={cat.name}
+                      stackId="a"
+                      fill={categoryColor[cat.key]}
+                      radius={i === data.activityCategories.length - 1 ? [3, 3, 0, 0] : undefined}
                     />
-                    <Legend wrapperStyle={{ fontSize: 11 }} />
-                    {data.activityCategories.map((cat, i) => (
-                      <Bar
-                        key={cat.key}
-                        dataKey={cat.key}
-                        name={cat.name}
-                        stackId="a"
-                        fill={categoryColor[cat.key]}
-                        radius={i === data.activityCategories.length - 1 ? [3, 3, 0, 0] : undefined}
-                      />
-                    ))}
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
-            </DataCard>
-
-            <DataCard title="By police district" source={`${period?.label}, ${period?.range}`}>
-              <div className="space-y-5">
-                {districtTotals.map((d) => {
-                  const pct = periodTotal ? (d.total / periodTotal) * 100 : 0;
-                  return (
-                    <div key={d.key}>
-                      <div className="flex items-baseline justify-between gap-2 mb-1">
-                        <span className="text-sm font-semibold text-[#21355a]">{d.key}</span>
-                        <span className="text-lg font-bold text-[#21355a]">{formatNumber(d.total)}</span>
-                      </div>
-                      <div className="h-2.5 rounded-full bg-gray-100 overflow-hidden">
-                        <div
-                          className="h-full rounded-full"
-                          style={{ width: `${pct}%`, backgroundColor: districtColor[d.key] }}
-                        />
-                      </div>
-                      <div className="flex justify-between text-[11px] text-gray-500 mt-1">
-                        <span>{d.name}</span>
-                        <span>{pct.toFixed(0)}% of activities</span>
-                      </div>
-                    </div>
-                  );
-                })}
-                <p className="text-xs text-gray-500 leading-snug pt-2 border-t border-gray-100">
-                  Each department patrols its own levee district. Activity mix differs by geography:
-                  river batture and polder checks concentrate in East Jefferson; gauge readings and
-                  Bayou Bienvenue checks in Orleans.
-                </p>
-              </div>
-            </DataCard>
-          </div>
+                  ))}
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </DataCard>
         </section>
 
         {/* MONITORING ACTIVITY */}
