@@ -17,7 +17,7 @@ Friday cron; the first manual run publishes the SharePoint data.
 | Staffing | current-counts overlay; capacity/thresholds stay policy | yes |
 | SITREP | PDF → Claude digest → engineering maintenance list (narrative only) | folder empty — activates on first upload |
 | Turf | newer-month overlay onto `grassCutting` (no regression) | folder empty — activates on first upload |
-| Police | **all** monthly `police-activity_YYYY-MM.xlsx` in `Levee Police - Protection/` (flexible names), merged into a month-by-month series for `/protection` | FPA created the folder Sep 30 2026; Aug 2026 uploaded; FY2026 backfilled locally |
+| Police | **all** monthly `police-activity_YYYY-MM.xlsx` in `Levee Police - Protection/` (flexible names), merged into a month-by-month series for `/protection` | LIVE Oct 5 2026 — Jul + Aug 2026 uploaded as `protection_MM-YYYY.xlsx`; FY2026 backfilled locally |
 
 - Tue/Fri cron `0 13 * * 2,5` (Fridays-only until Aug 11 2026, then weekday-daily until Aug 18 2026), `workflow_dispatch`, commit-only-what-changed, **digest email to `admin@ahdatalytics.com`** (`scripts/notify-digest.mjs`: changes published, per-source status, failures). Sent when data publishes, when a source fails, or on a manual run; quiet runs stay silent so the cadence doesn't bury the signal.
 - SITREP feeds narrative only; readiness/financial/safety come from their own pipelines.

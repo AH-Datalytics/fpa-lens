@@ -16,7 +16,7 @@ Public transparency dashboard for the Southeast Louisiana Flood Protection Autho
 | `/finance` | FY26 budget by category/district, budget vs actuals (monthly YTD refresh), capital projects |
 | `/staffing` | Staffing: leadership, headcount, vacancies, department status |
 | `/environment` | Real-time lakefront flood risk indicator with KNEW fallback wind source (see below) |
-| `/protection` | Infrastructure Protection Operations: 24/7 field protection of the flood system, activity stats, illustrative case example |
+| `/protection` | Infrastructure Protection Operations: 24/7 field protection of the flood system, monthly Levee District Police activity (fiscal year / trailing 12 months, refreshed from SharePoint), illustrative case example |
 | `/about/what-we-do` | About Us: organization overview |
 
 ## Getting Started
