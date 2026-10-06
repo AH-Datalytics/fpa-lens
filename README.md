@@ -267,7 +267,7 @@ When a new SITREP arrives:
 - **Language:** TypeScript
 - **Styling:** Tailwind CSS 4
 - **Charts:** Recharts
-- **Maps:** Leaflet / React-Leaflet
+- **Maps:** Leaflet / React-Leaflet on keyless Esri basemap tiles; MapLibre GL for the tropical weather map
 - **CMS:** Payload 3 (admin at `/admin`), Neon Postgres (prod) / SQLite (local dev), Vercel Blob for media
 - **Deployment:** Vercel (auto-deploy on push to main)
 - **Data extraction:** Python (openpyxl, pdfplumber), Node.js
