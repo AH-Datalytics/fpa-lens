@@ -168,6 +168,7 @@ export default function TropicalWeatherContent() {
             mode={dashboard.mode}
             storm={dashboard.storm}
             outlookText={dashboard.outlookText}
+            outlookGeo={dashboard.geo.outlook}
             probs={dashboard.probs}
             storms={dashboard.storms}
             demoParam={dashboard.demoParam}

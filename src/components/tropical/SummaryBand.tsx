@@ -2,6 +2,7 @@
 
 import { ArrowRight } from "lucide-react";
 import { PAGE_PATH } from "@/lib/tropical/config";
+import { gulfWatch } from "@/lib/tropical/outlookWatch";
 import type { Mode, ProbsEntry, StormEntry } from "@/lib/tropical/types";
 import { Alerts, useMetroAlerts } from "./Alerts";
 import { CoastalAlertsLegend, coastalLegendItems } from "./CoastalAlertsLegend";
@@ -17,6 +18,8 @@ export interface SummaryBandProps {
   mode: Mode;
   storm: StormEntry | null;
   outlookText: { issued: string; text: string } | null;
+  /** Seven-day genesis areas; drives the orange "being monitored" state. */
+  outlookGeo?: GeoJSON.FeatureCollection | null;
   /** storms/{id}/probs.json for the selected storm — see WindProbabilities. */
   probs: ProbsEntry[] | null;
   storms: StormEntry[];
@@ -51,6 +54,7 @@ export function SummaryBand({
   mode,
   storm,
   outlookText,
+  outlookGeo,
   probs,
   storms,
   demoParam,
@@ -113,7 +117,7 @@ export function SummaryBand({
         ) : (
           <>
             <div className="flex flex-wrap items-start justify-between gap-4 px-5 py-4">
-              <OutlookPanel outlookText={outlookText} />
+              <OutlookPanel outlookText={outlookText} watch={gulfWatch(outlookGeo)} />
               {/* Full navigation updates the URL-backed dashboard data source. */}
               <a
                 className="inline-flex shrink-0 items-center gap-1.5 rounded-md border border-gray-200 px-3 py-1.5 text-xs font-medium text-[#21355a] hover:bg-gray-50"
