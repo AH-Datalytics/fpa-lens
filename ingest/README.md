@@ -23,7 +23,7 @@ the `gulfwatch` package name is kept so fixes can still be traded with upstream.
 | `storms/<id>/intensity.json` | Per-model max-sustained-wind series |
 | `storms/<id>/probs.json` | Wind speed probabilities at named points |
 | `storms/<id>/text.json` | Public advisory + forecast discussion |
-| `outlook.geojson` / `outlook.json` | Seven-day genesis outlook (quiet mode) |
+| `outlook.geojson` / `outlook.json` | Seven-day genesis outlook (quiet mode). The page also reads `outlook.geojson`'s `RISK7DAY`/`PROB2DAY`/`PROB7DAY` to show the orange "Gulf disturbance being monitored" state (see `src/lib/tropical/outlookWatch.ts`), so keep those fields and the low/medium/high thresholds stable |
 
 Per-product failures are recorded in `manifest.json`'s `errors` list and surfaced
 in the page's "Some products are temporarily unavailable" disclosure; the run
