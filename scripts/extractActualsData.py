@@ -37,6 +37,11 @@ def resolve_input():
 
 def derive_period(path):
     """Derive the reporting period from a budget-actuals_YYYY-MM filename.
+
+    FPA Finance names the workbook by FISCAL year, not calendar year: the
+    fiscal year runs Jul-Jun, so `budget-actuals_2027-09` is September of
+    FY2027, i.e. September 2026. (Reading the year as a calendar year labelled
+    the Aug-Oct 2026 refreshes "FY28 ... September 30, 2027" on the live site.)
     Falls back to the legacy March 2026 labels if the name has no YYYY-MM."""
     m = re.search(r"(\d{4})-(\d{2})", os.path.basename(path))
     if not m:
@@ -46,13 +51,20 @@ def derive_period(path):
             "lastUpdated": "2026-03-31",
             "fiscalYear": 2026,
         }
-    year, month = int(m.group(1)), int(m.group(2))
+    fy, month = int(m.group(1)), int(m.group(2))
+    year = fy if month <= 6 else fy - 1   # calendar year of that fiscal month
     last_day = calendar.monthrange(year, month)[1]
-    fy = year if month <= 6 else year + 1   # fiscal year runs Jul-Jun
+    last_updated = f"{year}-{month:02d}-{last_day:02d}"
+    if last_updated > date.today().isoformat():
+        print(
+            f"WARNING: derived period end {last_updated} is in the future for {os.path.basename(path)}; "
+            "check the workbook's filename convention",
+            file=sys.stderr,
+        )
     return {
         "period": f"FY{fy % 100} YTD through {calendar.month_name[month]} {last_day}, {year}",
         "periodLabel": f"Jul {fy - 1} - {calendar.month_abbr[month]} {year}",
-        "lastUpdated": f"{year}-{month:02d}-{last_day:02d}",
+        "lastUpdated": last_updated,
         "fiscalYear": fy,
     }
 

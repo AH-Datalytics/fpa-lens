@@ -30,6 +30,8 @@ import {
   getActuals,
   type ActualsData,
   type ActualsLineItem,
+  fiscalYearElapsedPct,
+  fiscalYearLabel,
 } from "@/lib/financeData";
 import { usePageCopy } from "@/lib/usePageCopy";
 import { FINANCE_DEFAULTS } from "@/globals/pages/financePage";
@@ -43,7 +45,9 @@ const ACRONYMS: Record<string, string> = {
   HSDRRS: "Hurricane & Storm Damage Risk Reduction System",
   OPEB: "Other Post-Employment Benefits",
   SLIP: "Stormwater, Levee Improvements & Protection",
-  FY26: "Fiscal Year 2026",
+  FY26: "Fiscal Year 2026 (Jul 2025 - Jun 2026)",
+  FY27: "Fiscal Year 2027 (Jul 2026 - Jun 2027)",
+  FY28: "Fiscal Year 2028 (Jul 2027 - Jun 2028)",
   "O&M": "Operations & Maintenance (excludes capital projects)",
 };
 
@@ -133,7 +137,7 @@ export default function FinancialPage() {
         <SectionHeader
           title={copy.pageTitle}
           subtitle={copy.pageSubtitle}
-          source="FY26 Adopted Budget & Dashboard Reports"
+          source={`${fiscalYearLabel(actuals.fiscalYear)} Adopted Budget & Dashboard Reports`}
         />
 
         {/* ================================================================
@@ -144,10 +148,7 @@ export default function FinancialPage() {
           const entity = actuals.entities[selectedEntity];
 
           // Fiscal year progress: July 1 through last updated date
-          const fyStart = new Date(2025, 6, 1); // July 1, 2025
-          const dataDate = new Date(actuals.lastUpdated + "T00:00:00");
-          const fyEnd = new Date(2026, 5, 30); // June 30, 2026
-          const fyElapsedPct = Math.min(100, Math.max(0, Math.round(((dataDate.getTime() - fyStart.getTime()) / (fyEnd.getTime() - fyStart.getTime())) * 100)));
+          const fyElapsedPct = fiscalYearElapsedPct(actuals.lastUpdated, actuals.fiscalYear);
 
           // Revenue: % of annual collected
           const revAnnual = we.revenue.total.totalBudget;

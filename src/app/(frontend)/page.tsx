@@ -68,7 +68,7 @@ const quickLinks = [
   {
     title: "About Us",
     description: "What SLFPA-E does and how we protect the region",
-    href: "/about/what-we-do",
+    href: "/about",
     icon: Info,
   },
 ];
@@ -123,11 +123,8 @@ export default async function Home() {
   // O&M actuals come from the shared finance loader so this card never
   // drifts from /finance. Refresh `public/data/actuals-fy26.json` when
   // new Dashboard Reports data arrives and both surfaces pick it up.
-  const { omActual, omAnnualBudget, omDataDate } = getOmSummary();
+  const { omActual, omAnnualBudget, fyElapsedPct } = getOmSummary();
   const omPct = Math.round((omActual / omAnnualBudget) * 100);
-  const fyStart = new Date(2025, 6, 1);
-  const fyEnd = new Date(2026, 5, 30);
-  const fyElapsedPct = Math.min(100, Math.max(0, Math.round(((new Date(omDataDate + "T00:00:00").getTime() - fyStart.getTime()) / (fyEnd.getTime() - fyStart.getTime())) * 100)));
 
   const rollups = computeReadinessRollups();
 
