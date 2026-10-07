@@ -440,3 +440,21 @@ describe("density layer", () => {
     expect(at(LAYER_IDS.density)).toBeLessThan(at(LAYER_IDS.modelsEnsemble));
   });
 });
+
+describe("modelRows run time", () => {
+  it("carries each model's own cycle so the list can show when it ran", () => {
+    const rows = modelRows({
+      type: "FeatureCollection",
+      features: [
+        line({ model: "AVNO", label: "GFS", kind: "physics", group: "deterministic", cycle: "2026100706" }),
+        line({ model: "CMC", label: "CMC", kind: "physics", group: "deterministic", cycle: "2026100700" }),
+        line({ model: "NVGM", label: "NAVGEM", kind: "physics", group: "deterministic" }),
+      ],
+    });
+    expect(rows.map((r) => [r.code, r.cycle])).toEqual([
+      ["AVNO", "2026100706"],
+      ["CMC", "2026100700"],
+      ["NVGM", undefined],
+    ]);
+  });
+});

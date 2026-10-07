@@ -1,5 +1,5 @@
 import type { DensityProduct, DensitySource } from "./types";
-import { cdtDateTime, formatCycle } from "./format";
+import { cdtDateTime, formatRun } from "./format";
 
 /** Keep in step with BAND_EDGES / BAND_COLORS in ingest/gulfwatch/density.py. */
 export const DENSITY_BANDS: { from: number; color: string }[] = [
@@ -33,17 +33,11 @@ export const GOOGLE_CITATION_PARTS = {
     ". This data is intended for experimental modelling only and is not intended, validated, or approved for real world use.",
 };
 
-function cycleLabel(cycle: string): string {
-  const date = new Date(Date.UTC(+cycle.slice(0, 4), +cycle.slice(4, 6) - 1, +cycle.slice(6, 8)));
-  const day = new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", timeZone: "UTC" }).format(date);
-  return `${formatCycle(cycle)} ${day}`;
-}
-
 export function densityCaption(source: DensitySource, p: DensityProduct): string {
   const miles = Math.round((p.radiusKm * 0.621371) / 5) * 5;
   return (
     `Share of ${DENSITY_SOURCE_LABEL[source]} tracks whose center passes within about ${miles} miles ` +
     `(${p.radiusKm} km), ${cdtDateTime(p.start)} through ${cdtDateTime(p.end)}. ` +
-    `${p.members} of ${p.expected} members, ${cycleLabel(p.cycle)} run.`
+    `${p.members} of ${p.expected} members, ${formatRun(p.cycle)} run.`
   );
 }

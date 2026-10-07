@@ -208,6 +208,8 @@ export interface ModelRow {
   label: string;
   kind: string;
   group: ModelGroup;
+  /** This model's own run (YYYYMMDDHH); models in one a-deck differ. */
+  cycle?: string;
 }
 
 export function modelRows(models: GeoJSON.FeatureCollection | null | undefined): ModelRow[] {
@@ -223,6 +225,7 @@ export function modelRows(models: GeoJSON.FeatureCollection | null | undefined):
       label: String(f.properties?.label ?? code),
       kind: String(f.properties?.kind ?? ""),
       group,
+      cycle: f.properties?.cycle ? String(f.properties.cycle) : undefined,
     });
   }
   return Array.from(seen.values());

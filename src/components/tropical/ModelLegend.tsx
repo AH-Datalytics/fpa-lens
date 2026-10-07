@@ -10,6 +10,7 @@ import {
   MODEL_COLORS,
   modelDescription,
 } from "@/lib/tropical/modelColors";
+import { formatRun } from "@/lib/tropical/format";
 import { Kicker } from "./Kicker";
 
 export interface ModelLegendProps {
@@ -202,6 +203,7 @@ export function ModelLegend({
                     style={{ borderColor: MODEL_COLORS[model.code] ?? DEFAULT_MODEL_COLOR }}
                   />
                   {model.label}
+                  {model.cycle && <span className="text-gray-400">({formatRun(model.cycle)})</span>}
                 </label>
               ))}
             </Fragment>

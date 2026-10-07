@@ -6,6 +6,7 @@ import {
   cdtTime,
   countdown,
   formatCycle,
+  formatRun,
   nextOutlookIssueTime,
   stormTypeLabel,
 } from "../format";
@@ -149,5 +150,12 @@ describe("nextOutlookIssueTime", () => {
 
   it("does not preserve minutes from an off-schedule source timestamp", () => {
     expect(nextOutlookIssueTime("2026-07-22T17:13:24Z")).toBe("1:00 PM CDT");
+  });
+});
+
+describe("formatRun", () => {
+  it("gives the run hour and UTC date", () => {
+    expect(formatRun("2026100706")).toBe("06Z Oct 7");
+    expect(formatRun("2026093018")).toBe("18Z Sep 30");
   });
 });

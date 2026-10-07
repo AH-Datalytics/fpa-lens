@@ -118,6 +118,14 @@ export function stormTypeLabel(classification: string): string {
   }
 }
 
+/** "2026100706" -> "06Z Oct 7": a model run's hour and UTC date. Models in one
+ *  a-deck run on different cycles, so each is labeled with its own. */
+export function formatRun(cycle: string): string {
+  const date = new Date(Date.UTC(+cycle.slice(0, 4), +cycle.slice(4, 6) - 1, +cycle.slice(6, 8)));
+  const day = new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", timeZone: "UTC" }).format(date);
+  return `${formatCycle(cycle)} ${day}`;
+}
+
 /** "2026072212" -> "12Z" (the modelCycle hour, NHC/model-guidance style). */
 export function formatCycle(modelCycle: string): string {
   const hh = modelCycle.slice(-2);
