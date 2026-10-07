@@ -24,6 +24,8 @@ import {
 import { computeReadinessRollups } from "@/lib/readinessRollups";
 import { getOmSummary } from "@/lib/financeData";
 import { computeZoneLevel } from "@/lib/staffingZones";
+import { applyStaffingOverlay } from "@/lib/staffingOverlay";
+import staffingJson from "../../../public/data/staffing.json";
 import HomeHero from "@/components/HomeHero";
 
 const quickLinks = [
@@ -107,11 +109,15 @@ export const revalidate = 60;
 export default async function Home() {
   const infra = getCategory("Infrastructure Readiness")!;
   const staffReadiness = getCategory("Staffing Readiness")!;
+  // Same overlay /staffing applies (monthly workbook -> public/data/staffing.json)
+  // so the home card's status, bar and vacancy count never drift from that page.
+  const staffing = applyStaffingOverlay(staffingData, staffingJson);
   const staffStatus: StatusLevel =
     (computeZoneLevel(
-      staffingData.coreFPU.aggregate.current,
-      staffingData.coreFPU.aggregate.thresholds,
+      staffing.coreFPU.aggregate.current,
+      staffing.coreFPU.aggregate.thresholds,
     ) as StatusLevel) ?? staffReadiness.status;
+  const staffDescription = `${staffing.headcount.vacancies} vacancies agency-wide; recruitment efforts ongoing`;
   const financial = getCategory("Financial Readiness")!;
 
   // O&M actuals come from the shared finance loader so this card never
@@ -240,11 +246,11 @@ export default async function Home() {
               </div>
               <div className="mb-4">
                 <StaffingZoneBar
-                  group={staffingData.coreFPU.aggregate}
+                  group={staffing.coreFPU.aggregate}
                   variant="compact"
                 />
               </div>
-              <p className="text-sm text-gray-600 line-clamp-2">{staffReadiness.description}</p>
+              <p className="text-sm text-gray-600 line-clamp-2">{staffDescription}</p>
               <div className={`mt-4 flex items-center text-sm font-medium ${statusText(staffStatus)}`}>
                 View details
                 <ArrowRight className="h-4 w-4 ml-1 group-hover:translate-x-1 transition-transform" />
