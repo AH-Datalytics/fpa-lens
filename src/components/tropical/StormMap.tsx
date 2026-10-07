@@ -14,9 +14,10 @@ import {
 } from "maplibre-gl";
 import type { FilterSpecification } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
-import type { LayerKey, LayerState, WindThreshold } from "@/lib/tropical/layers";
-import type { Mode, TextProduct } from "@/lib/tropical/types";
+import type { DensityChoice, LayerKey, LayerState, WindThreshold } from "@/lib/tropical/layers";
+import type { DensityProduct, DensitySource, Mode, TextProduct } from "@/lib/tropical/types";
 import type { OtherStorm } from "@/lib/tropical/useDashboard";
+import { DensityLegend } from "./DensityLegend";
 import { ForecastDiscussion } from "./ForecastDiscussion";
 import { LayersControl } from "./LayersControl";
 import {
@@ -87,6 +88,8 @@ export interface StormMapProps {
       sourceUrl: string;
       bounds: [[number, number], [number, number]];
     };
+    /** Track-density images for the selected storm, keyed by ensemble. */
+    density: Partial<Record<DensitySource, DensityProduct & { url: string }>>;
   };
   /** The selected storm's headline facts, for the click-through popup on its
    *  current-position icon. Undefined in quiet mode (no storm to describe). */
@@ -115,6 +118,7 @@ export interface StormMapProps {
    *  standalone floating RADAR button. */
   layers: LayerState;
   onLayersToggle: (key: LayerKey) => void;
+  onDensityChange: (choice: DensityChoice) => void;
   windThreshold: WindThreshold;
   onWindThresholdChange: (threshold: WindThreshold) => void;
   /** Full NHC outlook prose in quiet mode. Used only to surface the explicit
@@ -212,6 +216,7 @@ export default function StormMap({
   windProbCyclesBehind,
   layers,
   onLayersToggle,
+  onDensityChange,
   windThreshold,
   onWindThresholdChange,
   outlookText,
@@ -236,6 +241,12 @@ export default function StormMap({
   );
   const { data: satelliteObjectUrl } = useSWR<string>(
     layers.satellite ? geo.satellite?.url ?? null : null,
+    imageObjectUrlFetcher,
+    VERSIONED_DATA_OPTIONS
+  );
+  const densityProduct = layers.density === "off" ? undefined : geo.density[layers.density];
+  const { data: densityObjectUrl } = useSWR<string>(
+    densityProduct?.url ?? null,
     imageObjectUrlFetcher,
     VERSIONED_DATA_OPTIONS
   );
@@ -437,6 +448,28 @@ export default function StormMap({
       ],
     });
   }, [geo.satellite, layers.satellite, loaded, satelliteObjectUrl]);
+
+  // --- track density image, same placement pattern as the satellite image ---
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !loaded) return;
+    if (!densityProduct || !densityObjectUrl) {
+      map.setLayoutProperty(LAYER_IDS.density, "visibility", "none");
+      return;
+    }
+    map.setLayoutProperty(LAYER_IDS.density, "visibility", "visible");
+    const [[west, south], [east, north]] = densityProduct.bounds;
+    const src = map.getSource(SOURCE_IDS.density) as ImageSource | undefined;
+    src?.updateImage({
+      url: densityObjectUrl,
+      coordinates: [
+        [west, north],
+        [east, north],
+        [east, south],
+        [west, south],
+      ],
+    });
+  }, [densityProduct, densityObjectUrl, loaded]);
 
   // Historical replays use a committed, advisory-matched radar crop. Keep it
   // as an image source so playback is fast and independent of IEM availability.
@@ -651,6 +684,9 @@ export default function StormMap({
           {geo.satellite.sourceLabel} · {cdtDateTime(geo.satellite.issued)}
         </a>
       )}
+      {layers.density !== "off" && densityProduct && (
+        <DensityLegend source={layers.density} product={densityProduct} />
+      )}
       {/* inset-y-3 + max-h-full on the panel keeps a long options list inside
           the map instead of overflowing past its bottom edge. */}
       <div className="absolute bottom-3 right-3 top-3 z-10 flex flex-col items-end">
@@ -693,6 +729,9 @@ export default function StormMap({
           windProbError={Boolean(windProbError)}
           windProbCycleLabel={windProbCycleLabel}
           windProbCyclesBehind={windProbCyclesBehind}
+          showDensity={Boolean(stormSummary)}
+          densityAvailable={{ gefs: Boolean(geo.density.gefs), google: Boolean(geo.density.google) }}
+          onDensityChange={onDensityChange}
         />
       </div>
     </div>

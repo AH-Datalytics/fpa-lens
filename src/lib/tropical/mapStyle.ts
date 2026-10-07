@@ -367,6 +367,7 @@ export const RADAR_TILE_URL =
 export const LAYER_IDS = {
   imagery: "gw-imagery",
   satellite: "gw-weather-satellite",
+  density: "gw-density",
   labels: "gw-labels",
   outlookFill: "gw-outlook-fill",
   outlookLine: "gw-outlook-line",
@@ -396,6 +397,7 @@ export const LAYER_IDS = {
 export const SOURCE_IDS = {
   imagery: "gw-imagery",
   satellite: "gw-weather-satellite",
+  density: "gw-density",
   labels: "gw-labels",
   outlook: "gw-outlook",
   cone: "gw-cone",
@@ -489,6 +491,17 @@ export function buildInitialStyle(): StyleSpecification {
           [-95.5, 19],
         ],
       },
+      // Track density (ingest/gulfwatch/density.py): one image, swapped by URL.
+      [SOURCE_IDS.density]: {
+        type: "image",
+        url: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR4nGNgYGBgAAAABQABpfZFQAAAAABJRU5ErkJggg==",
+        coordinates: [
+          [-95.5, 32],
+          [-80, 32],
+          [-80, 19],
+          [-95.5, 19],
+        ],
+      },
       [SOURCE_IDS.labels]: {
         type: "raster",
         tiles: [ESRI_LABELS_TILE_URL],
@@ -532,6 +545,15 @@ export function buildInitialStyle(): StyleSpecification {
           "raster-fade-duration": 0,
           "raster-contrast": 0.08,
         },
+      },
+      {
+        // Below the place-name labels so they stay readable through it, and
+        // below the cone, model lines and storm icon (spec 2026-10-07).
+        id: LAYER_IDS.density,
+        type: "raster",
+        source: SOURCE_IDS.density,
+        layout: { visibility: "none" },
+        paint: { "raster-opacity": 0.75, "raster-fade-duration": 0, "raster-resampling": "nearest" },
       },
       {
         id: LAYER_IDS.labels,

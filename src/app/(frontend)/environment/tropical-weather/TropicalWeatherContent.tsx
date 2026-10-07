@@ -15,6 +15,7 @@ import { cdtTime, formatCycle } from "@/lib/tropical/format";
 import {
   DEFAULT_LAYER_STATE,
   DEMO_LAYER_STATE,
+  setDensity,
   toggleLayer,
   type WindThreshold,
 } from "@/lib/tropical/layers";
@@ -210,6 +211,7 @@ export default function TropicalWeatherContent() {
               windProbCyclesBehind={dashboard.storm?.windprobCyclesBehind}
               layers={layers}
               onLayersToggle={(key) => setLayers((s) => toggleLayer(s, key))}
+              onDensityChange={(choice) => setLayers((s) => setDensity(s, choice))}
               windThreshold={windThreshold}
               onWindThresholdChange={setWindThreshold}
               outlookText={dashboard.outlookText?.text}

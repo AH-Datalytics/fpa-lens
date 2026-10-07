@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 import {
   allModelCodes,
+  buildInitialStyle,
+  LAYER_IDS,
   excludeOfficialModel,
   hasAiGuidance,
   mergeFeatureCollections,
@@ -425,5 +427,16 @@ describe("mergeFeatureCollections", () => {
 
   it("returns an empty FeatureCollection for an empty list", () => {
     expect(mergeFeatureCollections([]).features).toHaveLength(0);
+  });
+});
+
+describe("density layer", () => {
+  it("sits above the weather satellite and below labels, cone and tracks", () => {
+    const ids = buildInitialStyle().layers.map((layer) => layer.id);
+    const at = (id: string) => ids.indexOf(id);
+    expect(at(LAYER_IDS.density)).toBeGreaterThan(at(LAYER_IDS.satellite));
+    expect(at(LAYER_IDS.density)).toBeLessThan(at(LAYER_IDS.labels));
+    expect(at(LAYER_IDS.density)).toBeLessThan(at(LAYER_IDS.coneFill));
+    expect(at(LAYER_IDS.density)).toBeLessThan(at(LAYER_IDS.modelsEnsemble));
   });
 });

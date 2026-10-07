@@ -19,6 +19,10 @@ export interface ModelLegendProps {
   onEnabledChange: (enabled: boolean) => void;
   cycleLabel?: string;
   models?: GeoJSON.FeatureCollection | null;
+  /** A density layer is drawn, so "Official forecast" is not the only thing on the map. */
+  densityOn?: boolean;
+  /** "Official forecast" means official forecast only: it also clears density. */
+  onOfficialForecast?: () => void;
 }
 
 const CHECKBOX =
@@ -35,6 +39,8 @@ export function ModelLegend({
   onEnabledChange,
   cycleLabel,
   models,
+  densityOn = false,
+  onOfficialForecast,
 }: ModelLegendProps) {
   const rows = modelRows(models);
   const deterministic = rows.filter((row) => row.group === "deterministic");
@@ -104,9 +110,16 @@ export function ModelLegend({
     <section className="border-b border-gray-200 px-3.5 py-2.5" aria-labelledby="forecast-track-heading">
       <Kicker id="forecast-track-heading">Forecast track</Kicker>
       <div className="space-y-1">
-        <button type="button" className={choiceClass(!enabled)} onClick={() => choose([])}>
+        <button
+          type="button"
+          className={choiceClass(!enabled && !densityOn)}
+          onClick={() => {
+            choose([]);
+            onOfficialForecast?.();
+          }}
+        >
           <b className="text-xs font-semibold text-gray-900">Official forecast</b>
-          {!enabled && <Check className="h-4 w-4 shrink-0 text-[#21355a]" aria-hidden="true" />}
+          {!enabled && !densityOn && <Check className="h-4 w-4 shrink-0 text-[#21355a]" aria-hidden="true" />}
         </button>
         <button type="button" className={choiceClass(allSelected)} onClick={() => choose(allCodes)}>
           <span>

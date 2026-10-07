@@ -8,6 +8,9 @@ import { cdtDateTime } from "@/lib/tropical/format";
 import { radarAgeMinutes, RADAR_STALE_AFTER_MINUTES } from "@/lib/tropical/radar";
 import { Kicker } from "./Kicker";
 import { ModelLegend } from "./ModelLegend";
+import { DensityControl } from "./DensityControl";
+import type { DensityChoice } from "@/lib/tropical/layers";
+import type { DensitySource } from "@/lib/tropical/types";
 
 export interface LayersControlProps {
   layers: LayerState;
@@ -42,6 +45,10 @@ export interface LayersControlProps {
   hasIntensity: boolean;
   intensityOpen: boolean;
   onIntensityToggle: () => void;
+  /** Shown whenever a storm is selected, independent of the spaghetti list. */
+  showDensity: boolean;
+  densityAvailable: Partial<Record<DensitySource, boolean>>;
+  onDensityChange: (choice: DensityChoice) => void;
 }
 
 const WIND_THRESHOLD_LABELS: Record<WindThreshold, string> = {
@@ -95,6 +102,9 @@ export function LayersControl({
   hasIntensity,
   intensityOpen,
   onIntensityToggle,
+  showDensity,
+  densityAvailable,
+  onDensityChange,
 }: LayersControlProps) {
   // Collapsed on small screens: an open panel would cover most of the map.
   const [open, setOpen] = useState(() =>
@@ -128,7 +138,12 @@ export function LayersControl({
               }}
               cycleLabel={cycleLabel}
               models={models}
+              densityOn={layers.density !== "off"}
+              onOfficialForecast={() => onDensityChange("off")}
             />
+          )}
+          {showDensity && (
+            <DensityControl choice={layers.density} onChange={onDensityChange} available={densityAvailable} />
           )}
 
           <section className={SECTION} aria-labelledby="weather-overlays-heading">
