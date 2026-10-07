@@ -370,7 +370,8 @@ function useDashboardSource(): DashboardData {
     [otherStormEntries, otherCones]
   );
 
-  const stormVersion = storm ? stormVersionOf(storm) : null;
+  // Memoized so React Compiler can see it only changes with the storm.
+  const stormVersion = useMemo(() => (storm ? stormVersionOf(storm) : null), [storm]);
   const stormFileUrl = (path: string) => versionedDataUrl(base, path, stormVersion);
   const coneUrl = storm ? stormFileUrl(storm.files.cone) : null;
   const trackUrl = storm ? stormFileUrl(storm.files.track) : null;
