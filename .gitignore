@@ -82,3 +82,7 @@ cms-media/
 # Python bytecode (ingest/)
 __pycache__/
 *.py[cod]
+
+# Local tropical ingest preview (ingest/scripts/local_preview.py). Holds
+# Google Weather Lab-derived images: internal use only, never commit.
+/public/tropical/local-preview/
