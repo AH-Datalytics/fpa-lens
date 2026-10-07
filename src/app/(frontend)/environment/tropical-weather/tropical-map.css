@@ -202,3 +202,9 @@
   font-size: 11px;
   color: #64748b;
 }
+
+/* Zoom buttons live bottom-left (the density legend owns the top-left).
+   Lifted clear of the satellite source line that sits on the bottom edge. */
+.tw-map-frame .maplibregl-ctrl-bottom-left .maplibregl-ctrl-group {
+  margin-bottom: 1.5rem;
+}

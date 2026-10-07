@@ -5,7 +5,7 @@ import type { DensityProduct, DensitySource } from "@/lib/tropical/types";
  * required by its terms whenever its layer is shown. */
 export function DensityLegend({ source, product }: { source: DensitySource; product: DensityProduct }) {
   return (
-    <div className="absolute bottom-6 left-2 z-10 w-[min(20rem,calc(100%-1rem))] rounded-md bg-white/90 px-2.5 py-2 text-[10px] leading-snug text-gray-700 shadow">
+    <div className="absolute left-2 top-14 z-10 w-[min(20rem,calc(100%-1rem))] sm:left-3 sm:top-3 rounded-md bg-white/90 px-2.5 py-2 text-[10px] leading-snug text-gray-700 shadow">
       <div className="flex h-2.5 overflow-hidden rounded-sm" aria-hidden="true">
         {DENSITY_BANDS.map((band) => (
           <span key={band.from} className="flex-1" style={{ backgroundColor: band.color }} />

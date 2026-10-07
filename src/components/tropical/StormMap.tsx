@@ -188,9 +188,9 @@ function clearMarkers(markers: Marker[]): void {
  */
 function CompassRose() {
   return (
-    // Sits below MapLibre's zoom buttons, which own the top-left corner.
+    // Sits just above MapLibre's zoom buttons in the bottom-left corner.
     <svg
-      className="tw-compass pointer-events-none absolute left-2 top-[4.75rem] z-10 h-14 w-14"
+      className="tw-compass pointer-events-none absolute bottom-[5.75rem] left-2 z-10 h-14 w-14"
       viewBox="0 0 60 60"
       aria-hidden="true"
     >
@@ -304,7 +304,8 @@ export default function StormMap({
       // over the map now zooms instead, so the map is sized to leave page
       // margin either side on desktop and the rail is scrollable past it.
     });
-    map.addControl(new NavigationControl({ showCompass: false, showZoom: true }), "top-left");
+    // Bottom-left (Jeff, 2026-10-07): the top-left corner holds the density legend.
+    map.addControl(new NavigationControl({ showCompass: false, showZoom: true }), "bottom-left");
     mapRef.current = map;
 
     map.on("load", () => {
