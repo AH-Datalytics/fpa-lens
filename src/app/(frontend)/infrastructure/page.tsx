@@ -32,7 +32,7 @@ import {
   formatMonthLabel,
 } from "@/data/siteData";
 import { grassCuttingData } from "@/data/grassCutting";
-import { computeMonthlyKpi, type AnyZone } from "@/lib/turfMaintenance";
+import { computeSystemTurfRollup, type AnyZone } from "@/lib/turfMaintenance";
 import { usePageCopy } from "@/lib/usePageCopy";
 import { INFRASTRUCTURE_DEFAULTS } from "@/globals/pages/infrastructurePage";
 
@@ -286,27 +286,18 @@ export default function OurSystemPage() {
   const veRatio = veExpected > 0 ? (ve.percentComplete / veExpected) * 100 : 100;
   const veStatus = statusFromRatio(veRatio);
 
-  // Turf maintenance rollup. Each zone produces a Green/Amber/Red KPI
-  // from its monthly progress; "on pace" = Green. Zones without
-  // reported actuals (hasReportedData=false) count against the total
-  // but not toward "on pace." Card status uses the on-pace ratio with
-  // the same Green ≥ 90 / Amber ≥ 80 / Red < 80 thresholds the rest of
-  // the site uses, so 13/14 reads Green like every other ≥ 90% metric.
+  // Turf maintenance rollup, shared with the home rollup and the turf page via
+  // computeSystemTurfRollup: on-pace zones over zones that have reported this
+  // month (Green ≥ 90 / Amber ≥ 80 / Red < 80 on that ratio). Zones awaiting
+  // their weekly update are excluded rather than read as Behind.
   const gcZonesAll: AnyZone[] = [
     ...grassCuttingData.zones,
     ...grassCuttingData.ejldZones,
     ...grassCuttingData.lbbldZones,
   ];
-  const gcTotal = gcZonesAll.length;
   const gcAcres = Math.round(gcZonesAll.reduce((sum, z) => sum + z.acres, 0));
-  let gcCompleted = 0;
-  for (const zone of gcZonesAll) {
-    if (!zone.hasReportedData) continue;
-    const kpi = computeMonthlyKpi(zone, grassCuttingData.reportingMonth);
-    if (kpi.level === "green") gcCompleted += 1;
-  }
-  const gcRatio = gcTotal > 0 ? (gcCompleted / gcTotal) * 100 : 100;
-  const gcStatus: StatusColor = statusFromRatio(gcRatio);
+  const gc = computeSystemTurfRollup(gcZonesAll, grassCuttingData.reportingMonth);
+  const gcStatus: StatusColor = gc.level === null ? "NEUTRAL" : statusFromRatio(gc.ratio);
 
   return (
     <div className="py-12">
@@ -595,9 +586,13 @@ export default function OurSystemPage() {
                     title="Monthly Turf Maintenance"
                     mandate="Internal O&amp;M (per-zone monthly target)"
                     icon={Sprout}
-                    big={`${gcCompleted} / ${gcTotal}`}
-                    unit="zones on pace"
-                    actual={`${grassCuttingData.reportingMonth.label} progress across all 3 districts (~${gcAcres.toLocaleString()} ac)`}
+                    big={gc.reporting > 0 ? `${gc.onPace} / ${gc.reporting}` : "Awaiting"}
+                    unit={gc.reporting > 0 ? (gc.awaiting > 0 ? "reporting zones on pace" : "zones on pace") : "weekly update"}
+                    badgeLabel={gc.level === null ? "Awaiting" : undefined}
+                    actual={
+                      `${grassCuttingData.reportingMonth.label} progress across all 3 districts (~${gcAcres.toLocaleString()} ac)` +
+                      (gc.awaiting > 0 ? ` · ${gc.awaiting} of ${gc.total} zones awaiting weekly update` : "")
+                    }
                     status={gcStatus}
                     topCta="View full page"
                   />

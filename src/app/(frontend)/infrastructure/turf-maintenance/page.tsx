@@ -14,6 +14,7 @@ import {
 } from "@/data/grassCutting";
 import {
   computeMonthlyKpi,
+  computeSystemTurfRollup,
   cycle1TickPosition,
   monthlyTargetAcres,
   type AnyZone,
@@ -319,20 +320,15 @@ export default function GrassCuttingPage() {
   // the same on-pace count and Green/Amber/Red status the home and
   // infrastructure pages use. Same 90/80 thresholds as the rest of the
   // site.
+  // Zones awaiting their weekly update are excluded from the ratio (see
+  // computeSystemTurfRollup); when nothing has reported yet the badge is gray.
   const allZonesForRollup: AnyZone[] = [...zones, ...ejldZones, ...lbbldZones];
-  const onPaceCount = allZonesForRollup.reduce((n, zone) => {
-    if (!zone.hasReportedData) return n;
-    return computeMonthlyKpi(zone, reportingMonth).level === "green" ? n + 1 : n;
-  }, 0);
-  const onPaceRatio = systemZones > 0 ? (onPaceCount / systemZones) * 100 : 100;
-  const rollupLevel: KpiLevel =
-    onPaceRatio >= 90 ? "green" : onPaceRatio >= 80 ? "amber" : "red";
-  const rollupBadgeLabel =
-    rollupLevel === "green"
-      ? "On pace"
-      : rollupLevel === "amber"
-        ? "Watch"
-        : "Behind";
+  const rollup = computeSystemTurfRollup(allZonesForRollup, reportingMonth);
+  const onPaceCount = rollup.onPace;
+  const rollupLevel: KpiLevel | null = rollup.level;
+  const rollupBadgeLabel = rollup.badgeLabel;
+  const rollupBadgeClass = rollupLevel ? PALETTE[rollupLevel].badge : "bg-gray-100 text-gray-600";
+  const rollupDotClass = rollupLevel ? PALETTE[rollupLevel].dot : "bg-gray-400";
 
   const copy = usePageCopy("turf-page", TURF_DEFAULTS);
 
@@ -396,20 +392,31 @@ export default function GrassCuttingPage() {
                   {reportingMonth.label} system status
                 </div>
                 <div className="text-sm text-gray-700 mt-1">
-                  <span className="text-2xl font-bold text-[#21355a] align-middle">
-                    {onPaceCount}
-                  </span>
-                  <span className="align-middle">
-                    {" "}
-                    of {systemZones} zones on pace this month
-                  </span>
+                  {rollup.reporting > 0 ? (
+                    <>
+                      <span className="text-2xl font-bold text-[#21355a] align-middle">
+                        {onPaceCount}
+                      </span>
+                      <span className="align-middle">
+                        {" "}
+                        of {rollup.reporting} {rollup.awaiting > 0 ? "reporting " : ""}zones on pace this month
+                      </span>
+                    </>
+                  ) : (
+                    <span className="align-middle">No weekly entries logged yet this month</span>
+                  )}
+                  {rollup.awaiting > 0 && (
+                    <div className="text-xs text-gray-500 mt-1">
+                      {rollup.awaiting} of {systemZones} zones awaiting weekly update
+                    </div>
+                  )}
                 </div>
               </div>
               <span
-                className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold ${PALETTE[rollupLevel].badge}`}
+                className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold ${rollupBadgeClass}`}
               >
                 <span
-                  className={`inline-block w-1.5 h-1.5 rounded-full ${PALETTE[rollupLevel].dot}`}
+                  className={`inline-block w-1.5 h-1.5 rounded-full ${rollupDotClass}`}
                   aria-hidden="true"
                 />
                 {rollupBadgeLabel}

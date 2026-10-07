@@ -11,7 +11,7 @@
 
 import { readinessMetrics } from "@/data/siteData";
 import { grassCuttingData } from "@/data/grassCutting";
-import { computeMonthlyKpi, type AnyZone } from "@/lib/turfMaintenance";
+import { computeSystemTurfRollup, type AnyZone } from "@/lib/turfMaintenance";
 
 export type StatusColor = "GREEN" | "AMBER" | "RED" | "NEUTRAL";
 
@@ -49,8 +49,12 @@ interface InspectionsRollup {
 }
 
 interface GrassCuttingRollup {
+  /** Zones on pace this month. */
   complete: number;
+  /** Zones that have reported this month (the denominator). */
   total: number;
+  /** Zones with no weekly entry yet, excluded from the ratio. */
+  awaiting: number;
   status: StatusColor;
 }
 
@@ -162,27 +166,19 @@ export function computeReadinessRollups(asOfDate?: string): ReadinessRollups {
       ? "AMBER"
       : "GREEN";
 
-  // Turf maintenance rollup. Each zone produces a Green/Amber/Red KPI
-  // from its monthly progress (per-reach C1+C2 percentages × acres,
-  // compared to zone.acres × monthlyFrequency). Zones without reported
-  // actuals (hasReportedData=false) count against the total but not
-  // toward "on pace." Aggregate status uses the on-pace ratio with the
-  // site-wide 90/80 thresholds so a single off-pace zone in a 14-zone
-  // system doesn't drag the rollup to Red.
+  // Turf maintenance rollup, shared with the infrastructure card and the turf
+  // page via computeSystemTurfRollup: on-pace zones over zones that have
+  // reported this month; zones awaiting their weekly update are excluded
+  // rather than read as Behind. Null level (nothing reported yet) -> NEUTRAL.
   const gcZonesAll: AnyZone[] = [
     ...grassCuttingData.zones,
     ...grassCuttingData.ejldZones,
     ...grassCuttingData.lbbldZones,
   ];
-  const gcTotal = gcZonesAll.length;
-  let gcComplete = 0;
-  for (const zone of gcZonesAll) {
-    if (!zone.hasReportedData) continue;
-    const kpi = computeMonthlyKpi(zone, grassCuttingData.reportingMonth);
-    if (kpi.level === "green") gcComplete += 1;
-  }
-  const gcRatio = gcTotal > 0 ? (gcComplete / gcTotal) * 100 : 100;
-  const gcStatus: StatusColor = statusFromRatio(gcRatio);
+  const gc = computeSystemTurfRollup(gcZonesAll, grassCuttingData.reportingMonth);
+  const gcComplete = gc.onPace;
+  const gcTotal = gc.reporting;
+  const gcStatus: StatusColor = gc.level === null ? "NEUTRAL" : statusFromRatio(gc.ratio);
 
   return {
     inspections: {
@@ -194,6 +190,7 @@ export function computeReadinessRollups(asOfDate?: string): ReadinessRollups {
     grassCutting: {
       complete: gcComplete,
       total: gcTotal,
+      awaiting: gc.awaiting,
       status: gcStatus,
     },
   };

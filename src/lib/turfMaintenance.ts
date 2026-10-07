@@ -66,6 +66,49 @@ export interface MonthlyKpi {
   badgeLabel: string;
 }
 
+/**
+ * System-wide rollup shared by the home readiness rollup, the infrastructure
+ * turf card and the turf page header, so the three never disagree.
+ *
+ * Zones with no reported actuals for the month (`hasReportedData=false`, i.e.
+ * nothing logged yet on the month's tab) are "awaiting weekly update": they
+ * are excluded from both the numerator and the denominator rather than read
+ * as Behind. Per the Regional Director (Oct 7 2026) a zone with no entry a
+ * few days into the month is a reporting lag, not missed mowing. `level` is
+ * null when no zone has reported yet.
+ */
+export interface SystemTurfRollup {
+  onPace: number;
+  reporting: number;
+  awaiting: number;
+  total: number;
+  ratio: number;
+  level: KpiLevel | null;
+  badgeLabel: string;
+}
+
+export function computeSystemTurfRollup(
+  zones: AnyZone[],
+  reportingMonth: ReportingMonth,
+  today: Date = new Date(),
+): SystemTurfRollup {
+  let onPace = 0;
+  let reporting = 0;
+  for (const zone of zones) {
+    if (!zone.hasReportedData) continue;
+    reporting += 1;
+    if (computeMonthlyKpi(zone, reportingMonth, today).level === "green") onPace += 1;
+  }
+  const awaiting = zones.length - reporting;
+  if (reporting === 0) {
+    return { onPace, reporting, awaiting, total: zones.length, ratio: 0, level: null, badgeLabel: "Awaiting update" };
+  }
+  const ratio = (onPace / reporting) * 100;
+  const level: KpiLevel = ratio >= 90 ? "green" : ratio >= 80 ? "amber" : "red";
+  const badgeLabel = level === "green" ? "On pace" : level === "amber" ? "Watch" : "Behind";
+  return { onPace, reporting, awaiting, total: zones.length, ratio, level, badgeLabel };
+}
+
 export function computeMonthlyKpi(
   zone: AnyZone,
   reportingMonth: ReportingMonth,

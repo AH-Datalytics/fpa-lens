@@ -553,14 +553,24 @@ function applyTurfCycles(
   // A newer reporting month is a fresh slate: matched reaches take the workbook's
   // values (absent = 0, i.e. not yet cut this month); 1x/mo zones stay single-cycle.
   // Unmatched reaches keep their curated value so a name miss never zeroes real work.
-  const overlay = (zones: { name: string; reaches: Reach[] }[]) => {
+  //
+  // A zone with nothing logged yet for the month (every reach at 0) is marked
+  // hasReportedData=false -- "Awaiting weekly update" -- instead of grading as
+  // Behind. The extractor flips to a new month's tab as soon as any zone has
+  // an entry, so early in the month most zones have simply not been logged;
+  // per the Regional Director (Oct 7 2026) that is a reporting lag, not missed
+  // mowing. The zone returns to normal grading the moment an entry appears.
+  const overlay = (zones: { name: string; reaches: Reach[]; hasReportedData: boolean }[]) => {
     for (const zone of zones) {
+      let anyLogged = false;
       for (const reach of zone.reaches) {
         const v = lookup.get(`${normTurf(zone.name)}::${normTurf(reach.name)}`);
         if (!v) continue;
         reach.cycle1Pct = v.cycle1Pct ?? 0;
         if (reach.cycle2Pct !== null) reach.cycle2Pct = v.cycle2Pct ?? 0;
+        if ((reach.cycle1Pct ?? 0) > 0 || (reach.cycle2Pct ?? 0) > 0) anyLogged = true;
       }
+      zone.hasReportedData = anyLogged;
     }
   };
 
