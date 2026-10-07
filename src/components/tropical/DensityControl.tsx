@@ -1,6 +1,6 @@
 "use client";
 
-import { DENSITY_SOURCE_LABEL } from "@/lib/tropical/density";
+import { DENSITY_SOURCE_LABEL, densityOptions } from "@/lib/tropical/density";
 import type { DensityChoice } from "@/lib/tropical/layers";
 import type { DensitySource } from "@/lib/tropical/types";
 
@@ -10,8 +10,6 @@ export interface DensityControlProps {
   /** Run time label ("06Z") per ensemble that has an image; absent = unavailable. */
   cycles: Partial<Record<DensitySource, string>>;
 }
-
-const SOURCES: DensitySource[] = ["gefs", "ecmwf", "aifs", "google"];
 
 /** Which ensemble's track density to draw, as a dropdown under "Forecast
  * model tracks" (Jeff, 2026-10-07). Options without an image for this storm
@@ -31,7 +29,7 @@ export function DensityControl({ choice, onChange, cycles }: DensityControlProps
         onChange={(event) => onChange(event.target.value as DensityChoice)}
       >
         <option value="off">Off</option>
-        {SOURCES.map((source) => (
+        {densityOptions(cycles).map((source) => (
           <option key={source} value={source} disabled={!cycles[source]}>
             {DENSITY_SOURCE_LABEL[source]}
             {cycles[source] ? ` (${cycles[source]})` : " (not available)"}

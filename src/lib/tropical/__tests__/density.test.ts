@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { DENSITY_BANDS, densityCaption, ECMWF_CREDIT, GOOGLE_CITATION_PARTS } from "../density";
+import { DENSITY_BANDS, densityCaption, densityOptions, ECMWF_CREDIT, GOOGLE_CITATION_PARTS } from "../density";
 
 const product = {
   image: "storms/al092026/density-gefs.png",
@@ -55,5 +55,12 @@ describe("Euro ensemble", () => {
     );
     expect(ECMWF_CREDIT).toContain("ECMWF");
     expect(ECMWF_CREDIT).toContain("CC BY 4.0");
+  });
+});
+
+describe("densityOptions", () => {
+  it("hides Google until its layer exists; other ensembles stay listed", () => {
+    expect(densityOptions({ gefs: "12Z" })).toEqual(["gefs", "ecmwf", "aifs"]);
+    expect(densityOptions({ gefs: "12Z", google: "12Z" })).toEqual(["gefs", "ecmwf", "aifs", "google"]);
   });
 });

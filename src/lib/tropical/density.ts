@@ -22,6 +22,16 @@ export const DENSITY_SOURCE_LABEL: Record<DensitySource, string> = {
   google: "Google DeepMind AI ensemble",
 };
 
+const DENSITY_ORDER: DensitySource[] = ["gefs", "ecmwf", "aifs", "google"];
+
+/** Dropdown options in display order. Google is listed only once its layer
+ * exists (it is off until Google agrees to the terms; Jeff, 2026-10-07); the
+ * others stay listed, disabled when a storm has no image, so they never
+ * silently vanish. */
+export function densityOptions(cycles: Partial<Record<DensitySource, string>>): DensitySource[] {
+  return DENSITY_ORDER.filter((source) => source !== "google" || Boolean(cycles.google));
+}
+
 export const DENSITY_DISCLAIMER =
   "Shows where the storm's center may go, not where wind, surge or rain will reach.";
 
