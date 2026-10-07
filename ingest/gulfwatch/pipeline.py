@@ -27,7 +27,7 @@ import subprocess
 import sys
 import tempfile
 import time
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 import requests
@@ -630,9 +630,24 @@ def _google_density_enabled() -> bool:
 
 
 class _DensityStepError(Exception):
-    def __init__(self, step: str):
+    def __init__(self, step: str, cycle: str):
         super().__init__(step)
         self.step = step  # "render" | "upload"
+        self.cycle = cycle  # the cycle that failed to build
+
+
+def _fallback(prev_entry, attempted_cycle=None):
+    """The previous image to keep showing after a failed rebuild, unless it is
+    more than STALE_HOURS behind the cycle we tried to build -- the same limit
+    select_cycle applies, so a failure never revives guidance the staleness
+    rule would refuse (Codex review, 2026-10-07)."""
+    if not prev_entry:
+        return None
+    if attempted_cycle is not None:
+        behind = density.parse_cycle(attempted_cycle) - density.parse_cycle(prev_entry["cycle"])
+        if behind > timedelta(hours=density.STALE_HOURS):
+            return None
+    return prev_entry
 
 
 def _build_density(kind, storm, selected, store, prev):
@@ -653,13 +668,13 @@ def _build_density(kind, storm, selected, store, prev):
             return None
         png = density.render_png(grid.fraction, scale=density.RENDER_SCALE)
     except Exception as exc:  # noqa: BLE001
-        raise _DensityStepError("render") from exc
+        raise _DensityStepError("render", cycle) from exc
     stamp = density.parse_iso(storm.advisory_time).strftime("%Y%m%dT%H%MZ")
     path = f"storms/{storm.id}/density-{kind}-{cycle}-{stamp}-{fp[:8]}.png"
     try:
         store.put_bytes(path, png, "image/png")
     except Exception as exc:  # noqa: BLE001
-        raise _DensityStepError("upload") from exc
+        raise _DensityStepError("upload", cycle) from exc
     return {
         "image": path,
         "bounds": [list(grid.bounds[0]), list(grid.bounds[1])],
@@ -674,7 +689,7 @@ def _build_density(kind, storm, selected, store, prev):
     }
 
 
-def _process_density(storm, adeck_text, fetch, store, errors, prev_state):
+def _process_density(storm, adeck_text, fetch, store, errors, prev_state, ecmwf_files=()):
     """Track-density entries for one storm. Identity is saved only once its
     image has uploaded, so a failed upload is retried next run."""
     prev = prev_state.get("entries", {}) if prev_state.get("version") == _DENSITY_STATE_VERSION else {}
@@ -687,13 +702,15 @@ def _process_density(storm, adeck_text, fetch, store, errors, prev_state):
     else:
         try:
             points = adeck.extract_members(adeck_text, adeck.GEFS_MEMBER_RE)
-            selected = density.select_cycle(points, density.MINIMUM_MEMBERS["gefs"])
+            selected = density.select_cycle(
+                points, density.MINIMUM_MEMBERS["gefs"], advisory_time=storm.advisory_time
+            )
             entry = _build_density("gefs", storm, selected, store, prev.get("gefs"))
             if entry:
                 entries["gefs"] = entry
         except _DensityStepError as exc:
             errors.append({"product": f"{storm.id}.density.gefs", "message": f"{exc.step} failed: {exc.__cause__}"})
-            if prev.get("gefs"):
+            if _fallback(prev.get("gefs"), exc.cycle):
                 entries["gefs"] = prev["gefs"]
         except Exception as exc:  # noqa: BLE001
             errors.append({"product": f"{storm.id}.density.gefs", "message": str(exc)})
@@ -702,7 +719,10 @@ def _process_density(storm, adeck_text, fetch, store, errors, prev_state):
     # "Nothing posted yet" / "storm not in the file" are normal states, like a
     # storm with no watches: the option greys out and no error is recorded.
     try:
-        selected = ecmwf.fetch_members(storm.id, fetch, _utcnow(), density.MINIMUM_MEMBERS["ecmwf"])
+        # Files are downloaded once per run in run() and shared by every storm.
+        selected = ecmwf.members_for_storm(
+            list(ecmwf_files), storm.id, density.MINIMUM_MEMBERS["ecmwf"], storm.advisory_time
+        )
         entry = _build_density("ecmwf", storm, selected, store, prev.get("ecmwf"))
         if entry:
             entries["ecmwf"] = entry
@@ -710,7 +730,7 @@ def _process_density(storm, adeck_text, fetch, store, errors, prev_state):
         pass
     except _DensityStepError as exc:
         errors.append({"product": f"{storm.id}.density.ecmwf", "message": f"{exc.step} failed: {exc.__cause__}"})
-        if prev.get("ecmwf"):
+        if _fallback(prev.get("ecmwf"), exc.cycle):
             entries["ecmwf"] = prev["ecmwf"]
     except Exception as exc:  # noqa: BLE001
         errors.append({"product": f"{storm.id}.density.ecmwf", "message": str(exc)})
@@ -719,7 +739,10 @@ def _process_density(storm, adeck_text, fetch, store, errors, prev_state):
     if _google_density_enabled():
         product = f"{storm.id}.density.google"
         try:
-            selected = weatherlab.fetch_members(storm.id, fetch, _utcnow(), density.MINIMUM_MEMBERS["google"])
+            selected = weatherlab.fetch_members(
+                storm.id, fetch, _utcnow(), density.MINIMUM_MEMBERS["google"],
+                advisory_time=storm.advisory_time,
+            )
             entry = _build_density("google", storm, selected, store, prev.get("google"))
             if entry:
                 entries["google"] = entry
@@ -729,7 +752,7 @@ def _process_density(storm, adeck_text, fetch, store, errors, prev_state):
                 entries["google"] = prev["google"]
         except _DensityStepError as exc:
             errors.append({"product": product, "message": f"google_{exc.step}_failed"})
-            if prev.get("google"):
+            if _fallback(prev.get("google"), exc.cycle):
                 entries["google"] = prev["google"]
         except Exception:  # noqa: BLE001
             errors.append({"product": product, "message": "google_failed"})
@@ -747,7 +770,9 @@ def _density_manifest(entries, storm):
     return out
 
 
-def _process_storm(storm, prev_storm_state, fetch, store, errors, wsp_fc=None, others=None, sat=None):
+def _process_storm(
+    storm, prev_storm_state, fetch, store, errors, wsp_fc=None, others=None, sat=None, ecmwf_files=()
+):
     """Process one Atlantic storm: conditionally refresh its GIS + a-deck
     products, then build its manifest entry and next state.json entry."""
     paths = _storm_paths(storm.id)
@@ -829,7 +854,8 @@ def _process_storm(storm, prev_storm_state, fetch, store, errors, wsp_fc=None, o
     # itself failed), so carry forward what a prior run confirmed.
     adeck_keys = set(fresh_adeck) if fresh_adeck is not None else set(prev_adeck or [])
     density_entries = _process_density(
-        storm, adeck_sink.get("text"), fetch, store, errors, prev_storm_state.get("density", {})
+        storm, adeck_sink.get("text"), fetch, store, errors, prev_storm_state.get("density", {}),
+        ecmwf_files=ecmwf_files,
     )
 
     track_for_check = _resolve_track_for_gulf_check(
@@ -1001,6 +1027,11 @@ def run(fetch=requests.get, store=blob) -> dict:
     # Imagery is fetched only while something is active: it is the one product
     # with nothing to show in a quiet season, and skipping it keeps the
     # every-15-minutes off-season run exactly as cheap as it was.
+    # ECMWF ensemble track files cover every basin: download once per run and
+    # share them, so a slow ECMWF server costs one timeout, not one per storm.
+    ecmwf_files = ecmwf.download_files(fetch, _utcnow()) if any(
+        s.id.startswith("al") for s in all_storms
+    ) else []
     sat = _process_satellite(fetch, store, errors) if any(
         s.id.startswith("al") for s in all_storms
     ) else None
@@ -1016,7 +1047,7 @@ def run(fetch=requests.get, store=blob) -> dict:
             others = [pos for sid, pos in storm_positions.items() if sid != storm.id]
             entry, next_state = _process_storm(
                 storm, prev_storms_state.get(storm.id, {}), fetch, store, errors,
-                wsp_fc=wsp_fc, others=others, sat=sat,
+                wsp_fc=wsp_fc, others=others, sat=sat, ecmwf_files=ecmwf_files,
             )
             manifest_storms.append(entry)
             new_storms_state[storm.id] = next_state

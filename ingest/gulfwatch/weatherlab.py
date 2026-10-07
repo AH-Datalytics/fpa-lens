@@ -58,7 +58,9 @@ def cycle_candidates(now: datetime, count: int = CANDIDATE_CYCLES) -> list[datet
     return [newest - timedelta(hours=6 * i) for i in range(count)]
 
 
-def fetch_members(storm_id: str, fetch, now: datetime, minimum: int) -> tuple[str, density.Members]:
+def fetch_members(
+    storm_id: str, fetch, now: datetime, minimum: int, advisory_time: str | None = None
+) -> tuple[str, density.Members]:
     """Newest qualifying cycle's members for `storm_id` (e.g. "al092026").
 
     Walks the newest CANDIDATE_CYCLES synoptic cycles newest first. A 404 is
@@ -72,8 +74,10 @@ def fetch_members(storm_id: str, fetch, now: datetime, minimum: int) -> tuple[st
     for cycle_dt in cycle_candidates(now):
         try:
             resp = fetch(file_url(cycle_dt), timeout=TIMEOUT_S)
-        except Exception:  # noqa: BLE001 - network failure -> try an older cycle
-            continue
+        except Exception:  # noqa: BLE001
+            # A network failure stops the walk: four timeouts per storm could
+            # outlast the job's 15-minute limit (Codex review, 2026-10-07).
+            break
         if resp.status_code != 200:
             continue
         cycle = cycle_dt.strftime("%Y%m%d%H")
@@ -85,7 +89,9 @@ def fetch_members(storm_id: str, fetch, now: datetime, minimum: int) -> tuple[st
         if not points:
             continue
         saw_storm = True
-        selected = density.select_cycle(points, minimum, newest_cycle=newest_posted)
+        selected = density.select_cycle(
+            points, minimum, newest_cycle=newest_posted, advisory_time=advisory_time
+        )
         if selected is not None:
             return selected
         too_few = True

@@ -186,3 +186,20 @@ def test_render_png_upsamples_so_band_edges_are_smooth():
     colors = {px[:3] for px in row if px[3]}
     assert len(colors) >= 3  # several bands across the edge, not one jump
     assert row[0][3] == 0  # far west still transparent
+
+
+def test_select_cycle_counts_only_members_with_a_start_position():
+    # Newest cycle: 30 ids, but only 23 have a position at/before the window
+    # start (the rest begin at tau 6). The older cycle has 30 usable members.
+    late = [MemberPoint("2026100706", f"AP{m:02d}", tau, 25.0, -90.0)
+            for m in range(24, 31) for tau in (6, 12, 120)]
+    early = [MemberPoint("2026100706", f"AP{m:02d}", tau, 25.0, -90.0)
+             for m in range(1, 24) for tau in (0, 12, 120)]
+    older = _members("2026100700", 30)
+    selected = density.select_cycle(early + late + older, minimum=24, advisory_time="2026-10-07T03:00:00Z")
+    assert selected[0] == "2026100700"
+
+
+def test_select_cycle_skips_cycles_with_too_little_window_left():
+    points = _members("2026100700", 30)
+    assert density.select_cycle(points, minimum=24, advisory_time="2026-10-11T12:00:00Z") is None

@@ -53,31 +53,55 @@ class Resp:
         self.content = content
 
 
-def test_fetch_walks_back_past_unposted_cycles(monkeypatch):
+def test_download_files_walks_back_past_unposted_cycles_and_keeps_two():
     now = datetime(2026, 10, 7, 13, 0, tzinfo=timezone.utc)
-    url00 = ecmwf.file_url(datetime(2026, 10, 7, 0, tzinfo=timezone.utc))
+    posted = {
+        ecmwf.file_url(datetime(2026, 10, 7, 6, tzinfo=timezone.utc)): b"06",
+        ecmwf.file_url(datetime(2026, 10, 7, 0, tzinfo=timezone.utc)): b"00",
+        ecmwf.file_url(datetime(2026, 10, 6, 18, tzinfo=timezone.utc)): b"18",
+    }
     calls = []
 
     def fetch(url, timeout=None):
         calls.append(url)
-        return Resp(200, b"BUFR") if url == url00 else Resp(404)
+        return Resp(200, posted[url]) if url in posted else Resp(404)
 
-    pts = [MemberPoint("2026100700", f"EN{m:02d}", t, 22.0, -95.0) for m in range(1, 52) for t in (0, 6)]
-    monkeypatch.setattr(ecmwf, "decode_members", lambda data, ident, cycle: pts)
-    cycle, members = ecmwf.fetch_members("al092026", fetch, now, minimum=41)
-    assert cycle == "2026100700" and len(members) == 51
+    files = ecmwf.download_files(fetch, now)
+    assert files == [("2026100706", b"06"), ("2026100700", b"00")]
     assert calls[0].endswith("20261007120000-360h-enfo-tf.bufr")
+    assert len(calls) == 3  # stops once two files are in hand
 
 
-def test_fetch_raises_when_storm_absent(monkeypatch):
-    now = datetime(2026, 10, 7, 1, 0, tzinfo=timezone.utc)
+def test_download_files_stops_at_first_network_failure():
+    # One timeout must not become four: the hourly job has a 15-minute limit.
+    calls = []
+
+    def fetch(url, timeout=None):
+        calls.append(url)
+        raise TimeoutError("read timed out")
+
+    assert ecmwf.download_files(fetch, datetime(2026, 10, 7, 13, tzinfo=timezone.utc)) == []
+    assert len(calls) == 1
+
+
+def _pts(cycle, n):
+    return [MemberPoint(cycle, f"EN{m:02d}", t, 22.0, -95.0) for m in range(1, n + 1) for t in (0, 6, 120)]
+
+
+def test_members_for_storm_uses_newest_qualifying_file(monkeypatch):
+    by_data = {b"12": _pts("2026100712", 10), b"06": _pts("2026100706", 51)}
+    monkeypatch.setattr(ecmwf, "decode_members", lambda data, ident, cycle: by_data[data])
+    files = [("2026100712", b"12"), ("2026100706", b"06")]
+    cycle, members = ecmwf.members_for_storm(files, "al092026", 41, "2026-10-07T15:00:00Z")
+    assert cycle == "2026100706" and len(members) == 51
+
+
+def test_members_for_storm_raises_when_storm_absent(monkeypatch):
     monkeypatch.setattr(ecmwf, "decode_members", lambda data, ident, cycle: [])
     with pytest.raises(ecmwf.EcmwfError, match="no tracks for 09L"):
-        ecmwf.fetch_members("al092026", lambda url, timeout=None: Resp(200, b"BUFR"), now, minimum=41)
+        ecmwf.members_for_storm([("2026100700", b"x")], "al092026", 41, "2026-10-07T03:00:00Z")
 
 
-def test_fetch_raises_when_nothing_posted():
-    now = datetime(2026, 10, 7, 1, 0, tzinfo=timezone.utc)
+def test_members_for_storm_raises_when_nothing_downloaded():
     with pytest.raises(ecmwf.EcmwfError, match="no ECMWF track file"):
-        ecmwf.fetch_members("al092026", lambda url, timeout=None: Resp(404), now, minimum=41)
-
+        ecmwf.members_for_storm([], "al092026", 41, "2026-10-07T03:00:00Z")

@@ -28,7 +28,7 @@ from gulfwatch.adeck import MemberPoint
 
 BASE_URL = "https://data.ecmwf.int/forecasts"
 CANDIDATE_CYCLES = 4
-TIMEOUT_S = 60
+TIMEOUT_S = 30
 _BASIN_LETTER = {"al": "L", "ep": "E", "cp": "C"}
 _MISSING_ABOVE = 1e90
 
@@ -119,30 +119,47 @@ def cycle_candidates(now: datetime, count: int = CANDIDATE_CYCLES) -> list[datet
     return [newest - timedelta(hours=6 * i) for i in range(count)]
 
 
-def fetch_members(storm_id: str, fetch, now: datetime, minimum: int) -> tuple[str, density.Members]:
-    """Newest qualifying cycle's members. A 404 is the normal "not posted
-    yet" answer, so there is no retry-with-sleep."""
-    ident = storm_identifier(storm_id)
-    newest_posted: str | None = None
-    saw_storm = False
+def download_files(fetch, now: datetime, keep: int = 2) -> list[tuple[str, bytes]]:
+    """The newest `keep` posted track files, newest first, downloaded ONCE per
+    ingest run and shared by every storm (each file covers all basins).
+
+    A 404 is the normal "not posted yet" answer (no retry-with-sleep). A
+    network failure stops the walk: four timeouts per storm could otherwise
+    outlast the job's 15-minute limit and block every other product (Codex
+    review, 2026-10-07)."""
+    files: list[tuple[str, bytes]] = []
     for cycle_dt in cycle_candidates(now):
         try:
             resp = fetch(file_url(cycle_dt), timeout=TIMEOUT_S)
-        except Exception:  # noqa: BLE001 - network failure -> try an older cycle
-            continue
+        except Exception:  # noqa: BLE001
+            break
         if resp.status_code != 200:
             continue
-        cycle = cycle_dt.strftime("%Y%m%d%H")
-        newest_posted = newest_posted or cycle
-        points = decode_members(resp.content, ident, cycle)
+        files.append((cycle_dt.strftime("%Y%m%d%H"), resp.content))
+        if len(files) >= keep:
+            break
+    return files
+
+
+def members_for_storm(
+    files: list[tuple[str, bytes]], storm_id: str, minimum: int, advisory_time: str
+) -> tuple[str, density.Members]:
+    """Newest qualifying cycle's members for one storm from downloaded files."""
+    ident = storm_identifier(storm_id)
+    if not files:
+        raise EcmwfError("no ECMWF track file posted in the last 24 h")
+    newest_posted = files[0][0]
+    saw_storm = False
+    for cycle, data in files:
+        points = decode_members(data, ident, cycle)
         if not points:
             continue
         saw_storm = True
-        selected = density.select_cycle(points, minimum, newest_cycle=newest_posted)
+        selected = density.select_cycle(
+            points, minimum, newest_cycle=newest_posted, advisory_time=advisory_time
+        )
         if selected is not None:
             return selected
-    if newest_posted is None:
-        raise EcmwfError("no ECMWF track file posted in the last 24 h")
     if not saw_storm:
         raise EcmwfError(f"no tracks for {ident} in ECMWF files")
     raise EcmwfError(f"too few ECMWF members for {ident}")

@@ -43,11 +43,18 @@ def iso_z(moment: datetime) -> str:
     return moment.astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
-def select_cycle(points, minimum: int, newest_cycle: str | None = None) -> tuple[str, Members] | None:
+def select_cycle(
+    points, minimum: int, newest_cycle: str | None = None, advisory_time: str | None = None
+) -> tuple[str, Members] | None:
     """Newest cycle with at least `minimum` members, from one cycle only.
 
     A cycle more than STALE_HOURS behind the newest one seen (in `points`, or
     `newest_cycle` when the caller knows of a newer posted file) is refused.
+    With `advisory_time`, a cycle qualifies only if its window has at least
+    MIN_WINDOW_HOURS left and at least `minimum` members have a position at or
+    before the window start -- the same eligibility strike_grid applies, so a
+    newest cycle that would fail there never hides a usable older one (Codex
+    review, 2026-10-07).
     """
     by_cycle: dict[str, dict[str, list[tuple[int, float, float]]]] = {}
     for p in points:
@@ -59,7 +66,15 @@ def select_cycle(points, minimum: int, newest_cycle: str | None = None) -> tuple
         if newest - parse_cycle(cycle) > timedelta(hours=STALE_HOURS):
             break
         members = by_cycle[cycle]
-        if len(members) >= minimum:
+        if advisory_time is not None:
+            span = window(cycle, advisory_time)
+            if span is None:
+                continue
+            lead = (span[0] - parse_cycle(cycle)).total_seconds() / 3600
+            usable = sum(1 for track in members.values() if min(t for t, _, _ in track) <= lead)
+        else:
+            usable = len(members)
+        if usable >= minimum:
             return cycle, {tech: sorted(track) for tech, track in members.items()}
     return None
 

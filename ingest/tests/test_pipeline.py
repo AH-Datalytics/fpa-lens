@@ -179,9 +179,7 @@ def no_ecmwf(monkeypatch):
     "nothing posted" answer so tests not about it make no ECMWF requests."""
     from gulfwatch import ecmwf
 
-    def nothing(*args, **kwargs):
-        raise ecmwf.EcmwfError("no ECMWF track file posted in the last 24 h")
-    monkeypatch.setattr(ecmwf, "fetch_members", nothing)
+    monkeypatch.setattr(ecmwf, "download_files", lambda fetch, now, keep=2: [])
 
 
 @pytest.fixture(autouse=True)
@@ -1068,7 +1066,8 @@ def _ecmwf_members():
 
 
 def test_ecmwf_density_advertised_without_any_flag(density_clock, monkeypatch):
-    monkeypatch.setattr(_ecmwf, "fetch_members", lambda storm_id, fetch, now, minimum: _ecmwf_members())
+    monkeypatch.setattr(_ecmwf, "download_files", lambda fetch, now, keep=2: [("2026072218", b"BUFR")])
+    monkeypatch.setattr(_ecmwf, "members_for_storm", lambda files, storm_id, minimum, advisory_time: _ecmwf_members())
     store = FakeStore()
     manifest = run(fetch=FakeFetch(_density_routes()), store=store)
     entry = manifest["storms"][0]["density"]["ecmwf"]
@@ -1084,7 +1083,48 @@ def test_ecmwf_not_posted_is_silent_and_failure_is_recorded(density_clock, monke
 
     def boom(*a, **k):
         raise RuntimeError("ecCodes decode failed")
-    monkeypatch.setattr(_ecmwf, "fetch_members", boom)
+    monkeypatch.setattr(_ecmwf, "download_files", lambda fetch, now, keep=2: [("2026072218", b"BUFR")])
+    monkeypatch.setattr(_ecmwf, "members_for_storm", boom)
     manifest = run(fetch=FakeFetch(_density_routes()), store=FakeStore())
     assert "gefs" in manifest["storms"][0]["density"]
     assert {"product": "al022026.density.ecmwf", "message": "ecCodes decode failed"} in manifest["errors"]
+
+
+def test_ecmwf_files_downloaded_once_per_run(density_clock, monkeypatch):
+    calls = []
+
+    def download(fetch, now, keep=2):
+        calls.append(now)
+        return []
+    monkeypatch.setattr(_ecmwf, "download_files", download)
+    run(fetch=FakeFetch(_density_routes()), store=FakeStore())
+    assert len(calls) == 1
+
+
+def test_google_stops_at_first_network_failure(density_clock, monkeypatch):
+    monkeypatch.setenv("GOOGLE_DENSITY_ENABLED", "1")
+    routes = _density_routes(_google_text())
+    fetch = FakeFetch(routes, raising={GOOGLE_00Z_URL})
+    manifest = run(fetch=fetch, store=FakeStore())
+    assert GOOGLE_18Z_URL not in fetch.calls
+    codes = [e["message"] for e in manifest["errors"] if e["product"] == "al022026.density.google"]
+    assert codes == ["google_unavailable"]
+
+
+def test_failed_rebuild_does_not_advertise_a_stale_fallback(density_clock):
+    class FlakyStore(FakeStore):
+        fail = False
+
+        def put_bytes(self, path, data, content_type):
+            if "density-gefs" in path and self.fail:
+                raise RuntimeError("simulated store failure")
+            super().put_bytes(path, data, content_type)
+
+    store = FlakyStore()
+    old = _density_routes()
+    old[BERTHA_ADECK_URL] = FakeResponse(content=_adeck_gz(BERTHA_ADECK_TEXT + _gefs_rows(cycle="2026072200")))
+    assert run(fetch=FakeFetch(old), store=store)["storms"][0]["density"]["gefs"]["cycle"] == "2026072200"
+    store.fail = True  # 18Z is now available but its image cannot be uploaded
+    manifest = run(fetch=FakeFetch(_density_routes()), store=store)
+    assert "gefs" not in manifest["storms"][0].get("density", {})  # 00Z is 18 h behind 18Z
+    assert any(e["product"] == "al022026.density.gefs" for e in manifest["errors"])
