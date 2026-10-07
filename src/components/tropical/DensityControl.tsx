@@ -22,7 +22,7 @@ export function DensityControl({ choice, onChange, cycles }: DensityControlProps
   return (
     <label className="block rounded-md border border-gray-200 bg-white px-2.5 py-1.5">
       <span className="block text-xs">
-        <b className="font-semibold text-gray-900">Track density</b>
+        <b className="font-semibold text-gray-900">Ensemble paths</b>
         {chosenCycle && <span className="ml-1 text-gray-400">({chosenCycle})</span>}
       </span>
       <select
