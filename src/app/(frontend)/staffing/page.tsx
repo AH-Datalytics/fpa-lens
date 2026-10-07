@@ -1,30 +1,29 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState } from "react";
 import { ChevronDown, ChevronRight } from "lucide-react";
 import SectionHeader, { SectionSubheader } from "@/components/SectionHeader";
 import StaffingZoneBar from "@/components/StaffingZoneBar";
 import ZoneLegend from "@/components/ZoneLegend";
 import Prose from "@/components/Prose";
 import { staffingData } from "@/data/siteData";
-import { applyStaffingOverlay, type StaffingJson } from "@/lib/staffingOverlay";
+import { applyStaffingOverlay } from "@/lib/staffingOverlay";
 import { assertAggregateMatchesSum } from "@/lib/staffingZones";
 import { usePageCopy } from "@/lib/usePageCopy";
 import { STAFFING_DEFAULTS } from "@/globals/pages/staffingPage";
+import staffingJson from "../../../../public/data/staffing.json";
 
 type ZoneViewMode = "percent" | "raw";
 
+// Current filled counts come from the monthly staffing workbook
+// (public/data/staffing.json), imported statically so the server-rendered
+// HTML already shows the current month. (A runtime fetch used to leave the
+// first paint, crawlers and no-JS readers on the May 2026 baseline, with the
+// Core unit briefly reading Amber before hydration.) Capacity + thresholds
+// stay curated in code; the home page applies the same overlay.
+const data = applyStaffingOverlay(staffingData, staffingJson);
+
 export default function OurTeamPage() {
-  // Current filled counts auto-refresh from the monthly staffing workbook
-  // (public/data/staffing.json); capacity + thresholds stay curated in code.
-  const [staffingJson, setStaffingJson] = useState<StaffingJson | null>(null);
-  useEffect(() => {
-    fetch("/data/staffing.json")
-      .then((r) => (r.ok ? r.json() : null))
-      .then((d) => d && setStaffingJson(d))
-      .catch(() => {});
-  }, []);
-  const data = useMemo(() => applyStaffingOverlay(staffingData, staffingJson), [staffingJson]);
   const { coreFPU, adminFunctions } = data;
   const copy = usePageCopy("staffing-page", STAFFING_DEFAULTS);
   const [viewMode, setViewMode] = useState<ZoneViewMode>("percent");
