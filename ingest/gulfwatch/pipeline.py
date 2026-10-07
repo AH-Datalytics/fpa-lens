@@ -22,6 +22,7 @@ take down the whole run.
 from __future__ import annotations
 
 import gzip
+import os
 import subprocess
 import sys
 import tempfile
@@ -31,7 +32,7 @@ from pathlib import Path
 
 import requests
 
-from gulfwatch import adeck, aifs, blob, nhc, outlook, probs, satellite, shp, text, windprob
+from gulfwatch import adeck, aifs, blob, density, nhc, outlook, probs, satellite, shp, text, weatherlab, windprob
 
 FETCH_TIMEOUT_S = 30
 RETRY_BACKOFF_S = 10
@@ -490,7 +491,7 @@ def _process_text_products(storm, paths, fetch, store, errors):
     return next_advisory_time
 
 
-def _process_adeck(storm, paths, prev_cycle, fetch, store, errors, force=False, rebuild=False):
+def _process_adeck(storm, paths, prev_cycle, fetch, store, errors, force=False, rebuild=False, sink=None):
     """Fetch+decompress+parse this storm's a-deck, re-uploading
     models.geojson/intensity.json only if the parsed cycle differs from the
     prior known cycle (state.json). The a-deck is fetched every run
@@ -524,6 +525,10 @@ def _process_adeck(storm, paths, prev_cycle, fetch, store, errors, force=False, 
         # A-decks can contain odd/non-UTF-8 bytes -- decode latin-1 per
         # shared-contracts.md.
         text = gzip.decompress(resp.content).decode("latin-1")
+        # The raw text is also the GEFS member source for the density layer,
+        # so it is handed back rather than downloaded twice.
+        if sink is not None:
+            sink["text"] = text
         parsed = adeck.parse_adeck(text, reference_time=storm.advisory_time)
     except Exception as exc:
         errors.append({"product": f"{storm.id}.adeck", "message": str(exc)})
@@ -603,6 +608,124 @@ def _resolve_track_for_gulf_check(advisory_changed, fresh_track_fc, track_path, 
         return None
 
 
+# Bump when the meaning of state.json's "density" record changes (same reason
+# as _GIS_STATE_VERSION: a stale record must be re-derived, not trusted).
+_DENSITY_STATE_VERSION = 1
+_DENSITY_PUBLIC_KEYS = ("image", "bounds", "cycle", "members", "expected", "radiusKm", "start", "end")
+
+
+def _utcnow() -> datetime:
+    return datetime.now(timezone.utc)
+
+
+def _google_density_enabled() -> bool:
+    # Release gate for the Google layer, default off. Off means no fetch, no
+    # upload and no manifest entry. Stays off until Google agrees in writing to
+    # the Restricted Country clause of its terms (see the density spec).
+    return os.environ.get("GOOGLE_DENSITY_ENABLED") == "1"
+
+
+class _DensityStepError(Exception):
+    def __init__(self, step: str):
+        super().__init__(step)
+        self.step = step  # "render" | "upload"
+
+
+def _build_density(kind, storm, selected, store, prev):
+    """Return the state entry for one ensemble's density, re-rendering only
+    when (cycle, advisory, input fingerprint) changed. None = no image."""
+    if selected is None:
+        return None
+    cycle, members = selected
+    span = density.window(cycle, storm.advisory_time)
+    if span is None:
+        return None
+    fp = density.fingerprint(members)
+    if prev and (prev.get("cycle"), prev.get("advisory"), prev.get("fp")) == (cycle, storm.advisory_time, fp):
+        return prev
+    try:
+        grid = density.strike_grid(members, cycle, span[0], span[1], minimum=density.MINIMUM_MEMBERS[kind])
+        if grid is None:
+            return None
+        png = density.render_png(grid.fraction)
+    except Exception as exc:  # noqa: BLE001
+        raise _DensityStepError("render") from exc
+    stamp = density.parse_iso(storm.advisory_time).strftime("%Y%m%dT%H%MZ")
+    path = f"storms/{storm.id}/density-{kind}-{cycle}-{stamp}-{fp[:8]}.png"
+    try:
+        store.put_bytes(path, png, "image/png")
+    except Exception as exc:  # noqa: BLE001
+        raise _DensityStepError("upload") from exc
+    return {
+        "image": path,
+        "bounds": [list(grid.bounds[0]), list(grid.bounds[1])],
+        "cycle": cycle,
+        "members": grid.eligible,
+        "expected": density.EXPECTED_MEMBERS[kind],
+        "radiusKm": int(density.RADIUS_KM),
+        "start": density.iso_z(span[0]),
+        "end": density.iso_z(span[1]),
+        "advisory": storm.advisory_time,
+        "fp": fp,
+    }
+
+
+def _process_density(storm, adeck_text, fetch, store, errors, prev_state):
+    """Track-density entries for one storm. Identity is saved only once its
+    image has uploaded, so a failed upload is retried next run."""
+    prev = prev_state.get("entries", {}) if prev_state.get("version") == _DENSITY_STATE_VERSION else {}
+    entries: dict = {}
+
+    # GEFS: members from the a-deck already downloaded this run (public domain).
+    if adeck_text is None:
+        if prev.get("gefs"):
+            entries["gefs"] = prev["gefs"]  # a-deck failed this run: carry forward
+    else:
+        try:
+            points = adeck.extract_members(adeck_text, adeck.GEFS_MEMBER_RE)
+            selected = density.select_cycle(points, density.MINIMUM_MEMBERS["gefs"])
+            entry = _build_density("gefs", storm, selected, store, prev.get("gefs"))
+            if entry:
+                entries["gefs"] = entry
+        except _DensityStepError as exc:
+            errors.append({"product": f"{storm.id}.density.gefs", "message": f"{exc.step} failed: {exc.__cause__}"})
+            if prev.get("gefs"):
+                entries["gefs"] = prev["gefs"]
+        except Exception as exc:  # noqa: BLE001
+            errors.append({"product": f"{storm.id}.density.gefs", "message": str(exc)})
+
+    # Google: in memory only; every failure is an allowlisted code, never text.
+    if _google_density_enabled():
+        product = f"{storm.id}.density.google"
+        try:
+            selected = weatherlab.fetch_members(storm.id, fetch, _utcnow(), density.MINIMUM_MEMBERS["google"])
+            entry = _build_density("google", storm, selected, store, prev.get("google"))
+            if entry:
+                entries["google"] = entry
+        except weatherlab.GoogleError as exc:
+            errors.append({"product": product, "message": exc.code})
+            if exc.code == "google_unavailable" and prev.get("google"):
+                entries["google"] = prev["google"]
+        except _DensityStepError as exc:
+            errors.append({"product": product, "message": f"google_{exc.step}_failed"})
+            if prev.get("google"):
+                entries["google"] = prev["google"]
+        except Exception:  # noqa: BLE001
+            errors.append({"product": product, "message": "google_failed"})
+    return entries
+
+
+def _density_manifest(entries, storm):
+    out = {}
+    for kind, entry in entries.items():
+        if kind == "google" and not _google_density_enabled():
+            continue
+        if density.window(entry["cycle"], storm.advisory_time) is None:
+            continue  # stale: under 24 h of window left
+        out[kind] = {key: entry[key] for key in _DENSITY_PUBLIC_KEYS}
+    return out
+
+
 def _process_storm(storm, prev_storm_state, fetch, store, errors, wsp_fc=None, others=None, sat=None):
     """Process one Atlantic storm: conditionally refresh its GIS + a-deck
     products, then build its manifest entry and next state.json entry."""
@@ -667,6 +790,7 @@ def _process_storm(storm, prev_storm_state, fetch, store, errors, wsp_fc=None, o
         if prev_storm_state.get("gisVersion") == _GIS_STATE_VERSION
         else None
     )
+    adeck_sink: dict = {}
     new_cycle, fresh_adeck = _process_adeck(
         storm,
         paths,
@@ -678,10 +802,14 @@ def _process_storm(storm, prev_storm_state, fetch, store, errors, wsp_fc=None, o
         # Tracks are clipped to the advisory time, so a new advisory needs a
         # rebuild even when the a-deck cycle hasn't moved -- see _process_adeck.
         rebuild=advisory_changed,
+        sink=adeck_sink,
     )
     # None means nothing was uploaded this run (cycle unchanged, or the a-deck
     # itself failed), so carry forward what a prior run confirmed.
     adeck_keys = set(fresh_adeck) if fresh_adeck is not None else set(prev_adeck or [])
+    density_entries = _process_density(
+        storm, adeck_sink.get("text"), fetch, store, errors, prev_storm_state.get("density", {})
+    )
 
     track_for_check = _resolve_track_for_gulf_check(
         advisory_changed, fresh_track_fc, paths["track"], store
@@ -740,6 +868,9 @@ def _process_storm(storm, prev_storm_state, fetch, store, errors, wsp_fc=None, o
     }
     if sat:
         manifest_entry["satellite"] = sat
+    density_manifest = _density_manifest(density_entries, storm)
+    if density_manifest:
+        manifest_entry["density"] = density_manifest
     next_state = {
         "advisory": storm.advisory_num,
         "cycle": new_cycle,
@@ -756,6 +887,8 @@ def _process_storm(storm, prev_storm_state, fetch, store, errors, wsp_fc=None, o
         "adeck": sorted(adeck_keys),
         "gisVersion": _GIS_STATE_VERSION,
     }
+    if density_entries:
+        next_state["density"] = {"version": _DENSITY_STATE_VERSION, "entries": density_entries}
     return manifest_entry, next_state
 
 

@@ -821,3 +821,212 @@ def test_wwlines_is_not_advertised_when_nhc_has_no_watches_or_warnings():
     assert "storms/al022026/wwlines.geojson" not in store.put_calls
     # The failure is still reported -- silence would hide a real NHC outage.
     assert any(e["product"] == "al022026.wwlines" for e in manifest["errors"])
+
+
+# ---------------------------------------------------------------------------
+# Track density (spec 2026-10-07). Google rows are SYNTHETIC (public repo).
+# ---------------------------------------------------------------------------
+import re as _re
+from datetime import datetime as _dt, timezone as _tz
+
+from gulfwatch import weatherlab
+
+DENSITY_NOW = _dt(2026, 7, 23, 1, 0, tzinfo=_tz.utc)
+GOOGLE_18Z_URL = weatherlab.file_url(_dt(2026, 7, 22, 18, tzinfo=_tz.utc))
+GOOGLE_00Z_URL = weatherlab.file_url(_dt(2026, 7, 23, 0, tzinfo=_tz.utc))
+
+
+def _gefs_rows(cycle="2026072218", members=30):
+    rows = []
+    for m in range(1, members + 1):
+        for tau in range(0, 121, 12):
+            lat = 295 + tau // 12 * 3 + m % 3
+            lon = 905 + tau // 12 * 6
+            rows.append(f"AL, 02, {cycle}, 03, AP{m:02d}, {tau:3d}, {lat}N, {lon:4d}W,  40, 1002, TS\n")
+    return "".join(rows)
+
+
+def _google_text(members=45):
+    # Caribbean coordinates, far from every Bertha fixture, so a leak is findable.
+    lines = ["# SYNTHETIC test data in the Weather Lab ATCF layout"]
+    for m in range(members):
+        for tau in range(0, 121, 12):
+            lines.append(
+                f"AL, 02, 2026072218, 03, F{m:03d}, {tau:3d}, "
+                f"{117 + tau // 12 * 2 + m % 4}N, {613 + tau // 12 * 3:4d}W,  45,  998, XX,  34, NEQ"
+            )
+    lines.append("AL, 02, 2026072218, 03, F099,  12, 1X9N,  619W,  45,  998, XX,  34, NEQ")  # malformed
+    return "\n".join(lines) + "\n"
+
+
+def _google_decimals():
+    out = set()
+    for m in range(45):
+        for tau in range(0, 121, 12):
+            out.add(f"{(117 + tau // 12 * 2 + m % 4) / 10:.1f}")
+            out.add(f"-{(613 + tau // 12 * 3) / 10:.1f}")
+    return out
+
+
+def _density_routes(google_text=None):
+    routes = {
+        nhc.CURRENT_STORMS_URL: FakeResponse(json_data=CURRENT_STORMS_JSON),
+        BERTHA_GIS_URL: FakeResponse(content=SAMPLE_CONE_ZIP),
+        BERTHA_ADECK_URL: FakeResponse(content=_adeck_gz(BERTHA_ADECK_TEXT + _gefs_rows())),
+        GOOGLE_00Z_URL: FakeResponse(status_code=404, text=""),
+    }
+    if google_text is not None:
+        routes[GOOGLE_18Z_URL] = FakeResponse(content=google_text.encode())
+    routes.update(_outlook_routes())
+    routes.update(_bertha_text_product_routes())
+    return routes
+
+
+@pytest.fixture
+def density_clock(monkeypatch):
+    monkeypatch.setattr(pipeline_module, "_utcnow", lambda: DENSITY_NOW)
+
+
+def _assert_no_google_leak(store, manifest, captured):
+    tech = _re.compile(r"\bF\d{3}\b")
+    decimals = _google_decimals()
+    public_text = [json.dumps(manifest), json.dumps(store.data.get("state.json")), captured.out, captured.err]
+    for path, obj in store.data.items():
+        if not isinstance(obj, (bytes, bytearray)):
+            public_text.append(json.dumps(obj))
+    for text in public_text:
+        assert not tech.search(text), "Google member tech published"
+        for d in decimals:
+            assert not _re.search(rf"(?<![\d.]){_re.escape(d)}(?!\d)", text), f"Google coordinate {d} published"
+    for err in manifest["errors"]:
+        if ".density.google" in err["product"]:
+            assert err["message"] in weatherlab.ERROR_CODES
+
+
+def test_gefs_density_advertised_after_upload(density_clock):
+    store = FakeStore()
+    manifest = run(fetch=FakeFetch(_density_routes()), store=store)
+    entry = manifest["storms"][0]["density"]["gefs"]
+    assert set(entry) == {"image", "bounds", "cycle", "members", "expected", "radiusKm", "start", "end"}
+    assert entry["cycle"] == "2026072218"
+    assert entry["members"] == 30 and entry["expected"] == 30 and entry["radiusKm"] == 100
+    assert entry["start"] == "2026-07-23T00:00:00Z" and entry["end"] == "2026-07-27T18:00:00Z"
+    assert entry["image"].startswith("storms/al022026/density-gefs-2026072218-20260723T0000Z-")
+    assert isinstance(store.data[entry["image"]], bytes)
+    assert "google" not in manifest["storms"][0]["density"]
+    state = store.data["state.json"]["storms"]["al022026"]["density"]
+    assert state["version"] == 1 and state["entries"]["gefs"]["fp"]
+
+
+def test_gefs_density_not_rerendered_when_identity_unchanged(density_clock):
+    store = FakeStore()
+    run(fetch=FakeFetch(_density_routes()), store=store)
+    first = [p for p in store.put_calls if "density-" in p]
+    store.put_calls.clear()
+    run(fetch=FakeFetch(_density_routes()), store=store)
+    assert [p for p in store.put_calls if "density-" in p] == []
+    assert first
+
+
+def test_late_member_in_same_cycle_rebuilds(density_clock):
+    store = FakeStore()
+    routes = _density_routes()
+    routes[BERTHA_ADECK_URL] = FakeResponse(content=_adeck_gz(BERTHA_ADECK_TEXT + _gefs_rows(members=29)))
+    first = run(fetch=FakeFetch(routes), store=store)["storms"][0]["density"]["gefs"]["image"]
+    second = run(fetch=FakeFetch(_density_routes()), store=store)["storms"][0]["density"]["gefs"]
+    assert second["image"] != first and second["members"] == 30
+
+
+def test_failed_density_upload_not_advertised_and_retried(density_clock):
+    class FlakyStore(FakeStore):
+        fail = True
+
+        def put_bytes(self, path, data, content_type):
+            if "density-gefs" in path and self.fail:
+                raise RuntimeError("simulated store failure")
+            super().put_bytes(path, data, content_type)
+
+    store = FlakyStore()
+    manifest = run(fetch=FakeFetch(_density_routes()), store=store)
+    assert "density" not in manifest["storms"][0]
+    assert any(e["product"] == "al022026.density.gefs" for e in manifest["errors"])
+    store.fail = False
+    manifest = run(fetch=FakeFetch(_density_routes()), store=store)
+    assert "gefs" in manifest["storms"][0]["density"]
+
+
+def test_google_density_built_when_flag_on_and_nothing_leaks(density_clock, monkeypatch, capsys):
+    monkeypatch.setenv("GOOGLE_DENSITY_ENABLED", "1")
+    store = FakeStore()
+    manifest = run(fetch=FakeFetch(_density_routes(_google_text())), store=store)
+    google = manifest["storms"][0]["density"]["google"]
+    assert google["members"] == 45 and google["expected"] == 50
+    assert google["image"].startswith("storms/al022026/density-google-2026072218-")
+    _assert_no_google_leak(store, manifest, capsys.readouterr())
+
+
+def test_google_density_not_advertised_when_flag_off(density_clock, monkeypatch):
+    monkeypatch.setenv("GOOGLE_DENSITY_ENABLED", "1")
+    store = FakeStore()
+    run(fetch=FakeFetch(_density_routes(_google_text())), store=store)
+    monkeypatch.delenv("GOOGLE_DENSITY_ENABLED")
+    fetch = FakeFetch(_density_routes(_google_text()))
+    manifest = run(fetch=fetch, store=store)
+    assert "google" not in manifest["storms"][0].get("density", {})
+    assert GOOGLE_18Z_URL not in fetch.calls
+    assert "google" not in store.data["state.json"]["storms"]["al022026"]["density"]["entries"]
+
+
+@pytest.mark.parametrize("target,expected_code", [
+    ("gulfwatch.adeck.extract_members", "google_parse_failed"),
+    ("gulfwatch.density.render_png", "google_render_failed"),
+])
+def test_google_failures_publish_only_codes(density_clock, monkeypatch, capsys, target, expected_code):
+    monkeypatch.setenv("GOOGLE_DENSITY_ENABLED", "1")
+    module_name, attr = target.rsplit(".", 1)
+    import importlib
+    module = importlib.import_module(module_name)
+    real = getattr(module, attr)
+
+    def boom(*args, **kwargs):
+        # Only break the Google call; leave GEFS working.
+        text = args[0] if args else None
+        if attr == "extract_members" and isinstance(text, str) and "F000" not in text:
+            return real(*args, **kwargs)
+        if attr == "render_png" and not getattr(boom, "armed", False):
+            boom.armed = True  # first call is GEFS, second is Google
+            return real(*args, **kwargs)
+        raise ValueError("F001 1X9N 619W 11.7 -61.3")
+
+    monkeypatch.setattr(module, attr, boom)
+    store = FakeStore()
+    manifest = run(fetch=FakeFetch(_density_routes(_google_text())), store=store)
+    codes = [e["message"] for e in manifest["errors"] if e["product"] == "al022026.density.google"]
+    assert codes == [expected_code]
+    assert "google" not in manifest["storms"][0].get("density", {})
+    _assert_no_google_leak(store, manifest, capsys.readouterr())
+
+
+def test_google_upload_failure_publishes_only_code(density_clock, monkeypatch, capsys):
+    monkeypatch.setenv("GOOGLE_DENSITY_ENABLED", "1")
+
+    class NoGoogleUploads(FakeStore):
+        def put_bytes(self, path, data, content_type):
+            if "density-google" in path:
+                raise RuntimeError(f"cannot write {path} 11.7 -61.3 F001")
+            super().put_bytes(path, data, content_type)
+
+    store = NoGoogleUploads()
+    manifest = run(fetch=FakeFetch(_density_routes(_google_text())), store=store)
+    codes = [e["message"] for e in manifest["errors"] if e["product"] == "al022026.density.google"]
+    assert codes == ["google_upload_failed"]
+    _assert_no_google_leak(store, manifest, capsys.readouterr())
+
+
+def test_storm_without_members_has_no_density_key(density_clock):
+    routes = _density_routes()
+    routes[BERTHA_ADECK_URL] = FakeResponse(content=_adeck_gz(BERTHA_ADECK_TEXT))
+    store = FakeStore()
+    manifest = run(fetch=FakeFetch(routes), store=store)
+    assert "density" not in manifest["storms"][0]
+    assert "density" not in store.data["state.json"]["storms"]["al022026"]
