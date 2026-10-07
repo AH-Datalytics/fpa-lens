@@ -21,6 +21,7 @@ from __future__ import annotations
 
 import os
 import tempfile
+import time
 from datetime import datetime, timedelta, timezone
 
 from gulfwatch import density
@@ -149,7 +150,8 @@ def cycle_candidates(now: datetime, count: int = CANDIDATE_CYCLES) -> list[datet
 
 
 def download_files(
-    fetch, now: datetime, keep: int = 2, model: str = "ifs", stream: str = "enfo"
+    fetch, now: datetime, keep: int = 2, model: str = "ifs", stream: str = "enfo",
+    deadline: float | None = None, clock=time.monotonic,
 ) -> list[tuple[str, bytes]]:
     """The newest `keep` posted track files, newest first, downloaded ONCE per
     ingest run and shared by every storm (each file covers all basins).
@@ -160,8 +162,17 @@ def download_files(
     review, 2026-10-07)."""
     files: list[tuple[str, bytes]] = []
     for cycle_dt in cycle_candidates(now):
+        # `deadline` is the run's shared budget for outside downloads (see
+        # pipeline.EXTERNAL_BUDGET_S): stop when it is spent, and never wait
+        # longer than what remains.
+        timeout = TIMEOUT_S
+        if deadline is not None:
+            remaining = deadline - clock()
+            if remaining <= 0:
+                break
+            timeout = min(TIMEOUT_S, remaining)
         try:
-            resp = fetch(file_url(cycle_dt, model, stream), timeout=TIMEOUT_S)
+            resp = fetch(file_url(cycle_dt, model, stream), timeout=timeout)
         except Exception:  # noqa: BLE001
             break
         if resp.status_code != 200:

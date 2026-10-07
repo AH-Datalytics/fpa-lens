@@ -636,6 +636,15 @@ def _resolve_track_for_gulf_check(advisory_changed, fresh_track_fc, track_path, 
 # identity (cycle, advisory, inputs) is unchanged, so only a version bump
 # re-renders images already on the store.
 _DENSITY_STATE_VERSION = 2
+# Total seconds per run for the density layer's outside downloads (ECMWF and
+# Google Weather Lab together). The job has a 15-minute limit and a normal run
+# takes well under a minute; this keeps a slow outside server from holding up
+# the cone, warnings and every other product (Jeff, 2026-10-07). Each request
+# is also capped to what remains. A response that keeps trickling bytes is
+# bounded only by its per-request timeout, so this is a strong cap, not an
+# absolute one.
+EXTERNAL_BUDGET_S = 180
+
 _DENSITY_PUBLIC_KEYS = ("image", "bounds", "cycle", "members", "expected", "radiusKm", "start", "end")
 
 
@@ -710,7 +719,7 @@ def _build_density(kind, storm, selected, store, prev):
     }
 
 
-def _process_density(storm, adeck_text, fetch, store, errors, prev_state, ecmwf_files=None):
+def _process_density(storm, adeck_text, fetch, store, errors, prev_state, ecmwf_files=None, deadline=None):
     ecmwf_files = ecmwf_files or {}
     """Track-density entries for one storm. Identity is saved only once its
     image has uploaded, so a failed upload is retried next run."""
@@ -764,7 +773,7 @@ def _process_density(storm, adeck_text, fetch, store, errors, prev_state, ecmwf_
         try:
             selected = weatherlab.fetch_members(
                 storm.id, fetch, _utcnow(), density.MINIMUM_MEMBERS["google"],
-                advisory_time=storm.advisory_time,
+                advisory_time=storm.advisory_time, deadline=deadline,
             )
             entry = _build_density("google", storm, selected, store, prev.get("google"))
             if entry:
@@ -812,7 +821,8 @@ def _density_manifest(entries, storm):
 
 
 def _process_storm(
-    storm, prev_storm_state, fetch, store, errors, wsp_fc=None, others=None, sat=None, ecmwf_files=None
+    storm, prev_storm_state, fetch, store, errors, wsp_fc=None, others=None, sat=None, ecmwf_files=None,
+    deadline=None,
 ):
     """Process one Atlantic storm: conditionally refresh its GIS + a-deck
     products, then build its manifest entry and next state.json entry."""
@@ -904,7 +914,7 @@ def _process_storm(
     )
     density_entries = _process_density(
         storm, adeck_sink.get("text"), fetch, store, errors, prev_storm_state.get("density", {}),
-        ecmwf_files=ecmwf_files,
+        ecmwf_files=ecmwf_files, deadline=deadline,
     )
 
     track_for_check = _resolve_track_for_gulf_check(
@@ -1082,9 +1092,11 @@ def run(fetch=requests.get, store=blob) -> dict:
     # every-15-minutes off-season run exactly as cheap as it was.
     # ECMWF ensemble track files cover every basin: download once per run and
     # share them, so a slow ECMWF server costs one timeout, not one per storm.
+    deadline = time.monotonic() + EXTERNAL_BUDGET_S
     ecmwf_files = {
         key: ecmwf.download_files(
-            fetch, _utcnow(), keep=2 if key in ecmwf.ENSEMBLES else 1, model=model, stream=stream
+            fetch, _utcnow(), keep=2 if key in ecmwf.ENSEMBLES else 1, model=model, stream=stream,
+            deadline=deadline,
         )
         for key, (model, stream) in ecmwf.PRODUCTS.items()
     } if any(s.id.startswith("al") for s in all_storms) else {}
@@ -1103,7 +1115,7 @@ def run(fetch=requests.get, store=blob) -> dict:
             others = [pos for sid, pos in storm_positions.items() if sid != storm.id]
             entry, next_state = _process_storm(
                 storm, prev_storms_state.get(storm.id, {}), fetch, store, errors,
-                wsp_fc=wsp_fc, others=others, sat=sat, ecmwf_files=ecmwf_files,
+                wsp_fc=wsp_fc, others=others, sat=sat, ecmwf_files=ecmwf_files, deadline=deadline,
             )
             manifest_storms.append(entry)
             new_storms_state[storm.id] = next_state

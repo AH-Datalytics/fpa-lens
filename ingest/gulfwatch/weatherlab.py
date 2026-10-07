@@ -16,6 +16,7 @@ The repo, its Actions logs, the blob store and manifest.errors are all public.
 from __future__ import annotations
 
 import re
+import time
 from datetime import datetime, timedelta, timezone
 
 from gulfwatch import adeck, density
@@ -59,7 +60,8 @@ def cycle_candidates(now: datetime, count: int = CANDIDATE_CYCLES) -> list[datet
 
 
 def fetch_members(
-    storm_id: str, fetch, now: datetime, minimum: int, advisory_time: str | None = None
+    storm_id: str, fetch, now: datetime, minimum: int, advisory_time: str | None = None,
+    deadline: float | None = None, clock=time.monotonic,
 ) -> tuple[str, density.Members]:
     """Newest qualifying cycle's members for `storm_id` (e.g. "al092026").
 
@@ -72,8 +74,15 @@ def fetch_members(
     saw_storm = False
     too_few = False
     for cycle_dt in cycle_candidates(now):
+        # Shared run budget for outside downloads (pipeline.EXTERNAL_BUDGET_S).
+        timeout = TIMEOUT_S
+        if deadline is not None:
+            remaining = deadline - clock()
+            if remaining <= 0:
+                break
+            timeout = min(TIMEOUT_S, remaining)
         try:
-            resp = fetch(file_url(cycle_dt), timeout=TIMEOUT_S)
+            resp = fetch(file_url(cycle_dt), timeout=timeout)
         except Exception:  # noqa: BLE001
             # A network failure stops the walk: four timeouts per storm could
             # outlast the job's 15-minute limit (Codex review, 2026-10-07).

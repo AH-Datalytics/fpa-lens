@@ -110,3 +110,11 @@ def test_parse_failure_is_a_code_without_input_text(monkeypatch):
 def test_unknown_code_rejected():
     with pytest.raises(ValueError):
         weatherlab.GoogleError("F001 123N")
+
+
+def test_fetch_respects_the_run_deadline():
+    fetch = Fetch({url("2026100706"): Resp(200, google_file("2026100706", 50))})
+    with pytest.raises(weatherlab.GoogleError) as exc:
+        weatherlab.fetch_members("al092026", fetch, NOW, minimum=40, deadline=10.0, clock=lambda: 10.0)
+    assert exc.value.code == "google_unavailable"
+    assert fetch.calls == []

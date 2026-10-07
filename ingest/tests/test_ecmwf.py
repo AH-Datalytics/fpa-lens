@@ -159,3 +159,19 @@ def test_members_from_periods_keeps_the_ifs_control_run():
     periods = [(6, [22.3, 22.5], [-95.2, -94.8])]
     points = ecmwf.members_from_periods("2026100700", [1, 51], analysis, periods, forecast_types=[4, 0])
     assert {p.tech for p in points} == {"EN01", "EN51"}
+
+
+def test_download_files_respects_the_run_deadline():
+    calls = []
+
+    def fetch(url, timeout=None):
+        calls.append(timeout)
+        return Resp(404)
+
+    t13 = datetime(2026, 10, 7, 13, tzinfo=timezone.utc)
+    # Deadline already passed: no request at all.
+    assert ecmwf.download_files(fetch, t13, deadline=100.0, clock=lambda: 100.0) == []
+    assert calls == []
+    # 5 s left: each request's timeout is capped to what remains.
+    ecmwf.download_files(fetch, t13, deadline=105.0, clock=lambda: 100.0)
+    assert calls and max(calls) <= 5.0

@@ -1093,13 +1093,18 @@ def test_ecmwf_not_posted_is_silent_and_failure_is_recorded(density_clock, monke
 def test_ecmwf_files_downloaded_once_per_run(density_clock, monkeypatch):
     calls = []
 
-    def download(fetch, now, keep=2, model="ifs", stream="enfo"):
+    deadlines = set()
+
+    def download(fetch, now, keep=2, model="ifs", stream="enfo", deadline=None):
         calls.append((model, stream))
+        deadlines.add(deadline)
         return []
     monkeypatch.setattr(_ecmwf, "download_files", download)
     run(fetch=FakeFetch(_density_routes()), store=FakeStore())
     # one download per ECMWF product per run, shared by every storm
     assert sorted(calls) == sorted(set(_ecmwf.PRODUCTS.values()))
+    # ...all under ONE run-wide time budget
+    assert len(deadlines) == 1 and None not in deadlines
 
 
 def test_google_stops_at_first_network_failure(density_clock, monkeypatch):
