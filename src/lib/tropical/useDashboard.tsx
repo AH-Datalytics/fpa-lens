@@ -275,6 +275,13 @@ export function withoutEnsembleMembers(
   };
 }
 
+/** Cache key for a storm's files: advisory + a-deck cycle, plus the Euro line
+ * identity, which changes on ECMWF's own clock. */
+export function stormVersionOf(storm: Pick<StormEntry, "advisoryNum" | "modelCycle" | "guidanceVersion">): string {
+  const base = `${storm.advisoryNum}-${storm.modelCycle}`;
+  return storm.guidanceVersion ? `${base}-${storm.guidanceVersion}` : base;
+}
+
 /** Ingest errors worth telling visitors about. Density (like AIFS) degrades
  * to a disabled option instead, so it is not listed as an outage. */
 export function publicIngestIssues(
@@ -363,7 +370,7 @@ function useDashboardSource(): DashboardData {
     [otherStormEntries, otherCones]
   );
 
-  const stormVersion = storm ? `${storm.advisoryNum}-${storm.modelCycle}` : null;
+  const stormVersion = storm ? stormVersionOf(storm) : null;
   const stormFileUrl = (path: string) => versionedDataUrl(base, path, stormVersion);
   const coneUrl = storm ? stormFileUrl(storm.files.cone) : null;
   const trackUrl = storm ? stormFileUrl(storm.files.track) : null;

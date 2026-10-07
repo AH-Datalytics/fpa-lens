@@ -1208,3 +1208,19 @@ def test_stale_ecmwf_single_run_is_not_drawn(density_clock, monkeypatch):
     run(fetch=FakeFetch(_density_routes()), store=store)
     codes = {f["properties"]["model"] for f in store.data["storms/al022026/models.geojson"]["features"]}
     assert "AIFS" in codes and "EMXI" not in codes
+
+
+def test_manifest_versions_model_lines_when_euro_runs_change(density_clock, monkeypatch):
+    # models.geojson is fetched as ?v=<advisory>-<modelCycle>; a new Euro run
+    # alone must change what the page asks for, or browsers keep the old file.
+    cycle = {"now": "2026072212"}
+    monkeypatch.setattr(_ecmwf, "download_files", lambda *a, **k: [(cycle["now"], b"BUFR")])
+    monkeypatch.setattr(
+        _ecmwf, "single_track_feature",
+        lambda files, storm_id, code, label, kind, reference_time, decode=None: _single(code, label, kind, cycle["now"]),
+    )
+    store = FakeStore()
+    first = run(fetch=FakeFetch(_density_routes()), store=store)["storms"][0]["guidanceVersion"]
+    cycle["now"] = "2026072218"
+    second = run(fetch=FakeFetch(_density_routes()), store=store)["storms"][0]["guidanceVersion"]
+    assert first and second and first != second

@@ -974,6 +974,11 @@ def _process_storm(
     }
     if sat:
         manifest_entry["satellite"] = sat
+    # The page fetches storm files as ?v=<advisory>-<modelCycle>. Euro lines
+    # arrive on ECMWF's own clock, so publish their identity too; otherwise a
+    # new Euro run reuses the old URL and browsers keep the cached file.
+    if ecmwf_state:
+        manifest_entry["guidanceVersion"] = ".".join(f"{code}{ecmwf_state[code]}" for code in sorted(ecmwf_state))
     density_manifest = _density_manifest(density_entries, storm)
     if density_manifest:
         manifest_entry["density"] = density_manifest

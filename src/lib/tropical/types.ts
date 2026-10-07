@@ -47,6 +47,9 @@ export interface StormEntry {
    * Omitted when paired (the normal case) or unknown; positive means the
    * probabilities predate the advisory, negative means they are newer. */
   windprobCyclesBehind?: number;
+  /** Identity of the Euro / Euro AI lines in models.geojson ("AIFS2026100712.EMXI2026100712").
+   * They run on ECMWF's clock, so this joins the storm-file cache key. */
+  guidanceVersion?: string;
   files: Record<"cone" | "track" | "text" | "probs", string> & {
     /** Model guidance, from the a-deck. Absent for a freshly-formed storm with
      * no a-deck yet, or when that fetch failed -- the key is omitted rather

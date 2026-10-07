@@ -9,6 +9,7 @@ import {
   withoutEnsembleMembers,
   selectAdvisory,
   selectStorm,
+  stormVersionOf,
   versionedDataUrl,
 } from "../useDashboard";
 import type { Manifest, StormEntry } from "../types";
@@ -256,5 +257,15 @@ describe("withoutEnsembleMembers", () => {
     };
     expect(withoutEnsembleMembers(fc)?.features.map((f) => f.properties?.model)).toEqual(["AVNO"]);
     expect(withoutEnsembleMembers(undefined)).toBeUndefined();
+  });
+});
+
+describe("stormVersionOf", () => {
+  it("changes when only the Euro lines change, so models.geojson is refetched", () => {
+    const base = { advisoryNum: "004a", modelCycle: "2026100712" } as StormEntry;
+    expect(stormVersionOf(base)).toBe("004a-2026100712");
+    expect(stormVersionOf({ ...base, guidanceVersion: "AIFS2026100712.EMXI2026100712" })).toBe(
+      "004a-2026100712-AIFS2026100712.EMXI2026100712"
+    );
   });
 });
