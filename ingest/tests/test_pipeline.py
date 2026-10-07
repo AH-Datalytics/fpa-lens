@@ -1169,3 +1169,37 @@ def test_new_euro_single_run_rebuilds_model_lines(density_clock, monkeypatch):
     run(fetch=FakeFetch(_density_routes()), store=store)
     models = store.data["storms/al022026/models.geojson"]["features"]
     assert {f["properties"]["cycle"] for f in models if f["properties"]["model"] == "AIFS"} == {"2026072218"}
+
+
+def test_failed_models_upload_does_not_consume_the_ecmwf_trigger(density_clock, monkeypatch):
+    cycle = {"now": "2026072212"}
+    monkeypatch.setattr(_ecmwf, "download_files", lambda *a, **k: [(cycle["now"], b"BUFR")])
+    monkeypatch.setattr(
+        _ecmwf, "single_track_feature",
+        lambda files, storm_id, code, label, kind, reference_time, decode=None: _single(code, label, kind, cycle["now"]),
+    )
+    store = FakeStore()
+    run(fetch=FakeFetch(_density_routes()), store=store)
+    cycle["now"] = "2026072218"
+    store.raising_paths = {"storms/al022026/models.geojson"}  # this run's upload fails
+    run(fetch=FakeFetch(_density_routes()), store=store)
+    assert store.data["state.json"]["storms"]["al022026"]["ecmwfModels"]["AIFS"] == "2026072212"
+    store.raising_paths = set()  # recovers; nothing else changed
+    run(fetch=FakeFetch(_density_routes()), store=store)
+    models = store.data["storms/al022026/models.geojson"]["features"]
+    assert {f["properties"]["cycle"] for f in models if f["properties"]["model"] == "AIFS"} == {"2026072218"}
+
+
+def test_stale_ecmwf_single_run_is_not_drawn(density_clock, monkeypatch):
+    # The a-deck's dominant cycle is 2026072218; a 00Z ECMWF run is 18 h
+    # behind it, past the 12 h cap the a-deck models already obey.
+    runs = {"EMXI": "2026072200", "AIFS": "2026072212"}
+    monkeypatch.setattr(_ecmwf, "download_files", lambda *a, **k: [("x", b"BUFR")])
+    monkeypatch.setattr(
+        _ecmwf, "single_track_feature",
+        lambda files, storm_id, code, label, kind, reference_time, decode=None: _single(code, label, kind, runs[code]),
+    )
+    store = FakeStore()
+    run(fetch=FakeFetch(_density_routes()), store=store)
+    codes = {f["properties"]["model"] for f in store.data["storms/al022026/models.geojson"]["features"]}
+    assert "AIFS" in codes and "EMXI" not in codes

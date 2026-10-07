@@ -71,13 +71,17 @@ def _missing(value: float) -> bool:
 def members_from_periods(cycle, member_numbers, analysis, periods, forecast_types=None) -> list[MemberPoint]:
     """Decoded arrays -> member positions. `analysis` is (lats, lons) at tau 0;
     `periods` is [(tau, lats, lons), ...], each array one value per member.
-    With `forecast_types`, a subset of type 0 (a single run mixed into an
-    ensemble file, as AIFS ensemble files carry) is skipped -- unless it is
-    the file's only subset, which is how single-run files come."""
+    With `forecast_types` (WMO 0 = unperturbed high-res control, 1 =
+    unperturbed control, 4 = perturbed): a type-0 subset is skipped only when
+    the file ALSO has a type-1 control. AIFS ensemble files carry both, and
+    their type 0 is the single run. IFS ensemble files have no type 1, and
+    their type 0 is the control member (51), which is kept. Real files
+    checked in Docker, 2026-10-07."""
     points: list[MemberPoint] = []
     steps = [(0, analysis[0], analysis[1]), *periods]
+    has_control = forecast_types is not None and any(int(t) == 1 for t in forecast_types)
     for i, member in enumerate(member_numbers):
-        if forecast_types is not None and len(member_numbers) > 1 and int(forecast_types[i]) == 0:
+        if has_control and int(forecast_types[i]) == 0:
             continue
         tech = f"EN{int(member):02d}"
         for tau, lats, lons in steps:

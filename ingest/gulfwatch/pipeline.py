@@ -578,8 +578,22 @@ def _process_adeck(
         # ECMWF single runs read straight from ECMWF (see _ecmwf_model_lines).
         # Skip one whose code the a-deck already carries, so a model is never
         # drawn twice if NHC's public deck starts including it.
+        # They also obey the a-deck's staleness cap: a run more than
+        # MAX_STALENESS_HOURS behind the dominant cycle is not drawn (Codex
+        # review, 2026-10-07).
         have = {f["properties"]["model"] for f in models_geojson["features"]}
-        aifs_features = [*aifs_features, *(f for f in extra_features if f["properties"]["model"] not in have)]
+        dominant = adeck._parse_cycle(new_cycle)
+
+        def fresh(feature):
+            run_dt = adeck._parse_cycle(feature["properties"]["cycle"])
+            if dominant is None or run_dt is None:
+                return True
+            return (dominant - run_dt).total_seconds() / 3600 <= adeck.MAX_STALENESS_HOURS
+
+        aifs_features = [
+            *aifs_features,
+            *(f for f in extra_features if f["properties"]["model"] not in have and fresh(f)),
+        ]
         if aifs_features:
             models_geojson = {
                 "type": "FeatureCollection",
@@ -883,6 +897,11 @@ def _process_storm(
     # None means nothing was uploaded this run (cycle unchanged, or the a-deck
     # itself failed), so carry forward what a prior run confirmed.
     adeck_keys = set(fresh_adeck) if fresh_adeck is not None else set(prev_adeck or [])
+    ecmwf_state = (
+        ecmwf_line_cycles
+        if fresh_adeck is not None and "models" in fresh_adeck
+        else prev_storm_state.get("ecmwfModels", {})
+    )
     density_entries = _process_density(
         storm, adeck_sink.get("text"), fetch, store, errors, prev_storm_state.get("density", {}),
         ecmwf_files=ecmwf_files,
@@ -963,7 +982,10 @@ def _process_storm(
         "gis": sorted(gis_keys),
         "adeck": sorted(adeck_keys),
         "gisVersion": _GIS_STATE_VERSION,
-        **({"ecmwfModels": ecmwf_line_cycles} if ecmwf_line_cycles else {}),
+        # Advance the ECMWF line identity only once models.geojson actually
+        # uploaded this run; otherwise keep the old one so the next run retries
+        # (Codex review, 2026-10-07).
+        **({"ecmwfModels": ecmwf_state} if ecmwf_state else {}),
     }
     if density_entries:
         next_state["density"] = {"version": _DENSITY_STATE_VERSION, "entries": density_entries}

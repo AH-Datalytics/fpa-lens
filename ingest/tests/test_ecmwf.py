@@ -149,3 +149,13 @@ def test_single_track_feature_none_when_storm_absent():
         [("2026100700", b"x")], "al092026", "AIFS", "Euro AI (AIFS)", "ai", "2026-10-07T09:00:00Z",
         decode=lambda data, ident, cycle: [],
     ) is None
+
+
+def test_members_from_periods_keeps_the_ifs_control_run():
+    # IFS ENS: 50 perturbed (type 4) + the control (type 0, member 51) and NO
+    # type-1 subset. Type 0 is the control there and must be kept (real files,
+    # 2026100700 and 2026100712, checked in Docker 2026-10-07).
+    analysis = ([22.1, 22.1], [-95.8, -95.8])
+    periods = [(6, [22.3, 22.5], [-95.2, -94.8])]
+    points = ecmwf.members_from_periods("2026100700", [1, 51], analysis, periods, forecast_types=[4, 0])
+    assert {p.tech for p in points} == {"EN01", "EN51"}
