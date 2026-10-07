@@ -150,6 +150,35 @@ const SYSTEM = [
   "only fill valve completed/total when an explicit count like '84 of 105' is stated.",
 ].join(" ");
 
+/** The digest already published at OUTPUT_PATH, or null on a first run / bad JSON. */
+function readExistingDigest() {
+  try {
+    return JSON.parse(readFileSync(OUTPUT_PATH, "utf8"));
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Carry every month's permit count forward across refreshes. Each SITREP
+ * states only its own month, and the site overlay used to append just that
+ * one entry to the curated series, so a skipped digest dropped a month for
+ * good (July 2026 vanished when August landed). The history is keyed by
+ * period; a re-parsed month replaces its earlier value.
+ */
+export function mergePermitsHistory(existing, current) {
+  const prior = Array.isArray(existing?.permitsHistory)
+    ? existing.permitsHistory
+    : existing?.permits
+      ? [existing.permits]
+      : [];
+  const byPeriod = new Map();
+  for (const p of [...prior, current]) {
+    if (p && p.issued != null && p.period) byPeriod.set(p.period, { issued: p.issued, period: p.period, type: p.type ?? null });
+  }
+  return [...byPeriod.values()];
+}
+
 function resolveInput() {
   const arg = process.argv.slice(2).find((a) => !a.startsWith("-"));
   const p = arg || process.env.SITREP_INPUT;
@@ -228,6 +257,7 @@ async function main() {
   // when run by hand, which simply makes that next check fall back to the name.
   const digest = {
     ...tool.input,
+    permitsHistory: mergePermitsHistory(readExistingDigest(), tool.input.permits),
     source: basename(path),
     sourceModified: process.env.REFRESH_SOURCE_MODIFIED || null,
     generatedFrom: "Claude " + MODEL,

@@ -35,15 +35,25 @@ export interface SitrepProject {
   phase?: string;
 }
 
+export interface SitrepPermits {
+  issued?: number | null;
+  period?: string | null;
+  type?: string | null;
+}
+
 export interface SitrepDigest {
   reportMonth?: string;
+  executiveSummary?: string | null;
   readiness?: {
     infrastructure?: string | null;
     staffing?: string | null;
     financial?: string | null;
     media?: string | null;
   };
-  permits?: { issued?: number | null; period?: string | null; type?: string | null };
+  permits?: SitrepPermits;
+  /** Every month's permit count the pipeline has seen (accumulated across
+   *  refreshes by extractSitrep.mjs); older digests only carry `permits`. */
+  permitsHistory?: SitrepPermits[];
   projects?: SitrepProject[];
   inspections?: {
     cpra?: SitrepInspection;
@@ -136,6 +146,52 @@ export function inspectionPercent(
   }
 }
 
+/** Calendar quarter containing an ISO month: label, ISO start/end dates. */
+export function quarterBounds(iso: string): { quarter: number; label: string; start: string; end: string } {
+  const [y, m] = iso.split("-").map(Number);
+  const quarter = Math.floor((m - 1) / 3) + 1;
+  const startMonth = (quarter - 1) * 3 + 1;
+  const endMonth = startMonth + 2;
+  const endDay = new Date(y, endMonth, 0).getDate();
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return {
+    quarter,
+    label: `Q${quarter} ${y}`,
+    start: `${y}-${pad(startMonth)}-01`,
+    end: `${y}-${pad(endMonth)}-${pad(endDay)}`,
+  };
+}
+
+/** Fiscal half containing an ISO month (Jan-Jun / Jul-Dec). */
+export function halfBounds(iso: string): { start: string; end: string } {
+  const [y, m] = iso.split("-").map(Number);
+  return m <= 6
+    ? { start: `${y}-01-01`, end: `${y}-06-30` }
+    : { start: `${y}-07-01`, end: `${y}-12-31` };
+}
+
+/**
+ * Find a stated "Qn field inspections ... N% complete" figure for the given
+ * quarter in any of the supplied texts. Returns the percent and the sentence
+ * it came from, or null when nothing matches that quarter.
+ */
+export function statedQuarterPercent(
+  texts: Array<string | null | undefined>,
+  quarter: number,
+): { percent: number; sentence: string } | null {
+  for (const text of texts) {
+    if (!text || typeof text !== "string") continue;
+    for (const sentence of text.split(/(?<=[.;])\s+/)) {
+      const m = sentence.match(/\bQ([1-4])\s+field inspections?\b[^.%]*?(\d{1,3})\s*%/i);
+      if (m && Number(m[1]) === quarter) {
+        const percent = Math.min(100, Math.max(0, Number(m[2])));
+        return { percent, sentence: sentence.trim().replace(/[.;]$/, "") };
+      }
+    }
+  }
+  return null;
+}
+
 /** Minimal shape check: a digest we can safely act on. */
 export function isUsableDigest(d: unknown): d is SitrepDigest {
   if (!d || typeof d !== "object") return false;
@@ -148,14 +204,24 @@ export function isUsableDigest(d: unknown): d is SitrepDigest {
 // ---------------------------------------------------------------------------
 interface InspectionCfg {
   periodStart: string;
+  periodEnd?: string;
   monthlyRate: number;
   source: string;
   currentQuarterStatus?: string;
 }
 interface ReadinessMetricsLike {
   dataAsOf: string;
-  cpraQuarterlyInspection: InspectionCfg & { currentQuarterPercent: number };
-  usaceSemiAnnualInspection: InspectionCfg & { currentHalfPercent: number; status?: string };
+  cpraQuarterlyInspection: InspectionCfg & {
+    currentQuarterPercent: number;
+    currentQuarter?: string;
+    reported?: boolean;
+    note?: string | null;
+  };
+  usaceSemiAnnualInspection: InspectionCfg & {
+    currentHalfPercent: number;
+    status?: string;
+    percentIsEstimate?: boolean;
+  };
   valveExercises: InspectionCfg & {
     percentComplete: number;
     completed?: number;
@@ -245,28 +311,69 @@ export function applySitrep(digest: unknown, targets: SitrepTargets): ApplyResul
   changes.push(`Reporting month -> ${month} (dataAsOf ${iso})`);
 
   // 2. Inspections — set percentComplete from the SITREP (count or status),
-  //    using the NEW dataAsOf so pace and date roll together.
+  //    using the NEW dataAsOf so pace and date roll together. The CPRA
+  //    quarter and USACE half roll to the period containing the report month
+  //    first, so a September report is graded against Q3 / Jul-Dec rather than
+  //    the baseline's Q2 / Jan-Jun (which had read "Q2 2026 · 100%" in October).
   const insp = digest.inspections ?? {};
-  const cpraPct = inspectionPercent(insp.cpra, {
-    monthlyRate: rm.cpraQuarterlyInspection.monthlyRate,
-    periodStart: rm.cpraQuarterlyInspection.periodStart,
-    dataAsOf: iso,
-  });
-  if (cpraPct != null) {
-    rm.cpraQuarterlyInspection.currentQuarterPercent = cpraPct;
-    rm.cpraQuarterlyInspection.source = sitrepSource;
-    changes.push(`CPRA inspection -> ${cpraPct}%`);
+  const cpraCfg = rm.cpraQuarterlyInspection;
+  const q = quarterBounds(iso);
+  cpraCfg.currentQuarter = q.label;
+  cpraCfg.periodStart = q.start;
+  cpraCfg.periodEnd = q.end;
+  const usaceCfg = rm.usaceSemiAnnualInspection;
+  const h = halfBounds(iso);
+  usaceCfg.periodStart = h.start;
+  usaceCfg.periodEnd = h.end;
+
+  // CPRA: prefer a stated figure. SITREPs phrase the quarterly CPRA work as
+  // "Qn field inspections approximately N% complete", often in the executive
+  // summary or filed under the USACE note by the extractor, so look there
+  // before falling back to the status word. A SITREP that says nothing about
+  // CPRA marks the card "not reported" rather than synthesizing a percent.
+  const stated = statedQuarterPercent(
+    [digest.executiveSummary, insp.cpra?.note, insp.usace?.note],
+    q.quarter,
+  );
+  const cpraHasCount = insp.cpra?.completed != null && insp.cpra?.total != null && insp.cpra.total > 0;
+  if (stated) {
+    cpraCfg.currentQuarterPercent = stated.percent;
+    cpraCfg.note = stated.sentence;
+    cpraCfg.reported = true;
+    cpraCfg.source = sitrepSource;
+    changes.push(`CPRA inspection -> ${stated.percent}% (stated)`);
+  } else if (cpraHasCount || (insp.cpra?.status && insp.cpra.status !== "not-reported")) {
+    const cpraPct = inspectionPercent(insp.cpra, {
+      monthlyRate: cpraCfg.monthlyRate,
+      periodStart: cpraCfg.periodStart,
+      dataAsOf: iso,
+    });
+    if (cpraPct != null) {
+      cpraCfg.currentQuarterPercent = cpraPct;
+      cpraCfg.note = insp.cpra?.note ?? null;
+      cpraCfg.reported = true;
+      cpraCfg.source = sitrepSource;
+      changes.push(`CPRA inspection -> ${cpraPct}%`);
+    }
+  } else {
+    cpraCfg.reported = false;
+    cpraCfg.note = null;
+    cpraCfg.source = sitrepSource;
+    changes.push("CPRA inspection -> not reported");
   }
+
   const usacePct = inspectionPercent(insp.usace, {
-    monthlyRate: rm.usaceSemiAnnualInspection.monthlyRate,
-    periodStart: rm.usaceSemiAnnualInspection.periodStart,
+    monthlyRate: usaceCfg.monthlyRate,
+    periodStart: usaceCfg.periodStart,
     dataAsOf: iso,
   });
   if (usacePct != null) {
-    rm.usaceSemiAnnualInspection.currentHalfPercent = usacePct;
-    rm.usaceSemiAnnualInspection.source = sitrepSource;
-    if (insp.usace?.note) rm.usaceSemiAnnualInspection.status = insp.usace.note;
-    changes.push(`USACE inspection -> ${usacePct}%`);
+    const usaceHasCount = insp.usace?.completed != null && insp.usace?.total != null && insp.usace.total > 0;
+    usaceCfg.currentHalfPercent = usacePct;
+    usaceCfg.percentIsEstimate = !usaceHasCount && insp.usace?.status !== "complete";
+    usaceCfg.source = sitrepSource;
+    if (insp.usace?.note) usaceCfg.status = insp.usace.note;
+    changes.push(`USACE inspection -> ${usacePct}%${usaceCfg.percentIsEstimate ? " (pace estimate)" : ""}`);
   }
   const valvePct = inspectionPercent(insp.valves, {
     monthlyRate: rm.valveExercises.monthlyRate,
@@ -311,22 +418,35 @@ export function applySitrep(digest: unknown, targets: SitrepTargets): ApplyResul
   for (const k of ["systemReadiness", "pccpPumps", "floodgateInspections"] as const) {
     if (targets.kpiMetrics[k].source) targets.kpiMetrics[k].source = sitrepSource;
   }
+  // Every month the pipeline has seen goes into the trend (older digests only
+  // carried the latest month, which silently dropped July 2026 when August
+  // arrived). The latest month also drives the KPI label.
+  const history = (digest.permitsHistory && digest.permitsHistory.length > 0
+    ? digest.permitsHistory
+    : [digest.permits]
+  ).filter((p): p is SitrepPermits => !!p && p.issued != null && !!p.period);
+  const trend = targets.operationsData.permitsIssued;
+  for (const p of history) {
+    const existing = trend.find((e) => e.month === p.period);
+    if (existing) {
+      existing.count = p.issued as number;
+      existing.source = sitrepSource;
+    } else {
+      trend.push({ month: p.period as string, count: p.issued as number, source: sitrepSource });
+    }
+  }
+  trend.sort((a, b) => {
+    const ra = parseReportMonthToISO(a.month);
+    const rb = parseReportMonthToISO(b.month);
+    return (ra ? monthRank(ra) : 0) - (rb ? monthRank(rb) : 0);
+  });
   const permits = digest.permits;
   if (permits && permits.issued != null && permits.period) {
     const sm = shortMonth(permits.period);
     targets.kpiMetrics.permitsIssued.label = `Permits Issued (${sm})`;
     targets.kpiMetrics.permitsIssued.value = permits.issued;
     targets.kpiMetrics.permitsIssued.source = sitrepSource;
-    // Append/replace the trend entry for this period.
-    const trend = targets.operationsData.permitsIssued;
-    const existing = trend.find((e) => e.month === permits.period);
-    if (existing) {
-      existing.count = permits.issued;
-      existing.source = sitrepSource;
-    } else {
-      trend.push({ month: permits.period, count: permits.issued, source: sitrepSource });
-    }
-    changes.push(`Permits (${permits.period}): ${permits.issued}`);
+    changes.push(`Permits (${permits.period}): ${permits.issued}${history.length > 1 ? ` (+${history.length - 1} prior months from history)` : ""}`);
   }
 
   // 5. Capital projects — replace with the SITREP's current list.

@@ -106,8 +106,8 @@ export const systemReadiness = {
       // inspection cards' percentages, but this prose summary is hand-maintained
       // (the SITREP extractor has no clean field for it); update it when the
       // monthly SITREP restates inspection status.
-      description: "Q1 field inspections submitted to CPRA; Q2 field inspections completed and under Engineering review; all LPV, PCCP, and Complex Structures USACE inspections complete with no significant findings",
-      source: "June 2026 SITREP",
+      description: "Q3 field inspections approximately 95% complete; all PCCP stations and complex structures operational and mission ready; annual floodgate inspections up to date",
+      source: "September 2026 SITREP",
     },
     {
       name: "Staffing Readiness",
@@ -322,18 +322,24 @@ export const readinessMetrics = {
   // date, so X% partway through a quarter reads against expected for that
   // point in time (not against 100% complete).
   cpraQuarterlyInspection: {
+    // The SITREP overlay rolls currentQuarter/periodStart/periodEnd to the
+    // quarter containing the report month and sets the percent from the
+    // SITREP (a stated "Qn field inspections ~N% complete" figure when the
+    // digest has one). `reported: false` means the latest SITREP said nothing
+    // about CPRA, and the card shows that instead of a synthesized percent.
     currentQuarter: "Q2 2026",
     // June 2026 SITREP: "second-quarter field inspections nearing completion."
     // The SITREP is narrative (no exact percent), so this reflects "nearing
     // completion" against ~67% straight-line expected for the June-1 as-of date
-    // (ahead of pace -> Green). Replace with an exact figure if a future SITREP
-    // states one. (Was 40% / "Q2 underway" on the May SITREP.)
+    // (ahead of pace -> Green). (Was 40% / "Q2 underway" on the May SITREP.)
     currentQuarterPercent: 90,
     periodStart: "2026-04-01",
     periodEnd: "2026-06-30",
     monthlyRate: 33.33,
     mandate: "CPRA",
     reportSubmittedDate: null,
+    reported: true as boolean,
+    note: null as string | null,
     source: "June 2026 SITREP (Q1 submitted to CPRA; Q2 field inspections nearing completion)",
   },
   // USACE semi-annual inspection: 16.67%/month over the current half (Jan-Jun
@@ -349,6 +355,10 @@ export const readinessMetrics = {
     monthlyRate: 16.67,
     mandate: "USACE",
     reportSubmittedDate: null,
+    // true when currentHalfPercent is a pace-line estimate from a narrative
+    // SITREP status (on-track/behind) rather than a figure the SITREP stated;
+    // the engineering card then shows the SITREP wording instead of "N% complete".
+    percentIsEstimate: false as boolean,
     status: "All LPV, PCCP, and Complex Structures USACE inspections complete with no significant findings",
     source: "June 2026 SITREP",
   },
@@ -531,6 +541,10 @@ export const operationsData = {
     { month: "March 2026", count: 27, source: "Apr 2026 SITREP" },
     { month: "April 2026", count: 27, source: "May 2026 SITREP" },
     { month: "May 2026", count: 19, source: "June 2026 SITREP" },
+    // June 2026 was never captured (no July SITREP digest was published).
+    { month: "July 2026", count: 33, source: "August 2026 SITREP" },
+    // Later months arrive via the SITREP overlay, which now carries the
+    // pipeline's accumulated `permitsHistory` so no month is dropped.
   ],
 
   floodgateInspections: {

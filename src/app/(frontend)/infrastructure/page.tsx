@@ -112,6 +112,7 @@ function ReadinessCard({
   progress,
   reservePaceSpace,
   dataAsOf,
+  badgeLabel,
 }: {
   title: string;
   description?: string;
@@ -131,10 +132,12 @@ function ReadinessCard({
   progress?: { actual: number; expected: number; total: number; unit: string };
   reservePaceSpace?: boolean;
   dataAsOf?: string;
+  /** Overrides the badge text (e.g. "In Progress" for a neutral card that is active, not inactive). */
+  badgeLabel?: string;
 }) {
   const s = statusStyles(status);
   const outerBorder = hideStatusBorder ? "border-transparent" : s.border;
-  const badgeText = status === "NEUTRAL" ? "Not Active" : status;
+  const badgeText = badgeLabel ?? (status === "NEUTRAL" ? "Not Active" : status);
   const actualPct = progress && progress.total > 0 ? (progress.actual / progress.total) * 100 : 0;
   const expectedPct = progress && progress.total > 0 ? (progress.expected / progress.total) * 100 : 0;
   const clampedActual = Math.max(0, Math.min(100, actualPct));
@@ -247,12 +250,18 @@ export default function OurSystemPage() {
   const hgStatus = statusFromRatio(hgRatio);
 
   // River gates: in-season Oct 1 to Dec 31. Outside the window, the card
-  // reflects the previous cycle's completion (so today, April, reads 100%
+  // reflects the previous cycle's completion (so in April it reads 100%
   // GREEN since the Oct-Dec 2025 cycle was completed).
+  //
+  // Grading is keyed to the SITREP data date (asOf), the same date the
+  // expected-progress math and the home rollup use. Early in the season the
+  // calendar is inside the window but the latest SITREP predates it, so there
+  // is no count yet; that reads as "Underway" rather than "0% · GREEN".
   const rg = readinessMetrics.riverGateInspections;
   const rgStart = new Date(rg.periodStart + "T00:00:00");
   const rgEnd = new Date(rg.periodEnd + "T00:00:00");
-  const rgInSeason = today >= rgStart && today <= rgEnd;
+  const rgInSeason = asOf >= rgStart && asOf <= rgEnd;
+  const rgSeasonOpenAwaitingData = !rgInSeason && today >= rgStart && today <= rgEnd;
   const rgPriorCycleComplete = !rgInSeason && rg.lastCycleCompleted === true;
   const rgExpected = rgInSeason
     ? expectedFromRate(rg.monthlyRate, rgStart, asOf, rg.total)
@@ -260,9 +269,11 @@ export default function OurSystemPage() {
   const rgRatio = rgExpected > 0 ? (rg.completed / rgExpected) * 100 : 100;
   const rgStatus: StatusColor = rgInSeason
     ? statusFromRatio(rgRatio)
-    : rgPriorCycleComplete
-      ? "GREEN"
-      : "NEUTRAL";
+    : rgSeasonOpenAwaitingData
+      ? "NEUTRAL"
+      : rgPriorCycleComplete
+        ? "GREEN"
+        : "NEUTRAL";
 
   // Valve exercises (quarterly — graded time-relative like CPRA/USACE)
   const ve = readinessMetrics.valveExercises;
@@ -492,29 +503,38 @@ export default function OurSystemPage() {
                   big={
                     rgInSeason
                       ? `${rg.percentComplete}%`
-                      : rgPriorCycleComplete
-                        ? "100%"
-                        : "Upcoming"
+                      : rgSeasonOpenAwaitingData
+                        ? "Underway"
+                        : rgPriorCycleComplete
+                          ? "100%"
+                          : "Upcoming"
                   }
                   unit={rgInSeason || rgPriorCycleComplete ? "complete" : undefined}
+                  badgeLabel={rgSeasonOpenAwaitingData ? "In Progress" : undefined}
                   actual={
                     rgInSeason
                       ? `${rg.completed} of ${rg.total} gates`
-                      : rgPriorCycleComplete
-                        ? `All ${rg.total} gates inspected last cycle (${rg.lastCycleLabel})`
-                        : `${rg.completed} of ${rg.total} gates`
+                      : rgSeasonOpenAwaitingData
+                        ? `Inspection season opened Oct 1; first count arrives with the next SITREP. All ${rg.total} gates were inspected last cycle (${rg.lastCycleLabel}).`
+                        : rgPriorCycleComplete
+                          ? `All ${rg.total} gates inspected last cycle (${rg.lastCycleLabel})`
+                          : `${rg.completed} of ${rg.total} gates`
                   }
                   status={rgStatus}
-                  progress={{
-                    actual: rgInSeason
-                      ? rg.completed
-                      : rgPriorCycleComplete
-                        ? rg.total
-                        : 0,
-                    expected: rgInSeason ? Math.round(rgExpected) : rg.total,
-                    total: rg.total,
-                    unit: "gates",
-                  }}
+                  progress={
+                    rgSeasonOpenAwaitingData
+                      ? undefined
+                      : {
+                          actual: rgInSeason
+                            ? rg.completed
+                            : rgPriorCycleComplete
+                              ? rg.total
+                              : 0,
+                          expected: rgInSeason ? Math.round(rgExpected) : rg.total,
+                          total: rg.total,
+                          unit: "gates",
+                        }
+                  }
                 />
                 <ReadinessCard
                   title="Quarterly Valve Exercises"

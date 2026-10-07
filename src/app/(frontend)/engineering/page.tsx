@@ -22,6 +22,41 @@ import { ENGINEERING_DEFAULTS } from "@/globals/pages/engineeringPage";
 
 type StatusColor = "GREEN" | "AMBER" | "RED" | "NEUTRAL";
 
+const MONTH_NAMES = [
+  "january", "february", "march", "april", "may", "june",
+  "july", "august", "september", "october", "november", "december",
+];
+
+/**
+ * Expand a sparse ["September 2025", "October 2025", ...] permit series into
+ * one entry per calendar month between its first and last reported months,
+ * with `count: null` for months that have no published figure. Recharts skips
+ * null bars, so the gap stays visible and the axis labels stay aligned.
+ */
+function buildPermitChartSeries(
+  entries: { month: string; count: number }[],
+): { month: string; count: number | null }[] {
+  const parsed = entries
+    .map((e) => {
+      const m = e.month.trim().toLowerCase().match(/^([a-z]+)\s+(\d{4})$/);
+      const idx = m ? MONTH_NAMES.indexOf(m[1]) : -1;
+      return idx >= 0 && m ? { rank: Number(m[2]) * 12 + idx, count: e.count } : null;
+    })
+    .filter((e): e is { rank: number; count: number } => e !== null)
+    .sort((a, b) => a.rank - b.rank);
+  if (parsed.length === 0) return [];
+  const byRank = new Map(parsed.map((e) => [e.rank, e.count]));
+  const out: { month: string; count: number | null }[] = [];
+  for (let r = parsed[0].rank; r <= parsed[parsed.length - 1].rank; r++) {
+    const name = MONTH_NAMES[r % 12];
+    out.push({
+      month: name.charAt(0).toUpperCase() + name.slice(1, 3),
+      count: byRank.get(r) ?? null,
+    });
+  }
+  return out;
+}
+
 function statusFromRatio(ratio: number): StatusColor {
   if (ratio >= 90) return "GREEN";
   if (ratio >= 80) return "AMBER";
@@ -159,10 +194,11 @@ export default function OperationsPage() {
   const usaceRatio = usaceExpected > 0 ? (usace.currentHalfPercent / usaceExpected) * 100 : 100;
   const usaceStatus = statusFromRatio(usaceRatio);
 
-  const permitChartData = operationsData.permitsIssued.map((item) => ({
-    month: item.month.split(" ")[0].substring(0, 3),
-    count: item.count,
-  }));
+  // Chart every calendar month from the first to the last reported one, so a
+  // month with no SITREP count shows as a gap instead of the bars closing up
+  // and mislabelling the axis (June 2026 has no published figure).
+  const permitChartData = buildPermitChartSeries(operationsData.permitsIssued);
+  const permitGapMonths = permitChartData.filter((d) => d.count === null).length;
 
   const latestPermit = operationsData.permitsIssued[operationsData.permitsIssued.length - 1];
 
@@ -195,10 +231,17 @@ export default function OperationsPage() {
               mandate={cpra.mandate}
               period={cpra.currentQuarter}
               icon={ClipboardCheck}
-              big={`${cpra.currentQuarterPercent}%`}
-              actual={`${cpra.currentQuarter} field inspections complete`}
-              expected={`${Math.round(cpraExpected)}% by report date (100% by end of quarter)`}
-              status={cpraStatus}
+              big={cpra.reported ? `${cpra.currentQuarterPercent}%` : "—"}
+              actual={
+                cpra.reported
+                  ? (cpra.note ??
+                    (cpra.currentQuarterPercent >= 100
+                      ? `${cpra.currentQuarter} field inspections complete`
+                      : `${cpra.currentQuarter} field inspections ${cpra.currentQuarterPercent}% complete`))
+                  : `Not covered in the ${cpra.source}`
+              }
+              expected={cpra.reported ? `${Math.round(cpraExpected)}% by report date (100% by end of quarter)` : undefined}
+              status={cpra.reported ? cpraStatus : "NEUTRAL"}
               note={cpra.reportSubmittedDate ? `Report submitted to CPRA ${cpra.reportSubmittedDate}` : "CPRA submission date pending"}
             />
             <ReadinessCard
@@ -209,7 +252,7 @@ export default function OperationsPage() {
               icon={ClipboardCheck}
               big={`${Math.min(100, Math.round(usaceRatio))}%`}
               unit="on pace"
-              actual={`${usace.currentHalfPercent}% complete · LPV done; PCCP/Complex in progress Apr 14-28`}
+              actual={usace.percentIsEstimate ? usace.status : `${usace.currentHalfPercent}% complete · ${usace.status}`}
               expected={`Target: ${Math.round(usaceExpected)}% by today, 100% by end of half`}
               status={usaceStatus}
               note={usace.reportSubmittedDate ? `Report submitted ${usace.reportSubmittedDate}` : "Submission pending"}
@@ -330,6 +373,11 @@ export default function OperationsPage() {
                 </BarChart>
               </ResponsiveContainer>
             </div>
+            {permitGapMonths > 0 && (
+              <p className="mt-2 text-xs text-gray-400">
+                Months without a published SITREP count are left blank.
+              </p>
+            )}
             <div className="mt-4 overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
