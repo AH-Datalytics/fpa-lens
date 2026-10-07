@@ -22,6 +22,12 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
+  // Branded 404 for unmatched URLs via src/app/global-not-found.tsx. Needed
+  // because the public root layout lives in the (frontend) route group (the
+  // Payload admin has its own), so a plain not-found.tsx cannot cover them.
+  experimental: {
+    globalNotFound: true,
+  },
   images: {
     // Staff headshots uploaded via the CMS are served from Vercel Blob.
     remotePatterns: [
