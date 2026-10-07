@@ -10,12 +10,14 @@ docs/superpowers/specs/2026-10-07-tropical-ensemble-density-design.md.
 from __future__ import annotations
 
 import hashlib
+import io
 import json
 import math
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 
 import numpy as np
+from PIL import Image
 
 EXPECTED_MEMBERS = {"gefs": 30, "google": 50}
 # 80% of expected. At 40+ Google members one track contributes at most 2.5%,
@@ -240,3 +242,29 @@ def strike_grid(
         (_round_up(float(_lon_of(x0 + ncols * cell_m))), _round_up(float(_lat_of(y_top)))),
     )
     return grid
+
+
+# Lower edges of the drawn bands: 5-10, 10-20, ..., 80-90, 90+ %.
+BAND_EDGES = (0.05, 0.10, 0.20, 0.30, 0.40, 0.50, 0.60, 0.70, 0.80, 0.90)
+# Light blue -> blue -> green -> yellow -> orange -> red, after polarwx's
+# density view. Keep in step with DENSITY_BANDS in src/lib/tropical/density.ts.
+BAND_COLORS = (
+    "#a9dcf2", "#5db5e8", "#2f7fd6", "#3fae49", "#9fd13f",
+    "#f3e23a", "#f6b22d", "#f17a24", "#e2432a", "#b5172b",
+)
+
+
+def render_png(fraction: np.ndarray) -> bytes:
+    """RGBA PNG, one pixel per grid cell, transparent below the first band.
+    Banding (not a continuous ramp) is part of what keeps a density built from
+    Google members a finished product rather than recoverable raw data."""
+    idx = np.searchsorted(np.array(BAND_EDGES), fraction, side="right") - 1
+    palette = np.array(
+        [[int(c[i:i + 2], 16) for i in (1, 3, 5)] + [255] for c in BAND_COLORS], dtype=np.uint8
+    )
+    rgba = np.zeros((*fraction.shape, 4), dtype=np.uint8)
+    drawn = idx >= 0
+    rgba[drawn] = palette[idx[drawn]]
+    buf = io.BytesIO()
+    Image.fromarray(rgba).save(buf, format="PNG", optimize=True)
+    return buf.getvalue()

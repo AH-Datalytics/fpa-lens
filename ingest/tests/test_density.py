@@ -151,3 +151,26 @@ def test_below_minimum_eligible_is_none():
 def test_all_tracks_before_window_is_none():
     start = T0 + timedelta(hours=48)
     assert density.strike_grid({"AP01": [(0, 25.0, -95.0), (24, 25.0, -93.0)]}, C, start, T0 + timedelta(hours=120)) is None
+
+
+import io
+
+from PIL import Image
+
+
+def test_render_png_bands_and_transparency():
+    fraction = np.array([[0.02, 0.05, 0.07], [0.5, 0.95, 1.0]])
+    img = Image.open(io.BytesIO(density.render_png(fraction))).convert("RGBA")
+    assert img.size == (3, 2)
+    px = img.load()
+    assert px[0, 0][3] == 0  # below 5%: transparent
+
+    def rgb(hex_color):
+        return tuple(int(hex_color[i:i + 2], 16) for i in (1, 3, 5))
+
+    assert px[1, 0][:3] == rgb(density.BAND_COLORS[0])  # exactly 5% -> first band
+    assert px[2, 0][:3] == rgb(density.BAND_COLORS[0])
+    assert px[0, 1][:3] == rgb(density.BAND_COLORS[5])  # 50-60%
+    assert px[1, 1][:3] == rgb(density.BAND_COLORS[9])  # 90%+
+    assert px[2, 1][:3] == rgb(density.BAND_COLORS[9])
+    assert len(density.BAND_EDGES) == len(density.BAND_COLORS) == 10
