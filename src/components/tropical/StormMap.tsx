@@ -27,7 +27,6 @@ import {
   INITIAL_BOUNDS,
   LAYER_IDS,
   mergeFeatureCollections,
-  NOLA_LNGLAT,
   outlookAreaLabel,
   outlookColor,
   polygonLabelPoint,
@@ -281,7 +280,6 @@ export default function StormMap({
   const trackMarkersRef = useRef<Marker[]>([]);
   const outlookMarkersRef = useRef<Marker[]>([]);
   const otherStormMarkersRef = useRef<Marker[]>([]);
-  const nolaMarkerRef = useRef<Marker | null>(null);
 
   // --- create the map once; tear it down on unmount (StrictMode-safe: the
   // effect+cleanup pair runs cleanly through a dev double-invoke since the
@@ -309,11 +307,6 @@ export default function StormMap({
     mapRef.current = map;
 
     map.on("load", () => {
-      const nolaEl = document.createElement("div");
-      nolaEl.className = "tmap-nola";
-      nolaEl.innerHTML = '<span class="tmap-nola-dot"></span><span class="tmap-nola-label">New Orleans</span>';
-      nolaMarkerRef.current = new Marker({ element: nolaEl, anchor: "left" }).setLngLat(NOLA_LNGLAT).addTo(map);
-
       setLoaded(true);
     });
 
@@ -321,8 +314,6 @@ export default function StormMap({
       clearMarkers(trackMarkersRef.current);
       clearMarkers(outlookMarkersRef.current);
       clearMarkers(otherStormMarkersRef.current);
-      nolaMarkerRef.current?.remove();
-      nolaMarkerRef.current = null;
       map.remove();
       mapRef.current = null;
       // Reset on teardown rather than on setup: under StrictMode's double

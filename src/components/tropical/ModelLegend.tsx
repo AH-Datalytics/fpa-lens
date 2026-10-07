@@ -127,10 +127,7 @@ export function ModelLegend({
         </button>
         <button type="button" className={choiceClass(allSelected)} onClick={() => choose(allCodes)}>
           <span>
-            <b className="block text-xs font-semibold text-gray-900">
-              Forecast model tracks
-              {cycleLabel && <span className="ml-1 font-normal text-gray-400">({cycleLabel})</span>}
-            </b>
+            <b className="block text-xs font-semibold text-gray-900">Forecast model tracks</b>
             <small className="block text-[11px] text-gray-500">Show other projected paths</small>
           </span>
           {allSelected && <Check className="h-4 w-4 shrink-0 text-[#21355a]" aria-hidden="true" />}

@@ -5,8 +5,6 @@
 
 import type { ExpressionSpecification, StyleSpecification } from "maplibre-gl";
 
-/** New Orleans marker location (fixed point of reference on both maps). */
-export const NOLA_LNGLAT: [number, number] = [-90.07, 29.95];
 
 /** Initial Gulf view: east Texas sits near the western edge while the
  * central Gulf and the Cuba-to-Louisiana corridor remain the visual focus. */
@@ -556,7 +554,7 @@ export function buildInitialStyle(): StyleSpecification {
         type: "raster",
         source: SOURCE_IDS.density,
         layout: { visibility: "none" },
-        paint: { "raster-opacity": 0.75, "raster-fade-duration": 0, "raster-resampling": "nearest" },
+        paint: { "raster-opacity": 0.75, "raster-fade-duration": 0, "raster-resampling": "linear" },
       },
       {
         id: LAYER_IDS.labels,

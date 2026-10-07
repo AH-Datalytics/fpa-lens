@@ -127,12 +127,12 @@ def test_window_start_interpolates_and_drops_earlier_track():
     assert grid.value_at(25.0, -87.5) == 1.0
 
 
-def test_ground_cell_size_is_about_10_km():
+def test_ground_cell_size_matches_cell_km():
     grid = density.strike_grid({"AP01": _line(25.0, -95.0, -85.0)}, C, T0, T0 + timedelta(hours=120))
     lats, lons = grid.row_lats(), grid.col_lons()
     mid = len(lats) // 2
     d = density.haversine_km(lats[mid], lons[10], lats[mid], lons[11])
-    assert 9.0 <= float(d) <= 11.0
+    assert 0.9 * density.CELL_KM <= float(d) <= 1.1 * density.CELL_KM
 
 
 def test_bounds_contain_every_point_within_radius():
@@ -174,3 +174,15 @@ def test_render_png_bands_and_transparency():
     assert px[1, 1][:3] == rgb(density.BAND_COLORS[9])  # 90%+
     assert px[2, 1][:3] == rgb(density.BAND_COLORS[9])
     assert len(density.BAND_EDGES) == len(density.BAND_COLORS) == 10
+
+
+def test_render_png_upsamples_so_band_edges_are_smooth():
+    # 2x2 cells: 0% west, 100% east. At 4x the boundary gets intermediate
+    # bands instead of a single hard step, and the size grows 4x per side.
+    fraction = np.array([[0.0, 1.0], [0.0, 1.0]])
+    img = Image.open(io.BytesIO(density.render_png(fraction, scale=4))).convert("RGBA")
+    assert img.size == (8, 8)
+    row = [img.getpixel((x, 4)) for x in range(8)]
+    colors = {px[:3] for px in row if px[3]}
+    assert len(colors) >= 3  # several bands across the edge, not one jump
+    assert row[0][3] == 0  # far west still transparent

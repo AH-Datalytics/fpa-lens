@@ -87,7 +87,7 @@ def fingerprint(members: Members) -> str:
     return hashlib.sha256(json.dumps(rows, separators=(",", ":")).encode()).hexdigest()
 
 
-CELL_KM = 10.0
+CELL_KM = 5.0  # 10 km showed stair-steps on the map (Jeff, 2026-10-07)
 SAMPLE_KM = 10.0
 EARTH_RADIUS_KM = 6371.0088
 MERCATOR_RADIUS_M = 6378137.0
@@ -245,6 +245,7 @@ def strike_grid(
 
 
 # Lower edges of the drawn bands: 5-10, 10-20, ..., 80-90, 90+ %.
+RENDER_SCALE = 4
 BAND_EDGES = (0.05, 0.10, 0.20, 0.30, 0.40, 0.50, 0.60, 0.70, 0.80, 0.90)
 # Light blue -> blue -> green -> yellow -> orange -> red, after polarwx's
 # density view. Keep in step with DENSITY_BANDS in src/lib/tropical/density.ts.
@@ -254,10 +255,20 @@ BAND_COLORS = (
 )
 
 
-def render_png(fraction: np.ndarray) -> bytes:
-    """RGBA PNG, one pixel per grid cell, transparent below the first band.
+def render_png(fraction: np.ndarray, scale: int = 1) -> bytes:
+    """RGBA PNG, transparent below the first band.
     Banding (not a continuous ramp) is part of what keeps a density built from
-    Google members a finished product rather than recoverable raw data."""
+    Google members a finished product rather than recoverable raw data.
+
+    `scale` > 1 interpolates the grid (bilinear) that many times finer per side
+    before banding, so band edges draw as smooth curves instead of 10 km steps
+    (Jeff, 2026-10-07). The image covers the same bounds either way."""
+    if scale > 1:
+        rows, cols = fraction.shape
+        fine = Image.fromarray(fraction.astype(np.float32)).resize(
+            (cols * scale, rows * scale), Image.Resampling.BILINEAR
+        )
+        fraction = np.asarray(fine, dtype=np.float64)
     idx = np.searchsorted(np.array(BAND_EDGES), fraction, side="right") - 1
     palette = np.array(
         [[int(c[i:i + 2], 16) for i in (1, 3, 5)] + [255] for c in BAND_COLORS], dtype=np.uint8

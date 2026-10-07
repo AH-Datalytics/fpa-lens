@@ -610,7 +610,11 @@ def _resolve_track_for_gulf_check(advisory_changed, fresh_track_fc, track_path, 
 
 # Bump when the meaning of state.json's "density" record changes (same reason
 # as _GIS_STATE_VERSION: a stale record must be re-derived, not trusted).
-_DENSITY_STATE_VERSION = 1
+#
+# 2 (2026-10-07): 5 km grid, rendered 4x finer with smoothed band edges; the
+# identity (cycle, advisory, inputs) is unchanged, so only a version bump
+# re-renders images already on the store.
+_DENSITY_STATE_VERSION = 2
 _DENSITY_PUBLIC_KEYS = ("image", "bounds", "cycle", "members", "expected", "radiusKm", "start", "end")
 
 
@@ -647,7 +651,7 @@ def _build_density(kind, storm, selected, store, prev):
         grid = density.strike_grid(members, cycle, span[0], span[1], minimum=density.MINIMUM_MEMBERS[kind])
         if grid is None:
             return None
-        png = density.render_png(grid.fraction)
+        png = density.render_png(grid.fraction, scale=density.RENDER_SCALE)
     except Exception as exc:  # noqa: BLE001
         raise _DensityStepError("render") from exc
     stamp = density.parse_iso(storm.advisory_time).strftime("%Y%m%dT%H%MZ")

@@ -915,7 +915,7 @@ def test_gefs_density_advertised_after_upload(density_clock):
     assert isinstance(store.data[entry["image"]], bytes)
     assert "google" not in manifest["storms"][0]["density"]
     state = store.data["state.json"]["storms"]["al022026"]["density"]
-    assert state["version"] == 1 and state["entries"]["gefs"]["fp"]
+    assert state["version"] == pipeline_module._DENSITY_STATE_VERSION and state["entries"]["gefs"]["fp"]
 
 
 def test_gefs_density_not_rerendered_when_identity_unchanged(density_clock):
@@ -1030,3 +1030,13 @@ def test_storm_without_members_has_no_density_key(density_clock):
     manifest = run(fetch=FakeFetch(routes), store=store)
     assert "density" not in manifest["storms"][0]
     assert "density" not in store.data["state.json"]["storms"]["al022026"]
+
+
+def test_density_from_an_older_state_version_is_rerendered(density_clock):
+    store = FakeStore()
+    run(fetch=FakeFetch(_density_routes()), store=store)
+    state = store.data["state.json"]
+    state["storms"]["al022026"]["density"]["version"] = pipeline_module._DENSITY_STATE_VERSION - 1
+    store.put_calls.clear()
+    run(fetch=FakeFetch(_density_routes()), store=store)
+    assert [p for p in store.put_calls if "density-gefs" in p]
