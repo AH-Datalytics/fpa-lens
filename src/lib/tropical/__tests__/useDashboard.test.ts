@@ -5,6 +5,7 @@ import {
   manifestUrl,
   resolvedManifestUrl,
   otherStorms,
+  publicIngestIssues,
   selectAdvisory,
   selectStorm,
   versionedDataUrl,
@@ -226,5 +227,18 @@ describe("otherStorms", () => {
   it("returns an empty list when the only storm is the selected one", () => {
     const solene = makeStorm({ id: "al992026" });
     expect(otherStorms([solene], solene)).toEqual([]);
+  });
+});
+
+describe("publicIngestIssues", () => {
+  it("hides aifs and density errors, which degrade to a disabled option", () => {
+    expect(
+      publicIngestIssues([
+        { product: "aifs", message: "x" },
+        { product: "al092026.density.gefs", message: "render failed: x" },
+        { product: "al092026.density.google", message: "google_unavailable" },
+        { product: "al092026.models", message: "boom" },
+      ])
+    ).toEqual([{ product: "al092026.models", message: "Latest ingest was incomplete" }]);
   });
 });

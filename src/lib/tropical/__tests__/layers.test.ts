@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { DEFAULT_LAYER_STATE, DEMO_LAYER_STATE, toggleLayer } from "../layers";
+import { DEFAULT_LAYER_STATE, DEMO_LAYER_STATE, setDensity, toggleLayer } from "../layers";
 
 describe("DEFAULT_LAYER_STATE", () => {
   it("opens on the official forecast: cone and past track only", () => {
@@ -14,6 +14,7 @@ describe("DEFAULT_LAYER_STATE", () => {
       windProb: false,
       rain: false,
       radar: false,
+      density: "off",
     });
   });
 });
@@ -29,6 +30,7 @@ describe("DEMO_LAYER_STATE", () => {
       windProb: false,
       rain: false,
       radar: false,
+      density: "off",
     });
   });
 });
@@ -58,5 +60,14 @@ describe("toggleLayer", () => {
     const once = toggleLayer(DEFAULT_LAYER_STATE, "radar");
     const twice = toggleLayer(once, "radar");
     expect(twice.radar).toBe(DEFAULT_LAYER_STATE.radar);
+  });
+});
+
+describe("setDensity", () => {
+  it("sets the density choice without touching boolean layers", () => {
+    const next = setDensity(DEFAULT_LAYER_STATE, "gefs");
+    expect(next.density).toBe("gefs");
+    expect(next.cone).toBe(DEFAULT_LAYER_STATE.cone);
+    expect(next).not.toBe(DEFAULT_LAYER_STATE);
   });
 });

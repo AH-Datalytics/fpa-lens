@@ -3,6 +3,9 @@
 // down to StormMap/LayersControl. Pure, framework-free so it's unit
 // testable without rendering anything.
 
+import type { DensitySource } from "./types";
+
+export type DensityChoice = "off" | DensitySource;
 export type LayerKey = "cone" | "history" | "satellite" | "models" | "windField" | "windProb" | "rain" | "radar";
 export type WindThreshold = 39 | 58 | 74;
 
@@ -33,6 +36,9 @@ export interface LayerState {
   /** NEXRAD radar overlay (was a standalone floating button before Round 2;
    *  now one row in the unified Layers control). */
   radar: boolean;
+  /** Track-density image under the cone and tracks. Not a boolean, so it is
+   *  set with setDensity, never toggleLayer. */
+  density: DensityChoice;
 }
 
 // There was also a `graphs` layer toggling the intensity chart from the map
@@ -57,6 +63,7 @@ export const DEFAULT_LAYER_STATE: LayerState = {
   windProb: false,
   rain: false,
   radar: false,
+  density: "off",
 };
 
 /** Historical demos open with a quiet, readable forecast view. Technical
@@ -71,10 +78,16 @@ export const DEMO_LAYER_STATE: LayerState = {
   windProb: false,
   rain: false,
   radar: false,
+  density: "off",
 };
 
 /** Pure toggle: flips one layer's boolean, returning a new LayerState
  *  (never mutates `state`). */
 export function toggleLayer(state: LayerState, key: LayerKey): LayerState {
   return { ...state, [key]: !state[key] };
+}
+
+/** Pure: choose which ensemble's density is drawn ("off" for none). */
+export function setDensity(state: LayerState, choice: DensityChoice): LayerState {
+  return { ...state, density: choice };
 }

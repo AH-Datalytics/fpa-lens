@@ -13,7 +13,16 @@ import {
 import type { ReactNode } from "react";
 import { BLOB_BASE, DEMO_BASE, STALE_HOURS } from "./config";
 import type { WindThreshold } from "./layers";
-import type { Manifest, StormEntry, IntensitySeries, Mode, ProbsEntry, StormTextProducts } from "./types";
+import type {
+  DensityProduct,
+  DensitySource,
+  Manifest,
+  StormEntry,
+  IntensitySeries,
+  Mode,
+  ProbsEntry,
+  StormTextProducts,
+} from "./types";
 
 const LIVE_REFRESH_MS = 5 * 60 * 1000;
 const VERSIONED_DATA_OPTIONS = {
@@ -236,6 +245,8 @@ export interface DashboardData {
       sourceUrl: string;
       bounds: [[number, number], [number, number]];
     };
+    /** Track-density images for the selected storm, keyed by ensemble. */
+    density: Partial<Record<DensitySource, DensityProduct & { url: string }>>;
   };
   intensity: IntensitySeries | null;
   outlookText: { issued: string; text: string } | null;
@@ -247,6 +258,16 @@ export interface DashboardData {
    *  if it failed); see ForecastDiscussion.tsx. */
   textProducts: StormTextProducts | null;
   stale: boolean;
+}
+
+/** Ingest errors worth telling visitors about. Density (like AIFS) degrades
+ * to a disabled option instead, so it is not listed as an outage. */
+export function publicIngestIssues(
+  errors: { product: string; message: string }[]
+): { product: string; message: string }[] {
+  return errors
+    .filter((issue) => issue.product !== "aifs" && !issue.product.includes(".density."))
+    .map((issue) => ({ product: issue.product, message: "Latest ingest was incomplete" }));
 }
 
 function useDashboardSource(): DashboardData {
@@ -352,6 +373,10 @@ function useDashboardSource(): DashboardData {
   const radar = storm?.radar
     ? { ...storm.radar, url: stormFileUrl(storm.radar.image) }
     : undefined;
+  const density: DashboardData["geo"]["density"] = {};
+  for (const [source, product] of Object.entries(storm?.density ?? {}) as [DensitySource, DensityProduct][]) {
+    density[source] = { ...product, url: stormFileUrl(product.image) };
+  }
   const outlookGeoUrl = manifest?.mode === "quiet"
     ? versionedDataUrl(base, manifest.outlook.geojson, manifest.outlook.issued)
     : null;
@@ -406,11 +431,7 @@ function useDashboardSource(): DashboardData {
     addMissing("Forecast discussion", textProducts, textError);
     addMissing("Seven-day outlook map", outlookGeo, outlookGeoError);
     addMissing("Seven-day outlook text", outlookText, outlookTextError);
-    for (const issue of manifest?.errors ?? []) {
-      if (issue.product !== "aifs") {
-        issues.push({ product: issue.product, message: "Latest ingest was incomplete" });
-      }
-    }
+    issues.push(...publicIngestIssues(manifest?.errors ?? []));
     return issues;
   }, [
     cone, coneError, intensity, intensityError, manifest?.errors, models, modelsError,
@@ -448,6 +469,7 @@ function useDashboardSource(): DashboardData {
       windProbUrls,
       satellite,
       radar,
+      density,
     },
     intensity: intensity ?? null,
     outlookText: outlookText ?? null,

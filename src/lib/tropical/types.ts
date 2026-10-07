@@ -2,6 +2,22 @@
 
 export type Mode = "quiet" | "active";
 
+export type DensitySource = "gefs" | "google";
+
+/** One ensemble's track-density image (ingest/gulfwatch/density.py). The
+ * value is the share of member tracks whose center passes within radiusKm,
+ * between start and end -- not a calibrated probability. */
+export interface DensityProduct {
+  image: string;
+  bounds: [[number, number], [number, number]];
+  cycle: string;
+  members: number;
+  expected: number;
+  radiusKm: number;
+  start: string;
+  end: string;
+}
+
 export interface StormEntry {
   id: string;
   name: string;
@@ -74,6 +90,9 @@ export interface StormEntry {
     sourceUrl: string;
     bounds: [[number, number], [number, number]];
   };
+  /** Track-density images, advertised only once uploaded. Google's is gated
+   * off in the ingest until its terms question is settled. */
+  density?: Partial<Record<DensitySource, DensityProduct>>;
   /** Optional historical snapshots for in-place advisory replay. Live
    * manifests omit this and continue using the top-level storm fields. */
   advisories?: StormEntry[];
