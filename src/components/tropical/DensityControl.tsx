@@ -11,7 +11,7 @@ export interface DensityControlProps {
   cycles: Partial<Record<DensitySource, string>>;
 }
 
-const SOURCES: DensitySource[] = ["gefs", "ecmwf", "google"];
+const SOURCES: DensitySource[] = ["gefs", "ecmwf", "aifs", "google"];
 
 /** Which ensemble's track density to draw, as a dropdown under "Forecast
  * model tracks" (Jeff, 2026-10-07). Options without an image for this storm

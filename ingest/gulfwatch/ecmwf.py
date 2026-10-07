@@ -37,11 +37,25 @@ class EcmwfError(Exception):
     """ECMWF data is public (CC BY 4.0), so plain messages are fine here."""
 
 
-def file_url(cycle_dt: datetime) -> str:
-    step = 360 if cycle_dt.hour in (0, 12) else 144
+# Track files ECMWF publishes beside each run's weather maps (listings
+# checked 2026-10-07): key -> (model folder, stream). The two ensembles feed
+# the density layer; the two single runs are drawn as model lines.
+PRODUCTS = {
+    "ecmwf": ("ifs", "enfo"),  # Euro ensemble, 51 members
+    "aifs": ("aifs-ens", "enfo"),  # Euro AI ensemble, 51 members (+ 1 single run, skipped)
+    "EMXI": ("ifs", "oper"),  # Euro high-resolution single run
+    "AIFS": ("aifs-single", "oper"),  # Euro AI single run
+}
+ENSEMBLES = ("ecmwf", "aifs")
+SINGLE_RUNS = {"EMXI": ("Euro (ECMWF)", "physics"), "AIFS": ("Euro AI (AIFS)", "ai")}
+
+
+def file_url(cycle_dt: datetime, model: str = "ifs", stream: str = "enfo") -> str:
+    # IFS runs at 06/18Z only go to 144 h; AIFS runs all go to 360 h.
+    step = 360 if model.startswith("aifs") or cycle_dt.hour in (0, 12) else 144
     return (
-        f"{BASE_URL}/{cycle_dt:%Y%m%d}/{cycle_dt:%H}z/ifs/0p25/enfo/"
-        f"{cycle_dt:%Y%m%d%H}0000-{step}h-enfo-tf.bufr"
+        f"{BASE_URL}/{cycle_dt:%Y%m%d}/{cycle_dt:%H}z/{model}/0p25/{stream}/"
+        f"{cycle_dt:%Y%m%d%H}0000-{step}h-{stream}-tf.bufr"
     )
 
 
@@ -54,12 +68,17 @@ def _missing(value: float) -> bool:
     return abs(value) > _MISSING_ABOVE
 
 
-def members_from_periods(cycle, member_numbers, analysis, periods) -> list[MemberPoint]:
+def members_from_periods(cycle, member_numbers, analysis, periods, forecast_types=None) -> list[MemberPoint]:
     """Decoded arrays -> member positions. `analysis` is (lats, lons) at tau 0;
-    `periods` is [(tau, lats, lons), ...], each array one value per member."""
+    `periods` is [(tau, lats, lons), ...], each array one value per member.
+    With `forecast_types`, a subset of type 0 (a single run mixed into an
+    ensemble file, as AIFS ensemble files carry) is skipped -- unless it is
+    the file's only subset, which is how single-run files come."""
     points: list[MemberPoint] = []
     steps = [(0, analysis[0], analysis[1]), *periods]
     for i, member in enumerate(member_numbers):
+        if forecast_types is not None and len(member_numbers) > 1 and int(forecast_types[i]) == 0:
+            continue
         tech = f"EN{int(member):02d}"
         for tau, lats, lons in steps:
             lat, lon = float(lats[i]), float(lons[i])
@@ -86,7 +105,13 @@ def decode_members(data: bytes, ident: str, cycle: str) -> list[MemberPoint]:
                     eccodes.codes_set(handle, "unpack", 1)
                     if eccodes.codes_get(handle, "#1#stormIdentifier").strip() != ident:
                         continue
-                    members = list(eccodes.codes_get_array(handle, "ensembleMemberNumber"))
+                    try:
+                        members = list(eccodes.codes_get_array(handle, "ensembleMemberNumber"))
+                        types = list(eccodes.codes_get_array(handle, "ensembleForecastType"))
+                    except eccodes.CodesInternalError:  # single-run file
+                        members, types = [0], None
+                    if types is not None and len(types) == 1:
+                        types = types * len(members)
 
                     def per_member(key):
                         values = list(eccodes.codes_get_array(handle, key))
@@ -106,7 +131,7 @@ def decode_members(data: bytes, ident: str, cycle: str) -> list[MemberPoint]:
                         rank = 2 * i + 2
                         periods.append((tau, per_member(f"#{rank}#latitude"), per_member(f"#{rank}#longitude")))
                         i += 1
-                    return members_from_periods(cycle, members, analysis, periods)
+                    return members_from_periods(cycle, members, analysis, periods, forecast_types=types)
                 finally:
                     eccodes.codes_release(handle)
     finally:
@@ -119,7 +144,9 @@ def cycle_candidates(now: datetime, count: int = CANDIDATE_CYCLES) -> list[datet
     return [newest - timedelta(hours=6 * i) for i in range(count)]
 
 
-def download_files(fetch, now: datetime, keep: int = 2) -> list[tuple[str, bytes]]:
+def download_files(
+    fetch, now: datetime, keep: int = 2, model: str = "ifs", stream: str = "enfo"
+) -> list[tuple[str, bytes]]:
     """The newest `keep` posted track files, newest first, downloaded ONCE per
     ingest run and shared by every storm (each file covers all basins).
 
@@ -130,7 +157,7 @@ def download_files(fetch, now: datetime, keep: int = 2) -> list[tuple[str, bytes
     files: list[tuple[str, bytes]] = []
     for cycle_dt in cycle_candidates(now):
         try:
-            resp = fetch(file_url(cycle_dt), timeout=TIMEOUT_S)
+            resp = fetch(file_url(cycle_dt, model, stream), timeout=TIMEOUT_S)
         except Exception:  # noqa: BLE001
             break
         if resp.status_code != 200:
@@ -163,3 +190,31 @@ def members_for_storm(
     if not saw_storm:
         raise EcmwfError(f"no tracks for {ident} in ECMWF files")
     raise EcmwfError(f"too few ECMWF members for {ident}")
+
+
+def single_track_feature(
+    files, storm_id: str, code: str, label: str, kind: str, reference_time: str, decode=None
+) -> dict | None:
+    """A single-run track as a models.geojson LineString, from the newest file
+    that has the storm, clipped to start at the advisory like every a-deck
+    model (adeck._clip_track). None when no file has the storm."""
+    from gulfwatch import adeck  # noqa: PLC0415 - avoid a top-level cycle
+
+    decode = decode or decode_members
+    ident = storm_identifier(storm_id)
+    for cycle, data in files:
+        points = decode(data, ident, cycle)
+        if not points:
+            continue
+        by_tau = {p.tau: [p.lon, p.lat] for p in points}
+        coords = adeck._clip_track(
+            by_tau, density.parse_cycle(cycle), density.parse_iso(reference_time)
+        )
+        if len(coords) < 2:
+            return None
+        return {
+            "type": "Feature",
+            "geometry": {"type": "LineString", "coordinates": coords},
+            "properties": {"model": code, "label": label, "kind": kind, "group": "deterministic", "cycle": cycle},
+        }
+    return None

@@ -40,6 +40,14 @@ describe("GOOGLE_CITATION_PARTS", () => {
   });
 });
 
+describe("Euro AI ensemble", () => {
+  it("is labeled for the public", () => {
+    expect(densityCaption("aifs", { ...product, members: 51, expected: 51 })).toContain(
+      "Share of Euro AI ensemble tracks"
+    );
+  });
+});
+
 describe("Euro ensemble", () => {
   it("is labeled for the public and credited to ECMWF under CC BY 4.0", () => {
     expect(densityCaption("ecmwf", { ...product, members: 51, expected: 51 })).toContain(

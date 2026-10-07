@@ -179,7 +179,7 @@ def no_ecmwf(monkeypatch):
     "nothing posted" answer so tests not about it make no ECMWF requests."""
     from gulfwatch import ecmwf
 
-    monkeypatch.setattr(ecmwf, "download_files", lambda fetch, now, keep=2: [])
+    monkeypatch.setattr(ecmwf, "download_files", lambda *a, **k: [])
 
 
 @pytest.fixture(autouse=True)
@@ -1066,7 +1066,7 @@ def _ecmwf_members():
 
 
 def test_ecmwf_density_advertised_without_any_flag(density_clock, monkeypatch):
-    monkeypatch.setattr(_ecmwf, "download_files", lambda fetch, now, keep=2: [("2026072218", b"BUFR")])
+    monkeypatch.setattr(_ecmwf, "download_files", lambda *a, **k: [("2026072218", b"BUFR")])
     monkeypatch.setattr(_ecmwf, "members_for_storm", lambda files, storm_id, minimum, advisory_time: _ecmwf_members())
     store = FakeStore()
     manifest = run(fetch=FakeFetch(_density_routes()), store=store)
@@ -1083,7 +1083,7 @@ def test_ecmwf_not_posted_is_silent_and_failure_is_recorded(density_clock, monke
 
     def boom(*a, **k):
         raise RuntimeError("ecCodes decode failed")
-    monkeypatch.setattr(_ecmwf, "download_files", lambda fetch, now, keep=2: [("2026072218", b"BUFR")])
+    monkeypatch.setattr(_ecmwf, "download_files", lambda *a, **k: [("2026072218", b"BUFR")])
     monkeypatch.setattr(_ecmwf, "members_for_storm", boom)
     manifest = run(fetch=FakeFetch(_density_routes()), store=FakeStore())
     assert "gefs" in manifest["storms"][0]["density"]
@@ -1093,12 +1093,13 @@ def test_ecmwf_not_posted_is_silent_and_failure_is_recorded(density_clock, monke
 def test_ecmwf_files_downloaded_once_per_run(density_clock, monkeypatch):
     calls = []
 
-    def download(fetch, now, keep=2):
-        calls.append(now)
+    def download(fetch, now, keep=2, model="ifs", stream="enfo"):
+        calls.append((model, stream))
         return []
     monkeypatch.setattr(_ecmwf, "download_files", download)
     run(fetch=FakeFetch(_density_routes()), store=FakeStore())
-    assert len(calls) == 1
+    # one download per ECMWF product per run, shared by every storm
+    assert sorted(calls) == sorted(set(_ecmwf.PRODUCTS.values()))
 
 
 def test_google_stops_at_first_network_failure(density_clock, monkeypatch):
@@ -1128,3 +1129,43 @@ def test_failed_rebuild_does_not_advertise_a_stale_fallback(density_clock):
     manifest = run(fetch=FakeFetch(_density_routes()), store=store)
     assert "gefs" not in manifest["storms"][0].get("density", {})  # 00Z is 18 h behind 18Z
     assert any(e["product"] == "al022026.density.gefs" for e in manifest["errors"])
+
+
+
+def _single(code, label, kind, cycle):
+    return {
+        "type": "Feature",
+        "geometry": {"type": "LineString", "coordinates": [[-90.5, 29.5], [-91.0, 30.5]]},
+        "properties": {"model": code, "label": label, "kind": kind, "group": "deterministic", "cycle": cycle},
+    }
+
+
+def test_euro_ai_ensemble_density_and_euro_single_run_lines(density_clock, monkeypatch):
+    monkeypatch.setattr(_ecmwf, "download_files", lambda *a, **k: [("2026072218", b"BUFR")])
+    monkeypatch.setattr(_ecmwf, "members_for_storm", lambda files, storm_id, minimum, advisory_time: _ecmwf_members())
+    monkeypatch.setattr(
+        _ecmwf, "single_track_feature",
+        lambda files, storm_id, code, label, kind, reference_time, decode=None: _single(code, label, kind, "2026072218"),
+    )
+    store = FakeStore()
+    manifest = run(fetch=FakeFetch(_density_routes()), store=store)
+    assert {"ecmwf", "aifs"} <= set(manifest["storms"][0]["density"])
+    models = store.data["storms/al022026/models.geojson"]["features"]
+    by_code = {f["properties"]["model"]: f["properties"] for f in models}
+    assert by_code["EMXI"]["label"] == "Euro (ECMWF)" and by_code["EMXI"]["kind"] == "physics"
+    assert by_code["AIFS"]["label"] == "Euro AI (AIFS)" and by_code["AIFS"]["kind"] == "ai"
+
+
+def test_new_euro_single_run_rebuilds_model_lines(density_clock, monkeypatch):
+    cycle = {"now": "2026072212"}
+    monkeypatch.setattr(_ecmwf, "download_files", lambda *a, **k: [(cycle["now"], b"BUFR")])
+    monkeypatch.setattr(
+        _ecmwf, "single_track_feature",
+        lambda files, storm_id, code, label, kind, reference_time, decode=None: _single(code, label, kind, cycle["now"]),
+    )
+    store = FakeStore()
+    run(fetch=FakeFetch(_density_routes()), store=store)
+    cycle["now"] = "2026072218"  # same a-deck cycle and advisory; only ECMWF moved
+    run(fetch=FakeFetch(_density_routes()), store=store)
+    models = store.data["storms/al022026/models.geojson"]["features"]
+    assert {f["properties"]["cycle"] for f in models if f["properties"]["model"] == "AIFS"} == {"2026072218"}

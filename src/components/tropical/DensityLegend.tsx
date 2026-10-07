@@ -24,7 +24,7 @@ export function DensityLegend({ source, product }: { source: DensitySource; prod
       </div>
       <p className="mt-1">{densityCaption(source, product)}</p>
       <p className="mt-0.5 text-gray-500">{DENSITY_DISCLAIMER}</p>
-      {source === "ecmwf" && <p className="mt-1 text-[9px] text-gray-500">{ECMWF_CREDIT}</p>}
+      {(source === "ecmwf" || source === "aifs") && <p className="mt-1 text-[9px] text-gray-500">{ECMWF_CREDIT}</p>}
       {source === "google" && (
         <p className="mt-1 text-[9px] text-gray-500">
           {GOOGLE_CITATION_PARTS.before}

@@ -19,10 +19,10 @@ from datetime import datetime, timedelta, timezone
 import numpy as np
 from PIL import Image
 
-EXPECTED_MEMBERS = {"gefs": 30, "ecmwf": 51, "google": 50}
+EXPECTED_MEMBERS = {"gefs": 30, "ecmwf": 51, "aifs": 51, "google": 50}
 # 80% of expected. At 40+ Google members one track contributes at most 2.5%,
 # under the lowest drawn band (5%), so no single member is visible on its own.
-MINIMUM_MEMBERS = {"gefs": 24, "ecmwf": 41, "google": 40}
+MINIMUM_MEMBERS = {"gefs": 24, "ecmwf": 41, "aifs": 41, "google": 40}
 RADIUS_KM = 100.0
 STALE_HOURS = 12
 MIN_WINDOW_HOURS = 24

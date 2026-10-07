@@ -491,7 +491,9 @@ def _process_text_products(storm, paths, fetch, store, errors):
     return next_advisory_time
 
 
-def _process_adeck(storm, paths, prev_cycle, fetch, store, errors, force=False, rebuild=False, sink=None):
+def _process_adeck(
+    storm, paths, prev_cycle, fetch, store, errors, force=False, rebuild=False, sink=None, extra_features=()
+):
     """Fetch+decompress+parse this storm's a-deck, re-uploading
     models.geojson/intensity.json only if the parsed cycle differs from the
     prior known cycle (state.json). The a-deck is fetched every run
@@ -573,6 +575,11 @@ def _process_adeck(storm, paths, prev_cycle, fetch, store, errors, force=False, 
             errors.append({"product": "aifs", "message": str(exc)})
 
         models_geojson = parsed["models_geojson"]
+        # ECMWF single runs read straight from ECMWF (see _ecmwf_model_lines).
+        # Skip one whose code the a-deck already carries, so a model is never
+        # drawn twice if NHC's public deck starts including it.
+        have = {f["properties"]["model"] for f in models_geojson["features"]}
+        aifs_features = [*aifs_features, *(f for f in extra_features if f["properties"]["model"] not in have)]
         if aifs_features:
             models_geojson = {
                 "type": "FeatureCollection",
@@ -689,7 +696,8 @@ def _build_density(kind, storm, selected, store, prev):
     }
 
 
-def _process_density(storm, adeck_text, fetch, store, errors, prev_state, ecmwf_files=()):
+def _process_density(storm, adeck_text, fetch, store, errors, prev_state, ecmwf_files=None):
+    ecmwf_files = ecmwf_files or {}
     """Track-density entries for one storm. Identity is saved only once its
     image has uploaded, so a failed upload is retried next run."""
     prev = prev_state.get("entries", {}) if prev_state.get("version") == _DENSITY_STATE_VERSION else {}
@@ -715,25 +723,26 @@ def _process_density(storm, adeck_text, fetch, store, errors, prev_state, ecmwf_
         except Exception as exc:  # noqa: BLE001
             errors.append({"product": f"{storm.id}.density.gefs", "message": str(exc)})
 
-    # ECMWF ensemble: public CC BY 4.0 data, so no gate and plain messages.
-    # "Nothing posted yet" / "storm not in the file" are normal states, like a
-    # storm with no watches: the option greys out and no error is recorded.
-    try:
-        # Files are downloaded once per run in run() and shared by every storm.
-        selected = ecmwf.members_for_storm(
-            list(ecmwf_files), storm.id, density.MINIMUM_MEMBERS["ecmwf"], storm.advisory_time
-        )
-        entry = _build_density("ecmwf", storm, selected, store, prev.get("ecmwf"))
-        if entry:
-            entries["ecmwf"] = entry
-    except ecmwf.EcmwfError:
-        pass
-    except _DensityStepError as exc:
-        errors.append({"product": f"{storm.id}.density.ecmwf", "message": f"{exc.step} failed: {exc.__cause__}"})
-        if _fallback(prev.get("ecmwf"), exc.cycle):
-            entries["ecmwf"] = prev["ecmwf"]
-    except Exception as exc:  # noqa: BLE001
-        errors.append({"product": f"{storm.id}.density.ecmwf", "message": str(exc)})
+    # ECMWF ensembles (Euro, Euro AI): public CC BY 4.0 data, so no gate and
+    # plain messages. "Nothing posted yet" / "storm not in the file" are normal
+    # states, like a storm with no watches: the option greys out, no error.
+    for kind in ecmwf.ENSEMBLES:
+        try:
+            # Files are downloaded once per run in run() and shared by every storm.
+            selected = ecmwf.members_for_storm(
+                list(ecmwf_files.get(kind, ())), storm.id, density.MINIMUM_MEMBERS[kind], storm.advisory_time
+            )
+            entry = _build_density(kind, storm, selected, store, prev.get(kind))
+            if entry:
+                entries[kind] = entry
+        except ecmwf.EcmwfError:
+            pass
+        except _DensityStepError as exc:
+            errors.append({"product": f"{storm.id}.density.{kind}", "message": f"{exc.step} failed: {exc.__cause__}"})
+            if _fallback(prev.get(kind), exc.cycle):
+                entries[kind] = prev[kind]
+        except Exception as exc:  # noqa: BLE001
+            errors.append({"product": f"{storm.id}.density.{kind}", "message": str(exc)})
 
     # Google: in memory only; every failure is an allowlisted code, never text.
     if _google_density_enabled():
@@ -759,6 +768,24 @@ def _process_density(storm, adeck_text, fetch, store, errors, prev_state, ecmwf_
     return entries
 
 
+def _ecmwf_model_lines(storm, ecmwf_files, errors):
+    """Euro and Euro AI single-run tracks as models.geojson features, plus
+    {code: cycle} so a new ECMWF run can trigger a rebuild on its own."""
+    features, cycles = [], {}
+    for code, (label, kind) in ecmwf.SINGLE_RUNS.items():
+        try:
+            feature = ecmwf.single_track_feature(
+                list(ecmwf_files.get(code, ())), storm.id, code, label, kind, storm.advisory_time
+            )
+        except Exception as exc:  # noqa: BLE001
+            errors.append({"product": f"{storm.id}.models.{code}", "message": str(exc)})
+            continue
+        if feature:
+            features.append(feature)
+            cycles[code] = feature["properties"]["cycle"]
+    return features, cycles
+
+
 def _density_manifest(entries, storm):
     out = {}
     for kind, entry in entries.items():
@@ -771,7 +798,7 @@ def _density_manifest(entries, storm):
 
 
 def _process_storm(
-    storm, prev_storm_state, fetch, store, errors, wsp_fc=None, others=None, sat=None, ecmwf_files=()
+    storm, prev_storm_state, fetch, store, errors, wsp_fc=None, others=None, sat=None, ecmwf_files=None
 ):
     """Process one Atlantic storm: conditionally refresh its GIS + a-deck
     products, then build its manifest entry and next state.json entry."""
@@ -837,6 +864,7 @@ def _process_storm(
         else None
     )
     adeck_sink: dict = {}
+    ecmwf_lines, ecmwf_line_cycles = _ecmwf_model_lines(storm, ecmwf_files or {}, errors)
     new_cycle, fresh_adeck = _process_adeck(
         storm,
         paths,
@@ -847,8 +875,10 @@ def _process_storm(
         force=prev_adeck is None,
         # Tracks are clipped to the advisory time, so a new advisory needs a
         # rebuild even when the a-deck cycle hasn't moved -- see _process_adeck.
-        rebuild=advisory_changed,
+        # ...and so does a new ECMWF single run, which arrives on its own clock.
+        rebuild=advisory_changed or ecmwf_line_cycles != prev_storm_state.get("ecmwfModels", {}),
         sink=adeck_sink,
+        extra_features=ecmwf_lines,
     )
     # None means nothing was uploaded this run (cycle unchanged, or the a-deck
     # itself failed), so carry forward what a prior run confirmed.
@@ -933,6 +963,7 @@ def _process_storm(
         "gis": sorted(gis_keys),
         "adeck": sorted(adeck_keys),
         "gisVersion": _GIS_STATE_VERSION,
+        **({"ecmwfModels": ecmwf_line_cycles} if ecmwf_line_cycles else {}),
     }
     if density_entries:
         next_state["density"] = {"version": _DENSITY_STATE_VERSION, "entries": density_entries}
@@ -1029,9 +1060,12 @@ def run(fetch=requests.get, store=blob) -> dict:
     # every-15-minutes off-season run exactly as cheap as it was.
     # ECMWF ensemble track files cover every basin: download once per run and
     # share them, so a slow ECMWF server costs one timeout, not one per storm.
-    ecmwf_files = ecmwf.download_files(fetch, _utcnow()) if any(
-        s.id.startswith("al") for s in all_storms
-    ) else []
+    ecmwf_files = {
+        key: ecmwf.download_files(
+            fetch, _utcnow(), keep=2 if key in ecmwf.ENSEMBLES else 1, model=model, stream=stream
+        )
+        for key, (model, stream) in ecmwf.PRODUCTS.items()
+    } if any(s.id.startswith("al") for s in all_storms) else {}
     sat = _process_satellite(fetch, store, errors) if any(
         s.id.startswith("al") for s in all_storms
     ) else None

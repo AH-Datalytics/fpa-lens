@@ -105,3 +105,47 @@ def test_members_for_storm_raises_when_storm_absent(monkeypatch):
 def test_members_for_storm_raises_when_nothing_downloaded():
     with pytest.raises(ecmwf.EcmwfError, match="no ECMWF track file"):
         ecmwf.members_for_storm([], "al092026", 41, "2026-10-07T03:00:00Z")
+
+
+def test_file_url_for_each_product():
+    t06 = datetime(2026, 10, 7, 6, tzinfo=timezone.utc)
+    assert ecmwf.file_url(t06, "aifs-ens", "enfo").endswith(
+        "/20261007/06z/aifs-ens/0p25/enfo/20261007060000-360h-enfo-tf.bufr"
+    )
+    assert ecmwf.file_url(t06, "aifs-single", "oper").endswith(
+        "/20261007/06z/aifs-single/0p25/oper/20261007060000-360h-oper-tf.bufr"
+    )
+    assert ecmwf.file_url(t06, "ifs", "oper").endswith(
+        "/20261007/06z/ifs/0p25/oper/20261007060000-144h-oper-tf.bufr"
+    )
+
+
+def test_members_from_periods_skips_the_single_run_mixed_into_an_ensemble():
+    # AIFS ensemble files carry 50 perturbed members (type 4), the control
+    # (type 1) and one single-run track (type 0) that is not a member.
+    analysis = ([22.1, 22.1, 22.1], [-95.8, -95.8, -95.8])
+    periods = [(6, [22.3, 22.4, 22.5], [-95.2, -94.9, -94.8])]
+    points = ecmwf.members_from_periods("2026100700", [1, 2, 3], analysis, periods, forecast_types=[4, 1, 0])
+    assert {p.tech for p in points} == {"EN01", "EN02"}
+
+
+def test_single_track_feature_is_clipped_to_the_advisory():
+    files = [("2026100700", b"x")]
+    pts = [MemberPoint("2026100700", "EN00", tau, 22.0 + tau / 60, -95.0 + tau / 30) for tau in (0, 6, 12, 18)]
+    feature = ecmwf.single_track_feature(
+        files, "al092026", "AIFS", "Euro AI (AIFS)", "ai", "2026-10-07T09:00:00Z",
+        decode=lambda data, ident, cycle: pts,
+    )
+    coords = feature["geometry"]["coordinates"]
+    assert feature["properties"] == {
+        "model": "AIFS", "label": "Euro AI (AIFS)", "kind": "ai", "group": "deterministic", "cycle": "2026100700",
+    }
+    assert coords[0] == [-94.7, 22.15]  # interpolated at 09Z between tau 6 and 12
+    assert coords[-1] == [-94.4, 22.3]
+
+
+def test_single_track_feature_none_when_storm_absent():
+    assert ecmwf.single_track_feature(
+        [("2026100700", b"x")], "al092026", "AIFS", "Euro AI (AIFS)", "ai", "2026-10-07T09:00:00Z",
+        decode=lambda data, ident, cycle: [],
+    ) is None
