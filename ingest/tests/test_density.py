@@ -65,3 +65,89 @@ def test_fingerprint_is_order_independent_and_sensitive_to_new_points():
     assert density.fingerprint(a) == density.fingerprint(b)
     assert density.fingerprint(a) != density.fingerprint(c)
     assert len(density.fingerprint(a)) == 64
+
+
+import math
+from datetime import timedelta
+
+import numpy as np
+
+C = "2026100700"
+T0 = density.parse_cycle(C)
+
+
+def _line(lat, lon0, lon1, taus=(0, 120)):
+    """Straight track along a parallel, evenly spaced in time."""
+    n = len(taus) - 1
+    return [(tau, lat, lon0 + (lon1 - lon0) * i / n) for i, tau in enumerate(taus)]
+
+
+def test_single_track_is_full_inside_radius_and_empty_outside():
+    grid = density.strike_grid({"AP01": _line(25.0, -95.0, -85.0)}, C, T0, T0 + timedelta(hours=120))
+    assert grid.eligible == 1
+    assert grid.value_at(25.0, -90.0) == 1.0
+    assert grid.value_at(25.0 + 50 / 111.2, -90.0) == 1.0   # ~50 km north
+    assert grid.value_at(25.0 + 150 / 111.2, -90.0) == 0.0  # ~150 km north
+
+
+def test_two_members_give_half_where_only_one_passes():
+    members = {"AP01": _line(25.0, -95.0, -85.0), "AP02": _line(27.0, -95.0, -85.0)}
+    grid = density.strike_grid(members, C, T0, T0 + timedelta(hours=120))
+    assert grid.value_at(25.0, -90.0) == 0.5
+    assert grid.value_at(27.0, -90.0) == 0.5
+    assert grid.value_at(26.0, -90.0) == 0.0  # ~111 km from both
+
+
+def test_member_ending_early_counts_as_non_pass():
+    members = {
+        "AP01": _line(25.0, -95.0, -85.0),
+        "AP02": [(0, 25.0, -95.0), (24, 25.0, -93.0)],  # dissipates
+    }
+    grid = density.strike_grid(members, C, T0, T0 + timedelta(hours=120))
+    assert grid.eligible == 2
+    assert grid.value_at(25.0, -86.0) == 0.5
+
+
+def test_member_starting_after_window_is_ineligible():
+    members = {"AP01": _line(25.0, -95.0, -85.0), "AP02": [(6, 25.0, -95.0), (120, 25.0, -85.0)]}
+    grid = density.strike_grid(members, C, T0, T0 + timedelta(hours=120))
+    assert grid.eligible == 1
+
+
+def test_pass_between_two_atcf_points_is_caught():
+    # 12 h apart, ~600 km: the midpoint has no ATCF row of its own.
+    grid = density.strike_grid({"AP01": [(0, 25.0, -90.0), (12, 25.0, -84.0)]}, C, T0, T0 + timedelta(hours=120))
+    assert grid.value_at(25.0, -87.0) == 1.0
+
+
+def test_window_start_interpolates_and_drops_earlier_track():
+    start = T0 + timedelta(hours=6)  # track is at -87 here
+    grid = density.strike_grid({"AP01": [(0, 25.0, -90.0), (12, 25.0, -84.0)]}, C, start, T0 + timedelta(hours=120))
+    assert grid.value_at(25.0, -89.5) == 0.0  # ~250 km before the window start
+    assert grid.value_at(25.0, -87.5) == 1.0
+
+
+def test_ground_cell_size_is_about_10_km():
+    grid = density.strike_grid({"AP01": _line(25.0, -95.0, -85.0)}, C, T0, T0 + timedelta(hours=120))
+    lats, lons = grid.row_lats(), grid.col_lons()
+    mid = len(lats) // 2
+    d = density.haversine_km(lats[mid], lons[10], lats[mid], lons[11])
+    assert 9.0 <= float(d) <= 11.0
+
+
+def test_bounds_contain_every_point_within_radius():
+    grid = density.strike_grid({"AP01": _line(25.0, -95.0, -85.0)}, C, T0, T0 + timedelta(hours=120))
+    (west, south), (east, north) = grid.bounds
+    dlat = math.degrees(100 / density.EARTH_RADIUS_KM)
+    assert south <= 25.0 - dlat and north >= 25.0 + dlat
+    dlon = math.degrees(100 / (density.EARTH_RADIUS_KM * math.cos(math.radians(25.0 + dlat))))
+    assert west <= -95.0 - dlon and east >= -85.0 + dlon
+
+
+def test_below_minimum_eligible_is_none():
+    assert density.strike_grid({"AP01": _line(25.0, -95.0, -85.0)}, C, T0, T0 + timedelta(hours=120), minimum=2) is None
+
+
+def test_all_tracks_before_window_is_none():
+    start = T0 + timedelta(hours=48)
+    assert density.strike_grid({"AP01": [(0, 25.0, -95.0), (24, 25.0, -93.0)]}, C, start, T0 + timedelta(hours=120)) is None

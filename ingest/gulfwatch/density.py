@@ -11,7 +11,11 @@ from __future__ import annotations
 
 import hashlib
 import json
+import math
+from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
+
+import numpy as np
 
 EXPECTED_MEMBERS = {"gefs": 30, "google": 50}
 # 80% of expected. At 40+ Google members one track contributes at most 2.5%,
@@ -79,3 +83,160 @@ def fingerprint(members: Members) -> str:
         (tech, tau, lat, lon) for tech, track in members.items() for tau, lat, lon in track
     )
     return hashlib.sha256(json.dumps(rows, separators=(",", ":")).encode()).hexdigest()
+
+
+CELL_KM = 10.0
+SAMPLE_KM = 10.0
+EARTH_RADIUS_KM = 6371.0088
+MERCATOR_RADIUS_M = 6378137.0
+
+
+def haversine_km(lat1, lon1, lat2, lon2):
+    """Great-circle distance in km; numpy-broadcasting."""
+    p1, p2 = np.radians(lat1), np.radians(lat2)
+    dphi = p2 - p1
+    dlam = np.radians(np.asarray(lon2) - np.asarray(lon1))
+    a = np.sin(dphi / 2) ** 2 + np.cos(p1) * np.cos(p2) * np.sin(dlam / 2) ** 2
+    return 2 * EARTH_RADIUS_KM * np.arcsin(np.sqrt(np.minimum(a, 1.0)))
+
+
+def _merc_x(lon):
+    return MERCATOR_RADIUS_M * np.radians(lon)
+
+
+def _merc_y(lat):
+    return MERCATOR_RADIUS_M * np.log(np.tan(np.pi / 4 + np.radians(lat) / 2))
+
+
+def _lon_of(x):
+    return np.degrees(x / MERCATOR_RADIUS_M)
+
+
+def _lat_of(y):
+    return np.degrees(2 * np.arctan(np.exp(y / MERCATOR_RADIUS_M)) - np.pi / 2)
+
+
+def _round_down(value: float) -> float:
+    return math.floor(value * 1e5) / 1e5
+
+
+def _round_up(value: float) -> float:
+    return math.ceil(value * 1e5) / 1e5
+
+
+@dataclass
+class DensityGrid:
+    fraction: np.ndarray  # rows north -> south, cols west -> east
+    eligible: int
+    bounds: tuple[tuple[float, float], tuple[float, float]]  # ((west, south), (east, north))
+    x0: float
+    y_top: float
+    cell_m: float
+
+    def row_lats(self) -> np.ndarray:
+        return _lat_of(self.y_top - (np.arange(self.fraction.shape[0]) + 0.5) * self.cell_m)
+
+    def col_lons(self) -> np.ndarray:
+        return _lon_of(self.x0 + (np.arange(self.fraction.shape[1]) + 0.5) * self.cell_m)
+
+    def value_at(self, lat: float, lon: float) -> float:
+        col = int((float(_merc_x(lon)) - self.x0) // self.cell_m)
+        row = int((self.y_top - float(_merc_y(lat))) // self.cell_m)
+        rows, cols = self.fraction.shape
+        if 0 <= row < rows and 0 <= col < cols:
+            return float(self.fraction[row, col])
+        return 0.0
+
+
+def _sample_track(track, cycle_dt: datetime, start: datetime, end: datetime):
+    """Positions no more than SAMPLE_KM apart inside [start, end], with exact
+    interpolated endpoints. None = ineligible (no position at or before
+    start). An empty array = eligible but no position in the window (the
+    member ended earlier): it counts as a non-pass."""
+    if not track:
+        return None
+    hours = [((cycle_dt + timedelta(hours=tau)) - start).total_seconds() / 3600 for tau, _, _ in track]
+    if hours[0] > 0:
+        return None
+    end_h = (end - start).total_seconds() / 3600
+    pts = [(h, lat, lon) for h, (_, lat, lon) in zip(hours, track)]
+    samples: list[tuple[float, float]] = []
+    for (h0, a0, o0), (h1, a1, o1) in zip(pts, pts[1:]):
+        if h1 < 0 or h0 > end_h or h1 == h0:
+            continue
+        lo, hi = max(h0, 0.0), min(h1, end_h)
+        la = a0 + (lo - h0) / (h1 - h0) * (a1 - a0)
+        oa = o0 + (lo - h0) / (h1 - h0) * (o1 - o0)
+        lb = a0 + (hi - h0) / (h1 - h0) * (a1 - a0)
+        ob = o0 + (hi - h0) / (h1 - h0) * (o1 - o0)
+        n = max(1, math.ceil(float(haversine_km(la, oa, lb, ob)) / SAMPLE_KM))
+        for k in range(n + 1):
+            f = k / n
+            samples.append((la + f * (lb - la), oa + f * (ob - oa)))
+    samples.extend((lat, lon) for h, lat, lon in pts if 0 <= h <= end_h)
+    return np.array(samples, dtype=float).reshape(-1, 2)
+
+
+def strike_grid(
+    members: Members,
+    cycle: str,
+    start: datetime,
+    end: datetime,
+    radius_km: float = RADIUS_KM,
+    minimum: int = 1,
+) -> DensityGrid | None:
+    """Share of eligible members passing within radius_km of each cell.
+
+    The grid is uniform in Web Mercator so the PNG can be placed as a MapLibre
+    image source by its corners; distances are great-circle from each cell
+    center. Cell size is CELL_KM on the ground at the tracks' mean latitude
+    (Mercator size = CELL_KM / cos(lat)). Bounds are the samples' box expanded
+    by radius_km along great circles on the same sphere as the distances, then
+    snapped outward to whole cells.
+    """
+    cycle_dt = parse_cycle(cycle)
+    sampled = [s for s in (_sample_track(t, cycle_dt, start, end) for t in members.values()) if s is not None]
+    eligible = len(sampled)
+    if eligible == 0 or eligible < minimum:
+        return None
+    nonempty = [s for s in sampled if len(s)]
+    if not nonempty:
+        return None
+    pts = np.vstack(nonempty)
+    dlat = math.degrees(radius_km / EARTH_RADIUS_KM)
+    south, north = float(pts[:, 0].min()) - dlat, float(pts[:, 0].max()) + dlat
+    widest = min(89.0, max(abs(south), abs(north)))
+    dlon = math.degrees(radius_km / (EARTH_RADIUS_KM * math.cos(math.radians(widest))))
+    west, east = float(pts[:, 1].min()) - dlon, float(pts[:, 1].max()) + dlon
+
+    cell_m = CELL_KM * 1000 / math.cos(math.radians(float(pts[:, 0].mean())))
+    x0 = float(_merc_x(west))
+    ncols = math.ceil((float(_merc_x(east)) - x0) / cell_m)
+    y_top = float(_merc_y(north))
+    nrows = math.ceil((y_top - float(_merc_y(south))) / cell_m)
+    grid = DensityGrid(np.zeros((nrows, ncols)), eligible, ((0, 0), (0, 0)), x0, y_top, cell_m)
+    row_lat, col_lon = grid.row_lats(), grid.col_lons()  # row_lat decreasing
+
+    counts = np.zeros((nrows, ncols), dtype=np.int32)
+    for samples in sampled:
+        mask = np.zeros((nrows, ncols), dtype=bool)
+        for lat, lon in samples:
+            r0 = int(np.searchsorted(-row_lat, -(lat + dlat), side="left"))
+            r1 = int(np.searchsorted(-row_lat, -(lat - dlat), side="right"))
+            plon = math.degrees(radius_km / (EARTH_RADIUS_KM * math.cos(math.radians(min(89.0, abs(lat) + dlat)))))
+            c0 = int(np.searchsorted(col_lon, lon - plon, side="left"))
+            c1 = int(np.searchsorted(col_lon, lon + plon, side="right"))
+            if r0 >= r1 or c0 >= c1:
+                continue
+            d = haversine_km(row_lat[r0:r1, None], col_lon[None, c0:c1], lat, lon)
+            mask[r0:r1, c0:c1] |= d <= radius_km
+        counts += mask
+
+    grid.fraction = counts / eligible
+    # Rounded to 5 decimals (about 1 m) OUTWARD, so the advertised box never
+    # trims a cell that is inside the radius.
+    grid.bounds = (
+        (_round_down(float(_lon_of(x0))), _round_down(float(_lat_of(y_top - nrows * cell_m)))),
+        (_round_up(float(_lon_of(x0 + ncols * cell_m))), _round_up(float(_lat_of(y_top)))),
+    )
+    return grid
