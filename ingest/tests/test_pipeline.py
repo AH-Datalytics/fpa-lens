@@ -174,6 +174,17 @@ def no_real_sleep(monkeypatch):
 
 
 @pytest.fixture(autouse=True)
+def no_ecmwf(monkeypatch):
+    """ECMWF density runs on every storm (no flag). Default to its normal
+    "nothing posted" answer so tests not about it make no ECMWF requests."""
+    from gulfwatch import ecmwf
+
+    def nothing(*args, **kwargs):
+        raise ecmwf.EcmwfError("no ECMWF track file posted in the last 24 h")
+    monkeypatch.setattr(ecmwf, "fetch_members", nothing)
+
+
+@pytest.fixture(autouse=True)
 def no_satellite(monkeypatch):
     """Skip the GOES overlay in tests that are not about imagery.
 
@@ -1040,3 +1051,40 @@ def test_density_from_an_older_state_version_is_rerendered(density_clock):
     store.put_calls.clear()
     run(fetch=FakeFetch(_density_routes()), store=store)
     assert [p for p in store.put_calls if "density-gefs" in p]
+
+
+# ---------------------------------------------------------------------------
+# ECMWF ensemble density (public CC BY 4.0 data; decode stubbed -- needs ecCodes)
+# ---------------------------------------------------------------------------
+from gulfwatch import ecmwf as _ecmwf
+from gulfwatch.adeck import MemberPoint as _MP
+
+
+def _ecmwf_members():
+    return "2026072218", {
+        f"EN{m:02d}": [(tau, 29.5 + tau / 40, -90.5 - tau / 20) for tau in range(0, 121, 6)]
+        for m in range(1, 52)
+    }
+
+
+def test_ecmwf_density_advertised_without_any_flag(density_clock, monkeypatch):
+    monkeypatch.setattr(_ecmwf, "fetch_members", lambda storm_id, fetch, now, minimum: _ecmwf_members())
+    store = FakeStore()
+    manifest = run(fetch=FakeFetch(_density_routes()), store=store)
+    entry = manifest["storms"][0]["density"]["ecmwf"]
+    assert entry["members"] == 51 and entry["expected"] == 51
+    assert entry["image"].startswith("storms/al022026/density-ecmwf-2026072218-")
+
+
+def test_ecmwf_not_posted_is_silent_and_failure_is_recorded(density_clock, monkeypatch):
+    # "Not posted yet" / "storm not in the file" are normal states: no error.
+    manifest = run(fetch=FakeFetch(_density_routes()), store=FakeStore())
+    assert "ecmwf" not in manifest["storms"][0]["density"]
+    assert not [e for e in manifest["errors"] if ".density.ecmwf" in e["product"]]
+
+    def boom(*a, **k):
+        raise RuntimeError("ecCodes decode failed")
+    monkeypatch.setattr(_ecmwf, "fetch_members", boom)
+    manifest = run(fetch=FakeFetch(_density_routes()), store=FakeStore())
+    assert "gefs" in manifest["storms"][0]["density"]
+    assert {"product": "al022026.density.ecmwf", "message": "ecCodes decode failed"} in manifest["errors"]

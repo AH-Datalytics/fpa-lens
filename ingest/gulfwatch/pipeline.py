@@ -32,7 +32,7 @@ from pathlib import Path
 
 import requests
 
-from gulfwatch import adeck, aifs, blob, density, nhc, outlook, probs, satellite, shp, text, weatherlab, windprob
+from gulfwatch import adeck, aifs, blob, density, ecmwf, nhc, outlook, probs, satellite, shp, text, weatherlab, windprob
 
 FETCH_TIMEOUT_S = 30
 RETRY_BACKOFF_S = 10
@@ -697,6 +697,23 @@ def _process_density(storm, adeck_text, fetch, store, errors, prev_state):
                 entries["gefs"] = prev["gefs"]
         except Exception as exc:  # noqa: BLE001
             errors.append({"product": f"{storm.id}.density.gefs", "message": str(exc)})
+
+    # ECMWF ensemble: public CC BY 4.0 data, so no gate and plain messages.
+    # "Nothing posted yet" / "storm not in the file" are normal states, like a
+    # storm with no watches: the option greys out and no error is recorded.
+    try:
+        selected = ecmwf.fetch_members(storm.id, fetch, _utcnow(), density.MINIMUM_MEMBERS["ecmwf"])
+        entry = _build_density("ecmwf", storm, selected, store, prev.get("ecmwf"))
+        if entry:
+            entries["ecmwf"] = entry
+    except ecmwf.EcmwfError:
+        pass
+    except _DensityStepError as exc:
+        errors.append({"product": f"{storm.id}.density.ecmwf", "message": f"{exc.step} failed: {exc.__cause__}"})
+        if prev.get("ecmwf"):
+            entries["ecmwf"] = prev["ecmwf"]
+    except Exception as exc:  # noqa: BLE001
+        errors.append({"product": f"{storm.id}.density.ecmwf", "message": str(exc)})
 
     # Google: in memory only; every failure is an allowlisted code, never text.
     if _google_density_enabled():

@@ -8,3 +8,9 @@ numpy>=1.26,<3
 rasterio>=1.3,<2
 pyproj>=3.6,<4
 Pillow>=10,<12
+
+# ECMWF ensemble cyclone tracks (gulfwatch/ecmwf.py) are BUFR, read with
+# ecCodes. `eccodeslib` bundles the C library for Linux (the Actions runner);
+# there is no Windows build, so local Windows runs skip the ECMWF layer.
+eccodes>=2.38,<3; sys_platform == "linux"
+eccodeslib>=2.38; sys_platform == "linux"

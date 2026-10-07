@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { DENSITY_BANDS, densityCaption, GOOGLE_CITATION_PARTS } from "../density";
+import { DENSITY_BANDS, densityCaption, ECMWF_CREDIT, GOOGLE_CITATION_PARTS } from "../density";
 
 const product = {
   image: "storms/al092026/density-gefs.png",
@@ -37,5 +37,15 @@ describe("GOOGLE_CITATION_PARTS", () => {
     expect(before + url + after).toBe(
       "Google Weather Lab. © 2024-6 Google LLC, whose machine learning models were used to create the experimental data made available under the following licence terms https://storage.googleapis.com/weathernext-public/terms-of-use.pdf. This data is intended for experimental modelling only and is not intended, validated, or approved for real world use."
     );
+  });
+});
+
+describe("Euro ensemble", () => {
+  it("is labeled for the public and credited to ECMWF under CC BY 4.0", () => {
+    expect(densityCaption("ecmwf", { ...product, members: 51, expected: 51 })).toContain(
+      "Share of Euro ensemble tracks"
+    );
+    expect(ECMWF_CREDIT).toContain("ECMWF");
+    expect(ECMWF_CREDIT).toContain("CC BY 4.0");
   });
 });

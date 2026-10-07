@@ -2,7 +2,7 @@
 
 export type Mode = "quiet" | "active";
 
-export type DensitySource = "gefs" | "google";
+export type DensitySource = "gefs" | "ecmwf" | "google";
 
 /** One ensemble's track-density image (ingest/gulfwatch/density.py). The
  * value is the share of member tracks whose center passes within radiusKm,

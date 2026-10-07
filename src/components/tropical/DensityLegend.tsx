@@ -1,4 +1,10 @@
-import { DENSITY_BANDS, DENSITY_DISCLAIMER, densityCaption, GOOGLE_CITATION_PARTS } from "@/lib/tropical/density";
+import {
+  DENSITY_BANDS,
+  DENSITY_DISCLAIMER,
+  densityCaption,
+  ECMWF_CREDIT,
+  GOOGLE_CITATION_PARTS,
+} from "@/lib/tropical/density";
 import type { DensityProduct, DensitySource } from "@/lib/tropical/types";
 
 /** Color key and caption for the drawn track density. Google's citation is
@@ -18,6 +24,7 @@ export function DensityLegend({ source, product }: { source: DensitySource; prod
       </div>
       <p className="mt-1">{densityCaption(source, product)}</p>
       <p className="mt-0.5 text-gray-500">{DENSITY_DISCLAIMER}</p>
+      {source === "ecmwf" && <p className="mt-1 text-[9px] text-gray-500">{ECMWF_CREDIT}</p>}
       {source === "google" && (
         <p className="mt-1 text-[9px] text-gray-500">
           {GOOGLE_CITATION_PARTS.before}

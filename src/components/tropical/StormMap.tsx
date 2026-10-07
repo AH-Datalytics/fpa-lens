@@ -724,6 +724,7 @@ export default function StormMap({
           showDensity={Boolean(stormSummary)}
           densityCycles={{
             gefs: geo.density.gefs && formatCycle(geo.density.gefs.cycle),
+            ecmwf: geo.density.ecmwf && formatCycle(geo.density.ecmwf.cycle),
             google: geo.density.google && formatCycle(geo.density.google.cycle),
           }}
           onDensityChange={onDensityChange}

@@ -17,11 +17,17 @@ export const DENSITY_BANDS: { from: number; color: string }[] = [
 
 export const DENSITY_SOURCE_LABEL: Record<DensitySource, string> = {
   gefs: "GFS ensemble",
+  ecmwf: "Euro ensemble",
   google: "Google DeepMind AI ensemble",
 };
 
 export const DENSITY_DISCLAIMER =
   "Shows where the storm's center may go, not where wind, surge or rain will reach.";
+
+/** ECMWF open data is CC BY 4.0: credit the source and say the image is
+ * derived from it. */
+export const ECMWF_CREDIT =
+  "Euro ensemble tracks: European Centre for Medium-Range Weather Forecasts (ECMWF), www.ecmwf.int, CC BY 4.0. Track shares computed by FPA Lens.";
 
 /** Google's Section 4(b) citation, verbatim (its spelling, not ours), split
  * so the terms URL can be a link. */
