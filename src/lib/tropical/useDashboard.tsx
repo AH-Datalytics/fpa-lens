@@ -260,6 +260,21 @@ export interface DashboardData {
   stale: boolean;
 }
 
+/** Model guidance without ensemble member tracks. The track-density layer
+ * shows the ensembles better than 30+ overlapping lines (Jeff, 2026-10-07);
+ * the ingest still emits them, so this is the one place they are dropped. */
+export function withoutEnsembleMembers(
+  fc: GeoJSON.FeatureCollection | undefined
+): GeoJSON.FeatureCollection | undefined {
+  if (!fc) return fc;
+  return {
+    ...fc,
+    features: fc.features.filter(
+      (f) => f.properties?.kind !== "ensemble" && f.properties?.group !== "ensemble"
+    ),
+  };
+}
+
 /** Ingest errors worth telling visitors about. Density (like AIFS) degrades
  * to a disabled option instead, so it is not listed as an outage. */
 export function publicIngestIssues(
@@ -397,6 +412,7 @@ function useDashboardSource(): DashboardData {
     jsonFetcher,
     VERSIONED_DATA_OPTIONS
   );
+  const deterministicModels = useMemo(() => withoutEnsembleMembers(models), [models]);
   const { data: outlookGeo, error: outlookGeoError } = useSWR<GeoJSON.FeatureCollection>(
     outlookGeoUrl,
     jsonFetcher,
@@ -463,7 +479,7 @@ function useDashboardSource(): DashboardData {
       track,
       history,
       wwlines,
-      models,
+      models: deterministicModels,
       outlook: outlookGeo,
       windFieldUrl,
       windProbUrls,

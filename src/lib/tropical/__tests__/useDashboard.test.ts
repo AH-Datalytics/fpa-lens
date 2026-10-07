@@ -6,6 +6,7 @@ import {
   resolvedManifestUrl,
   otherStorms,
   publicIngestIssues,
+  withoutEnsembleMembers,
   selectAdvisory,
   selectStorm,
   versionedDataUrl,
@@ -240,5 +241,20 @@ describe("publicIngestIssues", () => {
         { product: "al092026.models", message: "boom" },
       ])
     ).toEqual([{ product: "al092026.models", message: "Latest ingest was incomplete" }]);
+  });
+});
+
+describe("withoutEnsembleMembers", () => {
+  it("drops ensemble member tracks, which the density layer replaces", () => {
+    const fc: GeoJSON.FeatureCollection = {
+      type: "FeatureCollection",
+      features: [
+        { type: "Feature", geometry: null as unknown as GeoJSON.Geometry, properties: { model: "AVNO", kind: "physics", group: "deterministic" } },
+        { type: "Feature", geometry: null as unknown as GeoJSON.Geometry, properties: { model: "AP01", kind: "ensemble", group: "ensemble" } },
+        { type: "Feature", geometry: null as unknown as GeoJSON.Geometry, properties: { model: "UE01", kind: "ensemble" } },
+      ],
+    };
+    expect(withoutEnsembleMembers(fc)?.features.map((f) => f.properties?.model)).toEqual(["AVNO"]);
+    expect(withoutEnsembleMembers(undefined)).toBeUndefined();
   });
 });

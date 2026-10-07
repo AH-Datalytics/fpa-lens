@@ -47,7 +47,8 @@ export interface LayersControlProps {
   onIntensityToggle: () => void;
   /** Shown whenever a storm is selected, independent of the spaghetti list. */
   showDensity: boolean;
-  densityAvailable: Partial<Record<DensitySource, boolean>>;
+  /** Run time label ("06Z") per ensemble with a density image. */
+  densityCycles: Partial<Record<DensitySource, string>>;
   onDensityChange: (choice: DensityChoice) => void;
 }
 
@@ -103,7 +104,7 @@ export function LayersControl({
   intensityOpen,
   onIntensityToggle,
   showDensity,
-  densityAvailable,
+  densityCycles,
   onDensityChange,
 }: LayersControlProps) {
   // Collapsed on small screens: an open panel would cover most of the map.
@@ -111,6 +112,9 @@ export function LayersControl({
     typeof window === "undefined" ? true : window.innerWidth >= 768
   );
   const hasWindProb = availableWindThresholds.length > 0;
+  const densityControl = showDensity ? (
+    <DensityControl choice={layers.density} onChange={onDensityChange} cycles={densityCycles} />
+  ) : null;
 
   return (
     <div className="flex max-h-full w-64 flex-col overflow-hidden rounded-lg border border-gray-200 bg-white shadow-lg">
@@ -140,11 +144,12 @@ export function LayersControl({
               models={models}
               densityOn={layers.density !== "off"}
               onOfficialForecast={() => onDensityChange("off")}
+              densityControl={densityControl}
             />
           )}
-          {showDensity && (
-            <DensityControl choice={layers.density} onChange={onDensityChange} available={densityAvailable} />
-          )}
+          {/* No model list for this storm: the dropdown still shows on its own,
+              so density never depends on spaghetti being available. */}
+          {!models && densityControl && <section className={SECTION}>{densityControl}</section>}
 
           <section className={SECTION} aria-labelledby="weather-overlays-heading">
             <Kicker id="weather-overlays-heading">Weather overlays</Kicker>

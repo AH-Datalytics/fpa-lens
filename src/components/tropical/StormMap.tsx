@@ -42,7 +42,7 @@ import {
   wwColor,
 } from "@/lib/tropical/mapStyle";
 import { DEFAULT_MODEL_COLOR, ENSEMBLE_COLOR, MODEL_COLORS } from "@/lib/tropical/modelColors";
-import { categoryFor, cdtDateTime, stormTypeLabel } from "@/lib/tropical/format";
+import { categoryFor, cdtDateTime, formatCycle, stormTypeLabel } from "@/lib/tropical/format";
 import { radarValidTime, RADAR_METADATA_URL } from "@/lib/tropical/radar";
 
 // maplibre-gl resolves its worker script relative to its own module's
@@ -730,7 +730,10 @@ export default function StormMap({
           windProbCycleLabel={windProbCycleLabel}
           windProbCyclesBehind={windProbCyclesBehind}
           showDensity={Boolean(stormSummary)}
-          densityAvailable={{ gefs: Boolean(geo.density.gefs), google: Boolean(geo.density.google) }}
+          densityCycles={{
+            gefs: geo.density.gefs && formatCycle(geo.density.gefs.cycle),
+            google: geo.density.google && formatCycle(geo.density.google.cycle),
+          }}
           onDensityChange={onDensityChange}
         />
       </div>

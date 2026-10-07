@@ -1,6 +1,6 @@
 "use client";
 
-import { Fragment } from "react";
+import { Fragment, type ReactNode } from "react";
 import { Check } from "lucide-react";
 import { modelRows } from "@/lib/tropical/mapStyle";
 import {
@@ -23,6 +23,8 @@ export interface ModelLegendProps {
   densityOn?: boolean;
   /** "Official forecast" means official forecast only: it also clears density. */
   onOfficialForecast?: () => void;
+  /** Rendered directly under "Forecast model tracks" (the track-density dropdown). */
+  densityControl?: ReactNode;
 }
 
 const CHECKBOX =
@@ -41,6 +43,7 @@ export function ModelLegend({
   models,
   densityOn = false,
   onOfficialForecast,
+  densityControl,
 }: ModelLegendProps) {
   const rows = modelRows(models);
   const deterministic = rows.filter((row) => row.group === "deterministic");
@@ -123,11 +126,15 @@ export function ModelLegend({
         </button>
         <button type="button" className={choiceClass(allSelected)} onClick={() => choose(allCodes)}>
           <span>
-            <b className="block text-xs font-semibold text-gray-900">Forecast model tracks</b>
+            <b className="block text-xs font-semibold text-gray-900">
+              Forecast model tracks
+              {cycleLabel && <span className="ml-1 font-normal text-gray-400">({cycleLabel})</span>}
+            </b>
             <small className="block text-[11px] text-gray-500">Show other projected paths</small>
           </span>
           {allSelected && <Check className="h-4 w-4 shrink-0 text-[#21355a]" aria-hidden="true" />}
         </button>
+        {densityControl}
       </div>
       <details className="group mt-2">
         <summary className="cursor-pointer list-none text-[11px] font-medium text-[#21355a] hover:underline">
