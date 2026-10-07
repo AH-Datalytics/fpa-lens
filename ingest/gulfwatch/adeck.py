@@ -12,6 +12,7 @@ Pure function, no network I/O.
 from __future__ import annotations
 
 import re
+from dataclasses import dataclass
 from datetime import datetime, timezone
 
 KT_TO_MPH = 1.15078
@@ -146,6 +147,72 @@ def _model_meta(tech: str) -> tuple[str, str, str] | None:
     if tech in MODELS:
         return MODELS[tech]
     return _ensemble_meta(tech)
+
+
+# Raw ensemble-member positions for the track-density layer (gulfwatch.density).
+# Deliberately separate from parse_adeck: that function keeps only each tech's
+# latest cycle and emits coordinates without forecast hours, so a complete
+# previous cycle could never be recovered from its output (Codex review,
+# 2026-10-07). This reads every row before any display filtering.
+GEFS_MEMBER_RE = _GEFS_ENSEMBLE_RE
+
+
+@dataclass(frozen=True)
+class MemberPoint:
+    cycle: str  # YYYYMMDDHH
+    tech: str
+    tau: int
+    lat: float
+    lon: float
+
+
+def extract_members(
+    text: str,
+    tech_pattern: re.Pattern,
+    basin: str | None = None,
+    number: str | None = None,
+) -> list[MemberPoint]:
+    """Every (cycle, tech, tau) position for techs matching `tech_pattern`.
+
+    `basin`/`number` filter a multi-storm file (Google Weather Lab files carry
+    every basin). Rows repeated per wind radius (34/50/64 kt) are kept once.
+    Malformed rows and the ATCF null position (0N/0W) are skipped, never raised:
+    an exception here could quote input into a public error message.
+    """
+    # Keyed by storm too: an unfiltered multi-storm file repeats member names.
+    seen: set[tuple[str, str, str, str, int]] = set()
+    points: list[MemberPoint] = []
+    for line in text.splitlines():
+        line = line.strip()
+        if not line or line.startswith("#"):
+            continue
+        fields = [f.strip() for f in line.split(",")]
+        if len(fields) < 8:
+            continue
+        if basin is not None and fields[0].upper() != basin:
+            continue
+        if number is not None and fields[1].zfill(2) != number:
+            continue
+        tech = fields[4].upper()
+        if not tech_pattern.match(tech):
+            continue
+        cycle = fields[2]
+        if _parse_cycle(cycle) is None:
+            continue
+        try:
+            tau = int(fields[5])
+            lat = _decode_coord(fields[6])
+            lon = _decode_coord(fields[7])
+        except (ValueError, IndexError):
+            continue
+        if lat == 0 or lon == 0:
+            continue
+        key = (fields[0].upper(), fields[1].zfill(2), cycle, tech, tau)
+        if key in seen:
+            continue
+        seen.add(key)
+        points.append(MemberPoint(cycle, tech, tau, lat, lon))
+    return points
 
 
 def _decode_coord(raw: str) -> float:

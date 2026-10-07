@@ -466,3 +466,42 @@ def test_staleness_cap_keeps_a_model_a_full_twelve_hours_behind():
     assert result["dropped_stale"] == []
     assert feature_for(result, "EMXI") is not None
     assert series_for(result, "EMXI") is not None
+
+
+# ---------------------------------------------------------------------------
+# Raw ensemble-member extraction for the track-density layer.
+# ---------------------------------------------------------------------------
+import re as _re
+
+from gulfwatch.adeck import GEFS_MEMBER_RE, MemberPoint, extract_members
+
+MEMBER_TEXT = (
+    "# header line a Weather Lab file carries\n"
+    "AL, 09, 2026100706, 03, AP01,   0, 218N,  945W,  35, 1004, XX,  34, NEQ\n"
+    "AL, 09, 2026100706, 03, AP01,   0, 218N,  945W,  35, 1004, XX,  50, NEQ\n"  # wind-radius duplicate
+    "AL, 09, 2026100706, 03, AP01,  12, 229N,  931W,  45,  998, XX,  34, NEQ\n"
+    "AL, 09, 2026100700, 03, AP01,   0, 215N,  950W,  35, 1004, XX,  34, NEQ\n"  # older cycle kept
+    "AL, 09, 2026100706, 03, AVNO,   0, 218N,  945W,  35, 1004, XX,  34, NEQ\n"  # not a member
+    "AL, 09, 2026100706, 03, AP02,  12, 2X9N,  931W,  45,  998, XX,  34, NEQ\n"  # malformed lat
+    "AL, 09, 2026100706, 03, AP03,  12,   0N,    0W,  45,  998, XX,  34, NEQ\n"  # null position
+    "EP, 15, 2026100706, 03, AP01,   0, 150N, 1100W,  35, 1004, XX,  34, NEQ\n"
+)
+
+
+def test_extract_members_keeps_every_cycle_and_dedupes_wind_radius_rows():
+    points = extract_members(MEMBER_TEXT, GEFS_MEMBER_RE, basin="AL", number="09")
+    assert points == [
+        MemberPoint("2026100706", "AP01", 0, 21.8, -94.5),
+        MemberPoint("2026100706", "AP01", 12, 22.9, -93.1),
+        MemberPoint("2026100700", "AP01", 0, 21.5, -95.0),
+    ]
+
+
+def test_extract_members_without_basin_filter_reads_all_storms():
+    points = extract_members(MEMBER_TEXT, GEFS_MEMBER_RE)
+    assert MemberPoint("2026100706", "AP01", 0, 15.0, -110.0) in points
+
+
+def test_extract_members_skips_malformed_rows_without_raising():
+    text = "AL, 09, 20261007XX, 03, F001, 0, 218N, 945W\nAL, 09\n,,,,,,,\n"
+    assert extract_members(text, _re.compile(r"^F\d{3}$")) == []
