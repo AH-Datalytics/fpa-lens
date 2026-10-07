@@ -21,9 +21,9 @@ export const TURF_DEFAULTS = {
   systemOverviewTitle: "System overview",
 
   // Operational note callout
-  operationalNoteHeading: "Operational Note — June 2026",
+  operationalNoteHeading: "Operational Note — September 2026",
   operationalNoteBody1: rt(
-    "Recent rainfall has reduced the number of workable mowing days across portions of the system. For safety and turf protection, mowing may be delayed when levee slopes, access roads, or work areas are saturated. SLFPA-East is using additional crews and overtime, including scheduled off-day work, to recover production where conditions allow.",
+    "Levee turf maintenance is slightly behind due to recent rain but catching up as weather conditions improve; no readiness impacts reported.",
   ),
   operationalNoteBody2: rt(
     "The dashboard will continue to show actual progress against monthly mowing targets. Status colors are not adjusted for weather impacts, but operational notes will be provided when conditions materially affect monthly progress.",
@@ -37,7 +37,7 @@ export const TURF_DEFAULTS = {
   // How to read the zone cards
   howToReadHeading: "How to read the zone cards",
   statusExplainer: rt(
-    "The mowing status reflects progress against the monthly mowing target for each zone. It is an operational production indicator and does not, by itself, indicate a deficiency in the flood protection system. Weather, saturated ground conditions, site access, safety considerations, equipment availability, and other operating conditions may affect daily mowing production. When those conditions materially affect monthly progress, SLFPA-East may provide an operational note explaining the cause and recovery actions.",
+    "The mowing status reflects progress against the monthly mowing target for each zone. It is an operational production indicator and does not, by itself, indicate a deficiency in the flood protection system. Weather, saturated ground conditions, site access, safety considerations, equipment availability, and other operating conditions may affect daily mowing production. When those conditions materially affect monthly progress, SLFPA-E may provide an operational note explaining the cause and recovery actions.",
   ),
 };
 

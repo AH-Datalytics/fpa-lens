@@ -371,7 +371,7 @@ export default function GrassCuttingPage() {
               levee turf
             </h2>
             <p className="text-sm text-gray-700 mt-2 leading-relaxed max-w-3xl">
-              SLFPA-East maintains{" "}
+              SLFPA-E maintains{" "}
               <strong>{systemAcres.toLocaleString()} acres</strong> of levee
               turf across <strong>{systemZones} zones</strong> in three levee
               districts. Mowing targets vary by zone based on size, location,

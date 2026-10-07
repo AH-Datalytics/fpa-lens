@@ -34,7 +34,7 @@ export const INFRASTRUCTURE_DEFAULTS = {
   // Overview section
   overviewHeading: "Overview",
   overviewBody: rt(
-    "The Southeast Louisiana Flood Protection Authority – East (SLFPA-E) manages flood protection infrastructure across the Greater New Orleans area, including the East Bank of Orleans and Jefferson Parishes, and St. Bernard Parish. Our system includes levees, floodgates, pump stations, and complex structures that work together to protect our community from flooding caused by hurricanes, tropical storms, and other weather events.",
+    "The Southeast Louisiana Flood Protection Authority - East (SLFPA-E) manages flood protection infrastructure across the Greater New Orleans area, including the East Bank of Orleans and Jefferson Parishes, and St. Bernard Parish. Our system includes levees, floodgates, pump stations, and complex structures that work together to protect our community from flooding caused by hurricanes, tropical storms, and other weather events.",
   ),
 
   // System Map section

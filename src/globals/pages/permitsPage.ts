@@ -16,7 +16,7 @@ import { rt } from "@/lib/richText";
 export const PERMITS_DEFAULTS = {
   pageTitle: "Permit Overview",
   intro: rt(
-    "SLFPA-East reviews and approves permit applications for construction, encroachments, and events on or near the levee system. Once a permit is submitted, FPA conducts its own engineering review -- but some steps require action from outside parties, such as a Letter of No Objection from the U.S. Army Corps of Engineers or the Coastal Protection and Restoration Authority, or a response from the applicant. Processing time reflects the full timeline from submission to decision, including any periods outside FPA’s control.",
+    "SLFPA-E reviews and approves permit applications for construction, encroachments, and events on or near the levee system. Once a permit is submitted, FPA conducts its own engineering review — but some steps require action from outside parties, such as a Letter of No Objection from the U.S. Army Corps of Engineers or the Coastal Protection and Restoration Authority, or a response from the applicant. Processing time reflects the full timeline from submission to decision, including any periods outside FPA’s control.",
   ),
   lifecycleHeading: "Permit Lifecycle",
 };

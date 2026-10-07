@@ -4,6 +4,10 @@ import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 import { Loader2 } from "lucide-react";
 import { grassCuttingData } from "@/data/grassCutting";
+// Bundled with the app rather than fetched from unpkg at runtime, so a CDN
+// outage can't strip the map of its styling (the tropical map does the same
+// with maplibre-gl.css).
+import "leaflet/dist/leaflet.css";
 
 interface MowingPolygonProps {
   // OLD polygons have name; LBBLD/EJLD polygons don't.
@@ -118,6 +122,9 @@ export default function GrassCuttingMap({
   const [data, setData] = useState<GeoJSONCollection | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  // Phones only: the legend starts collapsed so it doesn't cover the map.
+  // From `sm:` up it is always shown and this state has no effect.
+  const [legendOpen, setLegendOpen] = useState(false);
 
   useEffect(() => {
     Promise.all([
@@ -184,11 +191,6 @@ export default function GrassCuttingMap({
 
   return (
     <div className="relative h-[500px] rounded-xl overflow-hidden shadow-lg border border-gray-200">
-      <link
-        rel="stylesheet"
-        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-        crossOrigin=""
-      />
       <MapContainer
         // Centered to include East Jefferson (west, ~-90.2), Orleans
         // (~-90.0), and the Lake Borgne basin (~-89.7) at zoom 10.
@@ -262,8 +264,21 @@ export default function GrassCuttingMap({
         />
       </MapContainer>
 
-      {/* Legend */}
-      <div className="absolute bottom-4 left-4 bg-white/95 backdrop-blur-sm rounded-lg shadow-lg p-3 z-[1000] max-w-[300px] max-h-[460px] overflow-y-auto">
+      {/* Legend (collapsible below sm:, where it would cover most of the map) */}
+      <div className="absolute bottom-4 left-4 z-[1000] max-w-[300px]">
+        <button
+          type="button"
+          onClick={() => setLegendOpen((open) => !open)}
+          aria-expanded={legendOpen}
+          aria-controls="turf-map-legend"
+          className="sm:hidden mb-2 rounded-lg bg-white/95 backdrop-blur-sm shadow-lg px-3 py-1.5 text-xs font-semibold text-gray-700 hover:text-[#21355a]"
+        >
+          {legendOpen ? "Hide legend" : "Legend"}
+        </button>
+        <div
+          id="turf-map-legend"
+          className={`${legendOpen ? "block" : "hidden"} sm:block bg-white/95 backdrop-blur-sm rounded-lg shadow-lg p-3 max-h-[300px] sm:max-h-[460px] overflow-y-auto`}
+        >
         {showOld && (
           <>
             <p className="text-xs uppercase tracking-wide text-gray-500 font-semibold mb-1">
@@ -334,6 +349,7 @@ export default function GrassCuttingMap({
             </ul>
           </>
         )}
+        </div>
       </div>
     </div>
   );

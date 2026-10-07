@@ -32,7 +32,7 @@ function isVacant(person: Person): boolean {
   return person.name.trim().toLowerCase() === "vacant";
 }
 
-function PersonPhoto({ image, blank }: { image?: string; blank?: boolean }) {
+function PersonPhoto({ name, image, blank }: { name: string; image?: string; blank?: boolean }) {
   // Vacant positions: a plain empty circle (no logo) so the card reads as "open".
   if (blank) {
     return <div className="w-24 h-24 mb-3 rounded-full bg-gray-100 flex-shrink-0" />;
@@ -40,9 +40,9 @@ function PersonPhoto({ image, blank }: { image?: string; blank?: boolean }) {
   return (
     <div className="relative w-24 h-24 mb-3 rounded-full overflow-hidden bg-gray-100 flex-shrink-0 ring-2 ring-transparent group-hover:ring-[#21355a]/20 transition-all">
       {image ? (
-        <Image src={image} alt="" fill sizes="96px" className="object-cover" />
+        <Image src={image} alt={name} fill sizes="96px" className="object-cover" />
       ) : (
-        <Image src="/fpa_logo.png" alt="" fill sizes="96px" className="object-contain p-2" />
+        <Image src="/fpa_logo.png" alt={name} fill sizes="96px" className="object-contain p-2" />
       )}
     </div>
   );
@@ -64,7 +64,7 @@ function PersonCard({ person, onOpen }: { person: Person; onOpen?: () => void })
   if (vacant || !onOpen) {
     return (
       <div className={vacant ? VACANT_CARD_BASE : CARD_BASE}>
-        <PersonPhoto image={person.image} blank={vacant} />
+        <PersonPhoto name={person.name} image={person.image} blank={vacant} />
         <p className="font-semibold text-[#21355a] leading-tight">{person.name}</p>
         <p className="text-sm text-gray-600 mt-1 leading-snug">{person.title}</p>
       </div>
@@ -78,7 +78,7 @@ function PersonCard({ person, onOpen }: { person: Person; onOpen?: () => void })
       aria-label={`View bio for ${person.name}`}
       className={`${CARD_BASE} hover:-translate-y-1 hover:shadow-lg hover:border-[#21355a]/30 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#21355a] focus-visible:ring-offset-2`}
     >
-      <PersonPhoto image={person.image} />
+      <PersonPhoto name={person.name} image={person.image} />
       <p className="font-semibold text-[#21355a] leading-tight">{person.name}</p>
       <p className="text-sm text-gray-600 mt-1 leading-snug">{person.title}</p>
       <span className="mt-3 inline-flex items-center gap-1 text-xs font-medium text-[#21355a]/70 group-hover:text-[#21355a] transition-colors">
@@ -128,9 +128,9 @@ function BioModal({ person, onClose }: { person: Person; onClose: () => void }) 
         <div className="px-6 -mt-16">
           <div className="relative w-32 h-32 mx-auto rounded-full overflow-hidden bg-white ring-4 ring-white shadow-lg">
             {person.image ? (
-              <Image src={person.image} alt="" fill sizes="128px" className="object-cover" />
+              <Image src={person.image} alt={person.name} fill sizes="128px" className="object-cover" />
             ) : (
-              <Image src="/fpa_logo.png" alt="" fill sizes="128px" className="object-contain bg-gray-50" />
+              <Image src="/fpa_logo.png" alt={person.name} fill sizes="128px" className="object-contain bg-gray-50" />
             )}
           </div>
           <h3 id="bio-modal-name" className="mt-4 text-xl font-bold text-[#21355a] text-center">

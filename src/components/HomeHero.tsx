@@ -7,6 +7,13 @@ import { siteConfig, StatusLevel } from "@/data/siteData";
 import { usePageCopy } from "@/lib/usePageCopy";
 import { HOME_DEFAULTS } from "@/globals/HomeContent";
 
+/** Plain-language caption beside the overall status badge. */
+const STATUS_CAPTIONS: Record<StatusLevel, string> = {
+  GREEN: "All Systems Operational",
+  AMBER: "Some Systems Need Attention",
+  RED: "Critical Issues Reported",
+};
+
 /**
  * Home page hero. Rendered as a Client Component so the editable headline
  * updates in real time inside the Payload admin Live Preview iframe (before
@@ -23,7 +30,6 @@ export default function HomeHero({
   const copy = usePageCopy("home-content", HOME_DEFAULTS);
   return (
     <section className="relative bg-gradient-to-br from-[#21355a] via-[#2c3859] to-[#21355a] text-white">
-      <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-5"></div>
       <div className="relative mx-auto max-w-7xl px-4 pt-10 pb-28 sm:px-6 lg:px-8 lg:pt-12 lg:pb-32">
         <div className="absolute top-10 right-4 sm:right-6 lg:right-8 z-10">
           <SiteGuide />
@@ -32,7 +38,7 @@ export default function HomeHero({
           <div>
             <div className="flex items-center gap-2 mb-6">
               <StatusBadge status={overallStatus} size="md" tooltip={overallTooltip} />
-              <span className="text-sm text-blue-200">All Systems Operational</span>
+              <span className="text-sm text-blue-200">{STATUS_CAPTIONS[overallStatus]}</span>
             </div>
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-6">
               {copy.heroHeading}

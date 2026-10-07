@@ -3,6 +3,10 @@
 import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 import { Loader2 } from "lucide-react";
+// Bundled with the app rather than fetched from unpkg at runtime, so a CDN
+// outage can't strip the map of its styling (the tropical map does the same
+// with maplibre-gl.css).
+import "leaflet/dist/leaflet.css";
 
 /**
  * Escape user-controlled strings before they're concatenated into a
@@ -181,8 +185,24 @@ function MapLegend({
   layerVisibility,
   onToggleLayer,
 }: MapLegendProps) {
+  // Phones only: the legend starts collapsed so it doesn't cover the map.
+  // From `sm:` up it is always shown and this state has no effect.
+  const [legendOpen, setLegendOpen] = useState(false);
   return (
-    <div className="absolute bottom-4 left-4 bg-white rounded-lg shadow-lg p-4 z-[1000]">
+    <div className="absolute bottom-4 left-4 z-[1000]">
+      <button
+        type="button"
+        onClick={() => setLegendOpen((open) => !open)}
+        aria-expanded={legendOpen}
+        aria-controls="system-map-legend"
+        className="sm:hidden mb-2 rounded-lg bg-white shadow-lg px-3 py-1.5 text-xs font-semibold text-gray-700 hover:text-[#21355a]"
+      >
+        {legendOpen ? "Hide legend" : "Legend"}
+      </button>
+      <div
+        id="system-map-legend"
+        className={`${legendOpen ? "block" : "hidden"} sm:block bg-white rounded-lg shadow-lg p-4`}
+      >
       <h4 className="font-semibold text-sm text-gray-800 mb-3">Map Legend</h4>
       <div className="space-y-2 text-sm">
         {/* Always-on layers */}
@@ -277,6 +297,7 @@ function MapLegend({
             </button>
           </label>
         </div>
+      </div>
       </div>
     </div>
   );
@@ -382,11 +403,6 @@ export default function SystemMap() {
 
   return (
     <div className="relative h-[500px] rounded-xl overflow-hidden shadow-lg">
-      <link
-        rel="stylesheet"
-        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-        crossOrigin=""
-      />
       <MapContainer
         center={center}
         zoom={zoom}
