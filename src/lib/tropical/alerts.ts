@@ -2,6 +2,8 @@
 // __tests__/alerts.test.ts. No React here so the logic is trivially testable;
 // components/Alerts.tsx wraps this with the actual SWR fetch.
 
+import { WW_COLORS } from "./mapStyle";
+
 // SAME codes for Jefferson, Orleans, Plaquemines, St. Bernard, St. Tammany
 // (per shared-contracts.md).
 export const METRO_SAME_CODES = ["022051", "022071", "022075", "022087", "022103"];
@@ -30,17 +32,24 @@ function severityRank(event: string): number {
   return 3;
 }
 
-// N6 (final review): border colors reference the mode-aware --warn-* design
-// tokens (see globals.css) rather than hardcoding the active-mode hex values
-// directly -- the previous literals (#d94141/#b04fd6/#4a7fd4) happened to
-// match --warn-hw/--warn-ssw/--warn-tsw in active mode but silently
-// clobbered quiet mode's distinct palette (#b3402e/#d97b29/#1f3a5f) with
-// active-mode colors instead.
+/** Chip colour for alerts outside the tropical watch/warning family (Flood
+ *  Advisory, Coastal Flood Watch, ...): Tailwind gray-400, a neutral that
+ *  still reads as a border against the white panel. */
+export const NEUTRAL_ALERT_COLOR = "#9ca3af";
+
+// Chip border colours come straight from WW_COLORS, the same palette the
+// map's coastal watch/warning lines and the CoastalAlertsLegend use, so an
+// NWS "Tropical Storm Warning" chip is the same blue as the warning line on
+// the map. The upstream gulf-watch build referenced mode-aware --warn-*
+// CSS tokens here; the Tailwind port never defined them, so every chip
+// silently fell back to the browser's default border colour.
 function colorForEvent(event: string): string {
-  if (event.includes("Hurricane Warning")) return "var(--warn-hw)";
-  if (event.includes("Storm Surge")) return "var(--warn-ssw)";
-  if (event.includes("Tropical Storm")) return "var(--warn-tsw)";
-  return "var(--rule)";
+  if (event.includes("Storm Surge")) return WW_COLORS.surge;
+  if (event.includes("Hurricane Warning")) return WW_COLORS.hurricaneWarning;
+  if (event.includes("Hurricane Watch")) return WW_COLORS.hurricaneWatch;
+  if (event.includes("Tropical Storm Warning")) return WW_COLORS.tsWarning;
+  if (event.includes("Tropical Storm Watch")) return WW_COLORS.tsWatch;
+  return NEUTRAL_ALERT_COLOR;
 }
 
 /**

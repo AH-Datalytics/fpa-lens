@@ -39,6 +39,14 @@ const TITLE_BLOCK_RE = /^Tropical Weather Outlook\b/i;
 /** "$$" on its own line, followed by the forecaster's name. */
 const SIGNOFF_RE = /^\${2}/;
 
+/** "&&" opens the remarks block that NHC appends once a system has its own
+ *  advisories ("&& Public Advisories on Tropical Depression Nine are issued
+ *  under WMO header WTNT34 KNHC..."). It runs from the "&&" line to the "$$"
+ *  sign-off, so everything from the first "&&" paragraph onward is plumbing.
+ *  Whether the remark shares the "&&" paragraph or follows it after a blank
+ *  line varies, which is why the cut is positional rather than per-paragraph. */
+const REMARKS_RE = /^&{2}/;
+
 /**
  * The outlook's narrative paragraphs only. Returns `[]` for text that is
  * entirely plumbing, so callers can fall back rather than render an empty box.
@@ -48,7 +56,10 @@ const SIGNOFF_RE = /^\${2}/;
  * "the first paragraph", so nothing real is ever dropped.
  */
 export function outlookParagraphs(text: string): string[] {
-  return splitParagraphs(text).filter(
+  const paragraphs = splitParagraphs(text);
+  const remarksAt = paragraphs.findIndex((paragraph) => REMARKS_RE.test(paragraph));
+  const narrative = remarksAt === -1 ? paragraphs : paragraphs.slice(0, remarksAt);
+  return narrative.filter(
     (paragraph) =>
       !TRANSMISSION_HEADER_RE.test(paragraph) &&
       !TITLE_BLOCK_RE.test(paragraph) &&

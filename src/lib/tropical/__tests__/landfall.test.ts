@@ -103,4 +103,26 @@ describe("landfallTau", () => {
   it("returns null for an empty track (no point features)", () => {
     expect(landfallTau({ type: "FeatureCollection", features: [] }, DEMO_INTENSITY)).toBeNull();
   });
+
+  it("matches a synoptic-clock track TAU against an advisory-clock series via the shift", () => {
+    // Live shape: a-deck cycle 12Z, advisory 15Z. The ingest rebases the
+    // intensity series by -3h (tau 72 becomes 69); the track's TAU 72 still
+    // counts from 12Z, so it must shift by the same -3h to find its partner.
+    const rebased: IntensitySeries = {
+      cycle: "2026072212",
+      reference: "2026-07-22T15:00:00Z",
+      series: [
+        {
+          model: "OFCL",
+          label: "Official",
+          kind: "official",
+          points: DEMO_INTENSITY.series[0].points.map((p) => ({ ...p, tauH: p.tauH - 3 })),
+        },
+      ],
+    };
+    expect(landfallTau(DEMO_TRACK, rebased, -3)).toBe(69);
+    // Without the shift the grids no longer line up and the marker is omitted
+    // rather than drawn at a wrong hour.
+    expect(landfallTau(DEMO_TRACK, rebased)).toBeNull();
+  });
 });

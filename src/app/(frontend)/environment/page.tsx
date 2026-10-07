@@ -41,6 +41,11 @@ import type { LakefrontData, RiskLevel } from "@/lib/lakefrontRisk";
 import { RISK_THRESHOLDS } from "@/lib/lakefrontRisk";
 import { usePageCopy } from "@/lib/usePageCopy";
 import { ENVIRONMENT_DEFAULTS } from "@/globals/pages/environmentPage";
+import {
+  CENTRAL_TZ,
+  centralZoneAbbreviation,
+  parseCentralTimestamp,
+} from "@/app/api/lakefront/centralTime";
 
 const REFRESH_INTERVAL = 5 * 60 * 1000; // 5 minutes
 
@@ -75,31 +80,11 @@ const TRENDING_COLORS = {
   worsening: "text-red-600",
 };
 
-const CENTRAL_TZ = "America/Chicago";
+// Timestamp parsing lives in @/app/api/lakefront/centralTime, shared with the
+// API route so the server and the browser read NOAA's offset-less Central
+// timestamps the same way.
 
-/**
- * Normalize a timestamp to a proper Date. NOAA timestamps come back
- * as "YYYY-MM-DD HH:MM" in Central Time (we request time_zone=lst_ldt)
- * but without timezone info. We append the Central offset so JS doesn't
- * misinterpret them as UTC. NWS timestamps already include offset (-05:00).
- */
-function parseCentralTimestamp(ts: string): Date {
-  // Already has timezone info (ISO 8601 with offset or Z)
-  if (ts.includes("T") && (ts.includes("+") || ts.includes("Z") || ts.match(/-\d{2}:\d{2}$/))) {
-    return new Date(ts);
-  }
-  // NOAA format: "YYYY-MM-DD HH:MM" — treat as Central Time.
-  // Determine offset by checking if CDT or CST applies.
-  // CDT (UTC-5) runs second Sunday of March through first Sunday of November.
-  const d = new Date(ts + "Z"); // parse as UTC first to get the date
-  const year = d.getUTCFullYear();
-  const marchSecondSun = new Date(Date.UTC(year, 2, 8 + (7 - new Date(Date.UTC(year, 2, 8)).getUTCDay()) % 7, 8)); // 2am CDT = 8am UTC
-  const novFirstSun = new Date(Date.UTC(year, 10, 1 + (7 - new Date(Date.UTC(year, 10, 1)).getUTCDay()) % 7, 7)); // 2am CDT = 7am UTC
-  const isCDT = d >= marchSecondSun && d < novFirstSun;
-  const offset = isCDT ? "-05:00" : "-06:00";
-  return new Date(ts.replace(" ", "T") + ":00" + offset);
-}
-
+/** "Oct 7, 7:21 AM CDT" -- every time on this page is Central, and says so. */
 function formatDateTime(ts: string): string {
   try {
     return parseCentralTimestamp(ts).toLocaleString("en-US", {
@@ -109,6 +94,7 @@ function formatDateTime(ts: string): string {
       minute: "2-digit",
       hour12: true,
       timeZone: CENTRAL_TZ,
+      timeZoneName: "short",
     });
   } catch {
     return ts;
@@ -202,8 +188,17 @@ export default function EnvironmentalPage() {
   const { risk, current, forecast, alerts, structureGauges, windHistory, waterLevelHistory, storedForecasts, dataGaps = [] } = data;
   const TrendIcon = TRENDING_ICONS[risk.trending];
 
+  // The route substitutes 0 for a failed water-level or prediction fetch
+  // (the shared type is non-nullable), so the cards must read dataGaps, not
+  // the numbers, to know whether there is a reading to show.
+  const waterLevelUnavailable = dataGaps.includes("water level");
+  const predictionUnavailable = dataGaps.includes("predictions");
+  const anomalyUnavailable = waterLevelUnavailable || predictionUnavailable;
+
   // Build combined chart: 12 hrs observed (past) + 48 hrs forecast (future)
   const now = Date.now();
+  // "CDT"/"CST" for the chart captions; Intl flips it on the real DST dates.
+  const zoneAbbr = centralZoneAbbreviation(new Date(now));
 
   // Format chart axis label: time only, but include date on midnight/noon boundaries
   function formatChartTime(ts: string): string {
@@ -216,7 +211,7 @@ export default function EnvironmentalPage() {
     const month = d.toLocaleString("en-US", { month: "short", timeZone: CENTRAL_TZ });
     const day = d.toLocaleString("en-US", { day: "numeric", timeZone: CENTRAL_TZ });
     const time = d.toLocaleString("en-US", { hour: "numeric", minute: "2-digit", hour12: true, timeZone: CENTRAL_TZ });
-    return `${month} ${day}, ${time}`;
+    return `${month} ${day}, ${time} ${centralZoneAbbreviation(d)}`;
   }
 
   // Index water level history by timestamp for easy lookup
@@ -650,18 +645,31 @@ export default function EnvironmentalPage() {
                 </span>
                 <Waves className="h-6 w-6 text-[#21355a]" />
               </div>
-              <div className="flex items-baseline gap-2">
-                <span className="text-3xl font-bold text-[#21355a]">
-                  {current.waterLevel.level.toFixed(2)}
-                </span>
-                <span className="text-sm text-gray-500">ft MLLW</span>
-              </div>
-              <p className="text-xs text-gray-500 mt-1">
-                Tide prediction: {current.waterLevel.predicted.toFixed(2)} ft
-              </p>
-              <p className="text-xs text-gray-400 mt-1">
-                Actual water height at the station
-              </p>
+              {waterLevelUnavailable ? (
+                <>
+                  <span className="text-2xl font-semibold text-gray-300">Unavailable</span>
+                  <p className="text-xs text-amber-600 mt-2">
+                    Water level sensor offline at {data.stationName}
+                  </p>
+                </>
+              ) : (
+                <>
+                  <div className="flex items-baseline gap-2">
+                    <span className="text-3xl font-bold text-[#21355a]">
+                      {current.waterLevel.level.toFixed(2)}
+                    </span>
+                    <span className="text-sm text-gray-500">ft MLLW</span>
+                  </div>
+                  <p className="text-xs text-gray-500 mt-1">
+                    {predictionUnavailable
+                      ? "Tide prediction unavailable"
+                      : `Tide prediction: ${current.waterLevel.predicted.toFixed(2)} ft`}
+                  </p>
+                  <p className="text-xs text-gray-400 mt-1">
+                    Actual water height at the station
+                  </p>
+                </>
+              )}
             </div>
 
             {/* Surge Anomaly */}
@@ -672,19 +680,30 @@ export default function EnvironmentalPage() {
                 </span>
                 <TrendingUp className="h-6 w-6 text-[#21355a]" />
               </div>
-              <div className="flex items-baseline gap-2">
-                <span className={`text-3xl font-bold ${
-                  current.waterLevel.anomaly >= RISK_THRESHOLDS.SURGE_ORANGE
-                    ? "text-orange-600"
-                    : current.waterLevel.anomaly >= RISK_THRESHOLDS.SURGE_YELLOW
-                      ? "text-yellow-600"
-                      : "text-[#21355a]"
-                }`}>
-                  {current.waterLevel.anomaly > 0 ? "+" : ""}
-                  {current.waterLevel.anomaly.toFixed(2)}
-                </span>
-                <span className="text-sm text-gray-500">ft</span>
-              </div>
+              {anomalyUnavailable ? (
+                <>
+                  <span className="text-2xl font-semibold text-gray-300">Unavailable</span>
+                  <p className="text-xs text-amber-600 mt-2">
+                    {waterLevelUnavailable
+                      ? "Needs the observed lake level, which is currently offline"
+                      : "Needs the NOAA tide prediction, which is currently unavailable"}
+                  </p>
+                </>
+              ) : (
+                <div className="flex items-baseline gap-2">
+                  <span className={`text-3xl font-bold ${
+                    current.waterLevel.anomaly >= RISK_THRESHOLDS.SURGE_ORANGE
+                      ? "text-orange-600"
+                      : current.waterLevel.anomaly >= RISK_THRESHOLDS.SURGE_YELLOW
+                        ? "text-yellow-600"
+                        : "text-[#21355a]"
+                  }`}>
+                    {current.waterLevel.anomaly > 0 ? "+" : ""}
+                    {current.waterLevel.anomaly.toFixed(2)}
+                  </span>
+                  <span className="text-sm text-gray-500">ft</span>
+                </div>
+              )}
               <p className="text-xs text-gray-400 mt-1">
                 {"Lake Level minus Tide Prediction. Positive = water is higher than tides alone explain, typically from wind pushing water toward shore. This is what drives the surge component of the risk level."}
               </p>
@@ -884,6 +903,7 @@ export default function EnvironmentalPage() {
                     <span className="text-xs text-gray-400">Original forecast</span>
                   </div>
                 )}
+                <span className="ml-auto text-xs text-gray-400">Times in {zoneAbbr}</span>
               </div>
             </DataCard>
             </div>
@@ -964,6 +984,7 @@ export default function EnvironmentalPage() {
                     <span className="text-xs text-gray-400">Original forecast</span>
                   </div>
                 )}
+                <span className="ml-auto text-xs text-gray-400">Times in {zoneAbbr}</span>
               </div>
             </DataCard>
             </div>

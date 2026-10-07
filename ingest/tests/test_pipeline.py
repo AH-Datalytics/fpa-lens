@@ -248,7 +248,11 @@ def test_active_path_all_five_storm_files_uploaded_and_state_advanced():
     assert bertha["lon"] == -90.5
     assert bertha["advisoryNum"] == "014a"
     assert bertha["advisoryTime"] == "2026-07-23T00:00:00Z"
-    assert bertha["nextAdvisoryTime"] == "2026-07-23T06:00:00Z"
+    # Read from the public advisory fixture's NEXT ADVISORY block ("Next
+    # complete advisory at 1000 PM CDT." -- 0300Z), not the feed-only +6h
+    # assumption (0600Z). An intermediate advisory at 7 PM CDT is followed by
+    # a complete one 3h later; the header counts down to that.
+    assert bertha["nextAdvisoryTime"] == "2026-07-23T03:00:00Z"
     assert bertha["inGulfBox"] is True
     assert bertha["modelCycle"] == "2026072218"
     assert bertha["files"] == {
@@ -300,6 +304,9 @@ def test_active_path_all_five_storm_files_uploaded_and_state_advanced():
     assert store.data["state.json"]["storms"]["al022026"] == {
         "advisory": "014a",
         "cycle": "2026072218",
+        # The announced next advisory, persisted because the text it comes
+        # from is only fetched when the advisory changes.
+        "nextAdvisoryTime": "2026-07-23T03:00:00Z",
         # Carried forward so an already-built past track keeps its manifest key
         # on a run where the advisory did not change.
         "history": True,

@@ -374,6 +374,52 @@ def test_unparseable_reference_time_degrades_to_no_clipping():
     assert coords == [[-80.0, 25.0], [-81.0, 26.0]]
 
 
+# --- Intensity hours rebased onto the advisory time ---------------------------
+#
+# The intensity chart labels tauH as advisoryTime + tauH ("Now" at 0). A-deck
+# tau counts from the model's 00/06/12/18Z cycle, so unrebased hours drew every
+# model 3h late under a 15Z advisory (9h for a run one cycle old).
+
+
+def test_intensity_hours_rebased_onto_the_reference_time_per_model():
+    text = (
+        # AVNO initialised 12z: tau 0/12/24 are 12z/00z/12z.
+        "AL, 03, 2026081212, 03, AVNO,   0, 250N,  800W,  60,  990, TS\n"
+        "AL, 03, 2026081212, 03, AVNO,  12, 260N,  810W,  65,  990, TS\n"
+        "AL, 03, 2026081212, 03, AVNO,  24, 270N,  820W,  70,  990, TS\n"
+        # EMXI (00z/12z only) last ran 00z: its tau 24 is the SAME 00z instant
+        # as AVNO's tau 12, and must land on the same hour of the chart.
+        "AL, 03, 2026081200, 03, EMXI,   0, 240N,  790W,  55,  995, TS\n"
+        "AL, 03, 2026081200, 03, EMXI,  24, 260N,  810W,  65,  990, TS\n"
+    )
+    result = parse_adeck(text, reference_time="2026-08-12T15:00:00Z")
+    assert result["intensity"]["reference"] == "2026-08-12T15:00:00Z"
+    assert [p["tauH"] for p in series_for(result, "AVNO")["points"]] == [-3, 9, 21]
+    assert [p["tauH"] for p in series_for(result, "EMXI")["points"]] == [-15, 9]
+    # The values ride along untouched -- only the hour moved.
+    assert series_for(result, "AVNO")["points"][1]["mph"] == round(65 * KT_TO_MPH)
+    # Whole hours stay ints so the JSON doesn't sprout "9.0".
+    assert all(isinstance(p["tauH"], int) for p in series_for(result, "AVNO")["points"])
+
+
+def test_intensity_hours_stay_cycle_relative_without_a_reference_time(result):
+    """No reference_time: legacy shape, tauH counts from the cycle and the
+    intensity payload carries no `reference` key (the frontend then shifts by
+    the cycle itself -- see src/lib/tropical/intensityTime.ts)."""
+    assert "reference" not in result["intensity"]
+    assert [p["tauH"] for p in series_for(result, "DSHP")["points"]] == [0, 12]
+
+
+def test_unparseable_reference_time_leaves_intensity_hours_alone():
+    text = (
+        "AL, 03, 2026081212, 03, AVNO,   0, 250N,  800W,  60,  990, TS\n"
+        "AL, 03, 2026081212, 03, AVNO,  12, 260N,  810W,  65,  990, TS\n"
+    )
+    result = parse_adeck(text, reference_time="not a timestamp")
+    assert "reference" not in result["intensity"]
+    assert [p["tauH"] for p in series_for(result, "AVNO")["points"]] == [0, 12]
+
+
 # --- Staleness cap ------------------------------------------------------------
 
 

@@ -283,6 +283,18 @@ def parse_adeck(text: str, reference_time: str | None = None) -> dict:
     any other whitelisted model, but are excluded from intensity.json
     entirely (see _ensemble_meta's docstring above).
 
+    Intensity forecast hours are REBASED onto `reference_time` when it is
+    given: each model's tauH becomes (tau - hours from that model's own cycle
+    to the reference), so tauH 0 means the advisory time for every series, and
+    intensity.json carries `"reference": <reference_time>` to say so. Without
+    it, the chart labelled tauH as advisoryTime + tauH while the a-deck counted
+    from the 00/06/12/18Z cycle -- every model drawn 3h late (9h for a run one
+    cycle old), and ECMWF (00/12Z only) plotted on a different clock from GFS.
+    Rebased hours can be negative (the already-elapsed leg) and, for a model
+    whose cycle sits an odd number of hours from the reference, fractional;
+    the frontend clips the former at "Now". Omitted reference_time leaves tauH
+    cycle-relative and `reference` absent, as before.
+
     Returns:
         {"models_geojson": <FeatureCollection dict>,
          "intensity": <intensity.json dict>,
@@ -434,7 +446,10 @@ def parse_adeck(text: str, reference_time: str | None = None) -> dict:
         if tech in MODELS:
             ipts = intensity_points.get(tech)
             if ipts:
-                points = [{"tauH": t, "mph": ipts[t]} for t in sorted(ipts)]
+                # Per MODEL, not per file: each model counts tau from its own
+                # cycle, and those differ (ECMWF 12Z beside GFS 18Z).
+                shift = _tau_shift_hours(_parse_cycle(latest_cycle_by_model[tech]), reference_dt)
+                points = [{"tauH": _rebased_tau(t, shift), "mph": ipts[t]} for t in sorted(ipts)]
                 series.append({
                     "model": tech,
                     "label": label,
@@ -442,10 +457,31 @@ def parse_adeck(text: str, reference_time: str | None = None) -> dict:
                     "points": points,
                 })
 
+    intensity = {"cycle": newest_cycle}
+    if reference_dt is not None:
+        intensity["reference"] = reference_dt.strftime("%Y-%m-%dT%H:%M:%SZ")
+    intensity["series"] = series
+
     return {
         "models_geojson": {"type": "FeatureCollection", "features": features},
-        "intensity": {"cycle": newest_cycle, "series": series},
+        "intensity": intensity,
         "cycle": newest_cycle,
         "dropped_stale": dropped_stale,
         "dropped_elapsed": sorted(dropped_elapsed),
     }
+
+
+def _tau_shift_hours(cycle_dt: datetime | None, reference_dt: datetime | None) -> float:
+    """Hours from one model's own cycle to the reference (advisory) time --
+    the amount to subtract from that model's tau so 0 means the reference.
+    0 when either time is unknown, which leaves tau cycle-relative."""
+    if cycle_dt is None or reference_dt is None:
+        return 0.0
+    return (reference_dt - cycle_dt).total_seconds() / 3600.0
+
+
+def _rebased_tau(tau: int, shift_hours: float) -> int | float:
+    """tau minus the shift, as an int when it is whole (the normal case:
+    advisories and cycles both sit on the hour) so the JSON stays tidy."""
+    value = round(tau - shift_hours, 2)
+    return int(value) if float(value).is_integer() else value

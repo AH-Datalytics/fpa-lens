@@ -66,4 +66,59 @@ describe("outlookParagraphs", () => {
       "Tropical cyclone formation is not expected.",
     ]);
   });
+
+  // Shape of the live outlook.json on Oct 7 2026, with Tropical Depression
+  // Nine in the Gulf: NHC appends an "&&" remarks block pointing at the
+  // storm's own advisories. Without the filter it rendered as a fourth
+  // paragraph of prose the moment the page dropped back to quiet mode.
+  const LIVE_OUTLOOK_WITH_REMARKS = [
+    "000",
+    "ABNT20 KNHC 071130",
+    "TWOAT ",
+    "",
+    "Tropical Weather Outlook",
+    "NWS National Hurricane Center Miami FL",
+    "800 AM EDT Wed Oct 7 2026",
+    "",
+    "For the North Atlantic...Caribbean Sea and the Gulf of America:",
+    "",
+    "The National Hurricane Center is issuing advisories on Tropical",
+    "Depression Nine, located over the southwestern Gulf of America.",
+    "",
+    "Tropical cyclone formation is not expected during the next 7 days.",
+    "",
+    "&&",
+    "Public Advisories on Tropical Depression Nine are issued under WMO",
+    "header WTNT34 KNHC and under AWIPS header MIATCPAT4.",
+    "Forecast/Advisories on Tropical Depression Nine are issued under WMO",
+    "header WTNT24 KNHC and under AWIPS header MIATCMAT4.",
+    "",
+    "$$",
+    "Forecaster Papin",
+  ].join("\n");
+
+  it("drops the && remarks block that follows the narrative", () => {
+    expect(outlookParagraphs(LIVE_OUTLOOK_WITH_REMARKS)).toEqual([
+      "For the North Atlantic...Caribbean Sea and the Gulf of America:",
+      "The National Hurricane Center is issuing advisories on Tropical Depression Nine, located over the southwestern Gulf of America.",
+      "Tropical cyclone formation is not expected during the next 7 days.",
+    ]);
+    expect(outlookParagraphs(LIVE_OUTLOOK_WITH_REMARKS).join(" ")).not.toContain("WMO header");
+  });
+
+  it("drops a remarks block whose text is separated from && by a blank line", () => {
+    const text = [
+      "Tropical cyclone formation is not expected during the next 7 days.",
+      "",
+      "&&",
+      "",
+      "Public Advisories on Tropical Depression Nine are issued under WMO header WTNT34 KNHC.",
+      "",
+      "$$",
+      "Forecaster Papin",
+    ].join("\n");
+    expect(outlookParagraphs(text)).toEqual([
+      "Tropical cyclone formation is not expected during the next 7 days.",
+    ]);
+  });
 });

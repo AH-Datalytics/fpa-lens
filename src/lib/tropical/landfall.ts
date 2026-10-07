@@ -22,8 +22,18 @@
 // forecast-hour grids) — if it doesn't, the marker is omitted rather than
 // interpolated, matching the brief's "must not crash" requirement for both
 // demo and live data.
+//
+// Clocks: a track's TAU counts from the advisory's synoptic time while the
+// intensity panel plots hours from the advisory itself (see intensityTime.ts),
+// so callers pass `trackTauShiftHours` -- the hours to add to a track TAU to
+// land it on the series' axis -- along with the already-normalised series.
+// The default of 0 is the legacy "both count from the same cycle" case.
 
 import type { IntensitySeries } from "./types";
+
+function round2(value: number): number {
+  return Math.round(value * 100) / 100;
+}
 
 export const LANDFALL_LAT = 29.2;
 
@@ -54,7 +64,8 @@ function trackPointsByTau(trackFc: GeoJSON.FeatureCollection): TrackTauLat[] {
  */
 export function landfallTau(
   trackFc: GeoJSON.FeatureCollection | null | undefined,
-  intensity: IntensitySeries | null | undefined
+  intensity: IntensitySeries | null | undefined,
+  trackTauShiftHours = 0
 ): number | null {
   if (!trackFc || !intensity) return null;
 
@@ -68,6 +79,7 @@ export function landfallTau(
   }
   if (crossingTau === null) return null;
 
-  const knownTaus = new Set(intensity.series.flatMap((s) => s.points.map((p) => p.tauH)));
-  return knownTaus.has(crossingTau) ? crossingTau : null;
+  const onSeriesAxis = round2(crossingTau + trackTauShiftHours);
+  const knownTaus = new Set(intensity.series.flatMap((s) => s.points.map((p) => round2(p.tauH))));
+  return knownTaus.has(onSeriesAxis) ? onSeriesAxis : null;
 }

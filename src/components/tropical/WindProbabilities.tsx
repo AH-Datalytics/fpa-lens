@@ -66,7 +66,8 @@ export function WindProbabilities({ probs }: WindProbabilitiesProps) {
               <tr className="border-b border-gray-200 text-left text-gray-500">
                 <th className="py-1 font-medium">Nearby</th>
                 <th className="py-1 text-right font-medium">TS force</th>
-                <th className="py-1 text-right font-medium">50+ mph</th>
+                {/* The PWS column is 50 KNOTS, which is 58 mph (57.5), not 50 mph. */}
+                <th className="py-1 text-right font-medium">58+ mph</th>
                 <th className="py-1 text-right font-medium">Hurricane</th>
               </tr>
             </thead>

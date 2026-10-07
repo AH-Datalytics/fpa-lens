@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { deriveAlertsState, filterMetroAlerts, type NWSAlertFeature } from "../alerts";
+import { NEUTRAL_ALERT_COLOR, deriveAlertsState, filterMetroAlerts, type NWSAlertFeature } from "../alerts";
+import { WW_COLORS } from "../mapStyle";
 
 const orleansHurricaneWarning: NWSAlertFeature = {
   properties: {
@@ -72,10 +73,10 @@ describe("filterMetroAlerts", () => {
     ]);
   });
 
-  it("colors alert borders from the mode-aware --warn-* tokens, not literal hexes", () => {
-    // N6 (final review): must reference --warn-hw/--warn-ssw/--warn-tsw so
-    // quiet mode picks up its own distinct palette instead of always
-    // rendering active mode's hex values.
+  it("colors alert borders with the map's WW_COLORS palette, never an undefined CSS token", () => {
+    // The upstream build referenced --warn-hw/--warn-ssw/--warn-tsw tokens
+    // that the Tailwind port never defined, so every chip lost its colour.
+    // Chips now share WW_COLORS with the coastal watch/warning lines.
     const rows = filterMetroAlerts([
       orleansHurricaneWarning,
       surgeWarning,
@@ -83,10 +84,23 @@ describe("filterMetroAlerts", () => {
       orleansFloodAdvisory,
     ]);
     const byEvent = Object.fromEntries(rows.map((r) => [r.event, r.color]));
-    expect(byEvent["Hurricane Warning"]).toBe("var(--warn-hw)");
-    expect(byEvent["Storm Surge Warning"]).toBe("var(--warn-ssw)");
-    expect(byEvent["Tropical Storm Watch"]).toBe("var(--warn-tsw)");
-    expect(byEvent["Flood Advisory"]).toBe("var(--rule)");
+    expect(byEvent["Hurricane Warning"]).toBe(WW_COLORS.hurricaneWarning);
+    expect(byEvent["Storm Surge Warning"]).toBe(WW_COLORS.surge);
+    expect(byEvent["Tropical Storm Watch"]).toBe(WW_COLORS.tsWatch);
+    expect(byEvent["Flood Advisory"]).toBe(NEUTRAL_ALERT_COLOR);
+    for (const color of Object.values(byEvent)) expect(color).toMatch(/^#[0-9a-f]{6}$/i);
+  });
+
+  it("distinguishes watch from warning tiers like the map legend does", () => {
+    const rows = filterMetroAlerts([
+      { properties: { event: "Tropical Storm Warning", areaDesc: "Orleans", geocode: { SAME: ["022071"] } } },
+      { properties: { event: "Hurricane Watch", areaDesc: "Orleans", geocode: { SAME: ["022071"] } } },
+      { properties: { event: "Storm Surge Watch", areaDesc: "Orleans", geocode: { SAME: ["022071"] } } },
+    ]);
+    const byEvent = Object.fromEntries(rows.map((r) => [r.event, r.color]));
+    expect(byEvent["Tropical Storm Warning"]).toBe(WW_COLORS.tsWarning);
+    expect(byEvent["Hurricane Watch"]).toBe(WW_COLORS.hurricaneWatch);
+    expect(byEvent["Storm Surge Watch"]).toBe(WW_COLORS.surge);
   });
 
   it("returns an empty array for no features", () => {
@@ -122,7 +136,7 @@ describe("deriveAlertsState", () => {
           key: "Hurricane Warning|Orleans; Jefferson",
           event: "Hurricane Warning",
           areaDesc: "Orleans; Jefferson",
-          color: "var(--warn-hw)",
+          color: WW_COLORS.hurricaneWarning,
         },
       ],
       unavailable: false,

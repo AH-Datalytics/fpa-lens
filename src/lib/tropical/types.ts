@@ -100,7 +100,13 @@ export interface IntensitySeriesEntry {
 }
 
 export interface IntensitySeries {
+  /** Dominant a-deck cycle ("YYYYMMDDHH", 00/06/12/18Z). */
   cycle: string;
+  /** ISO instant that tauH 0 refers to. Present when the ingest rebased every
+   *  model's forecast hours onto the advisory time (see adeck.parse_adeck's
+   *  reference_time). Absent on older blobs and the committed demo fixtures,
+   *  whose tauH are hours from `cycle` -- intensityTime.ts handles both. */
+  reference?: string;
   series: IntensitySeriesEntry[];
 }
 

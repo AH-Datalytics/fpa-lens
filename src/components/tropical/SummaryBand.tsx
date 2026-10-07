@@ -96,43 +96,46 @@ export function SummaryBand({
     <div className="space-y-4">
       <div className={PANEL}>
         {activeStorm ? (
-          <>
-            <div className="px-5 py-4">
-              <StormHeader storm={storm} />
-            </div>
-            {legendItems.length > 0 && (
-              <div className={ROW}>
-                <CoastalAlertsLegend
-                  items={legendItems}
-                  publicAdvisoryText={publicAdvisoryText}
-                />
-              </div>
-            )}
-            {probs !== null && (
-              <div className={ROW}>
-                <WindProbabilities probs={probs} />
-              </div>
-            )}
-          </>
+          <div className="px-5 py-4">
+            <StormHeader storm={storm} />
+          </div>
         ) : (
-          <>
-            <div className="flex flex-wrap items-start justify-between gap-4 px-5 py-4">
-              <OutlookPanel outlookText={outlookText} watch={gulfWatch(outlookGeo)} />
-              {/* Full navigation updates the URL-backed dashboard data source. */}
-              <a
-                className="inline-flex shrink-0 items-center gap-1.5 rounded-md border border-gray-200 px-3 py-1.5 text-xs font-medium text-[#21355a] hover:bg-gray-50"
-                href={`${PAGE_PATH}?demo=ida`}
-              >
-                See a storm: Hurricane Ida replay
-                <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
-              </a>
-            </div>
-            {hasMetroAlerts && (
-              <div className={ROW}>
-                <Alerts rows={metroAlerts.rows} unavailable={metroAlerts.unavailable} />
-              </div>
-            )}
-          </>
+          <div className="flex flex-wrap items-start justify-between gap-4 px-5 py-4">
+            <OutlookPanel outlookText={outlookText} watch={gulfWatch(outlookGeo)} />
+            {/* Full navigation updates the URL-backed dashboard data source. */}
+            <a
+              className="inline-flex shrink-0 items-center gap-1.5 rounded-md border border-gray-200 px-3 py-1.5 text-xs font-medium text-[#21355a] hover:bg-gray-50"
+              href={`${PAGE_PATH}?demo=ida`}
+            >
+              See a storm: Hurricane Ida replay
+              <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
+            </a>
+          </div>
+        )}
+
+        {/* NWS alerts for the five metro parishes, in BOTH modes. These are
+            the local Tropical Storm / Storm Surge / Flood watches and
+            warnings for Orleans, Jefferson, St. Bernard, Plaquemines and
+            St. Tammany -- the row that matters most during an active storm,
+            which is exactly when an earlier version stopped rendering it. */}
+        {hasMetroAlerts && (
+          <div className={ROW}>
+            <Alerts rows={metroAlerts.rows} unavailable={metroAlerts.unavailable} />
+          </div>
+        )}
+
+        {activeStorm && legendItems.length > 0 && (
+          <div className={ROW}>
+            <CoastalAlertsLegend
+              items={legendItems}
+              publicAdvisoryText={publicAdvisoryText}
+            />
+          </div>
+        )}
+        {activeStorm && probs !== null && (
+          <div className={ROW}>
+            <WindProbabilities probs={probs} />
+          </div>
         )}
 
         {activeStorm && storms.length > 1 && (

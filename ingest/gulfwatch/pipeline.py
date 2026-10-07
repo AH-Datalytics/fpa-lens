@@ -450,7 +450,14 @@ def _process_text_products(storm, paths, fetch, store, errors):
     storm's CurrentStorms.json entry, a bad fetch, or a parse error) must
     never block the other's upload, same isolation guarantee as
     cone/track/wwlines in _process_gis above.
+
+    Returns the next-advisory time the public advisory text announces (ISO
+    8601 Z), or None when text.json failed or the text names none. The
+    caller prefers it over the Storm record's +6h assumption: NHC drops to
+    3-hourly intermediate advisories once watches/warnings are up, and the
+    text is the only place the feed says so.
     """
+    next_advisory_time = None
     try:
         if not storm.discussion_url:
             raise ValueError("forecastDiscussion.url missing from CurrentStorms.json")
@@ -465,6 +472,9 @@ def _process_text_products(storm, paths, fetch, store, errors):
             advisory_issued=storm.advisory_time,
         )
         store.put_json(paths["text"], text_json)
+        next_advisory_time = nhc.next_advisory_from_text(
+            text_json["publicAdvisory"]["text"], storm.advisory_time
+        )
     except Exception as exc:
         errors.append({"product": f"{storm.id}.text", "message": str(exc)})
 
@@ -476,6 +486,8 @@ def _process_text_products(storm, paths, fetch, store, errors):
         store.put_json(paths["probs"], probs_json)
     except Exception as exc:
         errors.append({"product": f"{storm.id}.probs", "message": str(exc)})
+
+    return next_advisory_time
 
 
 def _process_adeck(storm, paths, prev_cycle, fetch, store, errors, force=False, rebuild=False):
@@ -613,8 +625,14 @@ def _process_storm(storm, prev_storm_state, fetch, store, errors, wsp_fc=None, o
     gis_keys = set(prev_gis) if prev_gis is not None else set()
     if advisory_changed or prev_gis is None:
         fresh_track_fc, gis_keys = _process_gis(storm, paths, fetch, store, errors)
+    # The announced next-advisory time is read from the public advisory text,
+    # which is only fetched when the advisory changes -- so it is persisted in
+    # state.json and carried forward on the runs in between (same advisory,
+    # same announcement). Absent both, the manifest falls back to +6h.
     if advisory_changed:
-        _process_text_products(storm, paths, fetch, store, errors)
+        next_advisory_time = _process_text_products(storm, paths, fetch, store, errors)
+    else:
+        next_advisory_time = prev_storm_state.get("nextAdvisoryTime")
 
     # History and wind probability refresh on a new advisory like everything
     # else, but ALSO build when they are simply missing. Without that second
@@ -682,7 +700,7 @@ def _process_storm(storm, prev_storm_state, fetch, store, errors, wsp_fc=None, o
         "lon": storm.lon,
         "advisoryNum": storm.advisory_num,
         "advisoryTime": storm.advisory_time,
-        "nextAdvisoryTime": storm.next_advisory_time,
+        "nextAdvisoryTime": next_advisory_time or storm.next_advisory_time,
         "inGulfBox": in_gulf,
         "modelCycle": new_cycle,
         # Wind probability is the one storm layer NOT fetched from an
@@ -725,6 +743,9 @@ def _process_storm(storm, prev_storm_state, fetch, store, errors, wsp_fc=None, o
     next_state = {
         "advisory": storm.advisory_num,
         "cycle": new_cycle,
+        # Only once read from the advisory text (see above); absent means
+        # "fall back to +6h", not "no next advisory".
+        **({"nextAdvisoryTime": next_advisory_time} if next_advisory_time else {}),
         "history": has_history,
         "windprob": sorted(windprob_keys),
         # Recorded only once known, so state.json doesn't carry a pair of nulls

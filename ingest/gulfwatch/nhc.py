@@ -10,8 +10,9 @@ Pure function, no network I/O.
 
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 CURRENT_STORMS_URL = "https://www.nhc.noaa.gov/CurrentStorms.json"
 
@@ -93,15 +94,90 @@ def _iso_z(dt: datetime) -> str:
 
 
 def _next_advisory_time(advisory_time: str) -> str:
-    """v1 rule: advisory_time + 6h.
+    """Fallback rule: advisory_time + 6h, the standard full-advisory cadence.
 
-    NHC actually runs intermediate advisories every 3h once coastal
-    watches/warnings are in effect, but CurrentStorms.json doesn't carry a
-    nextAdvisoryTime field directly, so v1 always assumes the standard 6h
-    advisory cadence. (Noted per task brief -- refine in a later task if the
-    3h/6h distinction becomes visible in the feed.)
+    CurrentStorms.json carries no nextAdvisoryTime, so this is all the feed
+    alone can say. Once coastal watches or warnings are up NHC moves to
+    3-hourly intermediate advisories, and the public advisory text says
+    exactly when the next one is due -- next_advisory_from_text reads that,
+    and the pipeline prefers it (see pipeline._process_text_products).
     """
     return _iso_z(_parse_nhc_time(advisory_time) + timedelta(hours=6))
+
+
+# "Next intermediate advisory at 800 PM EDT." / "Next complete advisory at
+# 1100 PM EDT." / occasionally "Next advisory at 400 AM CDT." -- the NEXT
+# ADVISORY block that closes every NHC public advisory. Times are local to the
+# zone NHC quotes, with no date, so the date is resolved against the advisory's
+# own issuance below.
+_NEXT_ADVISORY_RE = re.compile(
+    r"Next\s+(?:intermediate\s+|complete\s+|public\s+)?advisory\s+at\s+"
+    r"(\d{1,2})(\d{2})\s*(AM|PM)\s+([A-Z]{3,4})",
+    re.IGNORECASE,
+)
+
+# Fixed offsets for the abbreviations NHC uses. The product names the zone
+# explicitly, so a fixed table is exact here (no zoneinfo guesswork).
+_TZ_OFFSET_HOURS = {
+    "UTC": 0, "GMT": 0,
+    "AST": -4, "ADT": -3,
+    "EST": -5, "EDT": -4,
+    "CST": -6, "CDT": -5,
+    "MST": -7, "MDT": -6,
+    "PST": -8, "PDT": -7,
+    "AKST": -9, "AKDT": -8,
+    "HST": -10,
+}
+
+# An announced next advisory further out than this is a parse gone wrong
+# (a stray "at 1000 PM" from elsewhere in the text), not a schedule.
+_MAX_NEXT_ADVISORY_GAP = timedelta(hours=12)
+
+
+def next_advisory_from_text(advisory_text: str, advisory_time: str) -> str | None:
+    """The earliest next-advisory time announced in a public advisory's text,
+    as ISO 8601 Z, or None when the text names none that can be resolved.
+
+    Intermediate advisories (3-hourly, issued while watches/warnings are in
+    effect) and complete advisories (6-hourly) are both announced; the
+    earlier one is what "Next update" on the storm header should count down
+    to. Each quoted local time is placed on the advisory's own local date,
+    rolling to the next day when it has already passed (a 7 PM advisory
+    announcing "1000 PM" is tonight; one announcing "100 AM" is tomorrow).
+    """
+    try:
+        advisory_dt = _parse_nhc_time(advisory_time)
+    except (TypeError, ValueError, AttributeError):
+        return None
+    if advisory_dt.tzinfo is None:
+        advisory_dt = advisory_dt.replace(tzinfo=timezone.utc)
+
+    candidates = []
+    for hour_text, minute_text, meridiem, zone in _NEXT_ADVISORY_RE.findall(advisory_text or ""):
+        offset = _TZ_OFFSET_HOURS.get(zone.upper())
+        hour, minute = int(hour_text), int(minute_text)
+        if offset is None or hour > 12 or minute > 59:
+            continue
+        hour = hour % 12 + (12 if meridiem.upper() == "PM" else 0)
+        local_advisory = advisory_dt + timedelta(hours=offset)
+        local_candidate = local_advisory.replace(hour=hour, minute=minute, second=0, microsecond=0)
+        if local_candidate <= local_advisory:
+            local_candidate += timedelta(days=1)
+        candidate = local_candidate - timedelta(hours=offset)
+        if timedelta(0) < candidate - advisory_dt <= _MAX_NEXT_ADVISORY_GAP:
+            candidates.append(candidate)
+
+    return _iso_z(min(candidates).astimezone(timezone.utc)) if candidates else None
+
+
+def resolve_next_advisory_time(advisory_time: str, advisory_text: str | None = None) -> str:
+    """What the storm header counts down to: the time the public advisory
+    text announces when it can be read, else the +6h fallback."""
+    if advisory_text:
+        announced = next_advisory_from_text(advisory_text, advisory_time)
+        if announced:
+            return announced
+    return _next_advisory_time(advisory_time)
 
 
 def _gis_url(storm_json: dict, key: str) -> str:

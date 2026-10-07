@@ -18,6 +18,7 @@ import { CATEGORY_THRESHOLDS_MPH } from "@/lib/tropical/config";
 import { CATEGORY_COLORS } from "@/lib/tropical/categoryColors";
 import { PAGE_PATH } from "@/lib/tropical/config";
 import { cdtTickLabel, stormTypeLabel } from "@/lib/tropical/format";
+import { normalizeIntensity, trackTauShiftHours } from "@/lib/tropical/intensityTime";
 import { landfallTau } from "@/lib/tropical/landfall";
 import { DEFAULT_MODEL_COLOR, MODEL_COLORS, modelDescription } from "@/lib/tropical/modelColors";
 import type { IntensitySeries, StormEntry } from "@/lib/tropical/types";
@@ -169,7 +170,7 @@ function IntensityTooltip({ active, payload, label, advisoryTime }: IntensityToo
  * has and this component does not.
  */
 export function IntensityPanel({
-  intensity,
+  intensity: rawIntensity,
   storm,
   track,
   visibleModels,
@@ -177,6 +178,20 @@ export function IntensityPanel({
   demoParam,
   onClose,
 }: IntensityPanelProps) {
+  // Every tauH below counts from the ADVISORY time, because that is what the
+  // axis labels say (advisoryTime + tauH, "Now" at 0). The blob's own hours
+  // count from the a-deck cycle unless the ingest already rebased them (it
+  // says so with `reference`); un-rebased, a 12Z model under a 15Z advisory
+  // was drawn three hours late. See intensityTime.ts.
+  const intensity = useMemo(
+    () => normalizeIntensity(rawIntensity, storm.advisoryTime),
+    [rawIntensity, storm.advisoryTime]
+  );
+  const trackShift = useMemo(
+    () => trackTauShiftHours(track, rawIntensity, storm.advisoryTime),
+    [track, rawIntensity, storm.advisoryTime]
+  );
+
   const displayedSeries = useMemo(() => {
     const filtered = intensity.series.filter(
       (s) => ALWAYS_ON_MODELS.has(s.model) || visibleModels.has(s.model)
@@ -196,7 +211,10 @@ export function IntensityPanel({
   const maxTauH = useMemo(() => maxTau(intensity.series), [intensity.series]);
   const ticks = useMemo(() => buildTicks(maxTauH), [maxTauH]);
   const yTicks = useMemo(() => buildYTicks(yMax), [yMax]);
-  const landfall = useMemo(() => landfallTau(track, intensity), [track, intensity]);
+  const landfall = useMemo(
+    () => landfallTau(track, intensity, trackShift),
+    [track, intensity, trackShift]
+  );
   const officialPeak = useMemo(() => {
     const official = intensity.series.find((series) => series.model === "OFCL");
     return official ? Math.max(...official.points.map((point) => point.mph)) : null;
@@ -294,6 +312,10 @@ export function IntensityPanel({
               dataKey="tauH"
               type="number"
               domain={[0, maxTauH || 1]}
+              // A model's first hours can now sit BEFORE the advisory (a 12Z
+              // run's tau 0 is -3 on this axis). Clip them at "Now" rather
+              // than letting Recharts stretch the domain back into the past.
+              allowDataOverflow
               ticks={ticks}
               tickFormatter={(value: number) =>
                 value === 0 ? "Now" : cdtTickLabel(addHoursIso(storm.advisoryTime, value))

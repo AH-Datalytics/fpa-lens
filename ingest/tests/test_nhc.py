@@ -13,7 +13,9 @@ from gulfwatch.nhc import (
     Storm,
     deg_to_compass,
     in_gulf_box,
+    next_advisory_from_text,
     parse_current_storms,
+    resolve_next_advisory_time,
     storm_in_gulf,
 )
 
@@ -140,6 +142,64 @@ def test_deg_to_compass(deg, expected):
 
 def test_storm_in_gulf_true_by_current_position(bertha):
     assert storm_in_gulf(bertha, None) is True
+
+
+# --- Next advisory time from the public advisory text -------------------------
+#
+# CurrentStorms.json has no nextAdvisoryTime, so the Storm record assumes +6h.
+# Once watches/warnings are up NHC issues 3-hourly intermediates, which made
+# "Next update" on the storm header 3h late. The public advisory's own NEXT
+# ADVISORY block says when each is due.
+
+# Verbatim tail of Hurricane Ida advisory 6 (500 PM EDT Fri Aug 27 2021).
+IDA_ADV6_TAIL = (
+    "NEXT ADVISORY\n"
+    "-------------\n"
+    "Next intermediate advisory at 800 PM EDT.\n"
+    "Next complete advisory at 1100 PM EDT.\n"
+    " \n"
+    "$$\n"
+    "Forecaster Brown\n"
+)
+
+
+def test_next_advisory_prefers_the_earlier_intermediate_advisory():
+    # 800 PM EDT = 0000Z, three hours after the 2100Z advisory -- not the
+    # complete advisory at 1100 PM EDT (0300Z) and not the +6h fallback.
+    assert next_advisory_from_text(IDA_ADV6_TAIL, "2021-08-27T21:00:00Z") == "2021-08-28T00:00:00Z"
+
+
+def test_next_advisory_rolls_past_local_midnight():
+    # Ida advisory 7 (1100 PM EDT Fri = 0300Z Sat) announced "Next intermediate
+    # advisory at 200 AM EDT" -- 0600Z Saturday, the same UTC day but the next
+    # local day.
+    text = "Next intermediate advisory at 200 AM EDT.\nNext complete advisory at 500 AM EDT.\n"
+    assert next_advisory_from_text(text, "2021-08-28T03:00:00Z") == "2021-08-28T06:00:00Z"
+    # Bertha intermediate 18A (700 PM CDT Thu) announcing 1000 PM CDT: later
+    # the same local evening, which is 0300Z the next UTC day.
+    text = "Next complete advisory at 1000 PM CDT.\n"
+    assert next_advisory_from_text(text, "2026-07-23T00:00:00Z") == "2026-07-23T03:00:00Z"
+
+
+def test_next_advisory_handles_noon_midnight_and_bare_phrasing():
+    assert next_advisory_from_text("Next advisory at 1200 PM CDT.", "2026-07-23T14:00:00Z") == "2026-07-23T17:00:00Z"
+    assert next_advisory_from_text("Next advisory at 1200 AM CDT.", "2026-07-23T23:00:00Z") == "2026-07-24T05:00:00Z"
+
+
+def test_next_advisory_is_none_when_nothing_usable_is_announced():
+    assert next_advisory_from_text("", "2021-08-27T21:00:00Z") is None
+    assert next_advisory_from_text("This is the last public advisory.", "2021-08-27T21:00:00Z") is None
+    # Unknown zone abbreviation: skip rather than guess an offset.
+    assert next_advisory_from_text("Next advisory at 800 PM XYZ.", "2021-08-27T21:00:00Z") is None
+    # Unparseable advisory time.
+    assert next_advisory_from_text(IDA_ADV6_TAIL, "") is None
+    assert next_advisory_from_text(IDA_ADV6_TAIL, "yesterday") is None
+
+
+def test_resolve_next_advisory_time_falls_back_to_six_hours():
+    assert resolve_next_advisory_time("2021-08-27T21:00:00Z", IDA_ADV6_TAIL) == "2021-08-28T00:00:00Z"
+    assert resolve_next_advisory_time("2021-08-27T21:00:00Z", None) == "2021-08-28T03:00:00Z"
+    assert resolve_next_advisory_time("2021-08-27T21:00:00Z", "no schedule here") == "2021-08-28T03:00:00Z"
 
 
 def test_storm_in_gulf_false_when_far_and_no_track():

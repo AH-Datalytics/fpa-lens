@@ -28,6 +28,7 @@ import {
   type RiverLevel,
 } from "@/lib/lakefrontRisk";
 import { saveForecastSnapshot, getStoredForecasts } from "@/lib/forecastStore";
+import { centralDateStamp, parseCentralTimestamp } from "./centralTime";
 
 export const revalidate = 300; // 5-minute ISR cache
 
@@ -129,8 +130,13 @@ async function fetchWaterLevel(): Promise<{ level: number; timestamp: string }> 
   const json = await res.json();
   const entry = json.data?.[0] as NOAAWaterEntry | undefined;
   if (!entry) throw new Error("No water level data");
+  const level = parseFloat(entry.v);
+  // A blank/non-numeric reading is a sensor gap, not a 0.00 ft lake. Throwing
+  // routes it into dataGaps ("water level") so the page shows "unavailable"
+  // instead of a fake level and a negative anomaly.
+  if (!Number.isFinite(level)) throw new Error("Water level reading not numeric");
   return {
-    level: parseFloat(entry.v) || 0,
+    level,
     timestamp: entry.t,
   };
 }
@@ -156,13 +162,14 @@ async function fetchWaterLevelHistory(hours: number = CHART_HISTORY_HOURS): Prom
 }
 
 async function fetchPredictions(): Promise<{ predicted: number; timestamp: string }> {
-  // Get today's predictions and find the one closest to now
+  // Hourly predictions for today and tomorrow in STATION time (the server
+  // runs in UTC, so "today" must be New Orleans' today, and late in the
+  // evening the closest prediction can already belong to tomorrow's set).
   const now = new Date();
-  const dateStr = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, "0")}${String(now.getDate()).padStart(2, "0")}`;
   const url = buildNOAAUrl("predictions", {
     datum: "MLLW",
-    begin_date: dateStr,
-    end_date: dateStr,
+    begin_date: centralDateStamp(now),
+    end_date: centralDateStamp(new Date(now.getTime() + 24 * 60 * 60 * 1000)),
     interval: "h", // hourly predictions
   });
   const res = await fetchWithTimeout(url);
@@ -170,12 +177,14 @@ async function fetchPredictions(): Promise<{ predicted: number; timestamp: strin
   const predictions = (json.predictions || []) as NOAAWaterEntry[];
   if (predictions.length === 0) throw new Error("No prediction data");
 
-  // Find prediction closest to current time
+  // Find prediction closest to current time. CO-OPS timestamps are Central
+  // wall-clock with no offset; parsing them as UTC picked the slot five
+  // hours away (predicted 0.74 for the 07:06 CDT obs instead of 0.61).
   const nowMs = now.getTime();
   let closest = predictions[0];
   let closestDiff = Infinity;
   for (const p of predictions) {
-    const diff = Math.abs(new Date(p.t).getTime() - nowMs);
+    const diff = Math.abs(parseCentralTimestamp(p.t).getTime() - nowMs);
     if (diff < closestDiff) {
       closestDiff = diff;
       closest = p;
@@ -295,25 +304,21 @@ async function fetchKNEWCurrentWind(): Promise<WindReading> {
   return history[history.length - 1];
 }
 
-/** Minutes since a given NOAA or ISO8601 timestamp, or Infinity if unparsable. */
+/** Minutes since a given NOAA (Central wall-clock) or ISO8601 timestamp, or Infinity if unparsable. */
 function minutesSince(ts: string | undefined | null): number {
   if (!ts) return Infinity;
-  const d = ts.includes("T") ? new Date(ts) : new Date(ts.replace(" ", "T") + "Z");
-  const ms = d.getTime();
+  const ms = parseCentralTimestamp(ts).getTime();
   if (!Number.isFinite(ms)) return Infinity;
   return (Date.now() - ms) / (60 * 1000);
 }
 
 async function fetchOFSForecast(): Promise<ForecastPoint[]> {
+  // Date window in station (Central) time, like fetchPredictions.
   const now = new Date();
-  const dateStr = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, "0")}${String(now.getDate()).padStart(2, "0")}`;
-  const endDate = new Date(now.getTime() + 48 * 60 * 60 * 1000);
-  const endStr = `${endDate.getFullYear()}${String(endDate.getMonth() + 1).padStart(2, "0")}${String(endDate.getDate()).padStart(2, "0")}`;
-
   const url = buildNOAAUrl("ofs_water_level", {
     datum: "MLLW",
-    begin_date: dateStr,
-    end_date: endStr,
+    begin_date: centralDateStamp(now),
+    end_date: centralDateStamp(new Date(now.getTime() + 48 * 60 * 60 * 1000)),
   });
   const res = await fetchWithTimeout(url);
   const json = await res.json();
@@ -488,13 +493,15 @@ function mergeForecasts(
   if (nwsForecast.length === 0) return ofsForecast;
 
   return nwsForecast.map((nws) => {
-    const nwsTime = new Date(nws.timestamp).getTime();
+    // NWS timestamps carry an offset; OFS timestamps are Central wall-clock.
+    // Both go through parseCentralTimestamp so the two timelines line up.
+    const nwsTime = parseCentralTimestamp(nws.timestamp).getTime();
 
     // Find closest OFS water level
     let closestWater: number | null = null;
     let closestDiff = Infinity;
     for (const ofs of ofsForecast) {
-      const diff = Math.abs(new Date(ofs.timestamp).getTime() - nwsTime);
+      const diff = Math.abs(parseCentralTimestamp(ofs.timestamp).getTime() - nwsTime);
       if (diff < closestDiff && ofs.waterLevel !== null) {
         closestDiff = diff;
         closestWater = ofs.waterLevel;
@@ -654,11 +661,18 @@ export async function GET(request: Request) {
       ? riverResult.value
       : null;
 
-    // Build current conditions
+    // Build current conditions. The 0 placeholders above exist only because
+    // the shared WaterLevelReading type is non-nullable; they are NOT
+    // readings. The anomaly is therefore computed only when BOTH inputs
+    // arrived -- otherwise "0 - predicted" or "level - 0" would feed a
+    // fabricated surge (negative, or a false ORANGE) into the risk engine.
+    // The page gates the Lake Level / Surge Anomaly cards on dataGaps.
+    const waterLevelKnown = waterResult.status === "fulfilled";
+    const predictionKnown = predResult.status === "fulfilled";
     const waterLevel: WaterLevelReading = {
       level: water.level,
       predicted: prediction.predicted,
-      anomaly: water.level - prediction.predicted,
+      anomaly: waterLevelKnown && predictionKnown ? water.level - prediction.predicted : 0,
       timestamp: water.timestamp,
     };
 
