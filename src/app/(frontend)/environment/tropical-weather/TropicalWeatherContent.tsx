@@ -172,6 +172,7 @@ export default function TropicalWeatherContent() {
             outlookText={dashboard.outlookText}
             outlookGeo={dashboard.geo.outlook}
             probs={dashboard.probs}
+            rain={dashboard.rain}
             storms={dashboard.storms}
             demoParam={dashboard.demoParam}
             wwlines={dashboard.geo.wwlines}

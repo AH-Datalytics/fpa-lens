@@ -32,9 +32,11 @@ PCT_URL = "https://ftp-wpc.ncep.noaa.gov/pqpf/conus/pqpf_72hr/prcntil_p72i_{pct}
 MAP_URL = "https://ftp-wpc.ncep.noaa.gov/shapefiles/qpf/5day/QPF120hr_Day1-5_latest.tar"
 NOLA = (29.95, -90.07)
 LOW_PCT, MID_PCT, HIGH_PCT = 10, 50, 90
-# Roughly Texas through Florida and up to Tennessee: the area the map shows.
-MAP_BBOX = (-107.0, 24.0, -79.0, 37.0)
-SIMPLIFY_DEGREES = 0.02  # ~2 km; 9 MB national file -> ~270 KB (measured 2026-10-08)
+# Well beyond the map's opening view (19-32N, 95.5-80W) so the clip edge is
+# not drawn across the Gulf; WPC's data reaches ~20N. A 24N edge showed as a
+# hard line through the Gulf (2026-10-08).
+MAP_BBOX = (-108.0, 18.0, -74.0, 38.0)
+SIMPLIFY_DEGREES = 0.03  # ~3 km; 9 MB national file -> ~275 KB, ~73 KB gzipped (2026-10-08)
 MIN_QPF_IN = 0.1  # trace bands (0.01 in) would wash the whole map
 MM_PER_IN = 25.4
 

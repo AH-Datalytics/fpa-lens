@@ -4,6 +4,7 @@
 // watch/warning line colors, which are four fixed NHC-adjacent hex values.
 
 import type { ExpressionSpecification, StyleSpecification } from "maplibre-gl";
+import { rainColorExpression } from "./rain";
 
 
 /** Initial Gulf view: east Texas sits near the western edge while the
@@ -369,6 +370,7 @@ export const LAYER_IDS = {
   imagery: "gw-imagery",
   satellite: "gw-weather-satellite",
   density: "gw-density",
+  rainFill: "gw-rain-fill",
   labels: "gw-labels",
   outlookFill: "gw-outlook-fill",
   outlookLine: "gw-outlook-line",
@@ -399,6 +401,7 @@ export const SOURCE_IDS = {
   imagery: "gw-imagery",
   satellite: "gw-weather-satellite",
   density: "gw-density",
+  rain: "gw-rain",
   labels: "gw-labels",
   outlook: "gw-outlook",
   cone: "gw-cone",
@@ -503,6 +506,7 @@ export function buildInitialStyle(): StyleSpecification {
           [-95.5, 19],
         ],
       },
+      [SOURCE_IDS.rain]: { type: "geojson", data: EMPTY_FC },
       [SOURCE_IDS.labels]: {
         type: "raster",
         tiles: [ESRI_LABELS_TILE_URL],
@@ -555,6 +559,15 @@ export function buildInitialStyle(): StyleSpecification {
         source: SOURCE_IDS.density,
         layout: { visibility: "none" },
         paint: { "raster-opacity": 0.75, "raster-fade-duration": 0, "raster-resampling": "linear" },
+      },
+      {
+        // WPC 5-day rainfall (ingest/gulfwatch/rain.py), under the labels,
+        // cone and tracks like the density image.
+        id: LAYER_IDS.rainFill,
+        type: "fill",
+        source: SOURCE_IDS.rain,
+        layout: { visibility: "none" },
+        paint: { "fill-color": rainColorExpression(), "fill-opacity": 0.55 },
       },
       {
         id: LAYER_IDS.labels,

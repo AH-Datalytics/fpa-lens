@@ -3,12 +3,13 @@
 import { ArrowRight } from "lucide-react";
 import { PAGE_PATH } from "@/lib/tropical/config";
 import { gulfWatch } from "@/lib/tropical/outlookWatch";
-import type { Mode, ProbsEntry, StormEntry } from "@/lib/tropical/types";
+import type { Mode, ProbsEntry, RainSummary, StormEntry } from "@/lib/tropical/types";
 import { Alerts, useMetroAlerts } from "./Alerts";
 import { CoastalAlertsLegend, coastalLegendItems } from "./CoastalAlertsLegend";
 import { Kicker } from "./Kicker";
 import { OutlookPanel } from "./OutlookPanel";
 import { StormHeader } from "./StormHeader";
+import { RainChances } from "./RainChances";
 import { WindProbabilities } from "./WindProbabilities";
 
 export interface SummaryBandProps {
@@ -22,6 +23,8 @@ export interface SummaryBandProps {
   outlookGeo?: GeoJSON.FeatureCollection | null;
   /** storms/{id}/probs.json for the selected storm — see WindProbabilities. */
   probs: ProbsEntry[] | null;
+  /** New Orleans 3-day rain (WPC), shown under the wind chances. */
+  rain?: RainSummary | null;
   storms: StormEntry[];
   demoParam: string | null;
   wwlines?: GeoJSON.FeatureCollection | null;
@@ -56,6 +59,7 @@ export function SummaryBand({
   outlookText,
   outlookGeo,
   probs,
+  rain,
   storms,
   demoParam,
   wwlines,
@@ -135,6 +139,11 @@ export function SummaryBand({
         {activeStorm && probs !== null && (
           <div className={ROW}>
             <WindProbabilities probs={probs} />
+          </div>
+        )}
+        {activeStorm && rain && (
+          <div className={ROW}>
+            <RainChances rain={rain} />
           </div>
         )}
 

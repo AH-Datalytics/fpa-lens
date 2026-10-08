@@ -9,6 +9,7 @@ import { radarAgeMinutes, RADAR_STALE_AFTER_MINUTES } from "@/lib/tropical/radar
 import { Kicker } from "./Kicker";
 import { ModelLegend } from "./ModelLegend";
 import { DensityControl } from "./DensityControl";
+import { RAIN_BANDS } from "@/lib/tropical/rain";
 import type { DensityChoice } from "@/lib/tropical/layers";
 import type { DensitySource } from "@/lib/tropical/types";
 
@@ -19,6 +20,10 @@ export interface LayersControlProps {
   hasSatellite: boolean;
   satelliteLabel?: string;
   hasWindField: boolean;
+  /** WPC 5-day rainfall map is on the store (not storm-specific). */
+  hasRain: boolean;
+  /** "WPC 5-day forecast, ... through ..." for the row's note. */
+  rainLabel?: string;
   availableWindThresholds: WindThreshold[];
   windThreshold: WindThreshold;
   onWindThresholdChange: (threshold: WindThreshold) => void;
@@ -80,6 +85,8 @@ export function LayersControl({
   hasSatellite,
   satelliteLabel,
   hasWindField,
+  hasRain,
+  rainLabel,
   availableWindThresholds = [],
   windThreshold,
   onWindThresholdChange,
@@ -290,6 +297,32 @@ export function LayersControl({
                     <span>&gt;90%</span>
                   </div>
                 </div>
+              </div>
+            )}
+            <label className={layerRowClass(!hasRain)}>
+              <input
+                type="checkbox"
+                className={CHECKBOX}
+                checked={layers.rain}
+                disabled={!hasRain}
+                onChange={() => onToggle("rain")}
+              />
+              Rainfall <small className="text-[9px] uppercase text-gray-400">5-day</small>
+            </label>
+            {hasRain && layers.rain && (
+              <div className={STATUS_NOTE}>
+                <div className="flex h-2 w-40 overflow-hidden rounded-sm" aria-hidden="true">
+                  {RAIN_BANDS.map((band) => (
+                    <span key={band.from} className="flex-1" style={{ backgroundColor: band.color }} />
+                  ))}
+                </div>
+                <div className="flex w-40 justify-between text-[9px] text-gray-500">
+                  <span>0.1</span>
+                  <span>1</span>
+                  <span>3</span>
+                  <span>10+ in</span>
+                </div>
+                {rainLabel}
               </div>
             )}
             <label className={layerRowClass()}>

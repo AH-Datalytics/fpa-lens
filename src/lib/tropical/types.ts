@@ -101,12 +101,35 @@ export interface StormEntry {
   advisories?: StormEntry[];
 }
 
+/** New Orleans rain for the next 3 days from WPC's probabilistic forecast
+ * (ingest/gulfwatch/rain.py): the middle estimate and a 10th-90th range. */
+export interface RainSummary {
+  issued: string;
+  start: string;
+  end: string;
+  lowIn: number;
+  midIn: number;
+  highIn: number;
+  lowPct: number;
+  highPct: number;
+}
+
+/** WPC's official 5-day rainfall forecast, clipped to the Gulf Coast. */
+export interface RainMap {
+  geojson: string;
+  issued: string;
+  start: string;
+  end: string;
+}
+
 export interface Manifest {
   generated: string;
   mode: Mode;
   storms: StormEntry[];
   outlook: { geojson: string; text: string; issued: string };
   errors: { product: string; message: string }[];
+  /** WPC rainfall, not storm-specific; each part present only once landed. */
+  rain?: { nola?: RainSummary; map?: RainMap };
 }
 
 export interface IntensityPoint {

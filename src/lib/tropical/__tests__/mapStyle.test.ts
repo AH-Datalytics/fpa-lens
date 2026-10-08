@@ -458,3 +458,13 @@ describe("modelRows run time", () => {
     ]);
   });
 });
+
+describe("rain layer", () => {
+  it("draws under labels, cone and tracks", () => {
+    const ids = buildInitialStyle().layers.map((layer) => layer.id);
+    const at = (id: string) => ids.indexOf(id);
+    expect(at(LAYER_IDS.rainFill)).toBeGreaterThan(0);
+    expect(at(LAYER_IDS.rainFill)).toBeLessThan(at(LAYER_IDS.labels));
+    expect(at(LAYER_IDS.rainFill)).toBeLessThan(at(LAYER_IDS.coneFill));
+  });
+});

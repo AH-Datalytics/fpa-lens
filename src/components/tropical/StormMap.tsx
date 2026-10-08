@@ -89,6 +89,8 @@ export interface StormMapProps {
     };
     /** Track-density images for the selected storm, keyed by ensemble. */
     density: Partial<Record<DensitySource, DensityProduct & { url: string }>>;
+    /** WPC 5-day rainfall map (not storm-specific). */
+    rainMap?: { url: string; start: string; end: string; issued: string };
   };
   /** The selected storm's headline facts, for the click-through popup on its
    *  current-position icon. Undefined in quiet mode (no storm to describe). */
@@ -241,6 +243,11 @@ export default function StormMap({
   const { data: satelliteObjectUrl } = useSWR<string>(
     layers.satellite ? geo.satellite?.url ?? null : null,
     imageObjectUrlFetcher,
+    VERSIONED_DATA_OPTIONS
+  );
+  const { data: rainFc } = useSWR<GeoJSON.FeatureCollection>(
+    layers.rain ? geo.rainMap?.url ?? null : null,
+    geoJsonFetcher,
     VERSIONED_DATA_OPTIONS
   );
   const densityProduct = layers.density === "off" ? undefined : geo.density[layers.density];
@@ -440,6 +447,15 @@ export default function StormMap({
       ],
     });
   }, [geo.satellite, layers.satellite, loaded, satelliteObjectUrl]);
+
+  // --- WPC 5-day rainfall ---
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !loaded) return;
+    const src = map.getSource(SOURCE_IDS.rain) as GeoJSONSource | undefined;
+    src?.setData(layers.rain && rainFc ? rainFc : EMPTY_FC);
+    map.setLayoutProperty(LAYER_IDS.rainFill, "visibility", layers.rain && rainFc ? "visible" : "none");
+  }, [layers.rain, loaded, rainFc]);
 
   // --- track density image, same placement pattern as the satellite image ---
   useEffect(() => {
@@ -724,6 +740,10 @@ export default function StormMap({
           windProbError={Boolean(windProbError)}
           windProbCycleLabel={windProbCycleLabel}
           windProbCyclesBehind={windProbCyclesBehind}
+          hasRain={Boolean(geo.rainMap)}
+          rainLabel={
+            geo.rainMap ? `WPC 5-day forecast, ${cdtDateTime(geo.rainMap.start)} through ${cdtDateTime(geo.rainMap.end)}` : undefined
+          }
           showDensity={Boolean(stormSummary)}
           densityCycles={{
             gefs: geo.density.gefs && formatCycle(geo.density.gefs.cycle),

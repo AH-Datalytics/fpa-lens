@@ -17,6 +17,8 @@ import type {
   DensityProduct,
   DensitySource,
   Manifest,
+  RainMap,
+  RainSummary,
   StormEntry,
   IntensitySeries,
   Mode,
@@ -247,7 +249,11 @@ export interface DashboardData {
     };
     /** Track-density images for the selected storm, keyed by ensemble. */
     density: Partial<Record<DensitySource, DensityProduct & { url: string }>>;
+    /** WPC 5-day rainfall map (not storm-specific). */
+    rainMap?: RainMap & { url: string };
   };
+  /** New Orleans 3-day rain: middle estimate and range (WPC). */
+  rain: RainSummary | null;
   intensity: IntensitySeries | null;
   outlookText: { issued: string; text: string } | null;
   /** storms/{id}/probs.json for the selected storm — null while loading (or
@@ -494,7 +500,10 @@ function useDashboardSource(): DashboardData {
       satellite,
       radar,
       density,
+      // The path carries WPC's issue time, so it needs no version key.
+      rainMap: manifest?.rain?.map ? { ...manifest.rain.map, url: `${base}/${manifest.rain.map.geojson}` } : undefined,
     },
+    rain: manifest?.rain?.nola ?? null,
     intensity: intensity ?? null,
     outlookText: outlookText ?? null,
     probs: probs ?? null,
