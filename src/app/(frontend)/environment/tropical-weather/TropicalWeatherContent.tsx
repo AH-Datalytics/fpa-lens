@@ -8,6 +8,7 @@ import Prose from "@/components/Prose";
 import { usePageCopy } from "@/lib/usePageCopy";
 import { TROPICAL_WEATHER_DEFAULTS } from "@/globals/pages/tropicalWeatherPage";
 import { AdvisoryPlayback } from "@/components/tropical/AdvisoryPlayback";
+import { GoogleCitation } from "@/components/tropical/GoogleCitation";
 import { IntensityPanel } from "@/components/tropical/IntensityPanel";
 import { SummaryBand } from "@/components/tropical/SummaryBand";
 import { PAGE_PATH } from "@/lib/tropical/config";
@@ -260,6 +261,7 @@ export default function TropicalWeatherContent() {
         </div>
 
         <p className="mt-4 text-sm text-gray-500">{copy.disclaimer}</p>
+        {layers.density === "google" && dashboard.geo.density.google && <GoogleCitation />}
       </div>
     </div>
   );
