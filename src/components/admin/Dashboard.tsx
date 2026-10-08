@@ -2,6 +2,7 @@ import type { AdminViewServerProps } from "payload";
 import { Gutter } from "@payloadcms/ui";
 import React from "react";
 import { HowToUse } from "./HowToUse";
+import { SiteTraffic } from "./SiteTraffic";
 
 /**
  * Custom admin dashboard for the FPA Lens Content Portal. Replaces Payload's
@@ -73,6 +74,8 @@ export function Dashboard({ initPageResult }: AdminViewServerProps) {
             Update the public FPA Lens dashboard&rsquo;s text, staff, and settings.
           </p>
         </header>
+
+        <SiteTraffic />
 
         <HowToUse />
 
