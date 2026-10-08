@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { DENSITY_BANDS, densityCaption, densityOptions, ECMWF_CREDIT, GOOGLE_CITATION_PARTS } from "../density";
+import { DENSITY_BANDS, densityCaption, densityOptions, densitySummary, ECMWF_CREDIT, GOOGLE_CITATION_PARTS } from "../density";
 
 const product = {
   image: "storms/al092026/density-gefs.png",
@@ -62,5 +62,13 @@ describe("densityOptions", () => {
   it("hides Google until its layer exists; other ensembles stay listed", () => {
     expect(densityOptions({ gefs: "12Z" })).toEqual(["gefs", "ecmwf", "aifs"]);
     expect(densityOptions({ gefs: "12Z", google: "12Z" })).toEqual(["gefs", "ecmwf", "aifs", "google"]);
+  });
+});
+
+describe("densitySummary", () => {
+  it("is one short line: which ensemble, how many members, which run", () => {
+    expect(densitySummary("aifs", { ...product, members: 51, expected: 51 })).toBe(
+      "Euro AI ensemble: 51 of 51 members, 06Z Oct 7 run"
+    );
   });
 });

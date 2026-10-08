@@ -117,7 +117,7 @@ export function LayersControl({
   ) : null;
 
   return (
-    <div className="flex max-h-full w-64 flex-col overflow-hidden rounded-lg border border-gray-200 bg-white shadow-lg">
+    <div className="pointer-events-auto flex max-h-full w-64 flex-col overflow-hidden rounded-lg border border-gray-200 bg-white shadow-lg">
       <button
         type="button"
         className="flex w-full shrink-0 items-center justify-between gap-2 bg-[#21355a] px-3.5 py-2 text-left text-white"

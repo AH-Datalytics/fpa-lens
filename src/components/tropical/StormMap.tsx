@@ -681,7 +681,10 @@ export default function StormMap({
       )}
       {/* inset-y-3 + max-h-full on the panel keeps a long options list inside
           the map instead of overflowing past its bottom edge. */}
-      <div className="absolute bottom-3 right-3 top-3 z-10 flex flex-col items-end">
+      {/* pointer-events-none: this full-height column is invisible beyond the
+          panel itself, and on a phone it covered the legend's Details toggle
+          and the map under it. The panel opts back in (LayersControl). */}
+      <div className="pointer-events-none absolute bottom-3 right-3 top-3 z-10 flex flex-col items-end">
         {/* `models` is gated on the guidance existing, NOT on mode. `mode` is
             "active" only when a storm sits inside the Gulf box, so an Atlantic
             storm anywhere else lost the whole forecast-track section -- official

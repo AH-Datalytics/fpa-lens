@@ -50,6 +50,11 @@ export const GOOGLE_CITATION_PARTS = {
     ". This data is intended for experimental modelling only and is not intended, validated, or approved for real world use.",
 };
 
+/** The one line the legend always shows; the full caption is behind Details. */
+export function densitySummary(source: DensitySource, p: DensityProduct): string {
+  return `${DENSITY_SOURCE_LABEL[source]}: ${p.members} of ${p.expected} members, ${formatRun(p.cycle)} run`;
+}
+
 export function densityCaption(source: DensitySource, p: DensityProduct): string {
   const miles = Math.round((p.radiusKm * 0.621371) / 5) * 5;
   return (
