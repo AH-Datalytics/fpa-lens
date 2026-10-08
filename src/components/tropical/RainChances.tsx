@@ -19,7 +19,6 @@ export function RainChances({ rain }: { rain: RainSummary }) {
         <span className="whitespace-nowrap text-xs text-gray-600">Range</span>
         <strong className="text-sm font-semibold tabular-nums text-gray-900">{row.range}</strong>
       </span>
-      <span className="text-xs text-gray-500">1-in-10 chance of less, 1-in-10 of more</span>
     </div>
   );
 }
