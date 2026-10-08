@@ -20,10 +20,17 @@ the `gulfwatch` package name is kept so fixes can still be traded with upstream.
 | `storms/<id>/track.geojson` | Official forecast track + points |
 | `storms/<id>/wwlines.geojson` | Coastal watch/warning segments |
 | `storms/<id>/models.geojson` | A-deck model guidance tracks |
-| `storms/<id>/intensity.json` | Per-model max-sustained-wind series |
+| `storms/<id>/intensity.json` | Per-model max-sustained-wind series. Since Oct 2026 each model's `tau` is rebased to the advisory time and the file carries `reference` (advisory ISO) alongside `cycle`; the page (`src/lib/tropical/intensityTime.ts`) still accepts older cycle-relative blobs |
 | `storms/<id>/probs.json` | Wind speed probabilities at named points |
 | `storms/<id>/text.json` | Public advisory + forecast discussion |
 | `outlook.geojson` / `outlook.json` | Seven-day genesis outlook (quiet mode). The page also reads `outlook.geojson`'s `RISK7DAY`/`PROB2DAY`/`PROB7DAY` to show the orange "Gulf disturbance being monitored" state (see `src/lib/tropical/outlookWatch.ts`), so keep those fields and the low/medium/high thresholds stable |
+
+`manifest.json`'s per-storm `nextAdvisoryTime` is parsed from the public
+advisory text ("Next intermediate/complete advisory at ...", earliest wins, so
+it is right once NHC goes to 3-hourly intermediates) and persisted in
+`state.json.storms[<id>].nextAdvisoryTime` so it carries across runs where the
+advisory is unchanged; it falls back to advisory + 6 h when the text has no
+such line (Oct 2026).
 
 Per-product failures are recorded in `manifest.json`'s `errors` list and surfaced
 in the page's "Some products are temporarily unavailable" disclosure; the run
