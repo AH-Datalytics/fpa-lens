@@ -1,3 +1,4 @@
+import Link from "next/link";
 import React from "react";
 import { getTrafficSummary, isTrafficConfigured } from "@/lib/ga4";
 
@@ -78,14 +79,9 @@ export async function SiteTraffic() {
                 )}
               </tbody>
             </table>
-            <a
-              className="fpa-dash__toppages-link"
-              href={`https://analytics.google.com/analytics/web/#/p${data.propertyId}/reports/intelligenthome`}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Open full reports in Google Analytics →
-            </a>
+            <Link className="fpa-dash__toppages-link" href="/admin/analytics">
+              Open the full analytics page →
+            </Link>
           </div>
         </>
       );

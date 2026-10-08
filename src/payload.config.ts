@@ -73,13 +73,22 @@ export default buildConfig({
         Icon: "/components/admin/Icon#Icon",
       },
       beforeLogin: ["/components/admin/BeforeLogin#BeforeLogin"],
-      afterNavLinks: ["/components/admin/BackToSite#BackToSite"],
+      afterNavLinks: [
+        "/components/admin/AnalyticsNavLink#AnalyticsNavLink",
+        "/components/admin/BackToSite#BackToSite",
+      ],
       views: {
         // Custom dashboard: grouped, described cards instead of Payload's bare
         // default grid. Renders the "How to use" guide itself, so beforeDashboard
         // is no longer needed.
         dashboard: {
           Component: "/components/admin/Dashboard#Dashboard",
+        },
+        // Site analytics (GA4). A new custom view: Payload neither wraps it in
+        // the admin chrome nor guards it, so AnalyticsView does both itself.
+        analytics: {
+          Component: "/components/admin/AnalyticsView#AnalyticsView",
+          path: "/analytics",
         },
       },
     },
