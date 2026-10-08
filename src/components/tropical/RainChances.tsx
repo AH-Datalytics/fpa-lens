@@ -12,7 +12,7 @@ export function RainChances({ rain }: { rain: RainSummary }) {
         <span className="ml-1.5 font-normal normal-case tracking-normal text-gray-500">next 3 days</span>
       </span>
       <span className="flex items-baseline gap-2">
-        <span className="whitespace-nowrap text-xs text-gray-600">Middle estimate</span>
+        <span className="whitespace-nowrap text-xs text-gray-600">Estimate</span>
         <strong className="text-sm font-semibold tabular-nums text-gray-900">{row.middle}</strong>
       </span>
       <span className="flex items-baseline gap-2">

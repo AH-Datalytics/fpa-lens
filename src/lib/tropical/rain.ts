@@ -37,7 +37,7 @@ export function rainRow(s: RainSummary): { middle: string; range: string; help: 
     middle: inches(s.midIn),
     range,
     help:
-      "WPC rainfall forecast for New Orleans. Middle estimate: as likely to be more as less. " +
+      "WPC rainfall forecast for New Orleans. Estimate: the middle of the forecast range, as likely to be more as less. " +
       `Range: a 1-in-${lowOdds} chance of less than ${inches(s.lowIn)} and a 1-in-${highOdds} chance of more than ${inches(s.highIn)}.`,
   };
 }

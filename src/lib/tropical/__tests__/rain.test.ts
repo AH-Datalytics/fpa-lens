@@ -21,7 +21,7 @@ describe("rainRow", () => {
 
   it("explains the range in plain words", () => {
     expect(rainRow(nola).help).toBe(
-      "WPC rainfall forecast for New Orleans. Middle estimate: as likely to be more as less. Range: a 1-in-10 chance of less than 0.3 in and a 1-in-10 chance of more than 6.0 in."
+      "WPC rainfall forecast for New Orleans. Estimate: the middle of the forecast range, as likely to be more as less. Range: a 1-in-10 chance of less than 0.3 in and a 1-in-10 chance of more than 6.0 in."
     );
   });
 });
