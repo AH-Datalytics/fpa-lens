@@ -307,7 +307,15 @@ above.
 - **Admin dashboard:** `/admin` opens on a custom dashboard (`src/components/admin/Dashboard.tsx`,
   via `admin.components.views.dashboard`) with a welcome header, a short how-to guide, and grouped,
   described cards (Website pages / People, home & settings / Portal administration). The Portal
-  administration (Users) group is admin-only.
+  administration (Users) group is admin-only. A "Site traffic — last 30 days" panel at the top
+  (`src/components/admin/SiteTraffic.tsx`) shows visitors, page views, average time, and the top 10
+  pages, and links to the full analytics page.
+- **Site analytics (`/admin/analytics`):** a full traffic page for every signed-in user, linked from
+  the admin sidebar. Live visitors (last 30 minutes); 7 D / 30 D / 90 D / YTD / custom date ranges
+  and a page filter; headline numbers compared with the previous period of equal length; visitors
+  over time; top pages; how people find the site; referring sites; visitor cities and the share in
+  Louisiana; devices; file downloads; and outbound links. Data comes from Google Analytics 4 (see
+  [Analytics](#analytics)).
 - **Roles:** `admin` (AH Datalytics accounts, who manage the editor roster + all content) and
   `editor` (content only). The Users collection is hidden from editors (`admin.hidden`), so they
   don't see the roster in the nav and manage their own login from the Account page. The FPA Regional
@@ -346,4 +354,32 @@ Production uses Neon Postgres (`POSTGRES_URL`) and a public Vercel Blob store fo
 The site auto-deploys from the `main` branch via Vercel. Push to `main` to deploy. Production env
 (Vercel): `POSTGRES_URL` (Neon), `PAYLOAD_SECRET`, `CMS_MEDIA_BLOB_TOKEN` (public Blob store for
 staff photos), plus the existing `SHAREPOINT_*`, `RESEND_API_KEY`, `ANTHROPIC_API_KEY`, and
-`BLOB_READ_WRITE_TOKEN` (lakefront) vars.
+`BLOB_READ_WRITE_TOKEN` (lakefront) vars, and `GA_PROPERTY_ID` + `GA_SERVICE_ACCOUNT_JSON` for the
+admin analytics (see below).
+
+## Analytics
+
+Tracking started October 8, 2026; there was none before. Both trackers run on the public pages only
+(the `(frontend)` layout), never on the admin portal.
+
+- **Google Analytics 4**, measurement ID `G-X2R4DRZMEY` (constant in `src/lib/ga4.ts`, tag in
+  `src/components/GoogleAnalytics.tsx`). The GA account "FPA Lens" is a standalone account so it can
+  be handed to FPA whole. To give someone access to Google's own reports, add them in GA under
+  Admin → Account access management; they need a Google account (one can be created on any work
+  email address, no Gmail required). FPA staff with a portal login can use `/admin/analytics`
+  instead.
+- **Vercel Web Analytics** (`<Analytics />`), enabled on the `fpa-lens` Vercel project; viewable in
+  the Vercel dashboard by AHD team members.
+- **Admin analytics data path:** `src/lib/ga4.ts` calls the GA4 Data API (and the Realtime API for
+  the live count) as the read-only service account
+  `fpa-lens-reader@fpa-lens-analytics.iam.gserviceaccount.com` (Google Cloud project
+  `fpa-lens-analytics`, Viewer role on the GA property). Env vars, Vercel production only:
+  `GA_PROPERTY_ID` (`558196236`) and `GA_SERVICE_ACCOUNT_JSON` (the service account's JSON key).
+  **Never commit the key; this repo is public.** To rotate it, create a new key in Google Cloud,
+  replace the Vercel env var, redeploy, then delete the old key.
+- Reports are cached 15 minutes (the dashboard panel for an hour); the live count is not cached.
+  Google's standard reports lag a few hours behind real time. If GA isn't configured or a query
+  fails, the panel and page show a one-line note (or blank only the affected card) instead of
+  breaking the admin.
+- Google Analytics sets cookies. Whether the site should show a cookie notice is an open question
+  for FPA.

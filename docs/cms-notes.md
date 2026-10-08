@@ -278,6 +278,27 @@ Still open:
   then grep each of `VercelBlobClientUploadHandler` / `FixedToolbarFeatureClient` separately (each == 2).
   Never plain `next build` before commit — it regenerates the importMap the same way.
 
+## 8e. Site analytics in the admin portal (2026-10-08)
+
+- **Why:** FPA IT (Ginny Geddie) asked for page-level traffic reporting. The site had no tracking at
+  all before Oct 8 2026; GA4 + Vercel Web Analytics were added that day (README → Analytics).
+- **Dashboard panel** (`SiteTraffic.tsx`, a child of the custom Dashboard): last-30-day visitors,
+  page views, average time, top 10 pages. Shown to every signed-in user.
+- **Full page** `/admin/analytics` (`AnalyticsView.tsx`), registered as a custom root view
+  (`admin.components.views.analytics`, `path: "/analytics"`) with a sidebar link
+  (`AnalyticsNavLink.tsx` in `afterNavLinks`). Unlike the dashboard, Payload does **not** wrap a new
+  custom view in `DefaultTemplate` or require login, so the view redirects signed-out visitors to
+  `/admin/login` and renders `DefaultTemplate` itself. Range and page filters are query params
+  (`?period=7d|30d|90d|ytd|custom&start=&end=&page=`), so the page is server-rendered; only the two
+  charts (`AnalyticsCharts.tsx`, Recharts) are client components.
+- **Failure behaviour:** headline numbers and the daily series are required (failure shows a
+  "temporarily unavailable" note); every other card is an independent query that blanks only itself
+  and logs `[ga4] <name> report failed`.
+- **importMap:** the two new entries were added to `src/app/(payload)/admin/importMap.js` by hand
+  because `payload generate:importmap` can't load `libsql` on the Windows ARM64 machine. The suffix is
+  the md5 of the component path (e.g. md5 of `/components/admin/AnalyticsView`). The remote Vercel
+  build regenerates the map, so this only matters for the committed copy.
+
 ## 9. Future considerations / parking lot (NOT action items)
 
 These become action items only if/when that upgrade is decided upon.
