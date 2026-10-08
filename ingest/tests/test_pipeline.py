@@ -183,6 +183,13 @@ def no_ecmwf(monkeypatch):
 
 
 @pytest.fixture(autouse=True)
+def no_rain(monkeypatch):
+    """WPC rainfall has its own tests (test_rain.py); keep it off the network
+    here and out of the manifests these tests compare."""
+    monkeypatch.setattr(pipeline_module, "_process_rain", lambda *a, **k: ({}, {}))
+
+
+@pytest.fixture(autouse=True)
 def no_satellite(monkeypatch):
     """Skip the GOES overlay in tests that are not about imagery.
 

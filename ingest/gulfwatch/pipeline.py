@@ -32,7 +32,7 @@ from pathlib import Path
 
 import requests
 
-from gulfwatch import adeck, aifs, blob, density, ecmwf, nhc, outlook, probs, satellite, shp, text, weatherlab, windprob
+from gulfwatch import adeck, aifs, blob, density, ecmwf, nhc, rain, outlook, probs, satellite, shp, text, weatherlab, windprob
 
 FETCH_TIMEOUT_S = 30
 RETRY_BACKOFF_S = 10
@@ -1037,7 +1037,76 @@ def _process_outlook(state, fetch, store, errors):
     return issued
 
 
-def run(fetch=requests.get, store=blob) -> dict:
+def _last_modified(head, url, timeout):
+    """WPC's Last-Modified header, or None. A cheap HEAD lets the hourly run
+    skip the 2 MB / 9 MB downloads until WPC actually publishes."""
+    try:
+        resp = head(url, timeout=timeout, allow_redirects=True)
+    except Exception:  # noqa: BLE001
+        return None
+    return resp.headers.get("Last-Modified") if resp.status_code == 200 else None
+
+
+def _timeout(deadline):
+    if deadline is None:
+        return FETCH_TIMEOUT_S
+    return max(0.0, min(FETCH_TIMEOUT_S, deadline - time.monotonic()))
+
+
+def _process_rain(fetch, head, store, errors, prev_state, deadline=None):
+    """WPC rainfall (gulfwatch.rain): the New Orleans 3-day middle estimate +
+    range for the row above the map, and the 5-day map. Not storm-specific, so
+    it runs every hour, but downloads only when WPC's Last-Modified changes.
+    A failure keeps the last good values. Returns (state, manifest["rain"])."""
+    state = dict(prev_state or {})
+
+    # Row: three percentile GRIBs for the next 72 hours.
+    modified = _last_modified(head, rain.PCT_URL.format(pct=rain.MID_PCT), _timeout(deadline))
+    if not state.get("nola") or (modified and modified != state.get("nolaModified")):
+        try:
+            values = {}
+            for pct in (rain.LOW_PCT, rain.MID_PCT, rain.HIGH_PCT):
+                if deadline is not None and deadline - time.monotonic() <= 0:
+                    raise RuntimeError("download budget spent")
+                resp = fetch(rain.PCT_URL.format(pct=pct), timeout=_timeout(deadline))
+                resp.raise_for_status()
+                values[pct] = rain.grib_point(resp.content)
+            issued, hours, _ = values[rain.MID_PCT]
+            state["nola"] = rain.summary(
+                issued, hours, values[rain.LOW_PCT][2], values[rain.MID_PCT][2], values[rain.HIGH_PCT][2]
+            )
+            state["nolaModified"] = modified
+        except Exception as exc:  # noqa: BLE001
+            errors.append({"product": "rain.nola", "message": str(exc)})
+
+    # Map: WPC's 5-day QPF shapefile, clipped and simplified.
+    modified = _last_modified(head, rain.MAP_URL, _timeout(deadline))
+    if not state.get("map") or (modified and modified != state.get("mapModified")):
+        try:
+            if deadline is not None and deadline - time.monotonic() <= 0:
+                raise RuntimeError("download budget spent")
+            resp = fetch(rain.MAP_URL, timeout=_timeout(deadline))
+            resp.raise_for_status()
+            fc, meta = rain.map_geojson(resp.content)
+            stamp = meta["issued"].replace("-", "").replace(":", "")
+            path = f"rain/qpf-5day-{stamp}.geojson"  # new issue = new URL
+            store.put_json(path, fc)
+            state["map"] = {"geojson": path, **meta}
+            state["mapModified"] = modified
+        except Exception as exc:  # noqa: BLE001
+            errors.append({"product": "rain.map", "message": str(exc)})
+
+    # Advertise only what exists and is not over: stale rain is worse than none.
+    now = _utcnow()
+    manifest = {}
+    for key in ("nola", "map"):
+        entry = state.get(key)
+        if entry and density.parse_iso(entry["end"]) > now:
+            manifest[key] = entry
+    return state, manifest
+
+
+def run(fetch=requests.get, store=blob, head=None) -> dict:
     """Poll NHC feeds, convert, upload changed products, and return the
     manifest dict written to manifest.json (see shared-contracts.md)."""
     state = store.get_json("state.json") or {"storms": {}, "outlook_issued": None}
@@ -1132,6 +1201,9 @@ def run(fetch=requests.get, store=blob) -> dict:
                 new_storms_state[storm.id] = prev_storms_state[storm.id]
 
     outlook_issued = _process_outlook(state, fetch, store, errors)
+    rain_state, rain_manifest = _process_rain(
+        fetch, head or requests.head, store, errors, state.get("rain", {}), deadline
+    )
 
     mode = "active" if any(s["inGulfBox"] for s in manifest_storms) else "quiet"
 
@@ -1144,13 +1216,15 @@ def run(fetch=requests.get, store=blob) -> dict:
             "text": "outlook.json",
             "issued": outlook_issued,
         },
+        **({"rain": rain_manifest} if rain_manifest else {}),
         "errors": errors,
     }
 
     store.put_json("manifest.json", manifest)
     # state.json written last, per task brief.
     store.put_json(
-        "state.json", {"storms": new_storms_state, "outlook_issued": outlook_issued}
+        "state.json",
+        {"storms": new_storms_state, "outlook_issued": outlook_issued, **({"rain": rain_state} if rain_state else {})},
     )
 
     return manifest

@@ -14,3 +14,7 @@ Pillow>=10,<12
 # there is no Windows build, so local Windows runs skip the ECMWF layer.
 eccodes>=2.38,<3; sys_platform == "linux"
 eccodeslib>=2.38; sys_platform == "linux"
+
+# WPC rainfall map (gulfwatch/rain.py): clip WPC's national QPF shapefile to the
+# Gulf Coast and simplify it.
+shapely>=2,<3
