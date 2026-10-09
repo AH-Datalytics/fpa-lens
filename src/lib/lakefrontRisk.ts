@@ -94,6 +94,7 @@ export interface RiskAssessment {
   description: string;
   factors: string[];
   isOnshore: boolean;
+  shoreRelation: ShoreRelation;
   trending: "improving" | "stable" | "worsening";
   windPersistence: WindPersistence | null;
 }
@@ -159,10 +160,24 @@ export interface LakefrontData {
  */
 export const RISK_THRESHOLDS = {
   // Onshore wind direction range (degrees). For the south shore of
-  // Lake Pontchartrain (Lakeshore Drive), northerly winds push water
-  // toward shore. Range: 315 (NW) through 0 (N) to 45 (NE).
-  ONSHORE_DIR_MIN: 315,
-  ONSHORE_DIR_MAX: 45,
+  // Lake Pontchartrain (Lakeshore Drive), winds with a northerly component
+  // push water toward shore. The edges sit on the 16-point compass sector
+  // boundaries, so every reading the dashboard labels NW, NNW, N, NNE, NE or
+  // ENE is treated as onshore: NW sector starts at 303.75, ENE ends at 78.75.
+  // Widened Oct 9 2026 from 315-045, which cut through the middle of the NW
+  // and NE sectors: a 50 deg reading displayed as "NE" but scored offshore,
+  // and on Oct 9 (Lakeshore Drive closed) ENE winds at 24 kt suppressed a
+  // +1.96 ft surge. Backtest: no change on any historical closure; one extra
+  // YELLOW-only control day of 14, no extra ORANGE.
+  ONSHORE_DIR_MIN: 303.75,
+  ONSHORE_DIR_MAX: 78.75,
+
+  // Offshore range (degrees): winds with a clear southerly component (ESE
+  // through WSW sectors) that push water away from the south shore. Anything
+  // that is neither onshore nor offshore (E, WNW, W) blows roughly along the
+  // shore. Used for display wording only; the risk math uses isOnshoreWind.
+  OFFSHORE_DIR_MIN: 101.25,
+  OFFSHORE_DIR_MAX: 258.75,
 
   // Sustained wind speed tiers (knots)
   WIND_YELLOW: 15,
@@ -227,10 +242,25 @@ export function getRiskDescription(level: RiskLevel): string {
 /**
  * Determines if wind direction is onshore for the south shore
  * of Lake Pontchartrain (pushing water toward Lakeshore Drive).
- * Onshore directions: NW through N to NE (315-360, 0-45 degrees).
+ * Onshore directions: NW through N to ENE (303.75-360, 0-78.75 degrees).
  */
 export function isOnshoreWind(degrees: number): boolean {
-  return degrees >= RISK_THRESHOLDS.ONSHORE_DIR_MIN || degrees <= RISK_THRESHOLDS.ONSHORE_DIR_MAX;
+  const d = ((degrees % 360) + 360) % 360;
+  return d >= RISK_THRESHOLDS.ONSHORE_DIR_MIN || d < RISK_THRESHOLDS.ONSHORE_DIR_MAX;
+}
+
+export type ShoreRelation = "onshore" | "alongshore" | "offshore";
+
+/**
+ * Describes how the wind relates to the south shore, for display wording.
+ * Only "offshore" winds actually blow water away from Lakeshore Drive; E and
+ * W winds run along the shore and should not be described as offshore.
+ */
+export function windShoreRelation(degrees: number): ShoreRelation {
+  if (isOnshoreWind(degrees)) return "onshore";
+  const d = ((degrees % 360) + 360) % 360;
+  if (d >= RISK_THRESHOLDS.OFFSHORE_DIR_MIN && d < RISK_THRESHOLDS.OFFSHORE_DIR_MAX) return "offshore";
+  return "alongshore";
 }
 
 /**
@@ -552,7 +582,7 @@ export function computeRiskLevel(
   // Surge above predicted only signals flood risk when wind is (or recently was)
   // pushing water toward shore. Without that, elevated surge is rain runoff,
   // river inflow, or pressure noise. Suppress the surge component when wind is
-  // currently offshore AND recent onshore presence is below threshold.
+  // not currently onshore AND recent onshore presence is below threshold.
   const surgeLevelRaw = surgeRiskLevel(current.waterLevel.anomaly);
   let surgeLevel: RiskLevel = surgeLevelRaw;
   let surgeSuppressed = false;
@@ -597,7 +627,9 @@ export function computeRiskLevel(
   // Context for non-onshore winds
   if (!onshore && current.wind.speed >= RISK_THRESHOLDS.WIND_YELLOW) {
     factors.push(
-      `Wind at ${current.wind.speed.toFixed(0)} kt from ${current.wind.cardinal} (offshore, not driving surge)`
+      windShoreRelation(current.wind.direction) === "offshore"
+        ? `Wind at ${current.wind.speed.toFixed(0)} kt from ${current.wind.cardinal} (offshore, not driving surge)`
+        : `Wind at ${current.wind.speed.toFixed(0)} kt from ${current.wind.cardinal} (along the shore, not driving surge)`
     );
   }
 
@@ -613,6 +645,7 @@ export function computeRiskLevel(
     description: getRiskDescription(level),
     factors,
     isOnshore: onshore,
+    shoreRelation: windShoreRelation(current.wind.direction),
     trending,
     windPersistence: persistence,
   };

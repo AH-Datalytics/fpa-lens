@@ -38,7 +38,13 @@ import Prose from "@/components/Prose";
 import { RiskIndicator } from "@/components/RiskBadge";
 import RiskBadge from "@/components/RiskBadge";
 import type { LakefrontData, RiskLevel } from "@/lib/lakefrontRisk";
-import { RISK_THRESHOLDS } from "@/lib/lakefrontRisk";
+import { RISK_THRESHOLDS, windShoreRelation, type ShoreRelation } from "@/lib/lakefrontRisk";
+
+const SHORE_RELATION_LABEL: Record<ShoreRelation, string> = {
+  onshore: "Onshore (pushing toward Lakeshore Dr.)",
+  alongshore: "Along the shore (not pushing toward Lakeshore Dr.)",
+  offshore: "Offshore (away from shore)",
+};
 import { usePageCopy } from "@/lib/usePageCopy";
 import { ENVIRONMENT_DEFAULTS } from "@/globals/pages/environmentPage";
 import {
@@ -531,7 +537,7 @@ export default function EnvironmentalPage() {
                   </span>
                 </div>
                 <p className="text-sm text-gray-700 leading-snug">
-                  Wind is calm, blowing offshore, or below 15 knots; lake level is near tide prediction. No action required.
+                  Wind is calm, not blowing onshore, or below 15 knots; lake level is near tide prediction. No action required.
                 </p>
               </div>
               <div className="rounded-lg border border-amber-200 bg-amber-50/60 p-4">
@@ -604,14 +610,14 @@ export default function EnvironmentalPage() {
                     </p>
                   )}
                   <p className="text-xs text-gray-400 mt-2">
-                    {risk.isOnshore ? "Onshore (pushing toward Lakeshore Dr.)" : "Offshore (away from shore)"}
+                    {SHORE_RELATION_LABEL[windShoreRelation(current.wind.direction)]}
                   </p>
                   {risk.windPersistence && risk.windPersistence.hoursAnalyzed > 0 && (
                     <div className="mt-3 pt-3 border-t border-gray-100">
                       <div className="flex items-center justify-between mb-1.5">
                         <span className="text-xs font-medium text-gray-500">Onshore Persistence</span>
                         <span className={`text-xs font-semibold ${risk.windPersistence.isSustained ? "text-amber-600" : "text-gray-400"}`}>
-                          {risk.windPersistence.isSustained ? "Sustained" : risk.isOnshore ? "Not yet sustained" : "Offshore"}
+                          {risk.windPersistence.isSustained ? "Sustained" : risk.isOnshore ? "Not yet sustained" : "Not onshore"}
                         </span>
                       </div>
                       <div className="w-full bg-gray-100 rounded-full h-2 mb-1">
@@ -629,7 +635,7 @@ export default function EnvironmentalPage() {
                       <p className="text-xs text-gray-400">
                         {risk.windPersistence.effectiveHours > 0
                           ? `~${risk.windPersistence.effectiveHours} of ${risk.windPersistence.hoursAnalyzed} hrs onshore above threshold (need 70%)`
-                          : `No onshore wind in last ${risk.windPersistence.hoursAnalyzed} hrs (currently ${risk.isOnshore ? "onshore" : "offshore"}, ${current.wind.cardinal})`}
+                          : `No onshore wind in last ${risk.windPersistence.hoursAnalyzed} hrs (currently ${windShoreRelation(current.wind.direction) === "alongshore" ? "along the shore" : windShoreRelation(current.wind.direction)}, ${current.wind.cardinal})`}
                       </p>
                     </div>
                   )}
@@ -1050,7 +1056,7 @@ export default function EnvironmentalPage() {
                 <tbody>
                   <tr className="border-b border-gray-100 bg-green-50/50">
                     <td className="py-3"><RiskBadge level="GREEN" size="sm" /></td>
-                    <td className="py-3 text-gray-600">&lt; 15 kt or offshore</td>
+                    <td className="py-3 text-gray-600">&lt; 15 kt or not onshore</td>
                     <td className="py-3 text-gray-600">&lt; 0.75 ft</td>
                     <td className="py-3 text-gray-600">No action</td>
                   </tr>
@@ -1085,7 +1091,7 @@ export default function EnvironmentalPage() {
               </table>
             </div>
             <p className="text-xs text-gray-500 mt-3">
-              Wind thresholds apply when wind direction is onshore (roughly NW through N to NE, 315-045 degrees),
+              Wind thresholds apply when wind direction is onshore (NW through N to ENE, about 304-079 degrees),
               which pushes Lake Pontchartrain water toward the south shore and Lakeshore Drive.
               The risk level is the <strong>higher</strong> of the wind-based and surge-based assessments.
               If the forecast shows worse conditions within 6 hours, the current level is escalated by one tier.
@@ -1099,7 +1105,7 @@ export default function EnvironmentalPage() {
               <strong>Surge gating:</strong> Surge above predicted only signals flood risk when wind is currently
               onshore or has been onshore in the last {RISK_THRESHOLDS.WIND_HISTORY_HOURS} hours
               (at least {Math.round(RISK_THRESHOLDS.SURGE_RECENT_ONSHORE_FRACTION * 100)}% of readings).
-              On calm days with offshore wind, elevated surge is usually rain runoff, river inflow, or pressure
+              On calm days, or with offshore or along-shore wind, elevated surge is usually rain runoff, river inflow, or pressure
               noise rather than wind-driven flood risk, so it is suppressed.
             </p>
             <p className="text-xs text-gray-600 italic mt-2">

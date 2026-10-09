@@ -192,13 +192,13 @@ See `data/sources/budget/UPDATE-GUIDE.md` for detailed instructions to share wit
 
 **How it works:**
 - `src/app/api/lakefront/route.ts` — Server-side API route that fetches from 5 NOAA endpoints + 2 NWS endpoints in parallel, computes surge anomaly (actual water level minus tidal prediction), merges forecasts, and runs the risk engine. Cached for 5 minutes via ISR (`revalidate = 300`).
-- `src/lib/lakefrontRisk.ts` — Pure logic risk engine. Evaluates current conditions and forecast against configurable thresholds to produce a risk level (GREEN/YELLOW/ORANGE/RED). Key factors: onshore wind direction (N/NE/NW, 315-045°), wind speed (15/25/35 kt tiers), surge anomaly (0.5/1.0/1.5 ft tiers), gust escalation, and 6-hour forecast lookahead.
+- `src/lib/lakefrontRisk.ts` — Pure logic risk engine. Evaluates current conditions and forecast against configurable thresholds to produce a risk level (GREEN/YELLOW/ORANGE/RED). Key factors: onshore wind direction (NW through ENE, 303.75-078.75°, aligned to compass sectors), wind speed (15/25/35 kt tiers), surge anomaly (0.5/1.0/1.5 ft tiers), gust escalation, and 6-hour forecast lookahead.
 
 **Risk levels and operational actions:**
 
 | Level | Wind (onshore) | Surge Anomaly | Action |
 |-------|----------------|---------------|--------|
-| GREEN | < 15 kt or offshore | < 0.5 ft | No action needed |
+| GREEN | < 15 kt or not onshore | < 0.5 ft | No action needed |
 | YELLOW | 15-25 kt | 0.5-1.0 ft | Monitor conditions |
 | ORANGE | 25-35 kt sustained | 1.0-1.5 ft | Stage barricades |
 | RED | > 35 kt | > 1.5 ft | Close roadway |
@@ -215,7 +215,7 @@ Either condition (wind OR surge) alone can trigger a level. Forecast escalation:
 
 **Open calibration work:**
 - Current thresholds (15/25/35 kt wind, 0.5/1.0/1.5 ft surge) are starting points accepted by FPA in March 2026. FPA operations is compiling a historical closure log (~10-15 cold-front events since Nov/Dec 2025) for backtesting against NOAA historical data. Adjust in `RISK_THRESHOLDS` in `src/lib/lakefrontRisk.ts` once backtesting is done.
-- Onshore wind direction range (NW through NE, 315-045°) confirmed by the Director.
+- Onshore wind direction range (NW through NE, 315-045°) confirmed by the Director in March 2026; widened Oct 9 2026 to NW through ENE (303.75-078.75°) after ENE winds during that day's Lakeshore Drive closure were scored offshore. See `RISK_THRESHOLDS` in `lakefrontRisk.ts`.
 - Yellow-tier sensitivity may need to be tightened after backtesting if it fires too often on routine north wind events.
 
 ---

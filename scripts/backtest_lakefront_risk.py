@@ -102,8 +102,8 @@ def noaa_predictions(begin_dt: datetime, end_dt: datetime) -> list[dict]:
 # ---------------------------------------------------------------------------
 # Risk model (mirrors lakefrontRisk.ts logic)
 # ---------------------------------------------------------------------------
-ONSHORE_MIN = 315
-ONSHORE_MAX = 45
+ONSHORE_MIN = 303.75
+ONSHORE_MAX = 78.75
 WIND_HISTORY_HOURS = 3
 ONSHORE_FRACTION = 0.70
 
@@ -116,8 +116,8 @@ ORANGE_SURGE = 1.0
 YELLOW_SURGE = 0.75
 
 def is_onshore(deg: float) -> bool:
-    # NW–N–NE (315–045)
-    return deg >= ONSHORE_MIN or deg <= ONSHORE_MAX
+    # NW through ENE sectors (303.75-078.75), matches lakefrontRisk.ts
+    return deg >= ONSHORE_MIN or deg < ONSHORE_MAX
 
 def cardinal(deg: float) -> str:
     dirs = ["N","NNE","NE","ENE","E","ESE","SE","SSE","S","SSW","SW","WSW","W","WNW","NW","NNW"]

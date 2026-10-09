@@ -34,7 +34,7 @@ export const ENVIRONMENT_DEFAULTS = {
   ),
 
   windDirectionText: rt(
-    "Blowing from the north (NW, N, or NE) toward Lakeshore Drive. Winds from the south push water away and pose no risk.",
+    "Blowing from the north or northeast (NW, N, NE, or ENE) toward Lakeshore Drive. Winds from the south push water away and pose no risk.",
   ),
 
   lakeLevelText: rt(

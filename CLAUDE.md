@@ -198,6 +198,7 @@ Requirements gathered from FPA leadership. Their operations team is compiling a 
    **Still need to confirm with Director:** Whether they want these specific structure gauges on our page, or if the "canal gauges" request was something different.
 
 5. **Wind direction range confirmed**: NW-N-NE (315-045 degrees) aligns with their understanding of onshore conditions.
+   **Widened Oct 9 2026 to NW through ENE (303.75-078.75), compass-sector aligned.** On Oct 9 (Lakeshore Drive closed) ENE winds at 24 kt (60 deg) were scored offshore, so a +1.96 ft surge was suppressed and the page read YELLOW with "offshore" wording while showing the wind as NE/ENE. The old edges also cut through the NW and NE sectors, so a reading *labelled* NE could score offshore. Backtest (`scripts/backtest_lakefront_risk.py` events + the 14 TS control days): every historical closure unchanged, one extra YELLOW-only control day, no extra ORANGE. Non-onshore wind is now worded as offshore (ESE-WSW) or along the shore (E, W, WNW) via `windShoreRelation()`; only the former is "away from shore". Tests: `src/lib/lakefrontRisk.test.ts`.
 
 6. **Threshold validation**: Proposed thresholds (15/25/35 kt wind, 0.5/1.0/1.5 ft surge) accepted as starting points. Historical backtesting will calibrate.
 
