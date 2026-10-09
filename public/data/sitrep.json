@@ -1,43 +1,47 @@
 {
-  "reportMonth": "September 2026",
-  "executiveSummary": "The Authority remains operationally ready for the 2026 hurricane season, with no identified threats to overall system integrity. Q3 field inspections are approximately 95% complete, and all PCCP stations and complex structures remain operational and mission ready. Project execution remains a major leadership focus, with construction and repair activities continuing across several priority projects, while efforts to strengthen project planning and delivery through FPA PACE, long-term financial modeling, and cultural transformation are also advancing.",
+  "reportMonth": "October 2026",
+  "executiveSummary": "The Authority remains operationally ready for the 2026 hurricane season, with no identified threats to overall system integrity. Q3 field inspections are complete, all PCCP stations and complex structures remain mission ready, and routine maintenance continues without readiness impacts. As Hurricane Isaias approaches the central Gulf Coast, staff are actively monitoring weather and surge forecasts and implementing system closures and other operational measures as conditions require.",
   "readiness": {
     "infrastructure": "Green",
-    "staffing": "Amber",
+    "staffing": "Green",
     "financial": "Green",
-    "media": "Amber"
+    "media": "Green"
   },
   "permits": {
-    "issued": 29,
-    "period": "August 2026",
+    "issued": 32,
+    "period": "September 2026",
     "type": "Levee Safety"
   },
   "safety": {
     "accidents": 1,
-    "incidents": 6
+    "incidents": 5
   },
   "staffing": {
-    "vacancies": 65,
+    "vacancies": 38,
     "classifiedHeadcount": null,
     "unclassifiedHeadcount": null
   },
   "maintenanceActivities": [
     "Routine levee, floodwall, floodgate, valve, facility, and equipment maintenance continued with no impacts to system readiness.",
-    "Annual floodgate inspections remain up to date; Q3 valve inspections and exercises are complete as of August 26, 2026.",
+    "Annual floodgate inspections remain up to date; Q4 valve inspections and exercises underway.",
     "Field safety checks, required training, facility preparation, and seasonal readiness activities continue during hurricane season.",
     "Facility repairs, warehouse system maintenance, and support infrastructure improvements remain ongoing.",
-    "Levee turf maintenance is slightly behind due to recent rain but catching up as weather conditions improve; no readiness impacts reported.",
-    "Interim sand/HESCO basket protection along the crown of the levee at LPV-111 slide locations installed by Maintenance Department."
+    "Levee turf maintenance is slightly behind due to recent rain but catching up as weather conditions improve; no readiness impacts reported."
   ],
   "projects": [
     {
+      "name": "Foreshore Erosion Repair",
+      "status": "Currently advertised with a Bid Opening of October 19, 2026.",
+      "phase": "In Bidding"
+    },
+    {
       "name": "LPV Access Bridge",
-      "status": "Construction has begun. Contractor has mobilized and begun field activities.",
+      "status": "Construction has begun. Contractor has mobilized and is progressing.",
       "phase": "In Progress"
     },
     {
       "name": "Orpheum Slope Paving",
-      "status": "Construction has begun and is progressing per schedule.",
+      "status": "Construction has begun and is progressing per the schedule.",
       "phase": "In Progress"
     },
     {
@@ -47,33 +51,33 @@
     },
     {
       "name": "London Avenue Canal Erosion Mitigation (Phase 1)",
-      "status": "Construction Contract awarded during the August Board Meeting. Conditional NTP scheduled for 9/14/26 with an expected start of activities within the canal around 11/1/26.",
+      "status": "Full NTP scheduled to be issued on 10/12/26 with an expected start of activities within the canal around 11/1/26.",
       "phase": "Awarded"
     },
     {
       "name": "40 Arpent Sheet Pile Rehabilitation (Phase 2)",
-      "status": "Survey has been completed and design underway.",
+      "status": "60% design submittal currently under review by Engineering.",
       "phase": "In Design"
     },
     {
       "name": "Franklin Herbicide Vehicle Containment",
-      "status": "Readvertisement yielded several additional bids. Project awarded.",
-      "phase": "Awarded"
+      "status": "Construction has begun and is 95% complete.",
+      "phase": "In Progress"
     },
     {
-      "name": "Lakeshore Drive Flooding Warning Signs",
-      "status": "IDIQ holder engaged for design of locations. Currently exploring exact locations and coordinating design for installation with IDIQ holder.",
+      "name": "Lakeshore Drive Flood Warning Signs",
+      "status": "60% Design submitted. Review comments have been forwarded to designer. 90% design underway.",
+      "phase": "In Design"
+    },
+    {
+      "name": "Franklin Facility Access Improvements",
+      "status": "60% Design submittal under review by Engineering.",
       "phase": "In Design"
     },
     {
       "name": "Tropical Storm Arthur – Franklin Facility Damage",
-      "status": "Demolition work underway with a contract completion for end of September. Engineering continues to coordinate with Maintenance, Finance, and Insurance Adjusters.",
-      "phase": "In Progress"
-    },
-    {
-      "name": "Foreshore Erosion Repair",
-      "status": "Borrow site appropriation approved during August Board Meeting. USACE is currently working through advertisement milestones. Engineering/Maintenance prepared to install mitigation measures at two eroded locations if needed.",
-      "phase": "Pre-Award"
+      "status": "Demolition work has been completed. Secondary structural inspection by adjuster to take place. Engineering continues to coordinate with Maintenance, Finance and Insurance Adjusters. Final repair design scope being determined.",
+      "phase": "In Design"
     }
   ],
   "inspections": {
@@ -82,17 +86,29 @@
       "note": null
     },
     "usace": {
-      "status": "on-track",
-      "note": "Q3 field inspections approximately 95% complete; all annual complex structure inspections completed with no findings impacting system readiness"
+      "status": "complete",
+      "note": "Q3 field inspections complete; all PCCP stations and complex structures mission ready"
     },
     "valves": {
-      "status": "complete",
+      "status": "on-track",
+      "note": "Q4 valve inspections and exercises underway",
       "completed": null,
-      "total": null,
-      "note": "Q3 valve inspections and exercises complete as of August 26, 2026"
+      "total": null
     }
   },
-  "source": "sitrep_2026-09.pdf",
-  "sourceModified": "2026-09-28T15:49:07Z",
+  "permitsHistory": [
+    {
+      "issued": 29,
+      "period": "August 2026",
+      "type": "Levee Safety"
+    },
+    {
+      "issued": 32,
+      "period": "September 2026",
+      "type": "Levee Safety"
+    }
+  ],
+  "source": "sitrep_2026-10.pdf",
+  "sourceModified": "2026-10-09T17:07:57Z",
   "generatedFrom": "Claude claude-sonnet-4-6"
 }
