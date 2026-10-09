@@ -297,7 +297,7 @@ export function degreesToCardinal(degrees: number): string {
  * METHODOLOGY:
  * - Takes the last WIND_HISTORY_HOURS (default 3) hours of 6-minute
  *   wind observations from NOAA (~30 readings).
- * - Counts how many readings are both onshore (315-045 degrees) AND
+ * - Counts how many readings are both onshore (303.75-078.75 degrees) AND
  *   above the speed threshold.
  * - If that fraction >= WIND_SUSTAINED_FRACTION (default 70%), the
  *   wind is considered "sustained" for that tier.

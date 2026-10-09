@@ -218,6 +218,12 @@ Requirements gathered from FPA leadership. Their operations team is compiling a 
 - **Water chart**: Title shows "Water Level at New Canal Station". Source includes MLLW datum explanation.
 - **Timezone handling**: `parseCentralTimestamp()` correctly tags NOAA timestamps with CDT/CST offset.
 
+### Open items from the Oct 9 2026 wind-direction fix
+- **Alert email on the YELLOW -> RED jump:** right after the deploy the live API read RED with `trending: "improving"`. `riskAlertDecision.ts` suppresses an escalation that is already improving, so the ORANGE/RED alert email may not have fired for the Oct 9 closure. Confirm whether it sent (and whether the forecast/alert blob state is being written at all -- see the `storedForecasts: {}` note above) before relying on the email for the next event.
+- **`scripts/backtest_lakefront_risk.py` is a simplified port**, not the TS engine: its persistence check counts onshore direction only (no speed threshold) and it has no forecast step. Two of its events (2026-03-30, 2026-04-05) return UNKNOWN because NOAA has no wind data in those windows. Good enough for comparing direction ranges; use `scripts/backtest-closures.ts` (needs `data/sources/closures/closure-history.json`, not on Ben's machine) for a full-engine run.
+- **Sent to Jeff Williams as a draft reply (Ben to send):** the range change departs from the 315-045 he confirmed in March; await his response before treating 303.75-078.75 as confirmed.
+- **Unrelated failing test:** `staffingOverlay.test.ts` asserts Police `full` = 79 for the October workbook, but a bot data refresh changed it to 74. The test or the data needs a look.
+
 ### Next Steps
 1. **Historical backtesting**: Once FPA's closure log arrives (~10-15 events), pull NOAA historical data for each cold-front event and test current thresholds + duration gating. Adjust as needed.
 2. **Canal gauges**: Add as secondary corroboration. Blocked on confirming the data source with FPA operations.

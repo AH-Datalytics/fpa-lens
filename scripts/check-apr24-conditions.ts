@@ -6,6 +6,7 @@
 import {
   computeRiskLevel,
   RISK_THRESHOLDS,
+  isOnshoreWind,
   degreesToCardinal,
   type WindReading,
   type LakefrontConditions,
@@ -116,7 +117,7 @@ async function main() {
 
     const onshoreSpeeds = historyWindow.filter(r => {
       const dir = r.direction;
-      return (dir >= 315 || dir <= 45) && r.speed >= RISK_THRESHOLDS.WIND_YELLOW;
+      return isOnshoreWind(dir) && r.speed >= RISK_THRESHOLDS.WIND_YELLOW;
     });
     const sustainedFrac = historyWindow.length > 0 ? onshoreSpeeds.length / historyWindow.length : 0;
     const sustainedNote = `${(sustainedFrac * 100).toFixed(0)}%`;
