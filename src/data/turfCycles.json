@@ -50,7 +50,7 @@
     {
       "zone": "Lakefront & Outfall Canals",
       "reach": "Lakefront",
-      "cycle1Pct": 0.0,
+      "cycle1Pct": 1.0,
       "cycle2Pct": null,
       "c1CompletedOn": null,
       "c2CompletedOn": null
@@ -58,7 +58,7 @@
     {
       "zone": "Lakefront & Outfall Canals",
       "reach": "Outfall Canals (17th Street, Orleans, Bayou St. John, London)",
-      "cycle1Pct": 0.0,
+      "cycle1Pct": 0.85,
       "cycle2Pct": null,
       "c1CompletedOn": null,
       "c2CompletedOn": null
@@ -170,7 +170,7 @@
     {
       "zone": "EJ Lakefront Reach 1-5",
       "reach": "St. Charles/Jeff Parish line to 17th St. Canal on EJ side",
-      "cycle1Pct": 0.75,
+      "cycle1Pct": 1.0,
       "cycle2Pct": null,
       "c1CompletedOn": null,
       "c2CompletedOn": null
@@ -178,7 +178,7 @@
     {
       "zone": "EJ MRL",
       "reach": "Monticello to Alliance",
-      "cycle1Pct": 0.5,
+      "cycle1Pct": 1.0,
       "cycle2Pct": null,
       "c1CompletedOn": null,
       "c2CompletedOn": null
@@ -187,14 +187,14 @@
       "zone": "EJ MRL",
       "reach": "St. Charles/Jeff Parish line",
       "cycle1Pct": 1.0,
-      "cycle2Pct": null,
+      "cycle2Pct": 0.25,
       "c1CompletedOn": null,
       "c2CompletedOn": null
     },
     {
       "zone": "EJ West Return",
       "reach": "Airline Hwy & Lesan Dr to St. Charles/Jeff Parish line (Reach 1)",
-      "cycle1Pct": 0.0,
+      "cycle1Pct": 0.75,
       "cycle2Pct": null,
       "c1CompletedOn": null,
       "c2CompletedOn": null
@@ -210,7 +210,7 @@
     {
       "zone": "LPV-144 through LPV-149",
       "reach": "Bayou Dupre Structure (St. Bernard side) to HWY 39 at MRL",
-      "cycle1Pct": 0.0,
+      "cycle1Pct": 0.1,
       "cycle2Pct": null,
       "c1CompletedOn": null,
       "c2CompletedOn": null

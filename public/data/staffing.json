@@ -2,9 +2,9 @@
   "asOf": "October 2026",
   "source": "staffing_2026-10.xlsx",
   "headcount": {
-    "total": 312,
+    "total": 307,
     "filled": 269,
-    "vacancies": 43
+    "vacancies": 38
   },
   "departments": {
     "Maintenance": {
@@ -24,8 +24,8 @@
     },
     "Police": {
       "filled": 52,
-      "vacant": 27,
-      "total": 79
+      "vacant": 22,
+      "total": 74
     },
     "Executive": {
       "filled": 12,
