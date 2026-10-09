@@ -296,6 +296,18 @@ def main():
         "warnings": warnings,
     }
 
+    # Keep the old timestamp when nothing else changed, so an unchanged pull
+    # doesn't commit a diff and the refresh digest doesn't report an "update".
+    try:
+        with open(OUTPUT_PATH, encoding="utf-8") as f:
+            previous = json.load(f)
+        if {k: v for k, v in previous.items() if k != "generatedAt"} == {
+            k: v for k, v in output.items() if k != "generatedAt"
+        }:
+            output["generatedAt"] = previous.get("generatedAt", output["generatedAt"])
+    except (OSError, ValueError):
+        pass
+
     os.makedirs(os.path.dirname(OUTPUT_PATH), exist_ok=True)
     with open(OUTPUT_PATH, "w", encoding="utf-8") as f:
         json.dump(output, f, indent=2)
