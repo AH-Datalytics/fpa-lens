@@ -238,6 +238,15 @@ OFFICIAL_YEARLY_OVERRIDES = {
     2026: {"accidents": 3, "incidents": 27, "injuries": 7},  # YTD through June
 }
 
+# Last month each partial-year override covers. Event-log rows dated after it
+# are added on top of the official figures, so the live year keeps moving as
+# monthly logs arrive instead of freezing at the last reconciled month. Raise
+# the month (and update both override tables) when the Safety Officer sends a
+# newer official breakdown.
+OFFICIAL_THROUGH_MONTH = {
+    2026: 6,
+}
+
 # Safety Officer's official MONTHLY accident/incident split for the closed years,
 # from Jamal Dortch's June 2026 monthly breakdown ("Lens Monthly Safety Numbers"
 # workbook). His team re-reviewed the 2022-2024 records and re-cut the monthly
@@ -305,6 +314,17 @@ def build_output(events):
         override = OFFICIAL_YEARLY_OVERRIDES.get(year)
         if override:
             entry.update(override)
+            through = OFFICIAL_THROUGH_MONTH.get(year)
+            if through:
+                for e in events:
+                    if e["year"] != year or e["month"] <= through:
+                        continue
+                    if e["classification"] == "osha-recordable":
+                        entry["accidents"] += 1
+                    elif e["classification"] in ("damage", "other"):
+                        entry["incidents"] += 1
+                    if e["hasInjury"]:
+                        entry["injuries"] += 1
             entry["totalEvents"] = entry["accidents"] + entry["incidents"] + entry["noFault"]
         yearly_totals.append(entry)
 

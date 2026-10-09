@@ -46,14 +46,14 @@
     },
     {
       "year": 2026,
-      "totalEvents": 39,
-      "accidents": 3,
-      "incidents": 27,
+      "totalEvents": 52,
+      "accidents": 4,
+      "incidents": 39,
       "noFault": 9,
       "lostTime": 0,
-      "injuries": 7,
-      "propertyDamageFpa": 36,
-      "propertyDamagePrivate": 20
+      "injuries": 9,
+      "propertyDamageFpa": 41,
+      "propertyDamagePrivate": 22
     }
   ],
   "monthlyData": [
@@ -439,7 +439,21 @@
       "year": 2026,
       "month": 7,
       "accidents": 0,
-      "incidents": 5,
+      "incidents": 6,
+      "noFault": 0
+    },
+    {
+      "year": 2026,
+      "month": 8,
+      "accidents": 1,
+      "incidents": 0,
+      "noFault": 0
+    },
+    {
+      "year": 2026,
+      "month": 9,
+      "accidents": 0,
+      "incidents": 6,
       "noFault": 0
     }
   ],
@@ -488,9 +502,9 @@
     },
     {
       "type": "Mobile Equipment",
-      "count": 51,
+      "count": 54,
       "accidents": 1,
-      "incidents": 43,
+      "incidents": 46,
       "noFault": 7
     },
     {
@@ -502,20 +516,116 @@
     },
     {
       "type": "Slip/Trip/Fall",
-      "count": 26,
-      "accidents": 13,
-      "incidents": 13,
+      "count": 28,
+      "accidents": 14,
+      "incidents": 14,
       "noFault": 0
     },
     {
       "type": "Vehicle",
-      "count": 124,
+      "count": 127,
       "accidents": 3,
-      "incidents": 76,
+      "incidents": 79,
       "noFault": 45
     }
   ],
   "recentEvents": [
+    {
+      "date": "2026-09-24",
+      "month": "September",
+      "year": 2026,
+      "eventType": "Mobile Equipment",
+      "classification": "damage",
+      "isAtFault": true,
+      "isLostTime": false,
+      "hasInjury": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": true
+    },
+    {
+      "date": "2026-09-22",
+      "month": "September",
+      "year": 2026,
+      "eventType": "Mobile Equipment",
+      "classification": "damage",
+      "isAtFault": true,
+      "isLostTime": false,
+      "hasInjury": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": true
+    },
+    {
+      "date": "2026-09-21",
+      "month": "September",
+      "year": 2026,
+      "eventType": "Slip/Trip/Fall",
+      "classification": "other",
+      "isAtFault": true,
+      "isLostTime": false,
+      "hasInjury": true,
+      "hasDamage": false,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2026-09-17",
+      "month": "September",
+      "year": 2026,
+      "eventType": "Vehicle",
+      "classification": "other",
+      "isAtFault": true,
+      "isLostTime": false,
+      "hasInjury": false,
+      "hasDamage": false,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2026-09-14",
+      "month": "September",
+      "year": 2026,
+      "eventType": "Vehicle",
+      "classification": "damage",
+      "isAtFault": true,
+      "isLostTime": false,
+      "hasInjury": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2026-09-08",
+      "month": "September",
+      "year": 2026,
+      "eventType": "Mobile Equipment",
+      "classification": "other",
+      "isAtFault": true,
+      "isLostTime": false,
+      "hasInjury": false,
+      "hasDamage": false,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2026-08-13",
+      "month": "August",
+      "year": 2026,
+      "eventType": "Slip/Trip/Fall",
+      "classification": "osha-recordable",
+      "isAtFault": true,
+      "isLostTime": false,
+      "hasInjury": true,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": false
+    },
+    {
+      "date": "2026-07-28",
+      "month": "July",
+      "year": 2026,
+      "eventType": "Vehicle",
+      "classification": "damage",
+      "isAtFault": true,
+      "isLostTime": false,
+      "hasInjury": false,
+      "hasDamage": true,
+      "hasPrivatePropertyDamage": false
+    },
     {
       "date": "2026-07-28",
       "month": "July",
