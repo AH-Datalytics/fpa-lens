@@ -182,14 +182,42 @@ export function statedQuarterPercent(
   for (const text of texts) {
     if (!text || typeof text !== "string") continue;
     for (const sentence of text.split(/(?<=[.;])\s+/)) {
-      const m = sentence.match(/\bQ([1-4])\s+field inspections?\b[^.%]*?(\d{1,3})\s*%/i);
-      if (m && Number(m[1]) === quarter) {
-        const percent = Math.min(100, Math.max(0, Number(m[2])));
+      const q = quarterOf(sentence);
+      if (q !== quarter || !/\bfield inspections?\b/i.test(sentence)) continue;
+      const pct = sentence.match(/\bfield inspections?\b[^.%]*?(\d{1,3})\s*%/i);
+      // A bare "Q3 field inspections are complete" (October 2026 SITREP)
+      // counts as 100%; "nearing completion"/"nearly complete" do not.
+      const done = !pct && /\bfield inspections?\b[^.]*?(?<!nearly |almost |substantially )\bcomplete(d)?\b/i.test(sentence);
+      if (pct || done) {
+        const percent = pct ? Math.min(100, Math.max(0, Number(pct[1]))) : 100;
         return { percent, sentence: sentence.trim().replace(/[.;]$/, "") };
       }
     }
   }
   return null;
+}
+
+const QUARTER_WORDS: Record<string, number> = { "1st": 1, first: 1, "2nd": 2, second: 2, "3rd": 3, third: 3, "4th": 4, fourth: 4 };
+
+/** Calendar quarter named in a sentence ("Q3", "3rd quarter", "third-quarter"), or null. */
+export function quarterOf(text: string): number | null {
+  const q = text.match(/\bQ([1-4])\b/i);
+  if (q) return Number(q[1]);
+  const w = text.match(/\b(1st|2nd|3rd|4th|first|second|third|fourth)[\s-]+quarter\b/i);
+  return w ? QUARTER_WORDS[w[1].toLowerCase()] : null;
+}
+
+/**
+ * True when an inspection note is quarterly wording ("Q3 field inspections
+ * complete") that never names USACE. CPRA inspects quarterly and USACE
+ * semi-annually, so such a sentence is CPRA's even when the extractor files
+ * it under `usace` (it did in September and October 2026, which marked the
+ * Jul-Dec USACE card complete off a CPRA sentence).
+ */
+export function isUnlabeledQuarterlyNote(note: string | null | undefined): boolean {
+  if (!note) return false;
+  if (/\b(USACE|Corps|semi-?annual|federal)\b/i.test(note)) return false;
+  return quarterOf(note) != null;
 }
 
 /** Minimal shape check: a digest we can safely act on. */
@@ -221,6 +249,7 @@ interface ReadinessMetricsLike {
     currentHalfPercent: number;
     status?: string;
     percentIsEstimate?: boolean;
+    reported?: boolean;
   };
   valveExercises: InspectionCfg & {
     percentComplete: number;
@@ -362,18 +391,31 @@ export function applySitrep(digest: unknown, targets: SitrepTargets): ApplyResul
     changes.push("CPRA inspection -> not reported");
   }
 
-  const usacePct = inspectionPercent(insp.usace, {
+  // A quarter-labeled note with no USACE marker is CPRA's (see
+  // isUnlabeledQuarterlyNote); the CPRA step above already read it.
+  const usaceInsp = isUnlabeledQuarterlyNote(insp.usace?.note) ? undefined : insp.usace;
+  const usaceReported = !!usaceInsp && (
+    (usaceInsp.completed != null && usaceInsp.total != null && usaceInsp.total > 0) ||
+    (!!usaceInsp.status && usaceInsp.status !== "not-reported")
+  );
+  const usacePct = inspectionPercent(usaceInsp, {
     monthlyRate: usaceCfg.monthlyRate,
     periodStart: usaceCfg.periodStart,
     dataAsOf: iso,
   });
   if (usacePct != null) {
-    const usaceHasCount = insp.usace?.completed != null && insp.usace?.total != null && insp.usace.total > 0;
+    const usaceHasCount = usaceInsp?.completed != null && usaceInsp?.total != null && usaceInsp.total > 0;
     usaceCfg.currentHalfPercent = usacePct;
-    usaceCfg.percentIsEstimate = !usaceHasCount && insp.usace?.status !== "complete";
+    usaceCfg.percentIsEstimate = !usaceHasCount && usaceInsp?.status !== "complete";
+    usaceCfg.reported = usaceReported;
     usaceCfg.source = sitrepSource;
-    if (insp.usace?.note) usaceCfg.status = insp.usace.note;
-    changes.push(`USACE inspection -> ${usacePct}%${usaceCfg.percentIsEstimate ? " (pace estimate)" : ""}`);
+    if (usaceReported && usaceInsp?.note) usaceCfg.status = usaceInsp.note;
+    else if (!usaceReported) usaceCfg.status = `Not covered in the ${sitrepSource}`;
+    changes.push(
+      usaceReported
+        ? `USACE inspection -> ${usacePct}%${usaceCfg.percentIsEstimate ? " (pace estimate)" : ""}`
+        : "USACE inspection -> not reported",
+    );
   }
   const valvePct = inspectionPercent(insp.valves, {
     monthlyRate: rm.valveExercises.monthlyRate,

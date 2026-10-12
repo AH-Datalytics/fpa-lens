@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 import {
   applySitrep,
   halfBounds,
+  isUnlabeledQuarterlyNote,
   quarterBounds,
   statedQuarterPercent,
   type SitrepTargets,
@@ -123,14 +124,27 @@ describe("applySitrep with a September digest", () => {
     expect(cpra.source).toBe("September 2026 SITREP");
   });
 
-  it("rolls USACE to the Jul-Dec half and flags a status-only percent as an estimate", () => {
+  it("treats a quarter-labeled note filed under usace as CPRA's, leaving USACE not reported", () => {
     const t = baseline();
     applySitrep(septemberDigest, t);
+    const usace = t.readinessMetrics.usaceSemiAnnualInspection;
+    expect(usace.reported).toBe(false);
+    expect(usace.status).toBe("Not covered in the September 2026 SITREP");
+  });
+
+  it("rolls USACE to the Jul-Dec half and flags a status-only percent as an estimate", () => {
+    const t = baseline();
+    const digest = {
+      ...septemberDigest,
+      inspections: { ...septemberDigest.inspections, usace: { status: "on-track", note: "USACE LPV inspections underway" } },
+    };
+    applySitrep(digest, t);
     const usace = t.readinessMetrics.usaceSemiAnnualInspection;
     expect(usace.periodStart).toBe("2026-07-01");
     expect(usace.periodEnd).toBe("2026-12-31");
     expect(usace.percentIsEstimate).toBe(true);
-    expect(usace.status).toMatch(/^Q3 field inspections/);
+    expect(usace.reported).toBe(true);
+    expect(usace.status).toBe("USACE LPV inspections underway");
     // Sept 1 is two months into a six-month half at 16.67%/mo -> ~33% expected.
     expect(usace.currentHalfPercent).toBeGreaterThanOrEqual(32);
     expect(usace.currentHalfPercent).toBeLessThanOrEqual(34);
@@ -169,5 +183,47 @@ describe("applySitrep with a September digest", () => {
       "August 2026",
     ]);
     expect(t.operationsData.permitsIssued.find((e) => e.month === "June 2026")?.count).toBe(12);
+  });
+});
+
+describe("applySitrep with the October 2026 digest", () => {
+  /** Live October digest: an unlabeled Q3 sentence the extractor filed under usace. */
+  const octoberDigest = {
+    ...septemberDigest,
+    reportMonth: "October 2026",
+    executiveSummary:
+      "The Authority remains operationally ready. Q3 field inspections are complete, all PCCP stations and complex structures remain mission ready.",
+    inspections: {
+      cpra: { status: "not-reported", note: null },
+      usace: { status: "complete", note: "Q3 field inspections complete; all PCCP stations and complex structures mission ready" },
+      valves: { status: "on-track", completed: null, total: null, note: "Q4 valve inspections and exercises underway" },
+    },
+  };
+
+  it("does not mark the Jul-Dec USACE half complete from a CPRA quarter sentence", () => {
+    const t = baseline();
+    applySitrep(octoberDigest, t);
+    const usace = t.readinessMetrics.usaceSemiAnnualInspection;
+    expect(usace.reported).toBe(false);
+    expect(usace.currentHalfPercent).toBeLessThan(100);
+    expect(usace.status).toBe("Not covered in the October 2026 SITREP");
+    // Q3 is done; the October card grades Q4, which the SITREP does not cover.
+    expect(t.readinessMetrics.cpraQuarterlyInspection.currentQuarter).toBe("Q4 2026");
+    expect(t.readinessMetrics.cpraQuarterlyInspection.reported).toBe(false);
+  });
+
+  it("reads a bare 'complete' and spelled-out quarters as a stated CPRA figure", () => {
+    expect(statedQuarterPercent(["Q3 field inspections are complete."], 3)?.percent).toBe(100);
+    expect(statedQuarterPercent(["3rd quarter field inspections are complete."], 3)?.percent).toBe(100);
+    expect(statedQuarterPercent(["Q3 field inspections nearing completion."], 3)).toBeNull();
+    expect(statedQuarterPercent(["Q3 field inspections are nearly complete."], 3)).toBeNull();
+  });
+
+  it("isUnlabeledQuarterlyNote keeps USACE-named notes on the USACE card", () => {
+    expect(isUnlabeledQuarterlyNote("Q3 field inspections complete")).toBe(true);
+    expect(isUnlabeledQuarterlyNote("3rd quarter field inspections are complete")).toBe(true);
+    expect(isUnlabeledQuarterlyNote("USACE semi-annual inspections complete")).toBe(false);
+    expect(isUnlabeledQuarterlyNote("Q3 USACE LPV inspections underway")).toBe(false);
+    expect(isUnlabeledQuarterlyNote(null)).toBe(false);
   });
 });

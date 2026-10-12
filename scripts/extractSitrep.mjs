@@ -107,7 +107,7 @@ const SCHEMA = {
       properties: {
         cpra: {
           type: "object",
-          description: "CPRA state quarterly levee inspection",
+          description: "CPRA state quarterly levee inspection (includes unlabeled 'Qn field inspections' wording)",
           properties: {
             status: { type: ["string", "null"], enum: ["complete", "on-track", "behind", "not-reported", null] },
             note: { type: ["string", "null"], description: "Short phrase as stated, or null" },
@@ -116,7 +116,7 @@ const SCHEMA = {
         },
         usace: {
           type: "object",
-          description: "USACE federal semi-annual inspection (levees, floodwalls, PCCPs, complex structures)",
+          description: "USACE federal semi-annual inspection (levees, floodwalls, PCCPs, complex structures); only when the text names USACE/Corps/semi-annual",
           properties: {
             status: { type: ["string", "null"], enum: ["complete", "on-track", "behind", "not-reported", null] },
             note: { type: ["string", "null"], description: "Short phrase as stated, or null" },
@@ -148,6 +148,10 @@ const SYSTEM = [
   "Readiness colors must be exactly Green, Amber, or Red as written.",
   "For inspections, map the narrative to the status enum (complete/on-track/behind/not-reported);",
   "only fill valve completed/total when an explicit count like '84 of 105' is stated.",
+  "CPRA inspections are quarterly and USACE inspections are semi-annual: a sentence about",
+  "'Qn' or 'nth quarter' field inspections that does not name USACE belongs to cpra, not usace.",
+  "Set usace only from text that names USACE, the Corps, or the semi-annual/federal inspection;",
+  "otherwise usace is 'not-reported'.",
 ].join(" ");
 
 /** The digest already published at OUTPUT_PATH, or null on a first run / bad JSON. */

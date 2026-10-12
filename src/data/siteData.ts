@@ -359,6 +359,9 @@ export const readinessMetrics = {
     // SITREP status (on-track/behind) rather than a figure the SITREP stated;
     // the engineering card then shows the SITREP wording instead of "N% complete".
     percentIsEstimate: false as boolean,
+    // false when the latest SITREP said nothing about USACE (the card then
+    // shows that instead of a pace-line percent), as for CPRA.
+    reported: true as boolean,
     status: "All LPV, PCCP, and Complex Structures USACE inspections complete with no significant findings",
     source: "June 2026 SITREP",
   },

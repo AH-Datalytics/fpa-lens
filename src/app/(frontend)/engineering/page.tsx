@@ -250,11 +250,11 @@ export default function OperationsPage() {
               mandate={usace.mandate}
               period="Semi-Annual &middot; Ongoing"
               icon={ClipboardCheck}
-              big={`${Math.min(100, Math.round(usaceRatio))}%`}
-              unit="on pace"
+              big={usace.reported ? `${Math.min(100, Math.round(usaceRatio))}%` : "—"}
+              unit={usace.reported ? "on pace" : undefined}
               actual={usace.percentIsEstimate ? usace.status : `${usace.currentHalfPercent}% complete · ${usace.status}`}
-              expected={`Target: ${Math.round(usaceExpected)}% by today, 100% by end of half`}
-              status={usaceStatus}
+              expected={usace.reported ? `Target: ${Math.round(usaceExpected)}% by today, 100% by end of half` : undefined}
+              status={usace.reported ? usaceStatus : "NEUTRAL"}
               note={usace.reportSubmittedDate ? `Report submitted ${usace.reportSubmittedDate}` : "Submission pending"}
             />
           </div>
