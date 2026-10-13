@@ -372,7 +372,15 @@ export function applySitrep(digest: unknown, targets: SitrepTargets): ApplyResul
     cpraCfg.source = sitrepSource;
     changes.push(`CPRA inspection -> ${stated.percent}% (stated)`);
   } else if (cpraHasCount || (insp.cpra?.status && insp.cpra.status !== "not-reported")) {
-    const cpraPct = inspectionPercent(insp.cpra, {
+    // A "complete" status whose note names a quarter is about that quarter;
+    // a current-quarter completion would have matched statedQuarterPercent
+    // above. The October 2026 resend read "3rd quarter field inspections are
+    // complete ...; 4th Quarter field inspection underway", which otherwise
+    // put Q4 at 100%. Treat it as on pace for the current quarter.
+    const cpraInsp = !cpraHasCount && insp.cpra?.status === "complete" && quarterOf(insp.cpra?.note ?? "") != null
+      ? { ...insp.cpra, status: "on-track" as InspectionStatus }
+      : insp.cpra;
+    const cpraPct = inspectionPercent(cpraInsp, {
       monthlyRate: cpraCfg.monthlyRate,
       periodStart: cpraCfg.periodStart,
       dataAsOf: iso,

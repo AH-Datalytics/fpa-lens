@@ -550,7 +550,7 @@ export default function OurSystemPage() {
                 <div className="flex items-center gap-2">
                   <ClipboardCheck className="h-4 w-4 text-gray-400 group-hover:text-[#21355a] transition-colors" />
                   <span>
-                    <span className="font-medium text-gray-700">CPRA Quarterly</span> and <span className="font-medium text-gray-700">USACE Semi-Annual</span> inspection status are on the{" "}
+                    <span className="font-medium text-gray-700">CPRA Quarterly</span> inspection and <span className="font-medium text-gray-700">USACE Semi-Annual Report</span> status are on the{" "}
                     <span className="text-[#21355a] font-medium">Engineering</span> page.
                   </span>
                 </div>

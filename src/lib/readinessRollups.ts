@@ -139,7 +139,7 @@ export function computeReadinessRollups(asOfDate?: string): ReadinessRollups {
     active: true,
   });
 
-  // USACE Semi-Annual Inspection
+  // USACE Semi-Annual Report
   const usace = readinessMetrics.usaceSemiAnnualInspection;
   const usaceExpected = expectedFromRate(
     usace.monthlyRate,
@@ -153,7 +153,7 @@ export function computeReadinessRollups(asOfDate?: string): ReadinessRollups {
       : 100;
   inspections.push({
     key: "usace-semi-annual",
-    label: "USACE Semi-Annual Inspection",
+    label: "USACE Semi-Annual Report",
     status: statusFromRatio(usaceRatio),
     active: true,
   });

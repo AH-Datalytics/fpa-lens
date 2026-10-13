@@ -245,7 +245,7 @@ export default function OperationsPage() {
               note={cpra.reportSubmittedDate ? `Report submitted to CPRA ${cpra.reportSubmittedDate}` : "CPRA submission date pending"}
             />
             <ReadinessCard
-              title="USACE Semi-Annual Inspection"
+              title="USACE Semi-Annual Report"
               description={copy.usaceDescription}
               mandate={usace.mandate}
               period="Semi-Annual &middot; Ongoing"

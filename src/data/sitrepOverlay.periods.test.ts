@@ -212,6 +212,29 @@ describe("applySitrep with the October 2026 digest", () => {
     expect(t.readinessMetrics.cpraQuarterlyInspection.reported).toBe(false);
   });
 
+  it("reads the split resend: Q3 complete does not put Q4 at 100%, USACE report on the USACE card", () => {
+    const t = baseline();
+    applySitrep({
+      ...octoberDigest,
+      inspections: {
+        cpra: {
+          status: "complete",
+          note: "3rd quarter field inspections are complete and under Engineering review; 4th Quarter field inspection underway",
+        },
+        usace: { status: "on-track", note: "USACE Semi Annual Report nearing completion, to be submitted October 15, 2026, to CPRA" },
+        valves: octoberDigest.inspections.valves,
+      },
+    }, t);
+    const cpra = t.readinessMetrics.cpraQuarterlyInspection;
+    expect(cpra.currentQuarter).toBe("Q4 2026");
+    expect(cpra.reported).toBe(true);
+    expect(cpra.currentQuarterPercent).toBeLessThan(100);
+    const usace = t.readinessMetrics.usaceSemiAnnualInspection;
+    expect(usace.reported).toBe(true);
+    expect(usace.percentIsEstimate).toBe(true);
+    expect(usace.status).toMatch(/^USACE Semi Annual Report/);
+  });
+
   it("reads a bare 'complete' and spelled-out quarters as a stated CPRA figure", () => {
     expect(statedQuarterPercent(["Q3 field inspections are complete."], 3)?.percent).toBe(100);
     expect(statedQuarterPercent(["3rd quarter field inspections are complete."], 3)?.percent).toBe(100);

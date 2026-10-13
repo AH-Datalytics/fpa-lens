@@ -66,7 +66,7 @@
     },
     {
       "name": "Lakeshore Drive Flood Warning Signs",
-      "status": "60% Design submitted. Review comments have been forwarded to designer. 90% design underway.",
+      "status": "60% Design submitted. Review comments forwarded to designer. 90% design underway.",
       "phase": "In Design"
     },
     {
@@ -76,24 +76,24 @@
     },
     {
       "name": "Tropical Storm Arthur – Franklin Facility Damage",
-      "status": "Demolition work has been completed. Secondary structural inspection by adjuster to take place. Engineering continues to coordinate with Maintenance, Finance and Insurance Adjusters. Final repair design scope being determined.",
-      "phase": "In Design"
+      "status": "Demolition work has been completed. Secondary structural inspection by adjuster to take place. Final repair design scope being determined.",
+      "phase": "In Progress"
     }
   ],
   "inspections": {
     "cpra": {
-      "status": "not-reported",
-      "note": null
+      "status": "complete",
+      "note": "3rd quarter field inspections are complete and under Engineering review; 4th Quarter field inspection underway"
     },
     "usace": {
-      "status": "complete",
-      "note": "Q3 field inspections complete; all PCCP stations and complex structures mission ready"
+      "status": "on-track",
+      "note": "USACE Semi Annual Report nearing completion, to be submitted October 15, 2026, to CPRA"
     },
     "valves": {
       "status": "on-track",
-      "note": "Q4 valve inspections and exercises underway",
       "completed": null,
-      "total": null
+      "total": null,
+      "note": "Q4 valve inspections and exercises underway"
     }
   },
   "permitsHistory": [
@@ -109,6 +109,6 @@
     }
   ],
   "source": "sitrep_2026-10.pdf",
-  "sourceModified": "2026-10-09T17:07:57Z",
+  "sourceModified": "2026-10-13T15:33:27Z",
   "generatedFrom": "Claude claude-sonnet-4-6"
 }
