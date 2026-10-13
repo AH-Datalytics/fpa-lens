@@ -75,6 +75,10 @@ they change rarely and stay manual.
   if any category errors (so GitHub flags the run).
 - **SITREP** — `scripts/extractSitrep.mjs`: download PDF → Claude API with a strict structured-output
   schema + prompt caching → `public/data/sitrep.json`. Full-auto per Oscar.
+  Inspection attribution: CPRA is quarterly, USACE semi-annual. A "Qn field inspections" sentence
+  that names no agency is CPRA's (prompt rule + `isUnlabeledQuarterlyNote()` backstop in
+  `src/data/sitrepOverlay.ts`, Oct 12 2026). FPA was asked to write separate CPRA Quarterly and
+  USACE Semi-Annual bullets (period, status, % or count, date, findings).
 - **`.github/workflows/refresh-data.yml`** — `cron: '0 13 * * 1-5'` (Mon–Fri ~7–8am Central; UTC, no DST).
   Setup Python + Node, run orchestrator, commit changed `public/data/` (+ archived sources), push.
 

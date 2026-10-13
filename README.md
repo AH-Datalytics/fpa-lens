@@ -230,7 +230,7 @@ When a new SITREP arrives:
    - [ ] `systemReadiness.lastUpdated`, `.overallStatus`, `.categories`, `.alerts`
    - [ ] `systemReadiness.riverConditions` (level, status, forecast)
    - [ ] `kpiMetrics` (pccpPumps, ytdAccidents, floodgateInspections, staffCount)
-   - [ ] `readinessMetrics` (data-as-of date + any card values provided in the SITREP: hurricane gate %, valve exercises %, CPRA/USACE inspection status). Cards auto-grade against the straight-line monthly rates.
+   - [ ] `readinessMetrics` (data-as-of date + any card values provided in the SITREP: hurricane gate %, valve exercises %, CPRA/USACE inspection status). Cards auto-grade against the straight-line monthly rates. The SITREP should state CPRA Quarterly and USACE Semi-Annual as separate bullets; an unlabeled "Qn field inspections" line is read as CPRA only, and USACE then shows "Not covered".
    - [ ] `operationsData.permitsIssued` - **append** the new month's entry (page auto-derives the latest month for display)
    - [ ] `operationsData.floodgateInspections` (hurricaneGates %, valveExercises %, usaceInspections text)
    - [ ] `operationsData.pccpRepairStatus`, `.maintenanceActivities`
