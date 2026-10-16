@@ -47,10 +47,10 @@
     {
       "year": 2026,
       "totalEvents": 52,
-      "accidents": 4,
-      "incidents": 39,
+      "accidents": 3,
+      "incidents": 40,
       "noFault": 9,
-      "lostTime": 0,
+      "lostTime": 1,
       "injuries": 9,
       "propertyDamageFpa": 41,
       "propertyDamagePrivate": 22
@@ -445,8 +445,8 @@
     {
       "year": 2026,
       "month": 8,
-      "accidents": 1,
-      "incidents": 0,
+      "accidents": 0,
+      "incidents": 1,
       "noFault": 0
     },
     {
@@ -517,8 +517,8 @@
     {
       "type": "Slip/Trip/Fall",
       "count": 28,
-      "accidents": 14,
-      "incidents": 14,
+      "accidents": 13,
+      "incidents": 15,
       "noFault": 0
     },
     {
@@ -607,9 +607,9 @@
       "month": "August",
       "year": 2026,
       "eventType": "Slip/Trip/Fall",
-      "classification": "osha-recordable",
+      "classification": "damage",
       "isAtFault": true,
-      "isLostTime": false,
+      "isLostTime": true,
       "hasInjury": true,
       "hasDamage": true,
       "hasPrivatePropertyDamage": false
