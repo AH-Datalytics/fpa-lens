@@ -10,10 +10,11 @@
  * Usage:
  *   npx tsx scripts/replay-risk-alerts.ts 2026-10-08 2026-10-11
  *   npx tsx scripts/replay-risk-alerts.ts 2026-10-08 2026-10-11 --floor ORANGE
+ *   npx tsx scripts/replay-risk-alerts.ts 2026-10-08 2026-10-11 --json out.json   (every step + email, for charts)
  *   npx tsx scripts/replay-risk-alerts.ts 2026-10-08 2026-10-11 --send you@example.com [--pick 10-17]
  * --send needs RESEND_API_KEY (read from .env.vercel-prod when not set).
  */
-import { readFileSync, existsSync } from "fs";
+import { readFileSync, writeFileSync, existsSync } from "fs";
 import { Resend } from "resend";
 import {
   computeRiskLevel,
@@ -41,6 +42,7 @@ const flag = (name: string) => {
 };
 const floor = (flag("--floor")?.toUpperCase() as RiskLevel) || ALERT_FLOOR;
 const sendTo = flag("--send");
+const jsonOut = flag("--json");
 // 1-based range of the listed emails to send, e.g. "10-17" or "3".
 const pick = flag("--pick")?.split("-").map(Number);
 
@@ -99,6 +101,7 @@ async function main() {
 
   let state: AlertState | null = null;
   const minutesAt: Record<RiskLevel, number> = { GREEN: 0, YELLOW: 0, ORANGE: 0, RED: 0 };
+  const steps: { at: string; level: RiskLevel }[] = [];
   const alerts: {
     at: string;
     kind: AlertKind;
@@ -125,6 +128,7 @@ async function main() {
       history,
     );
     minutesAt[risk.level] += STEP_MIN;
+    steps.push({ at: new Date(ms).toISOString(), level: risk.level });
     const now = new Date(ms);
     // First evaluated step seeds the state as the cron would hold it.
     if (state === null) {
@@ -157,6 +161,7 @@ async function main() {
     console.log(`  ${fmt(a.at)}  ${a.kind.padEnd(12)} ${a.previous ?? "-"} -> ${a.level}  | ${a.factors.join("; ")}`);
   }
 
+  if (jsonOut) writeFileSync(jsonOut, JSON.stringify({ floor, steps, alerts }, null, 2));
   if (!sendTo) return;
   if (!process.env.RESEND_API_KEY && existsSync(".env.vercel-prod")) {
     const line = readFileSync(".env.vercel-prod", "utf-8").split(/\r?\n/).find((l) => l.startsWith("RESEND_API_KEY="));
