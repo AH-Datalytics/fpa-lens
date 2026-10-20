@@ -4,6 +4,7 @@
  * (trend). No em dashes, by direction.
  */
 import type { RiskLevel } from "./lakefrontRisk";
+import type { AlertKind } from "./riskAlertDecision";
 
 type Trend = "improving" | "stable" | "worsening";
 
@@ -31,12 +32,16 @@ const ORDER: Record<RiskLevel, number> = { GREEN: 0, YELLOW: 1, ORANGE: 2, RED: 
 export interface RiskAlertEmailInput {
   current: RiskLevel;
   previous: RiskLevel | null;
+  /** Why this email is going out. Omitted (preview) reads as a level change. */
+  kind?: AlertKind;
   trending: Trend;
   action: string;
   description: string;
   factors: string[];
   dashboardUrl: string;
   sentAt: string; // ISO timestamp
+  /** Shown as a banner above the alert; used for test sends and replays. */
+  testNote?: string;
 }
 
 export interface RiskAlertEmail {
@@ -52,7 +57,8 @@ function changeLine(current: RiskLevel, previous: RiskLevel | null): string | nu
 }
 
 export function buildRiskAlertEmail(input: RiskAlertEmailInput): RiskAlertEmail {
-  const { current, previous, trending, dashboardUrl, sentAt } = input;
+  const { current, previous, kind, trending, dashboardUrl, testNote } = input;
+  const sentAt = formatCentral(input.sentAt);
   // No em dashes in alerts (by direction): collapse any em/en dash to a comma.
   const action = noDash(input.action);
   const description = noDash(input.description);
@@ -60,17 +66,31 @@ export function buildRiskAlertEmail(input: RiskAlertEmailInput): RiskAlertEmail 
   const lvl = LEVEL_META[current];
   const trend = TREND_META[trending];
   const isAllClear = current === "GREEN";
-  const change = changeLine(current, previous);
+  const isReminder = kind === "reminder";
+  const change = isReminder ? null : changeLine(current, previous);
+  const isDrop = !!previous && ORDER[current] < ORDER[previous];
 
   const subject = isAllClear
     ? "FPA Lens: All Clear, Lakeshore Drive flood risk normal"
-    : `FPA Lens: Flood risk ${lvl.word} (${trend.word.toLowerCase()}), Lakeshore Drive`;
+    : isReminder
+      ? `FPA Lens: Lakeshore Drive flood risk still ${lvl.word} (24-hour update)`
+      : `FPA Lens: Lakeshore Drive flood risk ${isDrop ? "down" : "up"} to ${lvl.word}`;
+
+  const lead = isAllClear
+    ? "The Lakeshore Drive flood risk has returned to normal. Reassess any closures in place."
+    : isReminder
+      ? `The Lakeshore Drive flood risk has stayed at ${lvl.word} for the past 24 hours.`
+      : isDrop
+        ? `The Lakeshore Drive flood risk has dropped from ${LEVEL_META[previous!].word} to ${lvl.word}. Reassess field conditions and any closures in place.`
+        : `The Lakeshore Drive flood risk has risen to ${lvl.word}.`;
+
+  const audience =
+    "This alert goes to all Levee Police personnel. If you received it, it is for you: check current conditions.";
 
   // ---- plain-text fallback (no em dashes) ----
   const text = [
-    isAllClear
-      ? "The Lakeshore Drive flood risk has returned to normal."
-      : "The Lakeshore Drive flood risk level has changed.",
+    testNote ? `${noDash(testNote)}\n` : "",
+    lead,
     "",
     `Current level: ${lvl.word} (${lvl.tag})`,
     `Trend: ${trend.word}${change ? `, ${change}` : ""}`,
@@ -79,6 +99,8 @@ export function buildRiskAlertEmail(input: RiskAlertEmailInput): RiskAlertEmail 
     factors.length ? `\nContributing factors:\n${factors.map((f) => `  - ${f}`).join("\n")}` : "",
     "",
     `View live conditions: ${dashboardUrl}`,
+    "",
+    audience,
     "",
     `Sent ${sentAt}. Generated automatically by FPA Lens.`,
   ].join("\n");
@@ -98,6 +120,8 @@ export function buildRiskAlertEmail(input: RiskAlertEmailInput): RiskAlertEmail 
     <tr><td align="center">
       <table role="presentation" width="560" cellpadding="0" cellspacing="0" style="width:560px;max-width:92%;background:#ffffff;border-radius:14px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.08);">
 
+        ${testNote ? `<tr><td style="background:#1f2937;color:#ffffff;padding:10px 24px;font-size:13px;font-weight:600;line-height:1.5;">${escapeHtml(noDash(testNote))}</td></tr>` : ""}
+
         <tr><td style="background:${lvl.headerBg};padding:22px 24px;">
           <div style="color:${lvl.headerMuted};font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;">Lakeshore Drive Flood Risk</div>
           <div style="color:${lvl.headerText};font-size:30px;font-weight:800;line-height:1.1;margin-top:6px;">
@@ -115,7 +139,9 @@ export function buildRiskAlertEmail(input: RiskAlertEmailInput): RiskAlertEmail 
           </span>
         </td></tr>
 
-        <tr><td style="padding:14px 24px 0;color:#374151;font-size:14px;line-height:1.6;">${escapeHtml(description)}</td></tr>
+        <tr><td style="padding:14px 24px 0;color:#111827;font-size:15px;font-weight:600;line-height:1.5;">${escapeHtml(lead)}</td></tr>
+
+        <tr><td style="padding:8px 24px 0;color:#374151;font-size:14px;line-height:1.6;">${escapeHtml(description)}</td></tr>
 
         <tr><td style="padding:16px 24px 0;">
           <div style="background:${lvl.bg};border:1px solid ${lvl.accent}33;border-radius:10px;padding:14px 16px;">
@@ -130,6 +156,8 @@ export function buildRiskAlertEmail(input: RiskAlertEmailInput): RiskAlertEmail 
           <a href="${dashboardUrl}" style="display:inline-block;background:#21355a;color:#ffffff;text-decoration:none;font-size:14px;font-weight:700;padding:11px 20px;border-radius:8px;">View live conditions</a>
         </td></tr>
 
+        <tr><td style="padding:0 24px 16px;color:#374151;font-size:13px;line-height:1.5;">${escapeHtml(audience)}</td></tr>
+
         <tr><td style="padding:14px 24px 22px;border-top:1px solid #f3f4f6;color:#9ca3af;font-size:12px;line-height:1.5;">
           Sent ${escapeHtml(sentAt)}.<br/>Generated automatically by FPA Lens.
         </td></tr>
@@ -140,6 +168,20 @@ export function buildRiskAlertEmail(input: RiskAlertEmailInput): RiskAlertEmail 
   </body></html>`;
 
   return { subject, text, html };
+}
+
+function formatCentral(iso: string): string {
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return iso;
+  return d.toLocaleString("en-US", {
+    timeZone: "America/Chicago",
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+    timeZoneName: "short",
+  });
 }
 
 function noDash(s: string): string {

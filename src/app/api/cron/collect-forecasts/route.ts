@@ -10,15 +10,22 @@
 
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
-import { getLastRiskLevel, saveRiskLevel } from "@/lib/riskAlertStore";
+import { getRiskAlertState, saveRiskAlertState } from "@/lib/riskAlertStore";
 import { getRiskAction, getRiskDescription } from "@/lib/lakefrontRisk";
 import type { RiskLevel } from "@/lib/lakefrontRisk";
 import { buildRiskAlertEmail } from "@/lib/riskAlertEmail";
-import { decideRiskAlert } from "@/lib/riskAlertDecision";
+import { decideRiskAlert, type AlertKind } from "@/lib/riskAlertDecision";
 
 export const dynamic = "force-dynamic";
 
-const ALERT_TO = "police@leveepolice.org";
+// Recipients come from RISK_ALERT_TO (comma-separated) so the rollout can be
+// staged without a code change: Ben's inbox for testing, then the Chief and
+// Captain, then police@leveepolice.org (which reaches every officer). Unset
+// falls back to the data-ops inbox only, never to Police.
+const ALERT_TO = (process.env.RISK_ALERT_TO || "admin@ahdatalytics.com")
+  .split(",")
+  .map((s) => s.trim())
+  .filter(Boolean);
 const ALERT_BCC = "admin@ahdatalytics.com";
 const ALERT_FROM = "FPA Lens Alerts <alerts@fpalens.org>";
 const DASHBOARD_URL = "https://fpalens.org/environment";
@@ -42,13 +49,15 @@ async function sendRiskAlert(
   current: RiskLevel,
   previous: RiskLevel | null,
   risk: RiskInfo,
-  to: string,
+  to: string | string[],
   bcc?: string,
   subjectPrefix = "",
+  kind?: AlertKind,
 ) {
   const email = buildRiskAlertEmail({
     current,
     previous,
+    kind,
     trending: risk.trending,
     action: risk.action,
     description: risk.description,
@@ -112,33 +121,22 @@ export async function GET(request: Request) {
     let alertSent = false;
 
     if (currentLevel) {
-      // `lastLevel` is the level we last NOTIFIED about, not merely the last
-      // observed level: it is persisted only when an alert is actually sent
-      // (below). That makes an "all clear" fire solely to clear an alert we
-      // really sent, which stops the repeated all-clear emails caused by
-      // transient YELLOW spikes that are suppressed on the way up but used to
-      // fire an alert on the way back down to GREEN. See riskAlertDecision.ts.
-      const lastLevel = await getLastRiskLevel();
-      const trend = data.risk?.trending as "improving" | "stable" | "worsening" | undefined;
+      // Stored state = the level we last NOTIFIED about, when, and any drop
+      // still on hold. See riskAlertDecision.ts for the policy.
+      const state = await getRiskAlertState();
+      const { send, kind, next } = decideRiskAlert(state, currentLevel);
 
-      const { send, nextNotified } = decideRiskAlert(lastLevel, currentLevel, trend);
-
-      let baselineToSave: RiskLevel | null = null;
       if (send) {
         try {
-          await sendRiskAlert(currentLevel, lastLevel, data.risk, ALERT_TO, ALERT_BCC);
+          await sendRiskAlert(currentLevel, state?.level ?? null, data.risk, ALERT_TO, ALERT_BCC, "", kind);
           alertSent = true;
-          baselineToSave = nextNotified; // advance the baseline only after a successful send
+          await saveRiskAlertState(next); // advance only after a successful send
         } catch (err) {
           console.error("Risk alert email failed:", err);
-          // Leave the baseline unchanged so the alert retries on the next run.
+          // Leave the state unchanged so the alert retries on the next run.
         }
-      } else if (lastLevel === null) {
-        baselineToSave = nextNotified; // seed the very first baseline silently
-      }
-
-      if (baselineToSave !== null && baselineToSave !== lastLevel) {
-        await saveRiskLevel(baselineToSave);
+      } else if (JSON.stringify(next) !== JSON.stringify(state)) {
+        await saveRiskAlertState(next); // first seed, or a drop's hold starting/ending
       }
     }
 
