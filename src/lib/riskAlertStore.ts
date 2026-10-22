@@ -6,16 +6,11 @@
 
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from "fs";
 import { join } from "path";
-import type { RiskLevel } from "./lakefrontRisk";
+import type { AlertState } from "./riskAlertDecision";
 
 const BLOB_KEY = "risk-alert-state.json";
 const DATA_DIR = join(process.cwd(), "data");
 const STORE_PATH = join(DATA_DIR, "risk-alert-state.json");
-
-interface AlertState {
-  level: RiskLevel;
-  updatedAt: string;
-}
 
 const isVercel = !!process.env.BLOB_READ_WRITE_TOKEN;
 
@@ -70,13 +65,12 @@ function writeFS(state: AlertState): void {
   }
 }
 
-export async function getLastRiskLevel(): Promise<RiskLevel | null> {
-  const state = isVercel ? await readBlob() : readFS();
-  return state?.level ?? null;
+/** Last level we notified about, when, and any drop on hold. */
+export async function getRiskAlertState(): Promise<AlertState | null> {
+  return isVercel ? await readBlob() : readFS();
 }
 
-export async function saveRiskLevel(level: RiskLevel): Promise<void> {
-  const state: AlertState = { level, updatedAt: new Date().toISOString() };
+export async function saveRiskAlertState(state: AlertState): Promise<void> {
   if (isVercel) {
     await writeBlob(state);
   } else {
