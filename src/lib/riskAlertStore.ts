@@ -31,18 +31,16 @@ async function readBlob(): Promise<AlertState | null> {
   }
 }
 
+// Throws on failure. A silently failed write is what let the Oct 24 2026
+// alert re-send to every officer on each 5-minute run.
 async function writeBlob(state: AlertState): Promise<void> {
-  try {
-    const { put } = await import("@vercel/blob");
-    await put(BLOB_KEY, JSON.stringify(state), {
-      access: "private",
-      addRandomSuffix: false,
-      allowOverwrite: true,
-      cacheControlMaxAge: 0,
-    });
-  } catch {
-    // Non-fatal
-  }
+  const { put } = await import("@vercel/blob");
+  await put(BLOB_KEY, JSON.stringify(state), {
+    access: "private",
+    addRandomSuffix: false,
+    allowOverwrite: true,
+    cacheControlMaxAge: 0,
+  });
 }
 
 function readFS(): AlertState | null {
@@ -57,12 +55,8 @@ function readFS(): AlertState | null {
 }
 
 function writeFS(state: AlertState): void {
-  try {
-    if (!existsSync(DATA_DIR)) mkdirSync(DATA_DIR, { recursive: true });
-    writeFileSync(STORE_PATH, JSON.stringify(state));
-  } catch {
-    // Non-fatal
-  }
+  if (!existsSync(DATA_DIR)) mkdirSync(DATA_DIR, { recursive: true });
+  writeFileSync(STORE_PATH, JSON.stringify(state));
 }
 
 /** Last level we notified about, when, and any drop on hold. */
@@ -70,10 +64,28 @@ export async function getRiskAlertState(): Promise<AlertState | null> {
   return isVercel ? await readBlob() : readFS();
 }
 
+/** Throws if the write fails. */
 export async function saveRiskAlertState(state: AlertState): Promise<void> {
   if (isVercel) {
     await writeBlob(state);
   } else {
     writeFS(state);
+  }
+}
+
+/**
+ * Saves `state` and reads it back. Returns true only when the store now holds
+ * exactly `state`. The cron calls this BEFORE sending an alert, so a store
+ * that fails to write, or serves a stale read, produces no email rather than
+ * the same email on every run.
+ */
+export async function claimRiskAlertState(state: AlertState): Promise<boolean> {
+  try {
+    await saveRiskAlertState(state);
+    const back = await getRiskAlertState();
+    return JSON.stringify(back) === JSON.stringify(state);
+  } catch (err) {
+    console.error("Risk alert state write failed:", err);
+    return false;
   }
 }

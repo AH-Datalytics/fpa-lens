@@ -10,7 +10,7 @@
 
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
-import { getRiskAlertState, saveRiskAlertState } from "@/lib/riskAlertStore";
+import { claimRiskAlertState, getRiskAlertState, saveRiskAlertState } from "@/lib/riskAlertStore";
 import { getRiskAction, getRiskDescription } from "@/lib/lakefrontRisk";
 import type { RiskLevel } from "@/lib/lakefrontRisk";
 import { buildRiskAlertEmail } from "@/lib/riskAlertEmail";
@@ -127,16 +127,27 @@ export async function GET(request: Request) {
       const { send, kind, next } = decideRiskAlert(state, currentLevel);
 
       if (send) {
-        try {
-          await sendRiskAlert(currentLevel, state?.level ?? null, data.risk, ALERT_TO, ALERT_BCC, "", kind);
-          alertSent = true;
-          await saveRiskAlertState(next); // advance only after a successful send
-        } catch (err) {
-          console.error("Risk alert email failed:", err);
-          // Leave the state unchanged so the alert retries on the next run.
+        // Record the alert BEFORE sending it, and send only if the store
+        // confirms it. Sending first and saving after re-sent the same alert
+        // to every officer every 5 minutes on Oct 24 2026, because the save
+        // did not stick. A broken store now means no email, not a flood.
+        if (!(await claimRiskAlertState(next))) {
+          console.error("Risk alert NOT sent: could not confirm state write", { currentLevel, kind });
+        } else {
+          try {
+            await sendRiskAlert(currentLevel, state?.level ?? null, data.risk, ALERT_TO, ALERT_BCC, "", kind);
+            alertSent = true;
+          } catch (err) {
+            console.error("Risk alert email failed:", err);
+            // Roll the state back so the alert retries on the next run.
+            if (state) {
+              await saveRiskAlertState(state).catch((e) => console.error("Risk alert state rollback failed:", e));
+            }
+          }
         }
       } else if (JSON.stringify(next) !== JSON.stringify(state)) {
-        await saveRiskAlertState(next); // first seed, or a drop's hold starting/ending
+        // First seed, or a drop's hold starting/ending.
+        await saveRiskAlertState(next).catch((e) => console.error("Risk alert state write failed:", e));
       }
     }
 
