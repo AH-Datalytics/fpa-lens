@@ -50,7 +50,7 @@ const isVercel = !!process.env.BLOB_READ_WRITE_TOKEN;
 async function readStoreBlob(): Promise<ForecastStore> {
   try {
     const { list } = await import("@vercel/blob");
-    const { blobs } = await list({ prefix: BLOB_KEY, limit: 1 });
+    const { blobs } = await list({ prefix: BLOB_KEY, limit: 1, token: process.env.BLOB_READ_WRITE_TOKEN });
     if (blobs.length === 0) return {};
     // addRandomSuffix: false means we overwrite the same key each save, but
     // Vercel's public-blob CDN will cache the response and return stale data
@@ -81,6 +81,7 @@ async function writeStoreBlob(store: ForecastStore): Promise<void> {
     // the in-memory backfill kept computing the correct value.
     await put(BLOB_KEY, JSON.stringify(store), {
       access: "private",
+      token: process.env.BLOB_READ_WRITE_TOKEN,
       addRandomSuffix: false,
       allowOverwrite: true,
       // Minimise CDN caching since we overwrite this blob every few minutes.

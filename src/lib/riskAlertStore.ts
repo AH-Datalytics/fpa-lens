@@ -14,10 +14,16 @@ const STORE_PATH = join(DATA_DIR, "risk-alert-state.json");
 
 const isVercel = !!process.env.BLOB_READ_WRITE_TOKEN;
 
+// Every call passes this token explicitly. @vercel/blob 2.x prefers Vercel
+// OIDC + BLOB_STORE_ID when both are present, and BLOB_STORE_ID on this
+// project is the public CMS media store, so without it every write failed
+// ("Cannot use private access on a public store") from the Sep 28 2026
+// dependency bump until Oct 24 2026.
+
 async function readBlob(): Promise<AlertState | null> {
   try {
     const { list } = await import("@vercel/blob");
-    const { blobs } = await list({ prefix: BLOB_KEY, limit: 1 });
+    const { blobs } = await list({ prefix: BLOB_KEY, limit: 1, token: process.env.BLOB_READ_WRITE_TOKEN });
     if (blobs.length === 0) return null;
     const bust = blobs[0].uploadedAt?.toString() ?? Date.now().toString();
     const url = `${blobs[0].downloadUrl}${blobs[0].downloadUrl.includes("?") ? "&" : "?"}_=${encodeURIComponent(bust)}`;
@@ -37,6 +43,7 @@ async function writeBlob(state: AlertState): Promise<void> {
   const { put } = await import("@vercel/blob");
   await put(BLOB_KEY, JSON.stringify(state), {
     access: "private",
+    token: process.env.BLOB_READ_WRITE_TOKEN,
     addRandomSuffix: false,
     allowOverwrite: true,
     cacheControlMaxAge: 0,
