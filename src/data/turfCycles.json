@@ -51,7 +51,7 @@
       "zone": "Lakefront & Outfall Canals",
       "reach": "Lakefront",
       "cycle1Pct": 1.0,
-      "cycle2Pct": 0.25,
+      "cycle2Pct": 1.0,
       "c1CompletedOn": null,
       "c2CompletedOn": null
     },
@@ -59,7 +59,7 @@
       "zone": "Lakefront & Outfall Canals",
       "reach": "Outfall Canals (17th Street, Orleans, Bayou St. John, London)",
       "cycle1Pct": 1.0,
-      "cycle2Pct": 0.0,
+      "cycle2Pct": 1.0,
       "c1CompletedOn": null,
       "c2CompletedOn": null
     },
@@ -67,7 +67,7 @@
       "zone": "Lakefront & Outfall Canals",
       "reach": "IHNC West",
       "cycle1Pct": 1.0,
-      "cycle2Pct": 0.0,
+      "cycle2Pct": 1.0,
       "c1CompletedOn": null,
       "c2CompletedOn": null
     },
@@ -131,7 +131,7 @@
       "zone": "Upper Protection",
       "reach": "Upper Protection (Earhart Blvd to the MRL)",
       "cycle1Pct": 1.0,
-      "cycle2Pct": 0.0,
+      "cycle2Pct": 1.0,
       "c1CompletedOn": null,
       "c2CompletedOn": null
     },
@@ -139,7 +139,7 @@
       "zone": "MRL",
       "reach": "MRL (Jefferson Parish line to EB-00)",
       "cycle1Pct": 1.0,
-      "cycle2Pct": 0.0,
+      "cycle2Pct": 1.0,
       "c1CompletedOn": null,
       "c2CompletedOn": null
     },
