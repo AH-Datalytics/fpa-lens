@@ -1,7 +1,7 @@
 {
-  "period": "FY27 YTD through September 30, 2026",
-  "periodLabel": "Jul 2026 - Sep 2026",
-  "lastUpdated": "2026-09-30",
+  "period": "FY27 YTD through October 31, 2026",
+  "periodLabel": "Jul 2026 - Oct 2026",
+  "lastUpdated": "2026-10-31",
   "fiscalYear": 2027,
   "entities": {
     "wholeEntity": {
@@ -10,9 +10,9 @@
         "categories": [
           {
             "name": "Tax Revenue",
-            "ytdActual": 928486.77,
-            "ytdBudget": 877667.54,
-            "variancePct": 5.8,
+            "ytdActual": 1318440.39,
+            "ytdBudget": 1248262.46,
+            "variancePct": 5.6,
             "totalBudget": 79380800.0
           },
           {
@@ -31,24 +31,24 @@
           },
           {
             "name": "Interest Income",
-            "ytdActual": 716091.97,
-            "ytdBudget": 1895383.61,
-            "variancePct": -62.2,
+            "ytdActual": 1195951.2,
+            "ytdBudget": 2481062.97,
+            "variancePct": -51.8,
             "totalBudget": 7722150.0
           },
           {
             "name": "Misc Revenue",
-            "ytdActual": 73533.06,
-            "ytdBudget": 64757.35,
-            "variancePct": 13.6,
+            "ytdActual": 3119638.92,
+            "ytdBudget": 92896.33,
+            "variancePct": 3258.2,
             "totalBudget": 3724400.0
           }
         ],
         "total": {
           "name": "Total Revenue",
-          "ytdActual": 1718619.24,
-          "ytdBudget": 2837808.5,
-          "variancePct": -39.4,
+          "ytdActual": 5634537.95,
+          "ytdBudget": 3822221.76,
+          "variancePct": 47.4,
           "totalBudget": 92403850.0
         }
       },
@@ -57,51 +57,51 @@
           "categories": [
             {
               "name": "Personnel Services",
-              "ytdActual": 6162456.66,
-              "ytdBudget": 10140991.59,
-              "variancePct": -39.2,
+              "ytdActual": 7518048.94,
+              "ytdBudget": 13533100.24,
+              "variancePct": -44.4,
               "totalBudget": 40083300.0
             },
             {
               "name": "Training",
-              "ytdActual": 15506.97,
-              "ytdBudget": 101405.31,
-              "variancePct": -84.7,
+              "ytdActual": 21183.14,
+              "ytdBudget": 156713.93,
+              "variancePct": -86.5,
               "totalBudget": 454900.0
             },
             {
               "name": "Professional Svcs",
-              "ytdActual": 69596.17,
-              "ytdBudget": 245200.0,
-              "variancePct": -71.6,
+              "ytdActual": 86308.67,
+              "ytdBudget": 315200.0,
+              "variancePct": -72.6,
               "totalBudget": 890200.0
             },
             {
               "name": "Contractuals",
-              "ytdActual": 2298071.86,
-              "ytdBudget": 2775679.37,
-              "variancePct": -17.2,
+              "ytdActual": 2627644.64,
+              "ytdBudget": 3407682.71,
+              "variancePct": -22.9,
               "totalBudget": 10341200.0
             },
             {
               "name": "Materials & Supplies",
-              "ytdActual": 790734.19,
-              "ytdBudget": 1012714.13,
-              "variancePct": -21.9,
+              "ytdActual": 1171467.06,
+              "ytdBudget": 1345106.62,
+              "variancePct": -12.9,
               "totalBudget": 3884500.0
             },
             {
               "name": "Equipments",
-              "ytdActual": 946118.88,
-              "ytdBudget": 1416353.0,
-              "variancePct": -33.2,
+              "ytdActual": 1119472.91,
+              "ytdBudget": 1421353.0,
+              "variancePct": -21.2,
               "totalBudget": 2246000.0
             },
             {
               "name": "Other Charges",
-              "ytdActual": 30485.23,
-              "ytdBudget": 21540.35,
-              "variancePct": 41.5,
+              "ytdActual": 43559.73,
+              "ytdBudget": 30496.7,
+              "variancePct": 42.8,
               "totalBudget": 2775250.0
             },
             {
@@ -114,9 +114,9 @@
           ],
           "total": {
             "name": "Total O&M",
-            "ytdActual": 10312969.96,
-            "ytdBudget": 15713883.75,
-            "variancePct": -34.4,
+            "ytdActual": 12587685.09,
+            "ytdBudget": 20209653.2,
+            "variancePct": -37.7,
             "totalBudget": 60675350.0
           }
         },
@@ -124,124 +124,124 @@
           "categories": [
             {
               "name": "Projects",
-              "ytdActual": 1206279.23,
-              "ytdBudget": 1449744.65,
-              "variancePct": -16.8,
+              "ytdActual": 2024484.62,
+              "ytdBudget": 1976487.99,
+              "variancePct": 2.4,
               "totalBudget": 30671950.0
             }
           ],
           "total": {
-            "ytdActual": 1206279.23,
-            "ytdBudget": 1449744.65,
-            "variancePct": -16.8,
+            "ytdActual": 2024484.62,
+            "ytdBudget": 1976487.99,
+            "variancePct": 2.4,
             "totalBudget": 30671950.0
           }
         },
         "grandTotal": {
           "name": "Total Expenses",
-          "ytdActual": 11519249.19,
-          "ytdBudget": 17163628.4,
-          "variancePct": -32.9,
+          "ytdActual": 14612169.71,
+          "ytdBudget": 22186141.19,
+          "variancePct": -34.1,
           "totalBudget": 91347300.0
         }
       },
       "sourcesUses": {
         "name": "Sources & Uses",
-        "ytdActual": 508508.78,
+        "ytdActual": 636975.84,
         "ytdBudget": 0.0,
         "variancePct": "unbudgeted",
         "totalBudget": 0.0
       },
       "netChange": {
         "name": "Net Change in Fund Balance",
-        "ytdActual": -9292121.17,
-        "ytdBudget": -14325819.9,
-        "variancePct": -35.1,
+        "ytdActual": -8340655.92,
+        "ytdBudget": -18363919.43,
+        "variancePct": -54.6,
         "totalBudget": 1056550.0
       },
       "departments": [
         {
           "name": "Administration",
-          "ytdActual": 15743.56,
-          "ytdBudget": 12290.35,
-          "variancePct": 28.1,
+          "ytdActual": 27564.94,
+          "ytdBudget": 18996.7,
+          "variancePct": 45.1,
           "totalBudget": 2743800.0
         },
         {
           "name": "Executive",
-          "ytdActual": 1108266.75,
-          "ytdBudget": 1719140.23,
-          "variancePct": -35.5,
+          "ytdActual": 1229513.32,
+          "ytdBudget": 2026985.59,
+          "variancePct": -39.3,
           "totalBudget": 6026100.0
         },
         {
           "name": "Commissioner",
-          "ytdActual": 54752.5,
-          "ytdBudget": 82625.02,
-          "variancePct": -33.7,
+          "ytdActual": 55245.53,
+          "ytdBudget": 94958.36,
+          "variancePct": -41.8,
           "totalBudget": 330500.0
         },
         {
           "name": "Finance",
-          "ytdActual": 441247.56,
-          "ytdBudget": 571199.97,
-          "variancePct": -22.8,
+          "ytdActual": 514670.36,
+          "ytdBudget": 749599.96,
+          "variancePct": -31.3,
           "totalBudget": 2218300.0
         },
         {
           "name": "Human Resource",
-          "ytdActual": 304663.88,
-          "ytdBudget": 435610.0,
-          "variancePct": -30.1,
+          "ytdActual": 346440.28,
+          "ytdBudget": 575230.0,
+          "variancePct": -39.8,
           "totalBudget": 1480000.0
         },
         {
           "name": "Information Technology",
-          "ytdActual": 422346.08,
-          "ytdBudget": 703502.24,
-          "variancePct": -40.0,
+          "ytdActual": 516288.52,
+          "ytdBudget": 863490.88,
+          "variancePct": -40.2,
           "totalBudget": 2146900.0
         },
         {
           "name": "Police",
-          "ytdActual": 2462090.36,
-          "ytdBudget": 4024474.36,
-          "variancePct": -38.8,
+          "ytdActual": 2963283.32,
+          "ytdBudget": 5029323.15,
+          "variancePct": -41.1,
           "totalBudget": 13643650.0
         },
         {
           "name": "Engineering",
-          "ytdActual": 476420.56,
-          "ytdBudget": 791349.97,
-          "variancePct": -39.8,
+          "ytdActual": 569522.02,
+          "ytdBudget": 1063149.96,
+          "variancePct": -46.4,
           "totalBudget": 3143600.0
         },
         {
           "name": "Maintenance",
-          "ytdActual": 3490960.75,
-          "ytdBudget": 5064766.57,
-          "variancePct": -31.1,
+          "ytdActual": 4361147.89,
+          "ytdBudget": 6685184.88,
+          "variancePct": -34.8,
           "totalBudget": 20113400.0
         },
         {
           "name": "Operations",
-          "ytdActual": 1437372.48,
-          "ytdBudget": 1983900.04,
-          "variancePct": -27.5,
+          "ytdActual": 1804177.67,
+          "ytdBudget": 2669366.72,
+          "variancePct": -32.4,
           "totalBudget": 7529000.0
         },
         {
           "name": "Retiree",
-          "ytdActual": 99105.48,
-          "ytdBudget": 325025.0,
-          "variancePct": -69.5,
+          "ytdActual": 199831.24,
+          "ytdBudget": 433367.0,
+          "variancePct": -53.9,
           "totalBudget": 1300100.0
         },
         {
           "name": "Projects",
-          "ytdActual": 1206279.23,
-          "ytdBudget": 1449744.65,
-          "variancePct": -16.8,
+          "ytdActual": 2024484.62,
+          "ytdBudget": 1976487.99,
+          "variancePct": 2.4,
           "totalBudget": 30671950.0
         }
       ]
@@ -252,9 +252,9 @@
         "categories": [
           {
             "name": "Tax Revenue",
-            "ytdActual": 787178.75,
-            "ytdBudget": 796931.48,
-            "variancePct": -1.2,
+            "ytdActual": 1176047.75,
+            "ytdBudget": 1166239.41,
+            "variancePct": 0.8,
             "totalBudget": 62947000.0
           },
           {
@@ -273,24 +273,24 @@
           },
           {
             "name": "Interest Income",
-            "ytdActual": 535901.51,
-            "ytdBudget": 1442571.11,
-            "variancePct": -62.9,
+            "ytdActual": 925631.55,
+            "ytdBudget": 1877312.97,
+            "variancePct": -50.7,
             "totalBudget": 5910900.0
           },
           {
             "name": "Misc Revenue",
-            "ytdActual": 15305.96,
-            "ytdBudget": 15125.01,
-            "variancePct": 1.2,
+            "ytdActual": 3058621.82,
+            "ytdBudget": 20166.68,
+            "variancePct": 15066.7,
             "totalBudget": 3044800.0
           }
         ],
         "total": {
           "name": "Total Revenue",
-          "ytdActual": 1447242.41,
-          "ytdBudget": 2415577.6,
-          "variancePct": -40.1,
+          "ytdActual": 5269157.31,
+          "ytdBudget": 3224669.06,
+          "variancePct": 63.4,
           "totalBudget": 73576400.0
         }
       },
@@ -299,66 +299,66 @@
           "categories": [
             {
               "name": "Personnel Services",
-              "ytdActual": 3315860.13,
-              "ytdBudget": 5385416.65,
-              "variancePct": -38.4,
+              "ytdActual": 4045287.01,
+              "ytdBudget": 7194999.32,
+              "variancePct": -43.8,
               "totalBudget": 21245000.0
             },
             {
               "name": "Training",
-              "ytdActual": 2150.0,
-              "ytdBudget": 22500.0,
-              "variancePct": -90.4,
+              "ytdActual": 7061.5,
+              "ytdBudget": 51500.0,
+              "variancePct": -86.3,
               "totalBudget": 118000.0
             },
             {
               "name": "Professional Svcs",
-              "ytdActual": 26964.7,
-              "ytdBudget": 125000.01,
-              "variancePct": -78.4,
+              "ytdActual": 30698.7,
+              "ytdBudget": 166666.68,
+              "variancePct": -81.6,
               "totalBudget": 500000.0
             },
             {
               "name": "Contractuals",
-              "ytdActual": 920660.13,
-              "ytdBudget": 1165408.27,
-              "variancePct": -21.0,
+              "ytdActual": 1176114.38,
+              "ytdBudget": 1527558.25,
+              "variancePct": -23.0,
               "totalBudget": 4775100.0
             },
             {
               "name": "Materials & Supplies",
-              "ytdActual": 588529.4,
-              "ytdBudget": 673116.62,
-              "variancePct": -12.6,
+              "ytdActual": 821628.52,
+              "ytdBudget": 926759.94,
+              "variancePct": -11.3,
               "totalBudget": 2775100.0
             },
             {
               "name": "Equipments",
-              "ytdActual": 449413.71,
-              "ytdBudget": 595353.0,
-              "variancePct": -24.5,
+              "ytdActual": 602651.25,
+              "ytdBudget": 600353.0,
+              "variancePct": 0.4,
               "totalBudget": 1019000.0
             },
             {
               "name": "Other Charges",
-              "ytdActual": 18000.02,
-              "ytdBudget": 17415.36,
-              "variancePct": 3.4,
+              "ytdActual": 26432.86,
+              "ytdBudget": 25463.38,
+              "variancePct": 3.8,
               "totalBudget": 2149600.0
             },
             {
               "name": "Cost Sharing",
-              "ytdActual": 1573042.64,
-              "ytdBudget": 2429374.98,
-              "variancePct": -35.2,
+              "ytdActual": 1859634.69,
+              "ytdBudget": 3239166.64,
+              "variancePct": -42.6,
               "totalBudget": 9717500.0
             }
           ],
           "total": {
             "name": "Total O&M",
-            "ytdActual": 6894620.73,
-            "ytdBudget": 10413584.89,
-            "variancePct": -33.8,
+            "ytdActual": 8569508.91,
+            "ytdBudget": 13732467.21,
+            "variancePct": -37.6,
             "totalBudget": 42299300.0
           }
         },
@@ -366,89 +366,89 @@
           "categories": [
             {
               "name": "Projects",
-              "ytdActual": 736926.13,
-              "ytdBudget": 981293.06,
-              "variancePct": -24.9,
+              "ytdActual": 1095532.04,
+              "ytdBudget": 1370838.06,
+              "variancePct": -20.1,
               "totalBudget": 21726950.0
             }
           ],
           "total": {
-            "ytdActual": 736926.13,
-            "ytdBudget": 981293.06,
-            "variancePct": -24.9,
+            "ytdActual": 1095532.04,
+            "ytdBudget": 1370838.06,
+            "variancePct": -20.1,
             "totalBudget": 21726950.0
           }
         },
         "grandTotal": {
           "name": "Total Expenses",
-          "ytdActual": 7631546.86,
-          "ytdBudget": 11394877.95,
-          "variancePct": -33.0,
+          "ytdActual": 9665040.95,
+          "ytdBudget": 15103305.27,
+          "variancePct": -36.0,
           "totalBudget": 64026250.0
         }
       },
       "sourcesUses": {
         "name": "Sources & Uses",
-        "ytdActual": 235000.0,
+        "ytdActual": 363467.06,
         "ytdBudget": 0.0,
         "variancePct": "unbudgeted",
         "totalBudget": 0.0
       },
       "netChange": {
         "name": "Net Change in Fund Balance",
-        "ytdActual": -5949304.45,
-        "ytdBudget": -8979300.35,
-        "variancePct": -33.7,
+        "ytdActual": -4032416.58,
+        "ytdBudget": -11878636.21,
+        "variancePct": -66.1,
         "totalBudget": 9550150.0
       },
       "departments": [
         {
           "name": "Administration",
-          "ytdActual": 15768.56,
-          "ytdBudget": 12290.35,
-          "variancePct": 28.3,
+          "ytdActual": 23545.94,
+          "ytdBudget": 18996.7,
+          "variancePct": 23.9,
           "totalBudget": 2132700.0
         },
         {
           "name": "Executive",
-          "ytdActual": 1692172.24,
-          "ytdBudget": 2678550.03,
-          "variancePct": -36.8,
+          "ytdActual": 2020445.13,
+          "ytdBudget": 3551325.04,
+          "variancePct": -43.1,
           "totalBudget": 10684300.0
         },
         {
           "name": "Police",
-          "ytdActual": 1364226.14,
-          "ytdBudget": 2048277.87,
-          "variancePct": -33.4,
+          "ytdActual": 1665438.44,
+          "ytdBudget": 2587752.83,
+          "variancePct": -35.6,
           "totalBudget": 7286700.0
         },
         {
           "name": "Maintenance",
-          "ytdActual": 2340855.45,
-          "ytdBudget": 3542291.61,
-          "variancePct": -33.9,
+          "ytdActual": 2961050.22,
+          "ytdBudget": 4707326.6,
+          "variancePct": -37.1,
           "totalBudget": 14073500.0
         },
         {
           "name": "Operations",
-          "ytdActual": 1431051.7,
-          "ytdBudget": 1966150.03,
-          "variancePct": -27.2,
+          "ytdActual": 1797826.9,
+          "ytdBudget": 2645700.04,
+          "variancePct": -32.0,
           "totalBudget": 7458000.0
         },
         {
           "name": "Retiree",
-          "ytdActual": 50546.64,
-          "ytdBudget": 166025.0,
-          "variancePct": -69.6,
+          "ytdActual": 101202.28,
+          "ytdBudget": 221366.0,
+          "variancePct": -54.3,
           "totalBudget": 664100.0
         },
         {
           "name": "Projects",
-          "ytdActual": 736926.13,
-          "ytdBudget": 981293.06,
-          "variancePct": -24.9,
+          "ytdActual": 1095532.04,
+          "ytdBudget": 1370838.06,
+          "variancePct": -20.1,
           "totalBudget": 21726950.0
         }
       ]
@@ -459,9 +459,9 @@
         "categories": [
           {
             "name": "Tax Revenue",
-            "ytdActual": 123214.1,
-            "ytdBudget": 80176.65,
-            "variancePct": 53.7,
+            "ytdActual": 124298.72,
+            "ytdBudget": 81397.1,
+            "variancePct": 52.7,
             "totalBudget": 12443200.0
           },
           {
@@ -473,24 +473,24 @@
           },
           {
             "name": "Interest Income",
-            "ytdActual": 154101.68,
-            "ytdBudget": 416375.01,
-            "variancePct": -63.0,
+            "ytdActual": 232452.34,
+            "ytdBudget": 555166.68,
+            "variancePct": -58.1,
             "totalBudget": 1665500.0
           },
           {
             "name": "Misc Revenue",
-            "ytdActual": 4019.15,
-            "ytdBudget": 4850.0,
-            "variancePct": -17.1,
+            "ytdActual": 4694.15,
+            "ytdBudget": 6400.0,
+            "variancePct": -26.7,
             "totalBudget": 316900.0
           }
         ],
         "total": {
           "name": "Total Revenue",
-          "ytdActual": 281334.93,
-          "ytdBudget": 501401.66,
-          "variancePct": -43.9,
+          "ytdActual": 361445.21,
+          "ytdBudget": 642963.78,
+          "variancePct": -43.8,
           "totalBudget": 14809200.0
         }
       },
@@ -499,66 +499,66 @@
           "categories": [
             {
               "name": "Personnel Services",
-              "ytdActual": 1050413.06,
-              "ytdBudget": 1810674.95,
-              "variancePct": -42.0,
+              "ytdActual": 1277082.84,
+              "ytdBudget": 2414233.6,
+              "variancePct": -47.1,
               "totalBudget": 7162700.0
             },
             {
               "name": "Training",
               "ytdActual": 125.0,
-              "ytdBudget": 4500.0,
-              "variancePct": -97.2,
+              "ytdBudget": 6000.0,
+              "variancePct": -97.9,
               "totalBudget": 20000.0
             },
             {
               "name": "Professional Svcs",
               "ytdActual": 0.0,
-              "ytdBudget": 24999.99,
+              "ytdBudget": 33333.32,
               "variancePct": -100.0,
               "totalBudget": 100000.0
             },
             {
               "name": "Contractuals",
-              "ytdActual": 157351.07,
-              "ytdBudget": 292049.41,
-              "variancePct": -46.1,
+              "ytdActual": 169259.86,
+              "ytdBudget": 352599.21,
+              "variancePct": -52.0,
               "totalBudget": 1119900.0
             },
             {
               "name": "Materials & Supplies",
-              "ytdActual": 135025.79,
-              "ytdBudget": 157797.48,
-              "variancePct": -14.4,
+              "ytdActual": 205175.62,
+              "ytdBudget": 206096.64,
+              "variancePct": -0.4,
               "totalBudget": 658800.0
             },
             {
               "name": "Equipments",
-              "ytdActual": 444050.08,
+              "ytdActual": 464166.57,
               "ytdBudget": 636000.0,
-              "variancePct": -30.2,
+              "variancePct": -27.0,
               "totalBudget": 974000.0
             },
             {
               "name": "Other Charges",
-              "ytdActual": 509.0,
-              "ytdBudget": 1499.99,
-              "variancePct": -66.1,
+              "ytdActual": 4553.0,
+              "ytdBudget": 1633.32,
+              "variancePct": 178.8,
               "totalBudget": 492150.0
             },
             {
               "name": "Cost Sharing",
-              "ytdActual": 690873.11,
-              "ytdBudget": 1137125.01,
-              "variancePct": -39.2,
+              "ytdActual": 823531.49,
+              "ytdBudget": 1516166.68,
+              "variancePct": -45.7,
               "totalBudget": 4548500.0
             }
           ],
           "total": {
             "name": "Total O&M",
-            "ytdActual": 2478347.11,
-            "ytdBudget": 4064646.83,
-            "variancePct": -39.0,
+            "ytdActual": 2943894.38,
+            "ytdBudget": 5166062.77,
+            "variancePct": -43.0,
             "totalBudget": 15076050.0
           }
         },
@@ -566,24 +566,24 @@
           "categories": [
             {
               "name": "Projects",
-              "ytdActual": 407039.38,
-              "ytdBudget": 343011.64,
-              "variancePct": 18.7,
+              "ytdActual": 840829.77,
+              "ytdBudget": 431900.53,
+              "variancePct": 94.7,
               "totalBudget": 7065000.0
             }
           ],
           "total": {
-            "ytdActual": 407039.38,
-            "ytdBudget": 343011.64,
-            "variancePct": 18.7,
+            "ytdActual": 840829.77,
+            "ytdBudget": 431900.53,
+            "variancePct": 94.7,
             "totalBudget": 7065000.0
           }
         },
         "grandTotal": {
           "name": "Total Expenses",
-          "ytdActual": 2885386.49,
-          "ytdBudget": 4407658.47,
-          "variancePct": -34.5,
+          "ytdActual": 3784724.15,
+          "ytdBudget": 5597963.3,
+          "variancePct": -32.4,
           "totalBudget": 22141050.0
         }
       },
@@ -596,52 +596,52 @@
       },
       "netChange": {
         "name": "Net Change in Fund Balance",
-        "ytdActual": -2215542.78,
-        "ytdBudget": -3906256.81,
-        "variancePct": -43.3,
+        "ytdActual": -3034770.16,
+        "ytdBudget": -4954999.52,
+        "variancePct": -38.8,
         "totalBudget": -7331850.0
       },
       "departments": [
         {
           "name": "Administration",
-          "ytdActual": 0.0,
+          "ytdActual": 4044.0,
           "ytdBudget": 0.0,
-          "variancePct": 0.0,
+          "variancePct": "unbudgeted",
           "totalBudget": 488700.0
         },
         {
           "name": "Executive",
-          "ytdActual": 647209.88,
-          "ytdBudget": 1209525.41,
-          "variancePct": -46.5,
+          "ytdActual": 751107.91,
+          "ytdBudget": 1602067.21,
+          "variancePct": -53.1,
           "totalBudget": 4780800.0
         },
         {
           "name": "Police",
-          "ytdActual": 1066890.18,
-          "ytdBudget": 1829021.5,
-          "variancePct": -41.7,
+          "ytdActual": 1256464.15,
+          "ytdBudget": 2245337.0,
+          "variancePct": -44.0,
           "totalBudget": 5768250.0
         },
         {
           "name": "Maintenance",
-          "ytdActual": 747743.58,
-          "ytdBudget": 964099.92,
-          "variancePct": -22.4,
+          "ytdActual": 899380.38,
+          "ytdBudget": 1235991.56,
+          "variancePct": -27.2,
           "totalBudget": 3790300.0
         },
         {
           "name": "Retiree",
-          "ytdActual": 16503.47,
-          "ytdBudget": 62000.0,
-          "variancePct": -73.4,
+          "ytdActual": 32897.94,
+          "ytdBudget": 82667.0,
+          "variancePct": -60.2,
           "totalBudget": 248000.0
         },
         {
           "name": "Projects",
-          "ytdActual": 407039.38,
-          "ytdBudget": 343011.64,
-          "variancePct": 18.7,
+          "ytdActual": 840829.77,
+          "ytdBudget": 431900.53,
+          "variancePct": 94.7,
           "totalBudget": 7065000.0
         }
       ]
@@ -653,8 +653,8 @@
           {
             "name": "Tax Revenue",
             "ytdActual": 18093.92,
-            "ytdBudget": 559.41,
-            "variancePct": 3134.5,
+            "ytdBudget": 625.95,
+            "variancePct": 2790.6,
             "totalBudget": 3990600.0
           },
           {
@@ -666,24 +666,24 @@
           },
           {
             "name": "Interest Income",
-            "ytdActual": 20075.14,
-            "ytdBudget": 24937.5,
-            "variancePct": -19.5,
+            "ytdActual": 28853.18,
+            "ytdBudget": 33250.0,
+            "variancePct": -13.2,
             "totalBudget": 99750.0
           },
           {
             "name": "Misc Revenue",
-            "ytdActual": 241.07,
-            "ytdBudget": 225.0,
-            "variancePct": 7.1,
+            "ytdActual": 286.07,
+            "ytdBudget": 300.0,
+            "variancePct": -4.6,
             "totalBudget": 6300.0
           }
         ],
         "total": {
           "name": "Total Revenue",
-          "ytdActual": 38410.13,
-          "ytdBudget": 25721.91,
-          "variancePct": 49.3,
+          "ytdActual": 47233.17,
+          "ytdBudget": 34175.95,
+          "variancePct": 38.2,
           "totalBudget": 4259650.0
         }
       },
@@ -692,9 +692,9 @@
           "categories": [
             {
               "name": "Personnel Services",
-              "ytdActual": 253457.01,
-              "ytdBudget": 393349.99,
-              "variancePct": -35.6,
+              "ytdActual": 328023.32,
+              "ytdBudget": 527800.32,
+              "variancePct": -37.9,
               "totalBudget": 1523400.0
             },
             {
@@ -713,16 +713,16 @@
             },
             {
               "name": "Contractuals",
-              "ytdActual": 30533.4,
-              "ytdBudget": 64005.04,
-              "variancePct": -52.3,
+              "ytdActual": 37018.09,
+              "ytdBudget": 79996.72,
+              "variancePct": -53.7,
               "totalBudget": 252500.0
             },
             {
               "name": "Materials & Supplies",
-              "ytdActual": 45601.07,
-              "ytdBudget": 30250.03,
-              "variancePct": 50.7,
+              "ytdActual": 61161.23,
+              "ytdBudget": 39500.04,
+              "variancePct": 54.8,
               "totalBudget": 121000.0
             },
             {
@@ -735,23 +735,23 @@
             {
               "name": "Other Charges",
               "ytdActual": 0.0,
-              "ytdBudget": 150.0,
+              "ytdBudget": 200.0,
               "variancePct": -100.0,
               "totalBudget": 123000.0
             },
             {
               "name": "Cost Sharing",
-              "ytdActual": 314605.04,
-              "ytdBudget": 463899.99,
-              "variancePct": -32.2,
+              "ytdActual": 353001.62,
+              "ytdBudget": 564883.32,
+              "variancePct": -37.5,
               "totalBudget": 1855600.0
             }
           ],
           "total": {
             "name": "Total O&M",
-            "ytdActual": 644196.52,
-            "ytdBudget": 951855.05,
-            "variancePct": -32.3,
+            "ytdActual": 779204.26,
+            "ytdBudget": 1212580.4,
+            "variancePct": -35.7,
             "totalBudget": 3943700.0
           }
         },
@@ -759,24 +759,24 @@
           "categories": [
             {
               "name": "Projects",
-              "ytdActual": 62313.72,
-              "ytdBudget": 125439.95,
-              "variancePct": -50.3,
+              "ytdActual": 86944.05,
+              "ytdBudget": 173749.4,
+              "variancePct": -50.0,
               "totalBudget": 1880000.0
             }
           ],
           "total": {
-            "ytdActual": 62313.72,
-            "ytdBudget": 125439.95,
-            "variancePct": -50.3,
+            "ytdActual": 86944.05,
+            "ytdBudget": 173749.4,
+            "variancePct": -50.0,
             "totalBudget": 1880000.0
           }
         },
         "grandTotal": {
           "name": "Total Expenses",
-          "ytdActual": 706510.24,
-          "ytdBudget": 1077295.0,
-          "variancePct": -34.4,
+          "ytdActual": 866148.31,
+          "ytdBudget": 1386329.8,
+          "variancePct": -37.5,
           "totalBudget": 5823700.0
         }
       },
@@ -789,9 +789,9 @@
       },
       "netChange": {
         "name": "Net Change in Fund Balance",
-        "ytdActual": -668100.11,
-        "ytdBudget": -1051573.09,
-        "variancePct": -36.5,
+        "ytdActual": -818915.14,
+        "ytdBudget": -1352153.85,
+        "variancePct": -39.4,
         "totalBudget": -1564050.0
       },
       "departments": [
@@ -804,37 +804,37 @@
         },
         {
           "name": "Executive",
-          "ytdActual": 207869.03,
-          "ytdBudget": 304880.0,
-          "variancePct": -31.8,
+          "ytdActual": 247145.51,
+          "ytdBudget": 406230.0,
+          "variancePct": -39.2,
           "totalBudget": 1217300.0
         },
         {
           "name": "Maintenance",
-          "ytdActual": 304576.65,
-          "ytdBudget": 415050.04,
-          "variancePct": -26.6,
+          "ytdActual": 383704.05,
+          "ytdBudget": 550766.72,
+          "variancePct": -30.3,
           "totalBudget": 1676300.0
         },
         {
           "name": "Operations",
-          "ytdActual": 115176.97,
-          "ytdBudget": 178700.01,
-          "variancePct": -35.5,
+          "ytdActual": 115206.96,
+          "ytdBudget": 184616.68,
+          "variancePct": -37.6,
           "totalBudget": 714800.0
         },
         {
           "name": "Retiree",
-          "ytdActual": 16573.87,
-          "ytdBudget": 53225.0,
-          "variancePct": -68.9,
+          "ytdActual": 33147.74,
+          "ytdBudget": 70967.0,
+          "variancePct": -53.3,
           "totalBudget": 212900.0
         },
         {
           "name": "Projects",
-          "ytdActual": 62313.72,
-          "ytdBudget": 125439.95,
-          "variancePct": -50.3,
+          "ytdActual": 86944.05,
+          "ytdBudget": 173749.4,
+          "variancePct": -50.0,
           "totalBudget": 1880000.0
         }
       ]
@@ -852,45 +852,45 @@
           },
           {
             "name": "Rev from EJ",
-            "ytdActual": 677328.92,
-            "ytdBudget": 1117125.0,
-            "variancePct": -39.4,
+            "ytdActual": 803273.37,
+            "ytdBudget": 1489500.0,
+            "variancePct": -46.1,
             "totalBudget": 4468500.0
           },
           {
             "name": "Rev from LB",
-            "ytdActual": 205748.85,
-            "ytdBudget": 302949.99,
-            "variancePct": -32.1,
+            "ytdActual": 244145.43,
+            "ytdBudget": 403933.32,
+            "variancePct": -39.6,
             "totalBudget": 1211800.0
           },
           {
             "name": "Rev from OL",
-            "ytdActual": 1586586.83,
-            "ytdBudget": 2449374.99,
-            "variancePct": -35.2,
+            "ytdActual": 1879892.81,
+            "ytdBudget": 3265833.32,
+            "variancePct": -42.4,
             "totalBudget": 9797500.0
           },
           {
             "name": "Interest Income",
-            "ytdActual": 6013.64,
-            "ytdBudget": 11499.99,
-            "variancePct": -47.7,
+            "ytdActual": 9014.13,
+            "ytdBudget": 15333.32,
+            "variancePct": -41.2,
             "totalBudget": 46000.0
           },
           {
             "name": "Misc Revenue",
-            "ytdActual": 53966.88,
-            "ytdBudget": 44557.34,
-            "variancePct": 21.1,
+            "ytdActual": 56036.88,
+            "ytdBudget": 66029.65,
+            "variancePct": -15.1,
             "totalBudget": 356400.0
           }
         ],
         "total": {
           "name": "Total Revenue",
-          "ytdActual": 2530152.56,
-          "ytdBudget": 3925507.31,
-          "variancePct": -35.5,
+          "ytdActual": 2992870.06,
+          "ytdBudget": 5240629.61,
+          "variancePct": -42.9,
           "totalBudget": 15880200.0
         }
       },
@@ -899,37 +899,37 @@
           "categories": [
             {
               "name": "Personnel Services",
-              "ytdActual": 1542726.46,
-              "ytdBudget": 2551550.0,
-              "variancePct": -39.5,
+              "ytdActual": 1867655.77,
+              "ytdBudget": 3396067.0,
+              "variancePct": -45.0,
               "totalBudget": 10152200.0
             },
             {
               "name": "Training",
-              "ytdActual": 13231.97,
-              "ytdBudget": 74405.31,
-              "variancePct": -82.2,
+              "ytdActual": 13996.64,
+              "ytdBudget": 99213.93,
+              "variancePct": -85.9,
               "totalBudget": 316900.0
             },
             {
               "name": "Professional Svcs",
-              "ytdActual": 42631.47,
-              "ytdBudget": 95000.0,
-              "variancePct": -55.1,
+              "ytdActual": 55609.97,
+              "ytdBudget": 115000.0,
+              "variancePct": -51.6,
               "totalBudget": 290000.0
             },
             {
               "name": "Contractuals",
-              "ytdActual": 1189527.26,
-              "ytdBudget": 1254216.65,
-              "variancePct": -5.2,
+              "ytdActual": 1245252.31,
+              "ytdBudget": 1447528.53,
+              "variancePct": -14.0,
               "totalBudget": 4193700.0
             },
             {
               "name": "Materials & Supplies",
-              "ytdActual": 21577.93,
-              "ytdBudget": 151550.0,
-              "variancePct": -85.8,
+              "ytdActual": 83501.69,
+              "ytdBudget": 172750.0,
+              "variancePct": -51.7,
               "totalBudget": 329600.0
             },
             {
@@ -941,9 +941,9 @@
             },
             {
               "name": "Other Charges",
-              "ytdActual": 11976.21,
-              "ytdBudget": 2475.0,
-              "variancePct": 383.9,
+              "ytdActual": 12573.87,
+              "ytdBudget": 3200.0,
+              "variancePct": 292.9,
               "totalBudget": 10500.0
             },
             {
@@ -956,26 +956,34 @@
           ],
           "total": {
             "name": "Total O&M",
-            "ytdActual": 2874326.39,
-            "ytdBudget": 4314196.96,
-            "variancePct": -33.4,
+            "ytdActual": 3331245.34,
+            "ytdBudget": 5418759.46,
+            "variancePct": -38.5,
             "totalBudget": 15477900.0
           }
         },
         "projects": {
-          "categories": [],
+          "categories": [
+            {
+              "name": "Projects",
+              "ytdActual": 1178.76,
+              "ytdBudget": 0.0,
+              "variancePct": "unbudgeted",
+              "totalBudget": 0.0
+            }
+          ],
           "total": {
-            "ytdActual": 0.0,
+            "ytdActual": 1178.76,
             "ytdBudget": 0.0,
-            "variancePct": 0.0,
+            "variancePct": "unbudgeted",
             "totalBudget": 0.0
           }
         },
         "grandTotal": {
           "name": "Total Expenses",
-          "ytdActual": 2874326.39,
-          "ytdBudget": 4314196.96,
-          "variancePct": -33.4,
+          "ytdActual": 3332424.1,
+          "ytdBudget": 5418759.46,
+          "variancePct": -38.5,
           "totalBudget": 15477900.0
         }
       },
@@ -988,74 +996,81 @@
       },
       "netChange": {
         "name": "Net Change in Fund Balance",
-        "ytdActual": -459173.83,
-        "ytdBudget": -388689.65,
-        "variancePct": 18.1,
+        "ytdActual": -454554.04,
+        "ytdBudget": -178129.85,
+        "variancePct": 155.2,
         "totalBudget": 402300.0
       },
       "departments": [
         {
           "name": "Executive",
-          "ytdActual": 1030655.2,
-          "ytdBudget": 1395634.77,
-          "variancePct": -26.2,
+          "ytdActual": 1138101.38,
+          "ytdBudget": 1626629.98,
+          "variancePct": -30.0,
           "totalBudget": 4821500.0
         },
         {
           "name": "Commissioner",
-          "ytdActual": 54752.5,
-          "ytdBudget": 82625.02,
-          "variancePct": -33.7,
+          "ytdActual": 55245.53,
+          "ytdBudget": 94958.36,
+          "variancePct": -41.8,
           "totalBudget": 330500.0
         },
         {
           "name": "Finance",
-          "ytdActual": 441247.56,
-          "ytdBudget": 571199.97,
-          "variancePct": -22.8,
+          "ytdActual": 514670.36,
+          "ytdBudget": 749599.96,
+          "variancePct": -31.3,
           "totalBudget": 2218300.0
         },
         {
           "name": "Human Resource",
-          "ytdActual": 304663.88,
-          "ytdBudget": 435610.0,
-          "variancePct": -30.1,
+          "ytdActual": 346440.28,
+          "ytdBudget": 575230.0,
+          "variancePct": -39.8,
           "totalBudget": 1480000.0
         },
         {
           "name": "Information Technology",
-          "ytdActual": 422346.08,
-          "ytdBudget": 703502.24,
-          "variancePct": -40.0,
+          "ytdActual": 516288.52,
+          "ytdBudget": 863490.88,
+          "variancePct": -40.2,
           "totalBudget": 2146900.0
         },
         {
           "name": "Police",
-          "ytdActual": 30974.04,
-          "ytdBudget": 147174.99,
-          "variancePct": -79.0,
+          "ytdActual": 41380.73,
+          "ytdBudget": 196233.32,
+          "variancePct": -78.9,
           "totalBudget": 588700.0
         },
         {
           "name": "Engineering",
-          "ytdActual": 476420.56,
-          "ytdBudget": 791349.97,
-          "variancePct": -39.8,
+          "ytdActual": 569522.02,
+          "ytdBudget": 1063149.96,
+          "variancePct": -46.4,
           "totalBudget": 3143600.0
         },
         {
           "name": "Maintenance",
-          "ytdActual": 97785.07,
-          "ytdBudget": 143325.0,
-          "variancePct": -31.8,
+          "ytdActual": 117013.24,
+          "ytdBudget": 191100.0,
+          "variancePct": -38.8,
           "totalBudget": 573300.0
         },
         {
           "name": "Retiree",
-          "ytdActual": 15481.5,
-          "ytdBudget": 43775.0,
-          "variancePct": -64.6,
+          "ytdActual": 32583.28,
+          "ytdBudget": 58367.0,
+          "variancePct": -44.2,
           "totalBudget": 175100.0
+        },
+        {
+          "name": "Projects",
+          "ytdActual": 1178.76,
+          "ytdBudget": 0.0,
+          "variancePct": "unbudgeted",
+          "totalBudget": 0.0
         }
       ]
     }

@@ -1,8 +1,8 @@
 {
-  "generatedAt": "2026-10-09T13:19:28+00:00",
-  "source": "police-activity_2026-08.xlsx",
-  "sourceModified": "2026-10-05T20:45:10Z",
-  "latestMonth": "2026-08",
+  "generatedAt": "2026-11-03T13:09:26+00:00",
+  "source": "police-activity_2026-09.xlsx",
+  "sourceModified": "2026-11-02T21:31:55Z",
+  "latestMonth": "2026-09",
   "fiscalYearStartMonth": 7,
   "fields": [
     {
@@ -797,6 +797,59 @@
           "facilityChecks": 176,
           "neighborhoodPatrol": 401,
           "trafficControl": 15,
+          "fpaEscorts": 8
+        }
+      }
+    },
+    {
+      "month": "2026-09",
+      "label": "September 2026",
+      "source": "police-activity_2026-09.xlsx",
+      "total": 9192,
+      "agency": {
+        "gateChecks": 2276,
+        "pumpStationChecks": 1916,
+        "riverBattureChecks": 364,
+        "polderChecks": 1371,
+        "gaugeReadings": 223,
+        "bayouBienvenueChecks": 223,
+        "leveeInspections": 42,
+        "shelterChecks": 593,
+        "marinaChecks": 791,
+        "facilityChecks": 493,
+        "neighborhoodPatrol": 880,
+        "trafficControl": 12,
+        "fpaEscorts": 8
+      },
+      "districts": {
+        "EJLDPD": {
+          "gateChecks": 1539,
+          "pumpStationChecks": 1699,
+          "riverBattureChecks": 364,
+          "polderChecks": 1368,
+          "gaugeReadings": 0,
+          "bayouBienvenueChecks": 0,
+          "leveeInspections": 2,
+          "shelterChecks": 174,
+          "marinaChecks": 676,
+          "facilityChecks": 321,
+          "neighborhoodPatrol": 554,
+          "trafficControl": 0,
+          "fpaEscorts": 0
+        },
+        "OLDPD": {
+          "gateChecks": 737,
+          "pumpStationChecks": 217,
+          "riverBattureChecks": 0,
+          "polderChecks": 3,
+          "gaugeReadings": 223,
+          "bayouBienvenueChecks": 223,
+          "leveeInspections": 40,
+          "shelterChecks": 419,
+          "marinaChecks": 115,
+          "facilityChecks": 172,
+          "neighborhoodPatrol": 326,
+          "trafficControl": 12,
           "fpaEscorts": 8
         }
       }
