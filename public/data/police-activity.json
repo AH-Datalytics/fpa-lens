@@ -1,8 +1,8 @@
 {
-  "generatedAt": "2026-11-03T13:09:26+00:00",
-  "source": "police-activity_2026-09.xlsx",
-  "sourceModified": "2026-11-02T21:31:55Z",
-  "latestMonth": "2026-09",
+  "generatedAt": "2026-11-06T13:08:59+00:00",
+  "source": "police-activity_2026-10.xlsx",
+  "sourceModified": "2026-11-05T17:51:53Z",
+  "latestMonth": "2026-10",
   "fiscalYearStartMonth": 7,
   "fields": [
     {
@@ -851,6 +851,59 @@
           "neighborhoodPatrol": 326,
           "trafficControl": 12,
           "fpaEscorts": 8
+        }
+      }
+    },
+    {
+      "month": "2026-10",
+      "label": "October 2026",
+      "source": "police-activity_2026-10.xlsx",
+      "total": 10696,
+      "agency": {
+        "gateChecks": 2556,
+        "pumpStationChecks": 2431,
+        "riverBattureChecks": 386,
+        "polderChecks": 1579,
+        "gaugeReadings": 128,
+        "bayouBienvenueChecks": 176,
+        "leveeInspections": 43,
+        "shelterChecks": 690,
+        "marinaChecks": 947,
+        "facilityChecks": 595,
+        "neighborhoodPatrol": 1129,
+        "trafficControl": 24,
+        "fpaEscorts": 12
+      },
+      "districts": {
+        "EJLDPD": {
+          "gateChecks": 1808,
+          "pumpStationChecks": 2127,
+          "riverBattureChecks": 386,
+          "polderChecks": 1576,
+          "gaugeReadings": 0,
+          "bayouBienvenueChecks": 0,
+          "leveeInspections": 0,
+          "shelterChecks": 174,
+          "marinaChecks": 857,
+          "facilityChecks": 415,
+          "neighborhoodPatrol": 859,
+          "trafficControl": 0,
+          "fpaEscorts": 2
+        },
+        "OLDPD": {
+          "gateChecks": 748,
+          "pumpStationChecks": 304,
+          "riverBattureChecks": 0,
+          "polderChecks": 3,
+          "gaugeReadings": 128,
+          "bayouBienvenueChecks": 176,
+          "leveeInspections": 43,
+          "shelterChecks": 516,
+          "marinaChecks": 90,
+          "facilityChecks": 180,
+          "neighborhoodPatrol": 270,
+          "trafficControl": 24,
+          "fpaEscorts": 10
         }
       }
     }

@@ -509,9 +509,9 @@
     },
     {
       "type": "Mobile Equipment",
-      "count": 57,
+      "count": 56,
       "accidents": 1,
-      "incidents": 49,
+      "incidents": 48,
       "noFault": 7
     },
     {
@@ -523,16 +523,16 @@
     },
     {
       "type": "Slip/Trip/Fall",
-      "count": 27,
+      "count": 28,
       "accidents": 13,
-      "incidents": 14,
+      "incidents": 15,
       "noFault": 0
     },
     {
       "type": "Vehicle",
-      "count": 131,
+      "count": 132,
       "accidents": 3,
-      "incidents": 83,
+      "incidents": 84,
       "noFault": 45
     }
   ],
@@ -541,7 +541,7 @@
       "date": "2026-10-26",
       "month": "October",
       "year": 2026,
-      "eventType": "Mobile Equipment",
+      "eventType": "Vehicle",
       "classification": "other",
       "isAtFault": true,
       "isLostTime": false,
@@ -649,7 +649,7 @@
       "date": "2026-09-21",
       "month": "September",
       "year": 2026,
-      "eventType": "Not categorized",
+      "eventType": "Slip/Trip/Fall",
       "classification": "other",
       "isAtFault": true,
       "isLostTime": false,
