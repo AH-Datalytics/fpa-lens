@@ -1,6 +1,6 @@
 {
-  "reportMonth": "October 2026",
-  "executiveSummary": "The Authority remains operationally ready for the 2026 hurricane season, with no identified threats to overall system integrity. Q3 field inspections are complete, all PCCP stations and complex structures remain mission ready, and routine maintenance continues without readiness impacts. As Hurricane Isaias approaches the central Gulf Coast, staff are actively monitoring weather and surge forecasts and implementing system closures and other operational measures as conditions require.",
+  "reportMonth": "November 2026",
+  "executiveSummary": "The Authority remains operationally ready, with all readiness categories Green and no identified threats to overall system integrity. Q3 inspections are complete, Q4 inspections are underway, all PCCP stations and complex structures remain mission ready, and routine maintenance continues without operational impacts. The FY26 financial audit was completed with no findings, and October safety performance included no recordable accidents or serious injuries.",
   "readiness": {
     "infrastructure": "Green",
     "staffing": "Green",
@@ -8,51 +8,51 @@
     "media": "Green"
   },
   "permits": {
-    "issued": 32,
-    "period": "September 2026",
+    "issued": 15,
+    "period": "October 2026",
     "type": "Levee Safety"
   },
   "safety": {
-    "accidents": 1,
-    "incidents": 5
+    "incidents": 7,
+    "accidents": 0
   },
   "staffing": {
-    "vacancies": 38,
+    "vacancies": 41,
     "classifiedHeadcount": null,
     "unclassifiedHeadcount": null
   },
   "maintenanceActivities": [
-    "Routine levee, floodwall, floodgate, valve, facility, and equipment maintenance continued with no impacts to system readiness.",
-    "Annual floodgate inspections remain up to date; Q4 valve inspections and exercises underway.",
+    "Routine levee, floodwall, floodgate, valve, facility, and equipment maintenance continues with no impacts to system readiness.",
+    "Hurricane floodgate maintenance is complete; river floodgate maintenance and Q4 valve exercises are progressing.",
     "Field safety checks, required training, facility preparation, and seasonal readiness activities continue during hurricane season.",
     "Facility repairs, warehouse system maintenance, and support infrastructure improvements remain ongoing.",
-    "Levee turf maintenance is slightly behind due to recent rain but catching up as weather conditions improve; no readiness impacts reported."
+    "Turf maintenance is slightly behind due to recent rain but catching up as weather conditions improve; no readiness impacts reported."
   ],
   "projects": [
     {
       "name": "Foreshore Erosion Repair",
-      "status": "Currently advertised with a Bid Opening of October 19, 2026.",
+      "status": "Bid openings occurred on 10/29/26. Lowest Bid was $53,254,217. USACE project award / contract execution ongoing.",
       "phase": "In Bidding"
     },
     {
       "name": "LPV Access Bridge",
-      "status": "Construction has begun. Contractor has mobilized and is progressing.",
+      "status": "Construction has begun. Construction progressing and on schedule.",
       "phase": "In Progress"
     },
     {
       "name": "Orpheum Slope Paving",
-      "status": "Construction has begun and is progressing per the schedule.",
+      "status": "Project is substantially complete. Contract closeout ongoing.",
       "phase": "In Progress"
     },
     {
       "name": "Franklin Ave. Vault 4 – Final",
-      "status": "Construction ongoing and on schedule.",
+      "status": "Project is substantially complete. Contract closeout ongoing.",
       "phase": "In Progress"
     },
     {
       "name": "London Avenue Canal Erosion Mitigation (Phase 1)",
-      "status": "Full NTP scheduled to be issued on 10/12/26 with an expected start of activities within the canal around 11/1/26.",
-      "phase": "Awarded"
+      "status": "Full NTP issued on 10/12/26 with an expected start of activities within the canal around 11/1/26.",
+      "phase": "In Progress"
     },
     {
       "name": "40 Arpent Sheet Pile Rehabilitation (Phase 2)",
@@ -61,39 +61,39 @@
     },
     {
       "name": "Franklin Herbicide Vehicle Containment",
-      "status": "Construction has begun and is 95% complete.",
+      "status": "Construction is 95% complete.",
       "phase": "In Progress"
     },
     {
       "name": "Lakeshore Drive Flood Warning Signs",
-      "status": "60% Design submitted. Review comments forwarded to designer. 90% design underway.",
+      "status": "60% Design submitted. Review comments have been forwarded to designer. 90% design underway.",
       "phase": "In Design"
     },
     {
       "name": "Franklin Facility Access Improvements",
-      "status": "60% Design submittal under review by Engineering.",
+      "status": "60% Design submittal reviewed by Engineering. Plans are currently being reviewed by other FPA stakeholders.",
       "phase": "In Design"
     },
     {
       "name": "Tropical Storm Arthur – Franklin Facility Damage",
-      "status": "Demolition work has been completed. Secondary structural inspection by adjuster to take place. Final repair design scope being determined.",
-      "phase": "In Progress"
+      "status": "Demolition work has been completed. Secondary structural inspection completed (awaiting results). Final repair design scope being determined.",
+      "phase": "In Design"
     }
   ],
   "inspections": {
     "cpra": {
-      "status": "complete",
-      "note": "3rd quarter field inspections are complete and under Engineering review; 4th Quarter field inspection underway"
+      "status": "on-track",
+      "note": "Q3 field inspections complete and under Engineering review; Q4 field inspections underway"
     },
     "usace": {
-      "status": "on-track",
-      "note": "USACE Semi Annual Report nearing completion, to be submitted October 15, 2026, to CPRA"
+      "status": "complete",
+      "note": "FPA submitted its portion to CPRA on 10/17/2026; CPRA subsequently submitted the entire report to USACE on 11/02/2026"
     },
     "valves": {
       "status": "on-track",
       "completed": null,
       "total": null,
-      "note": "Q4 valve inspections and exercises underway"
+      "note": "Q4 valve exercises are progressing"
     }
   },
   "permitsHistory": [
@@ -106,9 +106,14 @@
       "issued": 32,
       "period": "September 2026",
       "type": "Levee Safety"
+    },
+    {
+      "issued": 15,
+      "period": "October 2026",
+      "type": "Levee Safety"
     }
   ],
-  "source": "sitrep_2026-10.pdf",
-  "sourceModified": "2026-10-13T15:33:27Z",
+  "source": "sitrep_2026-11.pdf",
+  "sourceModified": "2026-11-09T18:49:30Z",
   "generatedFrom": "Claude claude-sonnet-4-6"
 }
