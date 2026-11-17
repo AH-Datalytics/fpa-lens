@@ -54,6 +54,14 @@
       "cycle2Pct": null,
       "c1CompletedOn": null,
       "c2CompletedOn": null
+    },
+    {
+      "zone": "Non-Federal Back Levee/NFL",
+      "reach": "40 Arpent - Orleans Parish line to Hwy 46 Reggion in Lower St Bernard",
+      "cycle1Pct": 0.5,
+      "cycle2Pct": null,
+      "c1CompletedOn": null,
+      "c2CompletedOn": null
     }
   ]
 }
