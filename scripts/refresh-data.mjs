@@ -41,6 +41,9 @@ import { loadLocalEnv } from "./sharepoint/graph.mjs";
 const WIRED = {
   finance: { script: "scripts/extractActualsData.py" },
   idiq: { script: "scripts/extractIdiqData.py" },
+  // Engineering's running weekly river gate / valve log (one workbook, edited
+  // in place; fetch.mjs `anyName`). Cheap and deterministic, so no guard.
+  inspections: { script: "scripts/extractGateInspections.py" },
   // `all` category (fetch.mjs): every monthly workbook in the folder is passed
   // to the extractor, which rebuilds the month-by-month series.
   police: { script: "scripts/extractPoliceData.py" },

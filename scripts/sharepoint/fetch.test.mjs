@@ -71,3 +71,18 @@ describe("police category (flexibleMonth + all)", () => {
     expect(police.all).toBe(true);
   });
 });
+
+describe("inspections category (anyName)", () => {
+  const insp = CATEGORIES.inspections;
+
+  it("accepts any .xlsx name and saves under one canonical name", () => {
+    expect(dateKey("FPA_Lens_Simple_Weekly_Inspections (1).xlsx", insp)).toBe(0);
+    expect(dateKey("gate-inspections.xlsx", insp)).toBe(0);
+    expect(normalizeName("FPA_Lens_Simple_Weekly_Inspections (1).xlsx", insp)).toBe("gate-inspections.xlsx");
+  });
+
+  it("skips other file types and Office lock files", () => {
+    expect(dateKey("notes.docx", insp)).toBeNull();
+    expect(dateKey("~$FPA_Lens_Simple_Weekly_Inspections.xlsx", insp)).toBeNull();
+  });
+});

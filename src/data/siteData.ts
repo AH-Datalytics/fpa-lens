@@ -22,7 +22,9 @@
 
 import sitrepDigest from "../../public/data/sitrep.json";
 import staffingJson from "../../public/data/staffing.json";
+import gateInspectionsJson from "../../public/data/gate-inspections.json";
 import { applySitrep } from "./sitrepOverlay";
+import { applyGateInspections } from "../lib/riverGateOverlay";
 
 // ============================================================================
 // SITE METADATA
@@ -292,6 +294,10 @@ export const readinessMetrics = {
     monthlyRate: 28,
     mandate: "USACE O&M Manual",
     source: "FY26 schedule; last cycle (Oct-Dec 2025) completed",
+    // Set by applyGateInspections() (bottom of file) to the latest week in
+    // Engineering's weekly inspection log. When set, river gates grade on this
+    // date instead of the SITREP's dataAsOf.
+    dataAsOf: undefined as string | undefined,
   },
   // Quarterly valve exercises, graded time-relative like CPRA/USACE (percent
   // vs straight-line pace for the report date), not raw percent. June 2026
@@ -944,6 +950,15 @@ applySitrep(sitrepDigest, {
   operationsData,
   financialData,
 });
+
+// ============================================================================
+// RIVER GATE INSPECTION LOG OVERLAY
+// ============================================================================
+// Engineering's weekly inspection workbook (SharePoint FPA Lens Data/Engineering/
+// Inspections -> public/data/gate-inspections.json) is the system of record for
+// river gate counts during the Oct-Dec cycle; the SITREP does not report them.
+// No-op until a week is reported for the cycle configured above.
+applyGateInspections(readinessMetrics.riverGateInspections, gateInspectionsJson);
 
 // ============================================================================
 // STAFFING HEADCOUNT OVERLAY

@@ -257,14 +257,18 @@ export default function OurSystemPage() {
   // expected-progress math and the home rollup use. Early in the season the
   // calendar is inside the window but the latest SITREP predates it, so there
   // is no count yet; that reads as "Underway" rather than "0% · GREEN".
+  //
+  // Once Engineering's weekly inspection log reports a week, rg.dataAsOf is
+  // that week and grading keys to it instead (the log runs ahead of the SITREP).
   const rg = readinessMetrics.riverGateInspections;
+  const rgAsOf = rg.dataAsOf ? new Date(rg.dataAsOf + "T00:00:00") : asOf;
   const rgStart = new Date(rg.periodStart + "T00:00:00");
   const rgEnd = new Date(rg.periodEnd + "T00:00:00");
-  const rgInSeason = asOf >= rgStart && asOf <= rgEnd;
+  const rgInSeason = rgAsOf >= rgStart && rgAsOf <= rgEnd;
   const rgSeasonOpenAwaitingData = !rgInSeason && today >= rgStart && today <= rgEnd;
   const rgPriorCycleComplete = !rgInSeason && rg.lastCycleCompleted === true;
   const rgExpected = rgInSeason
-    ? expectedFromRate(rg.monthlyRate, rgStart, asOf, rg.total)
+    ? expectedFromRate(rg.monthlyRate, rgStart, rgAsOf, rg.total)
     : 0;
   const rgRatio = rgExpected > 0 ? (rg.completed / rgExpected) * 100 : 100;
   const rgStatus: StatusColor = rgInSeason
@@ -506,7 +510,7 @@ export default function OurSystemPage() {
                     rgInSeason
                       ? `${rg.completed} of ${rg.total} gates`
                       : rgSeasonOpenAwaitingData
-                        ? `Inspection season opened Oct 1; first count arrives with the next SITREP. All ${rg.total} gates were inspected last cycle (${rg.lastCycleLabel}).`
+                        ? `Inspection season opened Oct 1; first count arrives with Engineering's weekly inspection log. All ${rg.total} gates were inspected last cycle (${rg.lastCycleLabel}).`
                         : rgPriorCycleComplete
                           ? `All ${rg.total} gates inspected last cycle (${rg.lastCycleLabel})`
                           : `${rg.completed} of ${rg.total} gates`

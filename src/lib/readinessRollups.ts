@@ -86,12 +86,15 @@ export function computeReadinessRollups(asOfDate?: string): ReadinessRollups {
 
   // River Gates: in-season Oct to Dec. Out of season: GREEN if prior cycle
   // was completed (so the rollup still counts this as a healthy signal).
+  // Graded on the weekly inspection log's date when it has reported a week
+  // (rg.dataAsOf, set by applyGateInspections), else on the SITREP date.
   const rg = readinessMetrics.riverGateInspections;
+  const rgAsOf = rg.dataAsOf ? new Date(rg.dataAsOf + "T00:00:00") : asOf;
   const rgStart = new Date(rg.periodStart + "T00:00:00");
   const rgEnd = new Date(rg.periodEnd + "T00:00:00");
-  const rgInSeason = asOf >= rgStart && asOf <= rgEnd;
+  const rgInSeason = rgAsOf >= rgStart && rgAsOf <= rgEnd;
   const rgPriorCycleComplete = !rgInSeason && rg.lastCycleCompleted === true;
-  const rgExpected = expectedFromRate(rg.monthlyRate, rgStart, asOf, rg.total);
+  const rgExpected = expectedFromRate(rg.monthlyRate, rgStart, rgAsOf, rg.total);
   const rgRatio = rgExpected > 0 ? (rg.completed / rgExpected) * 100 : 100;
   const rgStatus: StatusColor = rgInSeason
     ? statusFromRatio(rgRatio)

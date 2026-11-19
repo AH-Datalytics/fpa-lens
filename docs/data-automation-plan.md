@@ -58,6 +58,7 @@ the manual steps.
 | Staffing | `Staffing/` | `staffing_YYYY-MM.xlsx` | _none yet_ | `staffing.json` (new) | ✅ |
 | SITREP | `SITREP/` | `sitrep_YYYY-MM.pdf` | _new, Claude_ | `sitrep.json` (new) | ❌ empty |
 | Turf | `Turf/` | `turf-maintenance_YYYY-MM-DD.xlsx` | _new_ | updates `grassCutting.ts` %s | ❌ empty |
+| River gate inspections (Nov 2026) | `Engineering/Inspections/` | any `.xlsx` (one running workbook, newest upload wins) | `extractGateInspections.py` | `gate-inspections.json` | ❌ awaiting Engineering's first upload |
 
 Static GIS (`kmz/`, `shapefiles/`) and the lakefront `closures/` log are **not** in this pipeline —
 they change rarely and stay manual.

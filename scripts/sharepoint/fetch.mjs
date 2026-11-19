@@ -95,6 +95,19 @@ export const CATEGORIES = {
     monthOptional: true, // one workbook with monthly tabs: turf-maintenance_YYYY[-MM].xlsx
     dest: "data/sources/turf/{name}",
   },
+  inspections: {
+    // Weekly river gate / valve inspection log (Nov 2026, agreed with Lawrence
+    // Williams and Kim Branch). Engineering keeps ONE running workbook and adds
+    // a row each week, editing it in place in SharePoint, so there is no date
+    // in the name to sort by. The folder holds only this workbook: take any
+    // .xlsx, newest upload wins, and save it under a fixed canonical name.
+    folder: `${ROOT}/Engineering/Inspections`,
+    descriptor: "gate-inspections",
+    ext: "xlsx",
+    cadence: "weekly",
+    anyName: true,
+    dest: "data/sources/inspections/{name}",
+  },
 };
 
 /** Escaped, alternation-grouped extension pattern (supports cat.exts). */
@@ -148,6 +161,7 @@ function nameRegex(cat) {
  * collapses a doubled extension, e.g. foo.xlsm.xlsm -> foo.xlsm.
  */
 export function normalizeName(name, cat) {
+  if (cat.anyName) return `${cat.descriptor}.${cat.ext}`;
   if (cat.flexibleMonth) {
     const fm = flexibleMonth(name);
     if (!fm) return name;
@@ -160,6 +174,13 @@ export function normalizeName(name, cat) {
 
 /** Parse the date in a filename into a sortable integer (YYYYMMDD), or null. */
 export function dateKey(name, cat) {
+  // anyName: every file with the right extension matches with the same key, so
+  // inspectCategory's lastModified tie-break picks the newest upload. Office
+  // lock files ("~$...") are skipped.
+  if (cat.anyName) {
+    if (name.startsWith("~$")) return null;
+    return new RegExp(`\\.${extPat(cat)}$`, "i").test(name) ? 0 : null;
+  }
   if (cat.flexibleMonth) {
     const fm = flexibleMonth(name);
     return fm ? Number(`${fm.yyyy}${fm.mm}01`) : null;
